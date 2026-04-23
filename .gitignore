@@ -1,0 +1,42 @@
+# -- OS noise --
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+
+# -- IDE / editor --
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.phpunit.result.cache
+
+# -- Node / build tooling (Phase 4+ blocks will need this) --
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnp.*
+
+# -- WordPress plugin build artefacts --
+dist/*.zip
+dist/*-temp/
+dist/shuffles-social-services-jobs-*.zip
+
+# -- Logs --
+*.log
+error_log
+
+# -- Local env / secrets --
+.env
+.env.local
+wp-config-local.php
+
+# -- Test output --
+coverage/
+.phpunit.cache/
+
+# -- the AI / scratch --
+.claude/
+$tmp/
