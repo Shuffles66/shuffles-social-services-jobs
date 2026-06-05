@@ -338,10 +338,12 @@ class Shuffles_SSJ_Admin {
 		$title     = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : 'Jobs';
 
 		$allowed = array(
-			'page_job_board' => '[sssj_job_board]',
-			'page_tfn_board' => '[sssj_tfn_board]',
-			'page_abn_board' => '[sssj_abn_board]',
-			'page_post_job'  => '[sssj_post_job]',
+			'page_job_board'   => '[sssj_job_board]',
+			'page_tfn_board'   => '[sssj_tfn_board]',
+			'page_abn_board'   => '[sssj_abn_board]',
+			'page_post_job'    => '[sssj_post_job]',
+			'page_my_listings' => '[sssj_my_listings]',
+			'page_messages'    => '[sssj_messages]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );

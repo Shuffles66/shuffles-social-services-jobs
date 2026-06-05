@@ -21,6 +21,7 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_sssj_apply', array( $this, 'handle_apply' ) );
 		add_action( 'admin_post_nopriv_sssj_apply', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_app_status', array( $this, 'handle_app_status' ) );
+		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 	}
 
 	public function deny() {
@@ -350,6 +351,33 @@ class Shuffles_SSJ_Frontend_Forms {
 		Shuffles_SSJ_Applications::set_status( $app_id, $status, get_current_user_id() );
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 		wp_safe_redirect( add_query_arg( 'sssj_status', '1', $redirect ) );
+		exit;
+	}
+
+	/**
+	 * Send a reply within an existing messaging thread (sender must be a party to it).
+	 */
+	public function handle_send_message() {
+		$nonce = isset( $_POST['sssj_msg_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_msg_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_send_message' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$uid      = get_current_user_id();
+		$thread   = isset( $_POST['thread_id'] ) ? absint( $_POST['thread_id'] ) : 0;
+		$body     = isset( $_POST['body'] ) ? wp_unslash( $_POST['body'] ) : '';
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+
+		if ( ! $thread || '' === trim( wp_strip_all_tags( (string) $body ) ) || ! Shuffles_SSJ_Messaging::is_party( $thread, $uid ) ) {
+			wp_safe_redirect( add_query_arg( array( 'sssj_thread' => $thread, 'sssj_msg' => 'error' ), $redirect ) );
+			exit;
+		}
+		$last  = Shuffles_SSJ_Messaging::last( $thread );
+		$other = ( (int) $last->from_user_id === (int) $uid ) ? (int) $last->to_user_id : (int) $last->from_user_id;
+		Shuffles_SSJ_Messaging::send( $uid, $other, $body, (string) $last->context_entity_type, (int) $last->context_entity_id, $thread );
+		wp_safe_redirect( add_query_arg( array( 'sssj_thread' => $thread, 'sssj_msg' => '1' ), $redirect ) );
 		exit;
 	}
 }

@@ -123,6 +123,14 @@ class Shuffles_SSJ_Applications {
 		if ( $job_id ) {
 			update_post_meta( $job_id, 'apply_count', (int) get_post_meta( $job_id, 'apply_count', true ) + 1 );
 		}
+		// Seed a messaging thread to the listing owner (relay — emails never exposed).
+		if ( class_exists( 'Shuffles_SSJ_Messaging' ) ) {
+			$entity = $job_id ? (int) $job_id : (int) $need_id;
+			$owner  = (int) get_post_field( 'post_author', $entity );
+			if ( $owner && $owner !== (int) $uid ) {
+				Shuffles_SSJ_Messaging::send( (int) $uid, $owner, $cover, $job_id ? 'job' : 'need', $entity );
+			}
+		}
 		return $app_id;
 	}
 

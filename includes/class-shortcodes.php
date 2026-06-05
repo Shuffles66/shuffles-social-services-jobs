@@ -29,6 +29,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_need_board', array( $this, 'need_board' ) );
 		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
 		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
+		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 	}
 
@@ -298,6 +299,13 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'my-listings.php', array() );
+		return ob_get_clean();
+	}
+
+	public function messages( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		ob_start();
+		$this->load_template( 'messages.php', array() );
 		return ob_get_clean();
 	}
 

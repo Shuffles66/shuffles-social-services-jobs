@@ -180,6 +180,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_tfn_board', __( 'TFN (employee) board', 'shuffles-social-services-jobs' ), '[sssj_tfn_board]', __( 'Employee positions only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_abn_board', __( 'ABN (contractor) board', 'shuffles-social-services-jobs' ), '[sssj_abn_board]', __( 'Contractor / ABN engagements only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_post_job', __( 'Post-a-job page', 'shuffles-social-services-jobs' ), '[sssj_post_job]', __( 'Advertiser posting form.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_my_listings', __( 'Member dashboard page', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Applications, your listings + applicants.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_messages', __( 'Messages (inbox) page', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -251,6 +253,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.11.0 — 2026-06-06 · Internal messaging relay</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Private inbox [sssj_messages]. Applying to a job or responding to a participant request starts a conversation with the listing owner (carrying your message); both sides reply in-app.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Relay only — no email addresses are shown; participants appear by pseudonym to workers; recipients get a no-content "you have a message" email.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Page-pickers added for the Member dashboard and Messages pages.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.10.0 — 2026-06-06 · Site-wide language + English hot-key</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Language choice is now site-wide: the accessibility/language toolbar appears on every page (a floating bar where there is no board), and the chosen language + translations persist and re-apply everywhere.', 'shuffles-social-services-jobs' ); ?></li>
