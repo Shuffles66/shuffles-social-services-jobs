@@ -78,7 +78,7 @@
 		} );
 	}
 
-	var rtlLangs = { ar: 1 };
+	var rtlLangs = cfg.rtl || { ar: 1 };
 
 	function updateEnglishBtn() {
 		var el = document.querySelector( '.sssj-a11y-english' );

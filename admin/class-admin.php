@@ -243,6 +243,36 @@ class Shuffles_SSJ_Admin {
 		echo '</td></tr>';
 	}
 
+	/**
+	 * Generic <select> field. $options = array( value => label ).
+	 */
+	public function select_field( $key, $label, $options, $help = '', $default = '' ) {
+		$val = (string) $this->settings->get( $key, $default );
+		echo '<tr><th scope="row"><label for="sssj-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<select id="sssj-' . esc_attr( $key ) . '" name="' . esc_attr( $this->field_name( $key ) ) . '">';
+		foreach ( (array) $options as $ov => $ol ) {
+			echo '<option value="' . esc_attr( $ov ) . '" ' . selected( $val, (string) $ov, false ) . '>' . esc_html( $ol ) . '</option>';
+		}
+		echo '</select>';
+		if ( $help ) {
+			echo '<p class="description">' . wp_kses_post( $help ) . '</p>';
+		}
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Multi-line textarea field. $help may contain inline markup (kses-filtered).
+	 */
+	public function textarea_field( $key, $label, $help = '', $rows = 4, $placeholder = '' ) {
+		$val = (string) $this->settings->get( $key, '' );
+		echo '<tr><th scope="row"><label for="sssj-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<textarea class="large-text code" rows="' . esc_attr( (string) (int) $rows ) . '" id="sssj-' . esc_attr( $key ) . '" name="' . esc_attr( $this->field_name( $key ) ) . '" placeholder="' . esc_attr( $placeholder ) . '">' . esc_textarea( $val ) . '</textarea>';
+		if ( $help ) {
+			echo '<p class="description">' . wp_kses_post( $help ) . '</p>';
+		}
+		echo '</td></tr>';
+	}
+
 	public function compliance_select() {
 		$current = (string) $this->settings->get( 'compliance_profile', '' );
 		$terms   = get_terms(

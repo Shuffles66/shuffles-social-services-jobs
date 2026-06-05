@@ -69,7 +69,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'cald':
 			$open_form( 'cald' );
 			echo '<table class="form-table" role="presentation">';
-			$this->checkbox_field( 'cald_enabled', __( 'CALD & accessibility layer', 'shuffles-social-services-jobs' ), __( 'Master switch for voice search, 7-language interface, read-aloud and display modes. Browser-side — $0 to run. (UI lands with the first public board.)', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'cald_enabled', __( 'CALD & accessibility layer', 'shuffles-social-services-jobs' ), __( 'Master switch for voice search, multilingual interface, read-aloud and display modes. Browser-side — $0 to run. (UI lands with the first public board, plus a floating bar site-wide.)', 'shuffles-social-services-jobs' ) );
+			$this->text_field( 'cald_languages', __( 'Offered languages (this site)', 'shuffles-social-services-jobs' ), __( 'Comma-separated language codes to show in the picker, e.g. en, ar, zh, vi. Leave blank to offer all built-ins (en, ar, zh, el, it, id, pa). English is always available. Built-in codes: ar=Arabic, zh=Chinese, el=Greek, it=Italian, id=Indonesian, pa=Punjabi.', 'shuffles-social-services-jobs' ) );
+			$this->textarea_field( 'cald_custom_langs', __( 'Add custom languages', 'shuffles-social-services-jobs' ), __( 'One per line: <code>code | Endonym | rtl</code> (the rtl flag is optional). Example: <code>vi | Tiếng Việt</code> or <code>fa | فارسی | rtl</code>. Added languages appear in the picker immediately (the switch, page language and right-to-left layout all work); supply their wording below.', 'shuffles-social-services-jobs' ), 4, "vi | Tiếng Việt\nfa | فارسی | rtl" );
+			$this->textarea_field( 'cald_lang_overrides', __( 'Translation overrides (JSON)', 'shuffles-social-services-jobs' ), __( 'Optional. Provide or override interface wording per language as JSON, e.g. <code>{ "vi": { "filter": "Lọc", "view_job": "Xem việc làm", "apply": "Ứng tuyển" } }</code>. Keys map to the on-screen labels; anything not supplied falls back to English. Built-in languages already include their core labels.', 'shuffles-social-services-jobs' ), 6, '{ "vi": { "filter": "Lọc", "apply": "Ứng tuyển" } }' );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -87,11 +90,29 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'monetisation':
 			$open_form( 'monetisation' );
 			echo '<table class="form-table" role="presentation">';
-			$this->checkbox_field( 'monetisation_enabled', __( 'Enable monetisation gates', 'shuffles-social-services-jobs' ), __( 'Employer advertising subscription + provider application-fee subscription (full billing in Phase 7).', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'monetisation_enabled', __( 'Enable monetisation gates', 'shuffles-social-services-jobs' ), __( 'Employer advertising subscription + provider application-fee subscription. OFF = the whole site is free / ungated.', 'shuffles-social-services-jobs' ) );
 			$this->number_field( 'free_active_listings', __( 'Free active listings per advertiser', 'shuffles-social-services-jobs' ), __( '0 = unlimited. Beyond this, the advertiser needs the subscription below.', 'shuffles-social-services-jobs' ), 0, 999 );
-			$this->number_field( 'advertiser_pmpro_level', __( 'Advertiser subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'PMPro membership level that unlocks unlimited job posting. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
+
+			$this->select_field(
+				'gating_provider',
+				__( 'Subscription provider', 'shuffles-social-services-jobs' ),
+				array(
+					'pmpro'      => __( 'Paid Memberships Pro (PMPro)', 'shuffles-social-services-jobs' ),
+					'fluentcart' => __( 'FluentCart', 'shuffles-social-services-jobs' ),
+				),
+				__( 'Which billing tool decides who holds a paid subscription. <strong>FluentCart</strong> needs the free <em>FluentCart</em> core plugin active (not just FluentCart Pro) — until then no FluentCart subscriber is detected. <strong>PMPro</strong> needs Paid Memberships Pro active.', 'shuffles-social-services-jobs' ),
+				'pmpro'
+			);
+
+			echo '<tr><th colspan="2" style="padding-top:8px"><strong>' . esc_html__( 'PMPro level IDs (used when provider = PMPro)', 'shuffles-social-services-jobs' ) . '</strong></th></tr>';
+			$this->number_field( 'advertiser_pmpro_level', __( 'Advertiser subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'Find it at Memberships → Membership Levels (the ID column). Unlocks unlimited posting + featured placement. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
 			$this->number_field( 'provider_pmpro_level', __( 'Provider subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'PMPro level required to respond to participant needs / ABN tasks. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
-			echo '<p class="description">' . esc_html__( 'These gates are OFF unless "Enable monetisation gates" is ticked. Levels integrate with PMPro; FluentCart or custom logic can plug in via the shuffles_ssj_has_advertiser_sub / shuffles_ssj_has_provider_sub filters.', 'shuffles-social-services-jobs' ) . '</p>';
+
+			echo '<tr><th colspan="2" style="padding-top:8px"><strong>' . esc_html__( 'FluentCart product IDs (used when provider = FluentCart)', 'shuffles-social-services-jobs' ) . '</strong></th></tr>';
+			$this->number_field( 'advertiser_fc_product', __( 'Advertiser subscription — FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'The subscription product in FluentCart → Products (open it; the ID is in the URL/post ID). An active subscription unlocks unlimited posting + featured placement. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
+			$this->number_field( 'provider_fc_product', __( 'Provider subscription — FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'FluentCart subscription product required to respond to participant needs / ABN tasks. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
+
+			echo '<tr><td colspan="2"><p class="description">' . wp_kses_post( __( 'Gates are OFF unless "Enable monetisation gates" is ticked. The site resale licence and admins always bypass. You can also plug in custom logic via the <code>shuffles_ssj_has_advertiser_sub</code>, <code>shuffles_ssj_has_provider_sub</code> and <code>shuffles_ssj_fluentcart_active</code> filters.', 'shuffles-social-services-jobs' ) ) . '</p></td></tr>';
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -286,6 +307,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.17.0 — 2026-06-06 · Languages by site + FluentCart/PMPro provider choice</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Languages are now per-site: choose which built-in languages appear in the picker (CALD tab → Offered languages), add your own (code | Endonym | rtl) including right-to-left ones, and supply/override their wording via a small JSON box. The English hot-key and live switching are unchanged.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Monetisation can now run on FluentCart or PMPro — pick the provider in the Monetisation tab. PMPro uses level IDs; FluentCart uses product IDs (active subscription = access). Featured placement and both gates follow the chosen provider.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'FluentCart support is built against its subscription model and is safe when the FluentCart core plugin is not yet active (no detection = treated as no subscription; never errors). Pluggable via shuffles_ssj_fluentcart_active. Standalone-first as ever — removing WooCommerce / WP Job Manager does not affect this plugin.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.16.0 — 2026-06-06 · Featured placement for paid advertisers</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Advertisers with the advertising subscription get featured placement: their jobs float to the top of every board (rides the existing menu_order sort — no change to the segregation/query layer) and show a ★ Featured badge.', 'shuffles-social-services-jobs' ); ?></li>

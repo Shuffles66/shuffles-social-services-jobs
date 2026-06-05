@@ -29,8 +29,14 @@ class Shuffles_SSJ_Settings {
 			'seo_enabled'               => '1',
 			'monetisation_enabled'      => '0',
 			'free_active_listings'      => 1,
+			'gating_provider'           => 'pmpro',
 			'advertiser_pmpro_level'    => 0,
 			'provider_pmpro_level'      => 0,
+			'advertiser_fc_product'     => 0,
+			'provider_fc_product'       => 0,
+			'cald_languages'            => '',
+			'cald_custom_langs'         => '',
+			'cald_lang_overrides'       => '',
 			'licence_key'               => '',
 			'license_item_id'           => '',
 			'vendor_url'                => 'https://shuffles.com.au',
@@ -109,7 +115,7 @@ class Shuffles_SSJ_Settings {
 		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
 		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall' );
-		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level' );
+		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product' );
 
 		foreach ( $text_keys as $k ) {
 			if ( isset( $input[ $k ] ) ) {
@@ -155,6 +161,24 @@ class Shuffles_SSJ_Settings {
 		if ( isset( $input['custom_css'] ) ) {
 			// Allow CSS but never let it break out of the <style> tag.
 			$out['custom_css'] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input['custom_css'] ) );
+		}
+
+		// Gating provider — whitelist.
+		if ( isset( $input['gating_provider'] ) ) {
+			$gp = sanitize_key( wp_unslash( (string) $input['gating_provider'] ) );
+			$out['gating_provider'] = in_array( $gp, array( 'pmpro', 'fluentcart' ), true ) ? $gp : 'pmpro';
+		}
+
+		// CALD: enabled language codes — normalise to a comma-separated list of sanitized keys.
+		if ( isset( $input['cald_languages'] ) ) {
+			$codes = array_filter( array_map( 'sanitize_key', preg_split( '/[\s,]+/', (string) wp_unslash( $input['cald_languages'] ) ) ) );
+			$out['cald_languages'] = implode( ',', array_unique( $codes ) );
+		}
+		// CALD: custom language definitions + JSON overrides — keep multiline text, strip angle brackets.
+		foreach ( array( 'cald_custom_langs', 'cald_lang_overrides' ) as $k ) {
+			if ( isset( $input[ $k ] ) ) {
+				$out[ $k ] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input[ $k ] ) );
+			}
 		}
 
 		return $out;

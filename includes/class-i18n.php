@@ -14,23 +14,86 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_I18n {
 
 	/**
-	 * Offered languages: code => endonym. English is the markup default.
+	 * The built-in languages shipped with the plugin: code => endonym.
 	 *
 	 * @return array
 	 */
-	public static function langs() {
-		return apply_filters(
-			'shuffles_ssj_languages',
-			array(
-				'en' => 'English',
-				'ar' => 'العربية',
-				'zh' => '中文',
-				'el' => 'Ελληνικά',
-				'it' => 'Italiano',
-				'id' => 'Bahasa Indonesia',
-				'pa' => 'ਪੰਜਾਬੀ',
-			)
+	public static function builtin_langs() {
+		return array(
+			'en' => 'English',
+			'ar' => 'العربية',
+			'zh' => '中文',
+			'el' => 'Ελληνικά',
+			'it' => 'Italiano',
+			'id' => 'Bahasa Indonesia',
+			'pa' => 'ਪੰਜਾਬੀ',
 		);
+	}
+
+	/**
+	 * Per-site custom languages, parsed from the `cald_custom_langs` setting.
+	 * One per line: "code | Endonym | rtl"  (the rtl flag is optional).
+	 *
+	 * @return array { 'langs' => array code=>endonym, 'rtl' => array code=>1 }
+	 */
+	public static function custom_langs() {
+		$langs = array();
+		$rtl   = array();
+		$raw   = (string) ( new Shuffles_SSJ_Settings() )->get( 'cald_custom_langs', '' );
+		foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+			$p    = array_map( 'trim', explode( '|', $line ) );
+			$code = sanitize_key( isset( $p[0] ) ? $p[0] : '' );
+			if ( '' === $code ) {
+				continue;
+			}
+			$langs[ $code ] = sanitize_text_field( ( isset( $p[1] ) && '' !== $p[1] ) ? $p[1] : $code );
+			if ( isset( $p[2] ) && 'rtl' === strtolower( trim( $p[2] ) ) ) {
+				$rtl[ $code ] = 1;
+			}
+		}
+		return array( 'langs' => $langs, 'rtl' => $rtl );
+	}
+
+	/**
+	 * Offered languages for THIS site: built-ins + per-site custom, narrowed to the
+	 * admin-enabled subset (`cald_languages`, comma/space separated). English is always
+	 * offered as the markup default.
+	 *
+	 * @return array code => endonym
+	 */
+	public static function langs() {
+		$custom = self::custom_langs();
+		$all    = array_merge( self::builtin_langs(), $custom['langs'] );
+
+		$enabled_raw = trim( (string) ( new Shuffles_SSJ_Settings() )->get( 'cald_languages', '' ) );
+		if ( '' !== $enabled_raw ) {
+			$codes = array_filter( array_map( 'sanitize_key', preg_split( '/[\s,]+/', $enabled_raw ) ) );
+			$codes[] = 'en'; // English never disappears.
+			$all   = array_intersect_key( $all, array_flip( $codes ) );
+			if ( ! isset( $all['en'] ) ) {
+				$all = array_merge( array( 'en' => 'English' ), $all );
+			}
+		}
+
+		return apply_filters( 'shuffles_ssj_languages', $all );
+	}
+
+	/**
+	 * Right-to-left language codes (built-in Arabic + any custom-flagged `rtl`).
+	 *
+	 * @return array code => 1
+	 */
+	public static function rtl_langs() {
+		$rtl    = array( 'ar' => 1 );
+		$custom = self::custom_langs();
+		foreach ( $custom['rtl'] as $code => $v ) {
+			$rtl[ $code ] = 1;
+		}
+		return apply_filters( 'shuffles_ssj_rtl_languages', $rtl );
 	}
 
 	/**
@@ -125,6 +188,27 @@ class Shuffles_SSJ_I18n {
 				'featured'      => '★ ਵਿਸ਼ੇਸ਼',
 			),
 		);
+
+		// Per-site translation overrides / new-language strings, pasted as JSON in the CALD tab:
+		// { "vi": { "filter": "Lọc", "view_job": "Xem việc làm" }, ... }
+		$raw = trim( (string) ( new Shuffles_SSJ_Settings() )->get( 'cald_lang_overrides', '' ) );
+		if ( '' !== $raw ) {
+			$decoded = json_decode( $raw, true );
+			if ( is_array( $decoded ) ) {
+				foreach ( $decoded as $code => $dict ) {
+					$code = sanitize_key( $code );
+					if ( '' === $code || ! is_array( $dict ) ) {
+						continue;
+					}
+					$clean = array();
+					foreach ( $dict as $k => $v ) {
+						$clean[ sanitize_key( $k ) ] = sanitize_text_field( (string) $v );
+					}
+					$map[ $code ] = isset( $map[ $code ] ) ? array_merge( $map[ $code ], $clean ) : $clean;
+				}
+			}
+		}
+
 		return apply_filters( 'shuffles_ssj_i18n', $map );
 	}
 }

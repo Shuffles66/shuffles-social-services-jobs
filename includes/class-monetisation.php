@@ -36,18 +36,137 @@ class Shuffles_SSJ_Monetisation {
 		return $level > 0 && function_exists( 'pmpro_hasMembershipLevel' ) && pmpro_hasMembershipLevel( $level, (int) $uid );
 	}
 
-	/** Does the user hold the employer advertising subscription? */
-	public static function has_advertiser_sub( $uid ) {
-		$ok = self::has_pmpro_level( $uid, self::settings()->get( 'advertiser_pmpro_level', 0 ) )
-			|| ( class_exists( 'Shuffles_SSJ_License' ) && Shuffles_SSJ_License::is_pro() );
-		return (bool) apply_filters( 'shuffles_ssj_has_advertiser_sub', $ok, (int) $uid );
+	/** The selected gating provider: 'pmpro' | 'fluentcart'. */
+	public static function gating_provider() {
+		$p = sanitize_key( (string) self::settings()->get( 'gating_provider', 'pmpro' ) );
+		return in_array( $p, array( 'pmpro', 'fluentcart' ), true ) ? $p : 'pmpro';
 	}
 
-	/** Does the user hold the provider application-fee subscription? */
+	/** The configured subscription id for a side under the active provider (PMPro level or FluentCart product). */
+	private static function sub_setting( $which ) {
+		if ( 'fluentcart' === self::gating_provider() ) {
+			return (int) self::settings()->get( 'advertiser' === $which ? 'advertiser_fc_product' : 'provider_fc_product', 0 );
+		}
+		return (int) self::settings()->get( 'advertiser' === $which ? 'advertiser_pmpro_level' : 'provider_pmpro_level', 0 );
+	}
+
+	/**
+	 * Does the ACTIVE provider grant this user the given subscription? Per-user only — no
+	 * admin/licence bypass (this is the base used by featured placement + the public checks).
+	 *
+	 * @param int    $uid
+	 * @param string $which 'advertiser' | 'provider'
+	 * @return bool
+	 */
+	public static function provider_grants( $uid, $which ) {
+		$uid = (int) $uid;
+		$ok  = false;
+		if ( $uid ) {
+			$ok = ( 'fluentcart' === self::gating_provider() )
+				? self::fluentcart_active( $uid, self::sub_setting( $which ) )
+				: self::has_pmpro_level( $uid, self::sub_setting( $which ) );
+		}
+		$filter = ( 'advertiser' === $which ) ? 'shuffles_ssj_has_advertiser_sub' : 'shuffles_ssj_has_provider_sub';
+		return (bool) apply_filters( $filter, (bool) $ok, $uid );
+	}
+
+	/** Site-owner resale licence (or SHUFFLES_SSJ_PRO) bypasses the end-user gates. */
+	private static function licence_bypass() {
+		return class_exists( 'Shuffles_SSJ_License' ) && Shuffles_SSJ_License::is_pro();
+	}
+
+	/** Does the user hold the employer advertising subscription? (resale licence bypasses). */
+	public static function has_advertiser_sub( $uid ) {
+		if ( self::licence_bypass() ) {
+			return (bool) apply_filters( 'shuffles_ssj_has_advertiser_sub', true, (int) $uid );
+		}
+		return self::provider_grants( $uid, 'advertiser' );
+	}
+
+	/** Does the user hold the provider application-fee subscription? (resale licence bypasses). */
 	public static function has_provider_sub( $uid ) {
-		$ok = self::has_pmpro_level( $uid, self::settings()->get( 'provider_pmpro_level', 0 ) )
-			|| ( class_exists( 'Shuffles_SSJ_License' ) && Shuffles_SSJ_License::is_pro() );
-		return (bool) apply_filters( 'shuffles_ssj_has_provider_sub', $ok, (int) $uid );
+		if ( self::licence_bypass() ) {
+			return (bool) apply_filters( 'shuffles_ssj_has_provider_sub', true, (int) $uid );
+		}
+		return self::provider_grants( $uid, 'provider' );
+	}
+
+	/**
+	 * Does the user have an active FluentCart subscription (optionally to a specific product)?
+	 *
+	 * Defensive by design: returns false when the FluentCart CORE plugin isn't active (only
+	 * FluentCart Pro is installed on some sites, which needs the free core), never fatals, and
+	 * is fully overridable via `shuffles_ssj_fluentcart_active`. Confirmed against the FluentCart
+	 * model API (FluentCart\App\Models\{Customer,Subscription}; Customer.user_id, Subscription.status).
+	 *
+	 * @param int $uid
+	 * @param int $product_id 0 = any active subscription qualifies.
+	 * @return bool
+	 */
+	public static function fluentcart_active( $uid, $product_id = 0 ) {
+		$uid = (int) $uid;
+		if ( ! $uid ) {
+			return false;
+		}
+		$pre = apply_filters( 'shuffles_ssj_fluentcart_active', null, $uid, (int) $product_id );
+		if ( null !== $pre ) {
+			return (bool) $pre;
+		}
+		if ( ! class_exists( '\FluentCart\App\Models\Subscription' ) || ! class_exists( '\FluentCart\App\Models\Customer' ) ) {
+			return false; // FluentCart core not active.
+		}
+		try {
+			$cust_ids = \FluentCart\App\Models\Customer::query()->where( 'user_id', $uid )->pluck( 'id' )->all();
+			if ( empty( $cust_ids ) ) {
+				return false;
+			}
+			$statuses = apply_filters( 'shuffles_ssj_fluentcart_active_statuses', array( 'active', 'trialing', 'pending' ) );
+			$subs     = \FluentCart\App\Models\Subscription::query()
+				->whereIn( 'customer_id', $cust_ids )
+				->whereIn( 'status', $statuses )
+				->get();
+			if ( ! $subs || $subs->isEmpty() ) {
+				return false;
+			}
+			$want = (int) $product_id;
+			if ( $want <= 0 ) {
+				return true; // any active subscription qualifies
+			}
+			foreach ( $subs as $sub ) {
+				if ( in_array( $want, self::fc_subscription_product_ids( $sub ), true ) ) {
+					return true;
+				}
+			}
+			return false;
+		} catch ( \Throwable $e ) {
+			return false;
+		}
+	}
+
+	/** Best-effort product id(s) behind a FluentCart subscription, fully filterable. */
+	private static function fc_subscription_product_ids( $sub ) {
+		$ids = array();
+		foreach ( array( 'product_id', 'post_id' ) as $col ) {
+			if ( isset( $sub->$col ) && $sub->$col ) {
+				$ids[] = (int) $sub->$col;
+			}
+		}
+		if ( isset( $sub->variation_id ) && $sub->variation_id && class_exists( '\FluentCart\App\Models\ProductVariation' ) ) {
+			try {
+				$v = \FluentCart\App\Models\ProductVariation::query()->find( (int) $sub->variation_id );
+				if ( $v ) {
+					foreach ( array( 'post_id', 'product_id' ) as $col ) {
+						if ( isset( $v->$col ) && $v->$col ) {
+							$ids[] = (int) $v->$col;
+						}
+					}
+				}
+			} catch ( \Throwable $e ) {
+				$ids = $ids; // no-op; stay defensive
+			}
+		}
+		$ids = apply_filters( 'shuffles_ssj_fluentcart_sub_product_ids', $ids, $sub );
+		return array_values( array_unique( array_filter( array_map( 'intval', (array) $ids ) ) ) );
 	}
 
 	/**
@@ -136,9 +255,7 @@ class Shuffles_SSJ_Monetisation {
 		if ( ! $author ) {
 			return false;
 		}
-		$featured = user_can( $author, 'manage_options' )
-			|| self::has_pmpro_level( $author, self::settings()->get( 'advertiser_pmpro_level', 0 ) )
-			|| (bool) apply_filters( 'shuffles_ssj_has_advertiser_sub', false, $author );
+		$featured = user_can( $author, 'manage_options' ) || self::provider_grants( $author, 'advertiser' );
 		return (bool) apply_filters( 'shuffles_ssj_is_job_featured', (bool) $featured, (int) $job_id, $author );
 	}
 

@@ -57,6 +57,7 @@ class Shuffles_SSJ_Shortcodes {
 					'lang'   => str_replace( '_', '-', get_locale() ),
 					'langs'  => Shuffles_SSJ_I18n::langs(),
 					'i18n'   => Shuffles_SSJ_I18n::map(),
+					'rtl'    => Shuffles_SSJ_I18n::rtl_langs(),
 					'labels' => array(
 						'region'   => __( 'Accessibility tools', 'shuffles-social-services-jobs' ),
 						'bigger'   => __( 'Larger text', 'shuffles-social-services-jobs' ),
