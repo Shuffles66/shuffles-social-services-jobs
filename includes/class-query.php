@@ -50,6 +50,10 @@ class Shuffles_SSJ_Query {
 
 		self::add_radius_clauses( $args, $extra );
 
+		if ( ! empty( $extra['org'] ) ) {
+			$args['meta_query'][] = array( 'key' => 'organisation_id', 'value' => (int) $extra['org'] );
+		}
+
 		if ( count( $args['meta_query'] ) > 1 ) {
 			$args['meta_query']['relation'] = 'AND';
 		}

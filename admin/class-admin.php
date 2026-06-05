@@ -349,6 +349,8 @@ class Shuffles_SSJ_Admin {
 			'page_post_job'    => '[sssj_post_job]',
 			'page_my_listings' => '[sssj_my_listings]',
 			'page_messages'    => '[sssj_messages]',
+			'page_org_directory' => '[sssj_org_directory]',
+			'page_post_org'    => '[sssj_post_org]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );

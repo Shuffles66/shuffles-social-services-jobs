@@ -22,6 +22,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_apply', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_app_status', array( $this, 'handle_app_status' ) );
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
+		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
+		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
 	}
 
 	public function deny() {
@@ -90,6 +92,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'rate_max'          => isset( $_POST['rate_max'] ) ? (float) $_POST['rate_max'] : 0,
 			'rate_unit'         => isset( $_POST['rate_unit'] ) ? sanitize_key( wp_unslash( $_POST['rate_unit'] ) ) : 'hour',
 			'expires_at'        => isset( $_POST['expires_at'] ) ? sanitize_text_field( wp_unslash( $_POST['expires_at'] ) ) : '',
+			'organisation_id'   => isset( $_POST['organisation_id'] ) ? absint( $_POST['organisation_id'] ) : 0,
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
@@ -378,6 +381,101 @@ class Shuffles_SSJ_Frontend_Forms {
 		$other = ( (int) $last->from_user_id === (int) $uid ) ? (int) $last->to_user_id : (int) $last->from_user_id;
 		Shuffles_SSJ_Messaging::send( $uid, $other, $body, (string) $last->context_entity_type, (int) $last->context_entity_id, $thread );
 		wp_safe_redirect( add_query_arg( array( 'sssj_thread' => $thread, 'sssj_msg' => '1' ), $redirect ) );
+		exit;
+	}
+
+	/**
+	 * Create/update the user's own organisation profile (one per user). Public + SEO-able.
+	 */
+	public function handle_post_org() {
+		$nonce = isset( $_POST['sssj_org_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_org_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_post_org' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() || ( ! current_user_can( 'sssj_post_org' ) && ! current_user_can( 'manage_options' ) ) ) {
+			wp_die( esc_html__( 'You do not have permission to create an organisation profile.', 'shuffles-social-services-jobs' ) );
+		}
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		$uid      = get_current_user_id();
+
+		$name = isset( $_POST['org_name'] ) ? sanitize_text_field( wp_unslash( $_POST['org_name'] ) ) : '';
+		if ( '' === $name ) {
+			wp_safe_redirect( add_query_arg( 'sssj_org', 'error', $redirect ) );
+			exit;
+		}
+		$abn = isset( $_POST['org_abn'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['org_abn'] ) ) : '';
+		if ( '' !== $abn && ! Shuffles_SSJ_ABN::is_valid( $abn ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_org', 'abn', $redirect ) );
+			exit;
+		}
+
+		$post_data = array(
+			'post_type'    => 'sssj_org',
+			'post_status'  => 'publish',
+			'post_title'   => $name,
+			'post_content' => isset( $_POST['description'] ) ? wp_kses_post( wp_unslash( $_POST['description'] ) ) : '',
+			'post_author'  => $uid,
+		);
+		$existing = get_posts(
+			array(
+				'post_type'      => 'sssj_org',
+				'post_status'    => 'any',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'meta_key'       => 'org_user_id',
+				'meta_value'     => $uid,
+			)
+		);
+		if ( ! empty( $existing ) ) {
+			$post_data['ID'] = (int) $existing[0];
+			$post_id         = wp_update_post( $post_data, true );
+		} else {
+			$post_id = wp_insert_post( $post_data, true );
+		}
+		if ( is_wp_error( $post_id ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_org', 'error', $redirect ) );
+			exit;
+		}
+
+		// Extra locations: one per line "Label | Suburb | State | Postcode".
+		$locations = array();
+		$raw       = isset( $_POST['locations'] ) ? (string) wp_unslash( $_POST['locations'] ) : '';
+		foreach ( preg_split( '/\r\n|\r|\n/', $raw ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+			$parts       = array_map( 'trim', explode( '|', $line ) );
+			$locations[] = array(
+				'label'    => sanitize_text_field( isset( $parts[0] ) ? $parts[0] : '' ),
+				'suburb'   => sanitize_text_field( isset( $parts[1] ) ? $parts[1] : '' ),
+				'state'    => sanitize_text_field( isset( $parts[2] ) ? $parts[2] : '' ),
+				'postcode' => sanitize_text_field( isset( $parts[3] ) ? $parts[3] : '' ),
+			);
+		}
+
+		$meta = array(
+			'org_user_id'       => $uid,
+			'org_abn'           => $abn,
+			'org_website'       => isset( $_POST['org_website'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['org_website'] ) ) ) : '',
+			'org_type'          => isset( $_POST['org_type'] ) ? sanitize_key( wp_unslash( $_POST['org_type'] ) ) : 'employer',
+			'org_phone'         => isset( $_POST['org_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['org_phone'] ) ) : '',
+			'location_suburb'   => isset( $_POST['location_suburb'] ) ? sanitize_text_field( wp_unslash( $_POST['location_suburb'] ) ) : '',
+			'location_state'    => isset( $_POST['location_state'] ) ? sanitize_text_field( wp_unslash( $_POST['location_state'] ) ) : '',
+			'location_postcode' => isset( $_POST['location_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['location_postcode'] ) ) : '',
+			'location_lat'      => isset( $_POST['location_lat'] ) ? (float) $_POST['location_lat'] : 0,
+			'location_lng'      => isset( $_POST['location_lng'] ) ? (float) $_POST['location_lng'] : 0,
+			'locations'         => wp_json_encode( $locations ),
+		);
+		foreach ( $meta as $k => $v ) {
+			update_post_meta( $post_id, $k, $v );
+		}
+
+		if ( '' !== $abn ) {
+			do_action( 'shuffles_ssj_abn_recorded', $abn, 'org', $post_id );
+		}
+
+		wp_safe_redirect( add_query_arg( 'sssj_org', '1', $redirect ) );
 		exit;
 	}
 }

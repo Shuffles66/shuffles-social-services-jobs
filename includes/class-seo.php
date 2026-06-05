@@ -39,10 +39,91 @@ class Shuffles_SSJ_SEO {
 			return;
 		}
 
+		// Organisation profiles: Organization structured data (public, indexable).
+		if ( is_singular( 'sssj_org' ) ) {
+			if ( '1' === (string) $this->settings->get( 'seo_enabled', '1' ) ) {
+				$this->org_jsonld( get_queried_object() );
+			}
+			return;
+		}
+
 		// Job ads: JobPosting structured data (Google for Jobs).
 		if ( is_singular( 'sssj_job' ) && '1' === (string) $this->settings->get( 'seo_enabled', '1' ) ) {
 			$this->job_jsonld( get_queried_object() );
 		}
+	}
+
+	/** Place node from suburb/state/postcode (null if all empty). */
+	private function place( $sub, $state, $pc ) {
+		if ( '' === trim( (string) $sub . (string) $state . (string) $pc ) ) {
+			return null;
+		}
+		return array(
+			'@type'   => 'Place',
+			'address' => array_filter(
+				array(
+					'@type'           => 'PostalAddress',
+					'addressLocality' => $sub,
+					'addressRegion'   => $state,
+					'postalCode'      => $pc,
+					'addressCountry'  => 'AU',
+				)
+			),
+		);
+	}
+
+	/** Emit Organization JSON-LD for an org profile (with all its locations). */
+	private function org_jsonld( $post ) {
+		if ( ! $post instanceof WP_Post ) {
+			return;
+		}
+		$id   = $post->ID;
+		$data = array(
+			'@context' => 'https://schema.org/',
+			'@type'    => 'Organization',
+			'name'     => wp_strip_all_tags( get_the_title( $id ) ),
+			'url'      => get_permalink( $id ),
+		);
+		$desc = wp_strip_all_tags( (string) $post->post_content );
+		if ( $desc ) {
+			$data['description'] = $desc;
+		}
+		$logo = get_the_post_thumbnail_url( $id, 'medium' );
+		if ( $logo ) {
+			$data['logo'] = $logo;
+		}
+		$web = (string) get_post_meta( $id, 'org_website', true );
+		if ( $web ) {
+			$data['sameAs'] = array( $web );
+		}
+		$phone = (string) get_post_meta( $id, 'org_phone', true );
+		if ( $phone ) {
+			$data['telephone'] = $phone;
+		}
+
+		$places  = array();
+		$primary = $this->place( get_post_meta( $id, 'location_suburb', true ), get_post_meta( $id, 'location_state', true ), get_post_meta( $id, 'location_postcode', true ) );
+		if ( $primary ) {
+			$places[] = $primary;
+		}
+		$extra = json_decode( (string) get_post_meta( $id, 'locations', true ), true );
+		if ( is_array( $extra ) ) {
+			foreach ( $extra as $loc ) {
+				$p = $this->place(
+					isset( $loc['suburb'] ) ? $loc['suburb'] : '',
+					isset( $loc['state'] ) ? $loc['state'] : '',
+					isset( $loc['postcode'] ) ? $loc['postcode'] : ''
+				);
+				if ( $p ) {
+					$places[] = $p;
+				}
+			}
+		}
+		if ( $places ) {
+			$data['location'] = $places;
+		}
+
+		echo "<script type=\"application/ld+json\">" . wp_json_encode( $data ) . "</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 
 	/**

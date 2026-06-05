@@ -210,6 +210,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_post_job', __( 'Post-a-job page', 'shuffles-social-services-jobs' ), '[sssj_post_job]', __( 'Advertiser posting form.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_my_listings', __( 'Member dashboard page', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Applications, your listings + applicants.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox) page', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_org_directory', __( 'Organisations directory page', 'shuffles-social-services-jobs' ), '[sssj_org_directory]', __( 'Browse employers/companies (SEO-able).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_org', __( 'Create organisation profile page', 'shuffles-social-services-jobs' ), '[sssj_post_org]', __( 'Employer profile form.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -281,6 +283,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.14.0 — 2026-06-06 · Organisation / employer profiles</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Permanent, SEO-able organisation profiles (Organization structured data) with multiple locations: [sssj_post_org] to create/edit, [sssj_org_directory] to browse, and a company page that lists all that employer\'s open positions.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Jobs can be attached to an organisation (browse jobs by company). Page-pickers added for the directory + profile pages.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Participants stay private by design — their listings remain pseudonymous and noindex; only named businesses get public profiles.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.13.0 — 2026-06-06 · Appearance — per-install re-skin</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New Appearance tab: set the primary/hover/ink/text/border/background colours, the ABN/TFN/participant accents, corner radius and font family with colour pickers — each install can be fully re-skinned without code.', 'shuffles-social-services-jobs' ); ?></li>

@@ -53,6 +53,8 @@ class Shuffles_SSJ_Settings {
 			'page_post_job'             => 0,
 			'page_my_listings'          => 0,
 			'page_messages'             => 0,
+			'page_org_directory'        => 0,
+			'page_post_org'             => 0,
 		);
 	}
 
@@ -105,7 +107,7 @@ class Shuffles_SSJ_Settings {
 		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
 		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall' );
-		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'ui_radius' );
+		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'ui_radius' );
 
 		foreach ( $text_keys as $k ) {
 			if ( isset( $input[ $k ] ) ) {

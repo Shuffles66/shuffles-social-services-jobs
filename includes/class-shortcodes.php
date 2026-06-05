@@ -30,7 +30,10 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
 		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
 		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
+		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
+		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
+		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 	}
 
 	public function register_assets() {
@@ -354,6 +357,45 @@ class Shuffles_SSJ_Shortcodes {
 		ob_start();
 		$this->load_template( 'messages.php', array() );
 		return ob_get_clean();
+	}
+
+	/* --- Organisation profiles --- */
+
+	public function org_directory( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		$atts = shortcode_atts( array( 'per_page' => 12 ), is_array( $atts ) ? $atts : array(), 'sssj_org_directory' );
+		$query = new WP_Query(
+			array(
+				'post_type'      => 'sssj_org',
+				'post_status'    => 'publish',
+				'posts_per_page' => (int) $atts['per_page'],
+				'paged'          => isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				's'              => ! empty( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			)
+		);
+		ob_start();
+		$this->load_template( 'org-directory.php', array( 'query' => $query ) );
+		wp_reset_postdata();
+		return ob_get_clean();
+	}
+
+	public function post_org_form( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		$this->enqueue_maps();
+		ob_start();
+		$this->load_template( 'post-org-form.php', array() );
+		return ob_get_clean();
+	}
+
+	/** Append the org's locations + its open jobs ("browse by company") to a single org page. */
+	public function maybe_org_panel( $content ) {
+		if ( is_singular( 'sssj_org' ) && in_the_loop() && is_main_query() ) {
+			wp_enqueue_style( 'sssj' );
+			ob_start();
+			$this->load_template( 'org-single-panel.php', array( 'org_id' => get_the_ID() ) );
+			return $content . ob_get_clean();
+		}
+		return $content;
 	}
 
 	/* --- Template loader (theme-overridable) --- */

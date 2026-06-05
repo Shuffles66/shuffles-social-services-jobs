@@ -17,7 +17,7 @@ class Shuffles_SSJ_Roles {
 	 * @return string[]
 	 */
 	public static function caps() {
-		return array( 'sssj_post_job', 'sssj_post_worker', 'sssj_post_need', 'sssj_manage' );
+		return array( 'sssj_post_job', 'sssj_post_worker', 'sssj_post_need', 'sssj_post_org', 'sssj_manage' );
 	}
 
 	/**

@@ -66,6 +66,20 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					</select>
 				</div>
 
+				<?php
+				$my_orgs = get_posts( array( 'post_type' => 'sssj_org', 'post_status' => 'any', 'author' => get_current_user_id(), 'posts_per_page' => 20 ) );
+				if ( ! empty( $my_orgs ) ) :
+					?>
+					<div class="sssj-field">
+						<label for="sssj-job-org"><?php esc_html_e( 'Organisation profile', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" id="sssj-job-org" name="organisation_id">
+							<option value="0"><?php esc_html_e( '— None —', 'shuffles-social-services-jobs' ); ?></option>
+							<?php foreach ( $my_orgs as $o ) { echo '<option value="' . esc_attr( $o->ID ) . '">' . esc_html( get_the_title( $o ) ) . '</option>'; } ?>
+						</select>
+						<p class="description"><?php esc_html_e( 'Attach this job to your organisation profile so it appears on your company page.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+				<?php endif; ?>
+
 				<div class="sssj-field">
 					<label for="sssj-cat"><?php esc_html_e( 'Category', 'shuffles-social-services-jobs' ); ?></label>
 					<select class="sssj-select" id="sssj-cat" name="category">

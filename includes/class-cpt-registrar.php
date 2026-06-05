@@ -64,6 +64,21 @@ class Shuffles_SSJ_CPT_Registrar {
 				'rewrite'             => false,
 			)
 		);
+
+		// Organisation / Employer profile — public + SEO-able (named businesses, not participants).
+		register_post_type(
+			'sssj_org',
+			array(
+				'labels'       => $this->labels( __( 'Organisation', 'shuffles-social-services-jobs' ), __( 'Organisations', 'shuffles-social-services-jobs' ) ),
+				'public'       => true,
+				'has_archive'  => true,
+				'show_in_rest' => true,
+				'show_in_menu' => 'shuffles-ssj',
+				'menu_icon'    => 'dashicons-building',
+				'supports'     => array( 'title', 'editor', 'author', 'thumbnail', 'custom-fields' ),
+				'rewrite'      => array( 'slug' => 'organisations', 'with_front' => false ),
+			)
+		);
 	}
 
 	/**
@@ -115,6 +130,7 @@ class Shuffles_SSJ_CPT_Registrar {
 				'is_promoted'       => array( 'boolean', true, 'bool' ),
 				'view_count'        => array( 'integer', true, 'int' ),
 				'apply_count'       => array( 'integer', true, 'int' ),
+				'organisation_id'   => array( 'integer', true, 'int' ),
 			),
 			'sssj_worker' => array(
 				'worker_user_id'          => array( 'integer', true, 'int' ),
@@ -145,6 +161,19 @@ class Shuffles_SSJ_CPT_Registrar {
 				'gender_preference'  => array( 'string', false, 'key' ),
 				'contact_mode'       => array( 'string', false, 'key' ),
 				'visibility'         => array( 'string', false, 'key' ),
+			),
+			'sssj_org' => array(
+				'org_user_id'     => array( 'integer', true, 'int' ),
+				'org_abn'         => array( 'string', true, 'abn' ),
+				'org_website'     => array( 'string', true, 'text' ),
+				'org_type'        => array( 'string', true, 'key' ),
+				'org_phone'       => array( 'string', true, 'text' ),
+				'locations'       => array( 'string', false, 'text' ), // JSON array of extra locations
+				'location_suburb' => array( 'string', true, 'text' ),
+				'location_state'  => array( 'string', true, 'text' ),
+				'location_postcode' => array( 'string', true, 'text' ),
+				'location_lat'    => array( 'number', true, 'float' ),
+				'location_lng'    => array( 'number', true, 'float' ),
 			),
 		);
 	}
