@@ -1,0 +1,103 @@
+<?php
+/**
+ * Job board template. Vars: $query (WP_Query), $basis (string), $atts (array).
+ * Theme override: wp-content/themes/<theme>/shuffles-jobs/job-board.php
+ *
+ * @package Shuffles_SSJ
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/** @var WP_Query $query */
+/** @var string $basis */
+/** @var array $atts */
+
+$basis = isset( $basis ) ? $basis : '';
+$heading = ! empty( $atts['title'] ) ? $atts['title'] : ( 'tfn' === $basis ? __( 'Employee positions', 'shuffles-social-services-jobs' ) : ( 'abn' === $basis ? __( 'Contractor & ABN engagements', 'shuffles-social-services-jobs' ) : __( 'Jobs', 'shuffles-social-services-jobs' ) ) );
+$cats    = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
+$cur_cat = isset( $_GET['sssj_cat'] ) ? sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_q   = isset( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$card_mod = 'tfn' === $basis ? 'sssj-card--tfn' : ( 'abn' === $basis ? 'sssj-card--abn' : '' );
+?>
+<div class="sssj sssj--board">
+	<div class="sssj-panel">
+		<h2><?php echo esc_html( $heading ); ?></h2>
+
+		<form class="sssj-row" method="get">
+			<?php
+			// Preserve other query args (e.g. page id) implicitly via current URL.
+			foreach ( array( 'sssj_paged' ) as $drop ) {
+				unset( $_GET[ $drop ] ); // not re-emitted
+			}
+			?>
+			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search jobs…', 'shuffles-social-services-jobs' ); ?>" />
+			<select class="sssj-select" name="sssj_cat">
+				<option value=""><?php esc_html_e( 'All categories', 'shuffles-social-services-jobs' ); ?></option>
+				<?php
+				if ( ! is_wp_error( $cats ) ) {
+					foreach ( $cats as $t ) {
+						echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_cat, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>';
+					}
+				}
+				?>
+			</select>
+			<button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
+		</form>
+	</div>
+
+	<?php if ( $query->have_posts() ) : ?>
+		<p class="sssj-count"><?php echo esc_html( sprintf( _n( '%d job', '%d jobs', (int) $query->found_posts, 'shuffles-social-services-jobs' ), (int) $query->found_posts ) ); ?></p>
+		<div class="sssj-grid">
+			<?php
+			while ( $query->have_posts() ) :
+				$query->the_post();
+				$pid     = get_the_ID();
+				$suburb  = (string) get_post_meta( $pid, 'location_suburb', true );
+				$state   = (string) get_post_meta( $pid, 'location_state', true );
+				$etype   = (string) get_post_meta( $pid, 'engagement_type', true );
+				$rmin    = (float) get_post_meta( $pid, 'rate_min', true );
+				$rmax    = (float) get_post_meta( $pid, 'rate_max', true );
+				$runit   = (string) get_post_meta( $pid, 'rate_unit', true );
+				$basis_m = (string) get_post_meta( $pid, 'engagement_basis', true );
+				$mod     = $card_mod ? $card_mod : ( 'tfn' === $basis_m ? 'sssj-card--tfn' : 'sssj-card--abn' );
+				?>
+				<article class="sssj-card <?php echo esc_attr( $mod ); ?>">
+					<h3 style="margin-top:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<div class="sssj-row">
+						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis_m ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis_m ? __( 'TFN (employee)', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' ) ); ?></span>
+						<?php if ( $etype ) : ?><span class="sssj-badge"><?php echo esc_html( 'one-off' === $etype ? __( 'One-off', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
+					</div>
+					<?php if ( $suburb || $state ) : ?>
+						<p>📍 <?php echo esc_html( trim( $suburb . ' ' . $state ) ); ?></p>
+					<?php endif; ?>
+					<?php if ( $rmin > 0 || $rmax > 0 ) : ?>
+						<p>💲 <?php echo esc_html( $rmin > 0 ? number_format_i18n( $rmin ) : '' ); ?><?php echo esc_html( $rmax > 0 ? ' – ' . number_format_i18n( $rmax ) : '' ); ?> / <?php echo esc_html( $runit ? $runit : 'hour' ); ?></p>
+					<?php endif; ?>
+					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 24 ) ); ?></p>
+					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View job', 'shuffles-social-services-jobs' ); ?></a>
+				</article>
+			<?php endwhile; ?>
+		</div>
+
+		<?php
+		$total = (int) $query->max_num_pages;
+		$cur   = isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $total > 1 ) :
+			?>
+			<div class="sssj-row" style="margin-top:16px">
+				<?php if ( $cur > 1 ) : ?>
+					<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="<?php echo esc_url( add_query_arg( 'sssj_paged', $cur - 1 ) ); ?>">&laquo; <?php esc_html_e( 'Previous', 'shuffles-social-services-jobs' ); ?></a>
+				<?php endif; ?>
+				<span class="sssj-badge"><?php echo esc_html( sprintf( __( 'Page %1$d of %2$d', 'shuffles-social-services-jobs' ), $cur, $total ) ); ?></span>
+				<?php if ( $cur < $total ) : ?>
+					<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="<?php echo esc_url( add_query_arg( 'sssj_paged', $cur + 1 ) ); ?>"><?php esc_html_e( 'Next', 'shuffles-social-services-jobs' ); ?> &raquo;</a>
+				<?php endif; ?>
+			</div>
+		<?php endif; ?>
+
+	<?php else : ?>
+		<div class="sssj-panel"><p><?php esc_html_e( 'No jobs found. Try widening your search.', 'shuffles-social-services-jobs' ); ?></p></div>
+	<?php endif; ?>
+</div>

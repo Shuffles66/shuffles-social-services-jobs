@@ -29,6 +29,18 @@ final class Shuffles_SSJ_Plugin {
 	/** @var Shuffles_SSJ_Admin|null */
 	public $admin = null;
 
+	/** @var Shuffles_SSJ_Shortcodes */
+	public $shortcodes;
+
+	/** @var Shuffles_SSJ_SEO */
+	public $seo;
+
+	/** @var Shuffles_SSJ_Frontend_Forms */
+	public $forms;
+
+	/** @var Shuffles_SSJ_Cron */
+	public $cron;
+
 	public static function instance() {
 		if ( null === self::$instance ) {
 			self::$instance = new self();
@@ -44,6 +56,16 @@ final class Shuffles_SSJ_Plugin {
 
 		add_action( 'init', array( $this, 'on_init' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_front_assets' ) );
+
+		// Phase 1 — front-end boards/forms, SEO, lifecycle.
+		$this->shortcodes = new Shuffles_SSJ_Shortcodes( $this->settings );
+		$this->shortcodes->register();
+		$this->seo = new Shuffles_SSJ_SEO( $this->settings );
+		$this->seo->register();
+		$this->forms = new Shuffles_SSJ_Frontend_Forms();
+		$this->forms->register();
+		$this->cron = new Shuffles_SSJ_Cron();
+		$this->cron->register();
 
 		if ( is_admin() && class_exists( 'Shuffles_SSJ_Admin' ) ) {
 			$this->admin = new Shuffles_SSJ_Admin( $this->settings, $this->integrations );

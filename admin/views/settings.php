@@ -207,6 +207,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.2.0 — 2026-06-05 · Phase 1 (Advertisers, slice 1)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Segregated job boards: [sssj_job_board], [sssj_tfn_board] (no ABN), [sssj_abn_board] (no TFN) — ABN/TFN separation enforced in the query layer.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Advertiser posting form [sssj_post_job] with engagement basis, one-off/ongoing, category, location, rate and ABN checksum validation (ABN stored only for ABN engagements).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'JobPosting JSON-LD (Google for Jobs) on job pages; participant needs + non-public workers forced noindex.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Daily expiry cron closes past-dated job ads. ABN-recorded hook fires for the banning cross-match.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.1.1 — 2026-06-05 · Plugin row links</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Added a Settings action link on the Plugins screen (next to Activate / Delete).', 'shuffles-social-services-jobs' ); ?></li>
