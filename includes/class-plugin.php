@@ -67,6 +67,9 @@ final class Shuffles_SSJ_Plugin {
 		$this->cron = new Shuffles_SSJ_Cron();
 		$this->cron->register();
 
+		// Apply schema upgrades in place on already-installed sites (cheap version guard).
+		add_action( 'admin_init', array( 'Shuffles_SSJ_Activator', 'maybe_upgrade' ) );
+
 		if ( is_admin() && class_exists( 'Shuffles_SSJ_Admin' ) ) {
 			$this->admin = new Shuffles_SSJ_Admin( $this->settings, $this->integrations );
 			$this->admin->register();

@@ -53,7 +53,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'maps':
 			$open_form( 'maps' );
 			echo '<table class="form-table" role="presentation">';
-			$this->text_field( 'google_maps_api_key', __( 'Google Maps API key', 'shuffles-social-services-jobs' ), __( 'Optional. Without a key the boards fall back to manual suburb/postcode entry and list view; radius still works from stored coordinates.', 'shuffles-social-services-jobs' ) );
+			$this->key_field(
+				'google_maps_api_key',
+				__( 'Google Maps API key', 'shuffles-social-services-jobs' ),
+				__( 'In the <a href="https://console.cloud.google.com/google/maps-apis/" target="_blank" rel="noopener">Google Cloud Console</a>: create or select a project → enable <strong>Maps JavaScript API</strong> and <strong>Places API</strong> → <strong>Credentials → Create credentials → API key</strong>. Restrict the key by HTTP referrer to your site, then paste it here.', 'shuffles-social-services-jobs' ),
+				__( 'Powers location autocomplete and the map / radius search on the boards. Optional — without it, boards fall back to manual suburb/postcode entry and a list view (radius still works from stored coordinates).', 'shuffles-social-services-jobs' )
+			);
 			$this->number_field( 'default_radius_km', __( 'Default search radius (km)', 'shuffles-social-services-jobs' ), '', 1, 500 );
 			echo '</table>';
 			submit_button();
@@ -91,7 +96,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'licensing':
 			$open_form( 'licensing' );
 			echo '<table class="form-table" role="presentation">';
-			$this->text_field( 'licence_key', __( 'Resale licence key', 'shuffles-social-services-jobs' ), __( 'For licensed/white-label deployments (validated via FluentCart in Phase 7).', 'shuffles-social-services-jobs' ) );
+			$this->key_field(
+				'licence_key',
+				__( 'Resale licence key', 'shuffles-social-services-jobs' ),
+				__( 'After purchasing on <a href="https://shuffles.com.au" target="_blank" rel="noopener">shuffles.com.au</a>, find your key under <strong>My Account → Licences</strong> and paste it here. Your own primary site does not require a key.', 'shuffles-social-services-jobs' ),
+				__( 'Unlocks the premium / white-label features (monetisation, AI bridge, sector duplication). The core job boards work without it.', 'shuffles-social-services-jobs' )
+			);
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -138,7 +148,17 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<li>' . wp_kses_post( __( '<strong>ABN board</strong> — contractor / sole-trader work only.', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '<li>' . wp_kses_post( __( '<strong>Participant-needs board</strong> — always ABN; never shows TFN positions.', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '</ul>';
-			echo '<p class="description">' . esc_html__( 'Board shortcodes and the segregation gate ship in Phase 1.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<h3>' . esc_html__( 'Board pages', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<p class="description">' . esc_html__( 'Pick an existing page, or create one (the matching shortcode is inserted for you), then edit or view it.', 'shuffles-social-services-jobs' ) . '</p>';
+			$open_form( 'boards' );
+			echo '<table class="form-table" role="presentation">';
+			$this->page_picker_field( 'page_job_board', __( 'All jobs board', 'shuffles-social-services-jobs' ), '[sssj_job_board]', __( 'Both bases in a labelled split.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_tfn_board', __( 'TFN (employee) board', 'shuffles-social-services-jobs' ), '[sssj_tfn_board]', __( 'Employee positions only.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_abn_board', __( 'ABN (contractor) board', 'shuffles-social-services-jobs' ), '[sssj_abn_board]', __( 'Contractor / ABN engagements only.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_job', __( 'Post-a-job page', 'shuffles-social-services-jobs' ), '[sssj_post_job]', __( 'Advertiser posting form.', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
 			break;
 
 		case 'compliance':
@@ -207,6 +227,22 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.3.0 — 2026-06-05 · Phase 1 (Workers)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Worker directory [sssj_worker_directory] with visibility enforced in the query layer (guests see public only; members also see logged-in profiles; verified-only is never over-exposed).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Worker profile form [sssj_post_worker] — create/edit your own profile (one per user), with services, availability, status, rate, optional ABN (checksum-validated) and visibility.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
+				<h3>v0.2.2 — 2026-06-05 · Database hardening (speed + accuracy)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Custom tables retuned: UNIQUE key stops duplicate applications; composite indexes match the real query patterns (applicants-by-status, thread view, by-context messages, worker credentials by kind, expiry/verification sweeps).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'NOT NULL + sensible defaults on key columns for accuracy.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'In-place schema upgrade (dbDelta) runs automatically on already-installed sites — no reactivation needed.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
+				<h3>v0.2.1 — 2026-06-05 · Settings conventions (page-pickers + key instructions)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Page settings now use a lookup + create (auto-inserts the shortcode) + edit/view picker — Boards tab links the board and post-a-job pages.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'API-key fields (Google Maps, licence key) now include how-to-get + what-it-does instructions and mask the stored value (blank submission keeps it).', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.2.0 — 2026-06-05 · Phase 1 (Advertisers, slice 1)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Segregated job boards: [sssj_job_board], [sssj_tfn_board] (no ABN), [sssj_abn_board] (no TFN) — ABN/TFN separation enforced in the query layer.', 'shuffles-social-services-jobs' ); ?></li>

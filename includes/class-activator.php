@@ -1,6 +1,12 @@
 <?php
 /**
- * Activation: create custom tables, seed taxonomies, add capabilities, flush rewrites.
+ * Activation + schema management: create/upgrade custom tables, seed taxonomies,
+ * add capabilities, flush rewrites.
+ *
+ * Tables are tuned for speed (composite indexes matching query patterns) and accuracy
+ * (NOT NULL + defaults, and a UNIQUE key preventing duplicate applications).
+ * create_tables() runs via dbDelta so it both CREATES and idempotently ADDS missing
+ * indexes/columns to existing tables — maybe_upgrade() applies it to already-deployed sites.
  *
  * @package Shuffles_SSJ
  */
@@ -11,8 +17,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Shuffles_SSJ_Activator {
 
+	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
+	const DB_VERSION = 2;
+
 	public static function activate() {
-		// Register entities first so rewrite rules + taxonomies exist before we seed and flush.
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
 		$cpt->register_post_types();
 
@@ -38,83 +46,103 @@ class Shuffles_SSJ_Activator {
 	}
 
 	/**
-	 * Create the plugin's custom tables (idempotent via dbDelta).
+	 * Apply schema upgrades on already-installed sites (activation only fires on activate,
+	 * not on a plain file update). Cheap guard — runs dbDelta only when the version lags.
 	 */
-	private static function create_tables() {
+	public static function maybe_upgrade() {
+		if ( (int) get_option( 'shuffles_ssj_db_version', 0 ) < self::DB_VERSION ) {
+			self::create_tables();
+		}
+	}
+
+	/**
+	 * Create or upgrade the custom tables (idempotent via dbDelta) and stamp the db version.
+	 */
+	public static function create_tables() {
 		global $wpdb;
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 		$charset_collate = $wpdb->get_charset_collate();
 		$p               = $wpdb->prefix . 'sssj_';
+		$statements      = array();
 
-		$statements = array();
-
+		// Match scores — read by "matches for a source/target ordered by score".
 		$statements[] = "CREATE TABLE {$p}match_score (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  source_type VARCHAR(10) NOT NULL,
-  source_id BIGINT UNSIGNED NOT NULL,
-  target_type VARCHAR(10) NOT NULL,
-  target_id BIGINT UNSIGNED NOT NULL,
+  source_type VARCHAR(10) NOT NULL DEFAULT '',
+  source_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  target_type VARCHAR(10) NOT NULL DEFAULT '',
+  target_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   score DECIMAL(4,3) NOT NULL DEFAULT 0.000,
   reason_json LONGTEXT NULL,
-  computed_at DATETIME NULL,
+  computed_at DATETIME NULL DEFAULT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY pair (source_type,source_id,target_type,target_id),
   KEY src (source_type,source_id,score),
-  KEY tgt (target_type,target_id,score)
+  KEY tgt (target_type,target_id,score),
+  KEY computed (computed_at)
 ) $charset_collate;";
 
+		// Applications — UNIQUE(job,need,applicant) stops duplicate applications (accuracy);
+		// composite (id,status) indexes serve "applicants for a job/need filtered by status".
 		$statements[] = "CREATE TABLE {$p}application (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   job_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   need_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   worker_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
-  applicant_user_id BIGINT UNSIGNED NOT NULL,
+  applicant_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   cover_message LONGTEXT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'new',
-  created_at DATETIME NULL,
-  updated_at DATETIME NULL,
+  created_at DATETIME NULL DEFAULT NULL,
+  updated_at DATETIME NULL DEFAULT NULL,
   PRIMARY KEY  (id),
-  KEY job (job_id),
-  KEY need (need_id),
-  KEY applicant (applicant_user_id)
+  UNIQUE KEY uniq_app (job_id,need_id,applicant_user_id),
+  KEY job_status (job_id,status),
+  KEY need_status (need_id,status),
+  KEY applicant (applicant_user_id),
+  KEY worker (worker_id),
+  KEY created (created_at)
 ) $charset_collate;";
 
+		// Messages — thread view, recipient unread, sender, by-context.
 		$statements[] = "CREATE TABLE {$p}message (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  thread_id BIGINT UNSIGNED NOT NULL,
-  from_user_id BIGINT UNSIGNED NOT NULL,
-  to_user_id BIGINT UNSIGNED NOT NULL,
+  thread_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  from_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  to_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   context_entity_type VARCHAR(10) NULL,
   context_entity_id BIGINT UNSIGNED NULL,
   body LONGTEXT NOT NULL,
-  read_at DATETIME NULL,
-  created_at DATETIME NULL,
+  read_at DATETIME NULL DEFAULT NULL,
+  created_at DATETIME NULL DEFAULT NULL,
   PRIMARY KEY  (id),
   KEY thread (thread_id,created_at),
   KEY recipient (to_user_id,read_at),
-  KEY sender (from_user_id)
+  KEY sender (from_user_id),
+  KEY context (context_entity_type,context_entity_id)
 ) $charset_collate;";
 
+		// Credentials — a worker's credentials, by-kind, and expiry/verification sweeps.
 		$statements[] = "CREATE TABLE {$p}credential (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-  worker_id BIGINT UNSIGNED NOT NULL,
-  kind VARCHAR(64) NOT NULL,
+  worker_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  kind VARCHAR(64) NOT NULL DEFAULT '',
   number VARCHAR(120) NULL,
-  issued_date DATE NULL,
-  expires_date DATE NULL,
+  issued_date DATE NULL DEFAULT NULL,
+  expires_date DATE NULL DEFAULT NULL,
   evidence_path VARCHAR(255) NULL,
-  verified_at DATETIME NULL,
+  verified_at DATETIME NULL DEFAULT NULL,
   verified_by_admin_id BIGINT UNSIGNED NULL,
   PRIMARY KEY  (id),
-  KEY worker (worker_id),
-  KEY expires (expires_date)
+  KEY worker_kind (worker_id,kind),
+  KEY expires (expires_date),
+  KEY verified (verified_at)
 ) $charset_collate;";
 
 		foreach ( $statements as $sql ) {
 			dbDelta( $sql );
 		}
 
-		update_option( 'shuffles_ssj_db_version', '1' );
+		update_option( 'shuffles_ssj_db_version', self::DB_VERSION );
 	}
 }

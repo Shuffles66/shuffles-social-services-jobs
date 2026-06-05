@@ -24,6 +24,8 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_tfn_board', array( $this, 'tfn_board' ) );
 		add_shortcode( 'sssj_abn_board', array( $this, 'abn_board' ) );
 		add_shortcode( 'sssj_post_job', array( $this, 'post_job_form' ) );
+		add_shortcode( 'sssj_worker_directory', array( $this, 'worker_directory' ) );
+		add_shortcode( 'sssj_post_worker', array( $this, 'post_worker_form' ) );
 	}
 
 	public function register_assets() {
@@ -91,6 +93,47 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'post-job-form.php', array( 'settings' => $this->settings ) );
+		return ob_get_clean();
+	}
+
+	/* --- Workers --- */
+
+	public function worker_directory( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'title'    => '',
+				'per_page' => 12,
+			),
+			is_array( $atts ) ? $atts : array(),
+			'sssj_worker_directory'
+		);
+		wp_enqueue_style( 'sssj' );
+
+		$extra = array(
+			'paged'          => isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'posts_per_page' => (int) $atts['per_page'],
+		);
+		if ( ! empty( $_GET['sssj_cat'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['category'] = sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+		if ( ! empty( $_GET['sssj_q'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['s'] = sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+		if ( ! empty( $_GET['sssj_avail'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['available'] = 1;
+		}
+
+		$query = new WP_Query( Shuffles_SSJ_Query::worker_args( $extra ) );
+		ob_start();
+		$this->load_template( 'worker-directory.php', array( 'query' => $query, 'atts' => $atts ) );
+		wp_reset_postdata();
+		return ob_get_clean();
+	}
+
+	public function post_worker_form( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		ob_start();
+		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
 	}
 

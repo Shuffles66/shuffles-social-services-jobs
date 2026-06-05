@@ -1,0 +1,93 @@
+<?php
+/**
+ * Worker directory template. Vars: $query (WP_Query), $atts (array).
+ * Visibility is already enforced in Shuffles_SSJ_Query::worker_args().
+ * Theme override: wp-content/themes/<theme>/shuffles-jobs/worker-directory.php
+ *
+ * @package Shuffles_SSJ
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/** @var WP_Query $query */
+/** @var array $atts */
+
+$heading = ! empty( $atts['title'] ) ? $atts['title'] : __( 'Available workers', 'shuffles-social-services-jobs' );
+$cats    = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
+$cur_cat = isset( $_GET['sssj_cat'] ) ? sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_q   = isset( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+?>
+<div class="sssj sssj--workers">
+	<div class="sssj-panel">
+		<h2><?php echo esc_html( $heading ); ?></h2>
+		<form class="sssj-row" method="get">
+			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" />
+			<select class="sssj-select" name="sssj_cat">
+				<option value=""><?php esc_html_e( 'All services', 'shuffles-social-services-jobs' ); ?></option>
+				<?php
+				if ( ! is_wp_error( $cats ) ) {
+					foreach ( $cats as $t ) {
+						echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_cat, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>';
+					}
+				}
+				?>
+			</select>
+			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></label>
+			<button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
+		</form>
+	</div>
+
+	<?php if ( $query->have_posts() ) : ?>
+		<div class="sssj-grid">
+			<?php
+			while ( $query->have_posts() ) :
+				$query->the_post();
+				$pid    = get_the_ID();
+				$avail2 = (string) get_post_meta( $pid, 'is_available', true );
+				$status = (string) get_post_meta( $pid, 'employment_status', true );
+				$yrs    = (int) get_post_meta( $pid, 'years_experience', true );
+				$rmin   = (float) get_post_meta( $pid, 'rate_min', true );
+				$runit  = (string) get_post_meta( $pid, 'rate_unit', true );
+				$verified = (string) get_post_meta( $pid, 'verified_at', true );
+				$svcs   = wp_get_post_terms( $pid, 'sssjt_category', array( 'fields' => 'names' ) );
+				?>
+				<article class="sssj-card">
+					<h3 style="margin-top:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<div class="sssj-row">
+						<?php if ( '1' === $avail2 ) : ?><span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Available', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
+						<?php if ( $verified ) : ?><span class="sssj-badge sssj-badge--verified">✓ <?php esc_html_e( 'Verified', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
+						<?php if ( $yrs > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d yr', '%d yrs', $yrs, 'shuffles-social-services-jobs' ), $yrs ) ); ?></span><?php endif; ?>
+					</div>
+					<?php if ( ! is_wp_error( $svcs ) && ! empty( $svcs ) ) : ?>
+						<p><?php echo esc_html( implode( ', ', array_slice( $svcs, 0, 4 ) ) ); ?></p>
+					<?php endif; ?>
+					<?php if ( $rmin > 0 ) : ?><p>💲 <?php echo esc_html( __( 'from', 'shuffles-social-services-jobs' ) . ' ' . number_format_i18n( $rmin ) . ' / ' . ( $runit ? $runit : 'hour' ) ); ?></p><?php endif; ?>
+					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 22 ) ); ?></p>
+					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View profile', 'shuffles-social-services-jobs' ); ?></a>
+				</article>
+			<?php endwhile; ?>
+		</div>
+		<?php
+		$total = (int) $query->max_num_pages;
+		$cur   = isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $total > 1 ) :
+			?>
+			<div class="sssj-row" style="margin-top:16px">
+				<?php if ( $cur > 1 ) : ?><a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="<?php echo esc_url( add_query_arg( 'sssj_paged', $cur - 1 ) ); ?>">&laquo; <?php esc_html_e( 'Previous', 'shuffles-social-services-jobs' ); ?></a><?php endif; ?>
+				<span class="sssj-badge"><?php echo esc_html( sprintf( __( 'Page %1$d of %2$d', 'shuffles-social-services-jobs' ), $cur, $total ) ); ?></span>
+				<?php if ( $cur < $total ) : ?><a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="<?php echo esc_url( add_query_arg( 'sssj_paged', $cur + 1 ) ); ?>"><?php esc_html_e( 'Next', 'shuffles-social-services-jobs' ); ?> &raquo;</a><?php endif; ?>
+			</div>
+		<?php endif; ?>
+	<?php else : ?>
+		<div class="sssj-panel"><p>
+			<?php
+			echo is_user_logged_in()
+				? esc_html__( 'No worker profiles match yet.', 'shuffles-social-services-jobs' )
+				: esc_html__( 'Log in to see more worker profiles.', 'shuffles-social-services-jobs' );
+			?>
+		</p></div>
+	<?php endif; ?>
+</div>

@@ -73,4 +73,59 @@ class Shuffles_SSJ_Query {
 		 */
 		return apply_filters( 'shuffles_ssj_board_query_args', $args, $basis, $extra );
 	}
+
+	/**
+	 * WP_Query args for the worker directory — visibility enforced in the query layer.
+	 *
+	 * Guests see only 'public'; logged-in users also see 'logged_in'. 'verified_only' is
+	 * deliberately excluded until verified-worker detection ships, so a profile is never
+	 * shown more widely than its owner intended.
+	 *
+	 * @param array $extra paged, posts_per_page, category (slug), s, available.
+	 * @return array
+	 */
+	public static function worker_args( $extra = array() ) {
+		$visible = array( 'public' );
+		if ( is_user_logged_in() ) {
+			$visible[] = 'logged_in';
+		}
+
+		$args = array(
+			'post_type'      => 'sssj_worker',
+			'post_status'    => 'publish',
+			'posts_per_page' => isset( $extra['posts_per_page'] ) ? max( 1, (int) $extra['posts_per_page'] ) : 12,
+			'paged'          => isset( $extra['paged'] ) ? max( 1, (int) $extra['paged'] ) : 1,
+			'orderby'        => array( 'date' => 'DESC' ),
+			'meta_query'     => array(
+				array(
+					'key'     => 'visibility',
+					'value'   => $visible,
+					'compare' => 'IN',
+				),
+			),
+			'tax_query'      => array(),
+		);
+
+		if ( ! empty( $extra['available'] ) ) {
+			$args['meta_query'][] = array(
+				'key'   => 'is_available',
+				'value' => 1,
+			);
+		}
+		if ( count( $args['meta_query'] ) > 1 ) {
+			$args['meta_query']['relation'] = 'AND';
+		}
+		if ( ! empty( $extra['category'] ) ) {
+			$args['tax_query'][] = array(
+				'taxonomy' => 'sssjt_category',
+				'field'    => 'slug',
+				'terms'    => sanitize_title( $extra['category'] ),
+			);
+		}
+		if ( ! empty( $extra['s'] ) ) {
+			$args['s'] = sanitize_text_field( $extra['s'] );
+		}
+
+		return apply_filters( 'shuffles_ssj_worker_query_args', $args, $extra );
+	}
 }

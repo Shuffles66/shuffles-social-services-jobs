@@ -33,6 +33,7 @@ class Shuffles_SSJ_Admin {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
 		add_filter( 'plugin_action_links_' . SHUFFLES_SSJ_BASENAME, array( $this, 'action_links' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'row_meta' ), 10, 2 );
+		add_action( 'wp_ajax_sssj_create_page', array( $this, 'ajax_create_page' ) );
 	}
 
 	/**
@@ -101,6 +102,18 @@ class Shuffles_SSJ_Admin {
 			return;
 		}
 		wp_enqueue_style( 'sssj-admin', SHUFFLES_SSJ_URL . 'admin/assets/css/sssj-admin.css', array(), SHUFFLES_SSJ_VERSION );
+		wp_enqueue_script( 'sssj-admin', SHUFFLES_SSJ_URL . 'admin/assets/js/sssj-admin.js', array(), SHUFFLES_SSJ_VERSION, true );
+		wp_localize_script(
+			'sssj-admin',
+			'SSJ_Admin',
+			array(
+				'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+				'nonce'       => wp_create_nonce( 'sssj_admin' ),
+				'creating'    => __( 'Creating…', 'shuffles-social-services-jobs' ),
+				'createLabel' => __( 'Create page', 'shuffles-social-services-jobs' ),
+				'error'       => __( 'Could not create the page. Please try again.', 'shuffles-social-services-jobs' ),
+			)
+		);
 	}
 
 	/* ----- Tab model ----- */
@@ -223,6 +236,119 @@ class Shuffles_SSJ_Admin {
 		echo '</select>';
 		echo '<p class="description">' . esc_html__( 'Drives which credentials are required for the sector this deployment serves.', 'shuffles-social-services-jobs' ) . '</p>';
 		echo '</td></tr>';
+	}
+
+	/**
+	 * Masked API/secret-key field with how-to + what-it-does instructions (standing rule).
+	 * Renders empty (never echoes the secret); a blank submission keeps the stored value.
+	 *
+	 * @param string $key      Setting key.
+	 * @param string $label    Field label.
+	 * @param string $how_html "How to get it" help (limited HTML allowed).
+	 * @param string $what     "What it does" help (plain text).
+	 */
+	public function key_field( $key, $label, $how_html, $what ) {
+		$stored = (string) $this->settings->get( $key, '' );
+		$last4  = '' !== $stored ? substr( $stored, -4 ) : '';
+		$ph     = '' !== $stored
+			? sprintf( '•••• •••• %s — %s', $last4, __( 'leave blank to keep', 'shuffles-social-services-jobs' ) )
+			: __( 'Enter key', 'shuffles-social-services-jobs' );
+		$allowed = array(
+			'a'      => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
+			'strong' => array(),
+			'code'   => array(),
+			'br'     => array(),
+		);
+		echo '<tr><th scope="row"><label for="sssj-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
+		echo '<input type="text" autocomplete="off" spellcheck="false" class="regular-text" id="sssj-' . esc_attr( $key ) . '" name="' . esc_attr( $this->field_name( $key ) ) . '" value="" placeholder="' . esc_attr( $ph ) . '" />';
+		echo '<p class="description"><strong>' . esc_html__( 'What it does:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html( $what ) . '</p>';
+		echo '<p class="description"><strong>' . esc_html__( 'How to get it:', 'shuffles-social-services-jobs' ) . '</strong> ' . wp_kses( $how_html, $allowed ) . '</p>';
+		echo '</td></tr>';
+	}
+
+	/**
+	 * Page-picker field (standing rule): lookup existing + create-with-shortcode + edit/view links.
+	 *
+	 * @param string $key       Setting key (stores the page ID).
+	 * @param string $label     Field label.
+	 * @param string $shortcode Shortcode to insert when creating the page.
+	 * @param string $help      Extra help text.
+	 */
+	public function page_picker_field( $key, $label, $shortcode, $help = '' ) {
+		$val = (int) $this->settings->get( $key, 0 );
+		echo '<tr><th scope="row">' . esc_html( $label ) . '</th><td>';
+		echo '<div class="sssj-page-picker" data-key="' . esc_attr( $key ) . '" data-shortcode="' . esc_attr( $shortcode ) . '">';
+		wp_dropdown_pages(
+			array(
+				'name'              => $this->field_name( $key ),
+				'id'                => 'sssj-' . $key,
+				'selected'          => $val,
+				'show_option_none'  => __( '— Select a page —', 'shuffles-social-services-jobs' ),
+				'option_none_value' => '0',
+				'class'             => 'sssj-page-select',
+			)
+		);
+		echo ' <button type="button" class="button sssj-create-page" data-title="' . esc_attr( $label ) . '">' . esc_html__( 'Create page', 'shuffles-social-services-jobs' ) . '</button>';
+		echo ' <span class="sssj-page-links">';
+		if ( $val && get_post( $val ) ) {
+			echo '<a href="' . esc_url( (string) get_edit_post_link( $val ) ) . '">' . esc_html__( 'Edit', 'shuffles-social-services-jobs' ) . '</a> | <a href="' . esc_url( (string) get_permalink( $val ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'View', 'shuffles-social-services-jobs' ) . '</a>';
+		}
+		echo '</span>';
+		echo '<p class="description">' . esc_html( $help ) . ' ' . sprintf(
+			/* translators: %s: shortcode in a <code> tag */
+			esc_html__( 'Shortcode: %s', 'shuffles-social-services-jobs' ),
+			'<code>' . esc_html( $shortcode ) . '</code>'
+		) . '</p>';
+		echo '</div></td></tr>';
+	}
+
+	/**
+	 * AJAX: create a page containing the given shortcode and link it to the setting.
+	 */
+	public function ajax_create_page() {
+		check_ajax_referer( 'sssj_admin', 'nonce' );
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error( array( 'msg' => 'forbidden' ), 403 );
+		}
+		$key       = isset( $_POST['key'] ) ? sanitize_key( wp_unslash( $_POST['key'] ) ) : '';
+		$shortcode = isset( $_POST['shortcode'] ) ? sanitize_text_field( wp_unslash( $_POST['shortcode'] ) ) : '';
+		$title     = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : 'Jobs';
+
+		$allowed = array(
+			'page_job_board' => '[sssj_job_board]',
+			'page_tfn_board' => '[sssj_tfn_board]',
+			'page_abn_board' => '[sssj_abn_board]',
+			'page_post_job'  => '[sssj_post_job]',
+		);
+		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
+			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );
+		}
+
+		$page_id = wp_insert_post(
+			array(
+				'post_type'    => 'page',
+				'post_status'  => 'publish',
+				'post_title'   => $title,
+				'post_content' => $shortcode,
+			),
+			true
+		);
+		if ( is_wp_error( $page_id ) ) {
+			wp_send_json_error( array( 'msg' => $page_id->get_error_message() ) );
+		}
+
+		$opts         = $this->settings->all();
+		$opts[ $key ] = (int) $page_id;
+		update_option( Shuffles_SSJ_Settings::OPTION_KEY, $opts );
+
+		wp_send_json_success(
+			array(
+				'id'    => (int) $page_id,
+				'title' => get_the_title( $page_id ),
+				'edit'  => get_edit_post_link( $page_id, 'raw' ),
+				'view'  => get_permalink( $page_id ),
+			)
+		);
 	}
 
 	public function render_page() {
