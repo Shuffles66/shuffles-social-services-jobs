@@ -128,4 +128,52 @@ class Shuffles_SSJ_Query {
 
 		return apply_filters( 'shuffles_ssj_worker_query_args', $args, $extra );
 	}
+
+	/**
+	 * WP_Query args for the participant-need board.
+	 *
+	 * Privacy: only PUBLISHED (admin-moderated) needs; never public — callers MUST gate on
+	 * is_user_logged_in() before querying. 'verified_workers_only' is excluded until
+	 * verified-worker detection ships, so a need is never shown more widely than intended.
+	 *
+	 * @param array $extra paged, posts_per_page, support (slug), funding (slug).
+	 * @return array
+	 */
+	public static function need_args( $extra = array() ) {
+		$args = array(
+			'post_type'      => 'sssj_need',
+			'post_status'    => 'publish',
+			'posts_per_page' => isset( $extra['posts_per_page'] ) ? max( 1, (int) $extra['posts_per_page'] ) : 12,
+			'paged'          => isset( $extra['paged'] ) ? max( 1, (int) $extra['paged'] ) : 1,
+			'orderby'        => array( 'date' => 'DESC' ),
+			'meta_query'     => array(
+				array(
+					'key'     => 'visibility',
+					'value'   => array( 'logged_in' ),
+					'compare' => 'IN',
+				),
+			),
+			'tax_query'      => array(),
+		);
+
+		if ( ! empty( $extra['support'] ) ) {
+			$args['tax_query'][] = array(
+				'taxonomy' => 'sssjt_support_category',
+				'field'    => 'slug',
+				'terms'    => sanitize_title( $extra['support'] ),
+			);
+		}
+		if ( ! empty( $extra['funding'] ) ) {
+			$args['tax_query'][] = array(
+				'taxonomy' => 'sssjt_funding_source',
+				'field'    => 'slug',
+				'terms'    => sanitize_title( $extra['funding'] ),
+			);
+		}
+		if ( count( $args['tax_query'] ) > 1 ) {
+			$args['tax_query']['relation'] = 'AND';
+		}
+
+		return apply_filters( 'shuffles_ssj_need_query_args', $args, $extra );
+	}
 }

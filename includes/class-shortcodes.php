@@ -26,6 +26,8 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_post_job', array( $this, 'post_job_form' ) );
 		add_shortcode( 'sssj_worker_directory', array( $this, 'worker_directory' ) );
 		add_shortcode( 'sssj_post_worker', array( $this, 'post_worker_form' ) );
+		add_shortcode( 'sssj_need_board', array( $this, 'need_board' ) );
+		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
 	}
 
 	public function register_assets() {
@@ -134,6 +136,51 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
+		return ob_get_clean();
+	}
+
+	/* --- Participant needs (gated, pseudonymous) --- */
+
+	public function need_board( $atts ) {
+		$atts = shortcode_atts(
+			array(
+				'title'    => '',
+				'per_page' => 12,
+			),
+			is_array( $atts ) ? $atts : array(),
+			'sssj_need_board'
+		);
+		wp_enqueue_style( 'sssj' );
+
+		// Needs are never public — require login before querying.
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj sssj--needs"><div class="sssj-panel"><p>'
+				. esc_html__( 'Participant requests are visible to logged-in members only.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+
+		$extra = array(
+			'paged'          => isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			'posts_per_page' => (int) $atts['per_page'],
+		);
+		if ( ! empty( $_GET['sssj_support'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['support'] = sanitize_title( wp_unslash( $_GET['sssj_support'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+		if ( ! empty( $_GET['sssj_funding'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['funding'] = sanitize_title( wp_unslash( $_GET['sssj_funding'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+
+		$query = new WP_Query( Shuffles_SSJ_Query::need_args( $extra ) );
+		ob_start();
+		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts ) );
+		wp_reset_postdata();
+		return ob_get_clean();
+	}
+
+	public function post_need_form( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		ob_start();
+		$this->load_template( 'post-need-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
 	}
 

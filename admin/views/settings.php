@@ -227,6 +227,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.4.0 — 2026-06-05 · Phase 1 (Participants) — four sides live</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Participant-need board [sssj_need_board] — logged-in only, shows published (admin-moderated) requests with pseudonym + suburb only; no names or contact details.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Request form [sssj_post_need] — participant/nominee posts a need; pseudonym generated server-side; multi-select support types + funding (one/many/none); always saved as pending for moderation.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.3.0 — 2026-06-05 · Phase 1 (Workers)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Worker directory [sssj_worker_directory] with visibility enforced in the query layer (guests see public only; members also see logged-in profiles; verified-only is never over-exposed).', 'shuffles-social-services-jobs' ); ?></li>

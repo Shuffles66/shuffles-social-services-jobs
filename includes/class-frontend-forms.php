@@ -16,6 +16,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_post_job', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_post_worker', array( $this, 'handle_post_worker' ) );
 		add_action( 'admin_post_nopriv_sssj_post_worker', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_post_need', array( $this, 'handle_post_need' ) );
+		add_action( 'admin_post_nopriv_sssj_post_need', array( $this, 'deny' ) );
 	}
 
 	public function deny() {
@@ -197,6 +199,78 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 
 		wp_safe_redirect( add_query_arg( 'sssj_worker', '1', $redirect ) );
+		exit;
+	}
+
+	/**
+	 * Process the [sssj_post_need] submission.
+	 *
+	 * Privacy: stores a generated pseudonym (never a real name), suburb-only location, and
+	 * defaults to 'pending' for admin moderation before it can appear on the board.
+	 */
+	public function handle_post_need() {
+		$nonce = isset( $_POST['sssj_need_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_need_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_post_need' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() || ( ! current_user_can( 'sssj_post_need' ) && ! current_user_can( 'manage_options' ) ) ) {
+			wp_die( esc_html__( 'You do not have permission to post a participant need.', 'shuffles-social-services-jobs' ) );
+		}
+
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		$uid      = get_current_user_id();
+
+		// Title is a SHORT DESCRIPTION, never a name.
+		$desc = isset( $_POST['short_description'] ) ? sanitize_text_field( wp_unslash( $_POST['short_description'] ) ) : '';
+		if ( '' === $desc ) {
+			wp_safe_redirect( add_query_arg( 'sssj_need', 'error', $redirect ) );
+			exit;
+		}
+
+		$post_id = wp_insert_post(
+			array(
+				'post_type'    => 'sssj_need',
+				'post_status'  => 'pending', // Always moderated before publish.
+				'post_title'   => $desc,
+				'post_content' => isset( $_POST['details'] ) ? wp_kses_post( wp_unslash( $_POST['details'] ) ) : '',
+				'post_author'  => $uid,
+			),
+			true
+		);
+		if ( is_wp_error( $post_id ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_need', 'error', $redirect ) );
+			exit;
+		}
+
+		$pseudonym = 'P-' . strtoupper( wp_generate_password( 7, false, false ) );
+
+		$meta = array(
+			'participant_ref'    => $pseudonym,
+			'nominee_user_id'    => $uid,
+			'location_suburb'    => isset( $_POST['location_suburb'] ) ? sanitize_text_field( wp_unslash( $_POST['location_suburb'] ) ) : '',
+			'location_state'     => isset( $_POST['location_state'] ) ? sanitize_text_field( wp_unslash( $_POST['location_state'] ) ) : '',
+			'schedule_pattern'   => isset( $_POST['schedule_pattern'] ) ? sanitize_key( wp_unslash( $_POST['schedule_pattern'] ) ) : 'flexible',
+			'ongoing_or_temp'    => isset( $_POST['ongoing_or_temp'] ) ? sanitize_key( wp_unslash( $_POST['ongoing_or_temp'] ) ) : 'ongoing',
+			'funding_management' => isset( $_POST['funding_management'] ) ? sanitize_key( wp_unslash( $_POST['funding_management'] ) ) : 'self',
+			'gender_preference'  => isset( $_POST['gender_preference'] ) ? sanitize_key( wp_unslash( $_POST['gender_preference'] ) ) : 'any',
+			'contact_mode'       => 'internal-only', // First contact always via internal relay.
+			'visibility'         => 'logged_in',
+		);
+		foreach ( $meta as $k => $v ) {
+			update_post_meta( $post_id, $k, $v );
+		}
+
+		// Support categories + funding sources (one, many, or none).
+		if ( ! empty( $_POST['support_categories'] ) && is_array( $_POST['support_categories'] ) ) {
+			$ids = array_filter( array_map( 'absint', (array) wp_unslash( $_POST['support_categories'] ) ) );
+			wp_set_object_terms( $post_id, $ids, 'sssjt_support_category' );
+		}
+		if ( ! empty( $_POST['funding_sources'] ) && is_array( $_POST['funding_sources'] ) ) {
+			$ids = array_filter( array_map( 'absint', (array) wp_unslash( $_POST['funding_sources'] ) ) );
+			wp_set_object_terms( $post_id, $ids, 'sssjt_funding_source' );
+		}
+
+		wp_safe_redirect( add_query_arg( 'sssj_need', 'pending', $redirect ) );
 		exit;
 	}
 }
