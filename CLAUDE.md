@@ -12,9 +12,9 @@
 
 ## Current Status
 
-**Pre-Phase 0** — design locked, scaffold not yet built.
+**Phase 0 built — v0.1.0 (scaffold).** Activates in wp-admin: the three CPTs (`sssj_job`, `sssj_worker`, `sssj_need`), eight seeded taxonomies, the four custom tables, ABN/TFN + funding meta, the `Shuffles_SSJ_Integrations` registry, ABN checksum helper, custom caps and the 16-tab settings page are all live. Standalone-first (no required plugins). **Next: Phase 1** — advertiser job-posting form, segregated ABN/TFN boards, the A11y/CALD layer, and JobPosting SEO on job pages.
 
-Once development starts, every change session MUST complete ALL of the following steps in order:
+Every change session MUST complete ALL of the following steps in order:
 
 1. Bump the version in both the `Version:` plugin header and the `SHUFFLES_SSJ_VERSION` constant in `shuffles-social-services-jobs.php`
 2. Add a changelog entry for the new version at the **top** of the version list in `admin/views/settings.php` (inside `#sssj-tab-changelog`, before the previous top entry). Each entry must include the version number, today's date, and bullet points describing every change made in that version.
@@ -203,7 +203,7 @@ Existing buckets stay as-is: 💼 Employment Opportunities (amber) for job ads, 
 
 | Phase | Scope | Time | Status |
 |---|---|---|---|
-| **0 · Scaffold** | Plugin skeleton, CPTs + taxonomies registered, activation seeder, settings page | 2 days | Not started |
+| **0 · Scaffold** | Plugin skeleton, CPTs + taxonomies registered, activation seeder, settings page | 2 days | ✅ Built (v0.1.0) |
 | **1 · Advertisers** | Job Ad posting form, public board, single-job page, expiry cron | 5 days | — |
 | **2 · Workers** | Worker Profile posting form, directory, profile page, visibility controls, basic compliance fields | 5 days | — |
 | **3 · Matching (real-time)** | `Matcher` class with `WP_Query` + scoring; "Matching X" panels | 3 days | — |

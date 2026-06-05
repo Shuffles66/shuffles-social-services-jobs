@@ -1,0 +1,9 @@
+[
+  { "name": "NDIS", "description": "National Disability Insurance Scheme." },
+  { "name": "Aged Care (HCP/CHSP)", "description": "Home Care Package or Commonwealth Home Support Programme." },
+  { "name": "DVA", "description": "Department of Veterans' Affairs." },
+  { "name": "iCare / Workers' Compensation", "description": "Workers compensation or insurance scheme." },
+  { "name": "Medicare / Chronic Disease Management", "description": "Medicare-funded allied health (CDM / EPC)." },
+  { "name": "Privately funded", "description": "Self-funded by the participant or their family." },
+  { "name": "No funding / self-funded", "description": "No external funding attached." }
+]

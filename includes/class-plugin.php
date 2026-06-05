@@ -1,0 +1,70 @@
+<?php
+/**
+ * Plugin orchestrator (singleton).
+ *
+ * @package Shuffles_SSJ
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+final class Shuffles_SSJ_Plugin {
+
+	/** @var Shuffles_SSJ_Plugin|null */
+	private static $instance = null;
+
+	/** @var Shuffles_SSJ_Settings */
+	public $settings;
+
+	/** @var Shuffles_SSJ_Integrations */
+	public $integrations;
+
+	/** @var Shuffles_SSJ_Taxonomy_Registrar */
+	public $taxonomies;
+
+	/** @var Shuffles_SSJ_CPT_Registrar */
+	public $cpt;
+
+	/** @var Shuffles_SSJ_Admin|null */
+	public $admin = null;
+
+	public static function instance() {
+		if ( null === self::$instance ) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	private function __construct() {
+		$this->settings     = new Shuffles_SSJ_Settings();
+		$this->integrations = new Shuffles_SSJ_Integrations( $this->settings );
+		$this->taxonomies   = new Shuffles_SSJ_Taxonomy_Registrar();
+		$this->cpt          = new Shuffles_SSJ_CPT_Registrar();
+
+		add_action( 'init', array( $this, 'on_init' ), 5 );
+		add_action( 'wp_enqueue_scripts', array( $this, 'register_front_assets' ) );
+
+		if ( is_admin() && class_exists( 'Shuffles_SSJ_Admin' ) ) {
+			$this->admin = new Shuffles_SSJ_Admin( $this->settings, $this->integrations );
+			$this->admin->register();
+		}
+	}
+
+	/**
+	 * Register entities on init.
+	 */
+	public function on_init() {
+		load_plugin_textdomain( 'shuffles-social-services-jobs', false, dirname( SHUFFLES_SSJ_BASENAME ) . '/languages' );
+		$this->cpt->register_post_types();
+		$this->taxonomies->register_taxonomies();
+		$this->cpt->register_meta();
+	}
+
+	/**
+	 * Register (not enqueue) the design-system stylesheet. Boards/forms enqueue it from Phase 1.
+	 */
+	public function register_front_assets() {
+		wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
+	}
+}

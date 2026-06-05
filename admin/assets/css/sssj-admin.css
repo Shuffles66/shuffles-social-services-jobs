@@ -1,0 +1,20 @@
+/* Settings page styling — Shuffles Social Services Jobs and Engagements (admin). */
+
+.sssj-admin .sssj-ver{ font-size:12px; font-weight:600; color:#1e5d9c; background:#eaf3fb; border-radius:999px; padding:2px 10px; vertical-align:middle; }
+.sssj-admin .sssj-sub{ color:#64748b; margin:4px 0 16px; }
+
+.sssj-admin .sssj-tabs{ display:flex; flex-wrap:wrap; gap:2px; }
+.sssj-admin .sssj-tabs .nav-tab{ display:inline-flex; align-items:center; gap:6px; }
+.sssj-admin .sssj-dot{ display:inline-block; width:9px; height:9px; border-radius:50%; }
+.sssj-admin .sssj-code{ font-size:10px; font-weight:700; color:#64748b; }
+
+.sssj-admin .sssj-panel{ background:#fff; border:1px solid #e2e8f0; border-top:none; border-radius:0 0 8px 8px; padding:18px 20px; box-shadow:0 1px 3px rgba(15,23,42,.06); }
+.sssj-admin .sssj-panel h2{ margin-top:0; color:#1e5d9c; }
+.sssj-admin .sssj-panel h3{ color:#0f172a; }
+
+.sssj-admin .sssj-badge{ display:inline-block; padding:2px 9px; border-radius:999px; font-size:11px; font-weight:600; }
+.sssj-admin .sssj-badge--ok{ background:#dcfce7; color:#15803d; }
+.sssj-admin .sssj-badge--off{ background:#f1f5f9; color:#64748b; }
+
+.sssj-admin .ul-disc{ list-style:disc; margin-left:20px; }
+.sssj-admin code{ background:#f1f5f9; padding:1px 5px; border-radius:4px; }

@@ -1,0 +1,82 @@
+/*
+ * Shuffles Social Services Jobs and Engagements — design-system foundation.
+ * One token block + base components. Everything front-end is scoped under .sssj so it
+ * sits on top of BuddyBoss / any theme without leaking. Reskin by overriding --sssj-blue.
+ * See docs/DESIGN-SYSTEM.md.
+ */
+
+.sssj {
+	/* Brand palette */
+	--sssj-blue:#3897e0; --sssj-blue-deep:#1e5d9c; --sssj-ink:#0f172a;
+	--sssj-text:#1f2937; --sssj-muted:#64748b; --sssj-line:#e2e8f0;
+	--sssj-bg:#ffffff; --sssj-bg-soft:#f8fafc;
+	/* Semantic */
+	--sssj-success:#15803d; --sssj-warning:#b45309; --sssj-danger:#b91c1c; --sssj-info:#1e5d9c;
+	/* Engagement-basis accents */
+	--sssj-abn:#7c3aed; --sssj-tfn:#0e7490; --sssj-need:#db2777;
+	/* Type + space + shape */
+	--sssj-fs:1rem; --sssj-fs-sm:.85rem; --sssj-lh:1.5; --sssj-weight-strong:600;
+	--sssj-s1:4px; --sssj-s2:8px; --sssj-s3:12px; --sssj-s4:16px; --sssj-s5:24px; --sssj-s6:32px;
+	--sssj-radius:10px; --sssj-radius-pill:999px;
+	--sssj-shadow:0 1px 3px rgba(15,23,42,.08),0 4px 16px rgba(15,23,42,.06);
+	--sssj-shadow-lift:0 6px 24px rgba(15,23,42,.12);
+	--sssj-ring:0 0 0 3px rgba(56,151,224,.35);
+	--sssj-dur:.15s;
+
+	color:var(--sssj-text); font-size:var(--sssj-fs); line-height:var(--sssj-lh);
+}
+.sssj *{ box-sizing:border-box; }
+
+/* Buttons */
+.sssj .sssj-btn{
+	display:inline-flex; align-items:center; gap:var(--sssj-s2);
+	min-height:44px; padding:var(--sssj-s2) var(--sssj-s4);
+	border-radius:var(--sssj-radius); border:2px solid transparent;
+	font-weight:var(--sssj-weight-strong); line-height:1; cursor:pointer;
+	text-decoration:none;
+	transition:background var(--sssj-dur),color var(--sssj-dur),border-color var(--sssj-dur);
+}
+.sssj .sssj-btn--primary{ background:var(--sssj-blue); color:#fff; }
+.sssj .sssj-btn--primary:hover{ background:var(--sssj-blue-deep); color:#fff; }
+.sssj .sssj-btn--secondary{ background:#fff; color:var(--sssj-blue-deep); border-color:var(--sssj-blue); }
+.sssj .sssj-btn--secondary:hover{ background:var(--sssj-bg-soft); }
+.sssj .sssj-btn--ghost{ background:transparent; color:var(--sssj-muted); }
+.sssj .sssj-btn--danger{ background:var(--sssj-danger); color:#fff; }
+.sssj .sssj-btn--sm{ min-height:34px; padding:var(--sssj-s1) var(--sssj-s3); font-size:var(--sssj-fs-sm); }
+.sssj .sssj-btn--block{ width:100%; justify-content:center; }
+.sssj .sssj-btn:focus-visible{ outline:none; box-shadow:var(--sssj-ring); }
+.sssj .sssj-btn:disabled,.sssj .sssj-btn[aria-disabled="true"]{ opacity:.55; cursor:not-allowed; }
+
+/* Containers */
+.sssj .sssj-panel{ background:var(--sssj-bg); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); padding:var(--sssj-s5); }
+.sssj .sssj-card{ background:var(--sssj-bg); border:1px solid var(--sssj-line); border-left:4px solid var(--sssj-muted); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); padding:var(--sssj-s4); transition:box-shadow var(--sssj-dur); }
+.sssj .sssj-card:hover{ box-shadow:var(--sssj-shadow-lift); }
+.sssj .sssj-card--abn{ border-left-color:var(--sssj-abn); }
+.sssj .sssj-card--tfn{ border-left-color:var(--sssj-tfn); }
+.sssj .sssj-card--need{ border-left-color:var(--sssj-need); }
+.sssj .sssj-card--banned{ border:2px solid var(--sssj-danger); }
+.sssj .sssj-grid{ display:grid; gap:var(--sssj-s4); grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
+.sssj .sssj-stack{ display:flex; flex-direction:column; gap:var(--sssj-s3); }
+.sssj .sssj-row{ display:flex; flex-wrap:wrap; gap:var(--sssj-s2); align-items:center; }
+
+/* Forms */
+.sssj .sssj-field{ display:flex; flex-direction:column; gap:var(--sssj-s1); }
+.sssj .sssj-input,.sssj .sssj-select,.sssj .sssj-textarea{
+	min-height:44px; padding:var(--sssj-s2) var(--sssj-s3);
+	border:1px solid var(--sssj-line); border-radius:var(--sssj-radius);
+	font-size:var(--sssj-fs); color:var(--sssj-text); background:#fff;
+}
+.sssj .sssj-input:focus,.sssj .sssj-select:focus,.sssj .sssj-textarea:focus{ outline:none; border-color:var(--sssj-blue); box-shadow:var(--sssj-ring); }
+
+/* Badges + chips */
+.sssj .sssj-badge{ display:inline-block; padding:2px 10px; border-radius:var(--sssj-radius-pill); font-size:var(--sssj-fs-sm); font-weight:var(--sssj-weight-strong); background:var(--sssj-bg-soft); color:var(--sssj-muted); }
+.sssj .sssj-badge--verified{ background:#dcfce7; color:var(--sssj-success); }
+.sssj .sssj-badge--abn{ background:#ede9fe; color:var(--sssj-abn); }
+.sssj .sssj-badge--tfn{ background:#cffafe; color:var(--sssj-tfn); }
+.sssj .sssj-badge--need{ background:#fce7f3; color:var(--sssj-need); }
+.sssj .sssj-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--sssj-line); border-radius:var(--sssj-radius-pill); cursor:pointer; background:#fff; }
+.sssj .sssj-chip.is-on{ border-color:var(--sssj-blue); background:#eaf3fb; color:var(--sssj-blue-deep); }
+
+/* Accessibility modes (toggled by the CALD layer in a later phase) — applied to content blocks. */
+.sssj .sssj-a11y-contrast{ background:#000 !important; color:#fff !important; }
+.sssj .sssj-a11y-mono{ filter:grayscale(1); }

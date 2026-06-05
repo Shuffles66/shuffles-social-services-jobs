@@ -1,0 +1,7 @@
+[
+  { "name": "NDIS Worker", "description": "Direct support worker under the NDIS. Typically requires NDIS Worker Screening Check + Working With Children Check." },
+  { "name": "NDIS Practitioner", "description": "Allied health or behaviour practitioner delivering NDIS services." },
+  { "name": "Aged Care Worker", "description": "Worker delivering aged care services (Home Care Package / CHSP)." },
+  { "name": "Allied Health", "description": "Registered allied health professional (AHPRA where applicable)." },
+  { "name": "Generic", "description": "General social-services role with minimal mandated credentials." }
+]

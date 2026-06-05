@@ -40,3 +40,6 @@ coverage/
 # -- the AI / scratch --
 .claude/
 $tmp/
+
+# -- Generated doc exports (kept out of source) --
+docs/pdf/
