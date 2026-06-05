@@ -78,6 +78,13 @@
 		} );
 	}
 
+	var rtlLangs = { ar: 1 };
+
+	function updateEnglishBtn() {
+		var el = document.querySelector( '.sssj-a11y-english' );
+		if ( el ) { el.style.display = ( prefs.lang && 'en' !== prefs.lang ) ? '' : 'none'; }
+	}
+
 	function applyLang( code ) {
 		var dict = ( cfg.i18n || {} )[ code ] || {};
 		document.querySelectorAll( '[data-i18n]' ).forEach( function ( el ) {
@@ -85,17 +92,24 @@
 			var k = el.getAttribute( 'data-i18n' );
 			el.textContent = ( null != dict[ k ] ) ? dict[ k ] : el.dataset.i18nEn;
 		} );
-		var rtl = ( 'ar' === code );
+		// Site-wide: stamp the document language; RTL is applied to plugin surfaces (incl. the
+		// floating toolbar wrapper) so we don't flip a theme that wasn't built for it.
+		document.documentElement.setAttribute( 'lang', code );
+		var rtl = !! rtlLangs[ code ];
 		document.querySelectorAll( '.sssj' ).forEach( function ( s ) { s.setAttribute( 'dir', rtl ? 'rtl' : 'ltr' ); } );
 		prefs.lang = code;
 		save();
+		var sel = document.querySelector( '.sssj-a11y-lang' );
+		if ( sel && sel.value !== code ) { sel.value = code; }
+		updateEnglishBtn();
 	}
 
 	function buildToolbar() {
+		if ( document.querySelector( '.sssj-a11y-bar' ) ) { return; }
 		var host = document.querySelector( '.sssj' );
-		if ( ! host || document.querySelector( '.sssj-a11y-bar' ) ) { return; }
+		var floating = ! host; // site-wide: float on pages that have no plugin surface
 		var bar = document.createElement( 'div' );
-		bar.className = 'sssj-a11y-bar';
+		bar.className = 'sssj-a11y-bar' + ( floating ? ' sssj-a11y-bar--floating' : '' );
 		bar.setAttribute( 'role', 'region' );
 		bar.setAttribute( 'aria-label', L.region || 'Accessibility tools' );
 
@@ -132,16 +146,29 @@
 			} );
 			sel.addEventListener( 'change', function () { applyLang( sel.value ); } );
 			bar.appendChild( sel );
+
+			// Always-visible English escape — shown only when the UI is not English.
+			var eng = makeBtn( 'English', 'Switch to English' );
+			eng.className += ' sssj-a11y-english';
+			eng.addEventListener( 'click', function () { applyLang( 'en' ); } );
+			bar.appendChild( eng );
 		}
 
-		host.insertBefore( bar, host.firstChild );
+		if ( floating ) {
+			var wrap = document.createElement( 'div' );
+			wrap.className = 'sssj';
+			wrap.appendChild( bar );
+			document.body.appendChild( wrap );
+		} else {
+			host.insertBefore( bar, host.firstChild );
+		}
 	}
 
 	function init() {
 		applyPrefs();
 		buildToolbar();
 		attachVoice();
-		if ( prefs.lang && 'en' !== prefs.lang ) { applyLang( prefs.lang ); }
+		applyLang( prefs.lang || 'en' );
 	}
 
 	if ( 'loading' !== document.readyState ) { init(); }

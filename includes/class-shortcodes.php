@@ -36,8 +36,10 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_style_is( 'sssj', 'registered' ) ) {
 			wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 		}
-		// Accessibility / CALD toolbar — master-gated. Loaded once; the JS no-ops if no .sssj surface is present.
+		// Accessibility / CALD toolbar — master-gated. Loaded site-wide so the language choice
+		// and toolbar are available on every page (a floating bar appears where there's no board).
 		if ( '1' === (string) $this->settings->get( 'cald_enabled', '1' ) ) {
+			wp_enqueue_style( 'sssj' );
 			wp_enqueue_script( 'sssj-a11y', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-a11y.js', array(), SHUFFLES_SSJ_VERSION, true );
 			wp_localize_script(
 				'sssj-a11y',

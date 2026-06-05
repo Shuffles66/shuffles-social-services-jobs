@@ -251,6 +251,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.10.0 — 2026-06-06 · Site-wide language + English hot-key</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Language choice is now site-wide: the accessibility/language toolbar appears on every page (a floating bar where there is no board), and the chosen language + translations persist and re-apply everywhere.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Always-visible English hot-key in the toolbar whenever a non-English language is active — one tap back to English.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.9.0 — 2026-06-06 · Resale licensing (FluentCart)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Licence client: enter key + product ID, Activate/Deactivate, live status on the Licensing tab; daily re-validation with a grace window so a vendor-store outage never disables a valid licence.', 'shuffles-social-services-jobs' ); ?></li>
