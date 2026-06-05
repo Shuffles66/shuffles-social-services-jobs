@@ -74,7 +74,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 					?>
 				</select>
 			<?php endif; ?>
-			<button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
+			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>
 
@@ -116,7 +116,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 							<input type="hidden" name="need_id" value="<?php echo esc_attr( $pid ); ?>" />
 							<?php wp_nonce_field( 'sssj_apply', 'sssj_apply_nonce' ); ?>
 							<textarea class="sssj-textarea" name="cover_message" rows="2" placeholder="<?php esc_attr_e( 'Short message (optional)', 'shuffles-social-services-jobs' ); ?>"></textarea>
-							<button class="sssj-btn sssj-btn--primary sssj-btn--sm" type="submit"><?php esc_html_e( 'Respond', 'shuffles-social-services-jobs' ); ?></button>
+							<button class="sssj-btn sssj-btn--primary sssj-btn--sm" type="submit" data-i18n="respond"><?php esc_html_e( 'Respond', 'shuffles-social-services-jobs' ); ?></button>
 						</form>
 						<?php
 					} else {

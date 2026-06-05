@@ -36,7 +36,7 @@ $avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.No
 				?>
 			</select>
 			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></label>
-			<button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
+			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>
 
@@ -66,7 +66,7 @@ $avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.No
 					<?php endif; ?>
 					<?php if ( $rmin > 0 ) : ?><p>💲 <?php echo esc_html( __( 'from', 'shuffles-social-services-jobs' ) . ' ' . number_format_i18n( $rmin ) . ' / ' . ( $runit ? $runit : 'hour' ) ); ?></p><?php endif; ?>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 22 ) ); ?></p>
-					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View profile', 'shuffles-social-services-jobs' ); ?></a>
+					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>" data-i18n="view_profile"><?php esc_html_e( 'View profile', 'shuffles-social-services-jobs' ); ?></a>
 				</article>
 			<?php endwhile; ?>
 		</div>

@@ -44,6 +44,8 @@ class Shuffles_SSJ_Shortcodes {
 				'SSJ_A11y',
 				array(
 					'lang'   => str_replace( '_', '-', get_locale() ),
+					'langs'  => Shuffles_SSJ_I18n::langs(),
+					'i18n'   => Shuffles_SSJ_I18n::map(),
 					'labels' => array(
 						'region'   => __( 'Accessibility tools', 'shuffles-social-services-jobs' ),
 						'bigger'   => __( 'Larger text', 'shuffles-social-services-jobs' ),
@@ -53,6 +55,7 @@ class Shuffles_SSJ_Shortcodes {
 						'read'     => __( 'Read aloud', 'shuffles-social-services-jobs' ),
 						'reset'    => __( 'Reset', 'shuffles-social-services-jobs' ),
 						'voice'    => __( 'Voice input', 'shuffles-social-services-jobs' ),
+						'language' => __( 'Language', 'shuffles-social-services-jobs' ),
 					),
 				)
 			);

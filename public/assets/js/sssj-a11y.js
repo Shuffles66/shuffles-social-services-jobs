@@ -78,6 +78,19 @@
 		} );
 	}
 
+	function applyLang( code ) {
+		var dict = ( cfg.i18n || {} )[ code ] || {};
+		document.querySelectorAll( '[data-i18n]' ).forEach( function ( el ) {
+			if ( ! el.dataset.i18nEn ) { el.dataset.i18nEn = el.textContent; }
+			var k = el.getAttribute( 'data-i18n' );
+			el.textContent = ( null != dict[ k ] ) ? dict[ k ] : el.dataset.i18nEn;
+		} );
+		var rtl = ( 'ar' === code );
+		document.querySelectorAll( '.sssj' ).forEach( function ( s ) { s.setAttribute( 'dir', rtl ? 'rtl' : 'ltr' ); } );
+		prefs.lang = code;
+		save();
+	}
+
 	function buildToolbar() {
 		var host = document.querySelector( '.sssj' );
 		if ( ! host || document.querySelector( '.sssj-a11y-bar' ) ) { return; }
@@ -86,8 +99,9 @@
 		bar.setAttribute( 'role', 'region' );
 		bar.setAttribute( 'aria-label', L.region || 'Accessibility tools' );
 
-		function add( label, title, fn ) {
+		function add( label, title, fn, key ) {
 			var b = makeBtn( label, title );
+			if ( key ) { b.setAttribute( 'data-i18n', key ); }
 			b.addEventListener( 'click', fn );
 			bar.appendChild( b );
 		}
@@ -96,13 +110,29 @@
 			prefs.textsize = 'lg' === prefs.textsize ? 'xl' : ( 'xl' === prefs.textsize ? '' : 'lg' );
 			save(); applyPrefs();
 		} );
-		add( L.contrast || 'High contrast', L.contrast || 'High contrast', function () { prefs.contrast = ! prefs.contrast; save(); applyPrefs(); } );
-		add( L.mono || 'No colour', L.mono || 'No colour', function () { prefs.mono = ! prefs.mono; save(); applyPrefs(); } );
-		add( L.easyread || 'Easy read', L.easyread || 'Easy read', function () { prefs.easyread = ! prefs.easyread; save(); applyPrefs(); } );
+		add( L.contrast || 'High contrast', L.contrast || 'High contrast', function () { prefs.contrast = ! prefs.contrast; save(); applyPrefs(); }, 'a11y_contrast' );
+		add( L.mono || 'No colour', L.mono || 'No colour', function () { prefs.mono = ! prefs.mono; save(); applyPrefs(); }, 'a11y_mono' );
+		add( L.easyread || 'Easy read', L.easyread || 'Easy read', function () { prefs.easyread = ! prefs.easyread; save(); applyPrefs(); }, 'a11y_easyread' );
 		if ( 'speechSynthesis' in window ) {
 			add( '🔊', L.read || 'Read aloud', readAloud );
 		}
-		add( L.reset || 'Reset', L.reset || 'Reset', function () { prefs = {}; save(); applyPrefs(); } );
+		add( L.reset || 'Reset', L.reset || 'Reset', function () { prefs = {}; save(); applyPrefs(); }, 'a11y_reset' );
+
+		var langs = cfg.langs || {};
+		if ( Object.keys( langs ).length > 1 ) {
+			var sel = document.createElement( 'select' );
+			sel.className = 'sssj-select sssj-a11y-lang';
+			sel.setAttribute( 'aria-label', L.language || 'Language' );
+			Object.keys( langs ).forEach( function ( code ) {
+				var o = document.createElement( 'option' );
+				o.value = code;
+				o.textContent = langs[ code ];
+				if ( code === ( prefs.lang || 'en' ) ) { o.selected = true; }
+				sel.appendChild( o );
+			} );
+			sel.addEventListener( 'change', function () { applyLang( sel.value ); } );
+			bar.appendChild( sel );
+		}
 
 		host.insertBefore( bar, host.firstChild );
 	}
@@ -111,6 +141,7 @@
 		applyPrefs();
 		buildToolbar();
 		attachVoice();
+		if ( prefs.lang && 'en' !== prefs.lang ) { applyLang( prefs.lang ); }
 	}
 
 	if ( 'loading' !== document.readyState ) { init(); }

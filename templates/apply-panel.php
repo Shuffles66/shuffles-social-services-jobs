@@ -49,7 +49,7 @@ $uid   = get_current_user_id();
 					<label for="sssj-cover"><?php esc_html_e( 'Message to the advertiser (optional)', 'shuffles-social-services-jobs' ); ?></label>
 					<textarea class="sssj-textarea" id="sssj-cover" name="cover_message" rows="4"></textarea>
 				</div>
-				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Apply now', 'shuffles-social-services-jobs' ); ?></button></div>
+				<div><button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="apply"><?php esc_html_e( 'Apply now', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 			<?php
 		}

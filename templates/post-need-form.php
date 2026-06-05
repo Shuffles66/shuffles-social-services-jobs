@@ -127,7 +127,7 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 					</div>
 				</div>
 
-				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Submit request', 'shuffles-social-services-jobs' ); ?></button></div>
+				<div><button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="submit_request"><?php esc_html_e( 'Submit request', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>
 	</div>

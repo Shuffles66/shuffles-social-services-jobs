@@ -123,7 +123,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					<input class="sssj-input" id="sssj-exp" type="date" name="expires_at" />
 				</div>
 
-				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php esc_html_e( 'Post job', 'shuffles-social-services-jobs' ); ?></button></div>
+				<div><button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="post_job"><?php esc_html_e( 'Post job', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>
 	</div>

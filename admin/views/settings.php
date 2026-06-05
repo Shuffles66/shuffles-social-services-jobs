@@ -227,6 +227,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.8.0 — 2026-06-06 · Interface translation (CALD)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Language picker in the accessibility toolbar — switches the interface into Arabic (RTL), Mandarin, Greek, Italian, Indonesian or Punjabi, live, no reload. Auto-translated, pending native review.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Translations extend/override via the shuffles_ssj_i18n and shuffles_ssj_languages filters; choice remembered in the browser.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.7.0 — 2026-06-06 · Accessibility / CALD toolbar</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Browser-side accessibility toolbar on every board/form: larger text, high-contrast, no-colour, Easy-Read, read-aloud (speech), and voice input on search fields. $0 to run.', 'shuffles-social-services-jobs' ); ?></li>
