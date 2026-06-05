@@ -56,7 +56,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->key_field(
 				'google_maps_api_key',
 				__( 'Google Maps API key', 'shuffles-social-services-jobs' ),
-				__( 'In the <a href="https://console.cloud.google.com/google/maps-apis/" target="_blank" rel="noopener">Google Cloud Console</a>: create or select a project → enable <strong>Maps JavaScript API</strong> and <strong>Places API</strong> → <strong>Credentials → Create credentials → API key</strong>. Restrict the key by HTTP referrer to your site, then paste it here.', 'shuffles-social-services-jobs' ),
+				__( 'In the <a href="https://console.cloud.google.com/google/maps-apis/" target="_blank" rel="noopener">Google Cloud Console</a>, create or select a project and <strong>enable these three APIs</strong>:<ul><li><strong>Maps JavaScript API</strong> — draws the interactive map on the boards</li><li><strong>Places API</strong> — suburb/address autocomplete in the search and posting forms</li><li><strong>Geocoding API</strong> — turns a suburb or postcode into coordinates for radius search</li></ul>Then open <strong>APIs &amp; Services → Credentials → Create credentials → API key</strong>, restrict the key by <strong>HTTP referrer</strong> to your site, and paste it here.', 'shuffles-social-services-jobs' ),
 				__( 'Powers location autocomplete and the map / radius search on the boards. Optional — without it, boards fall back to manual suburb/postcode entry and a list view (radius still works from stored coordinates).', 'shuffles-social-services-jobs' )
 			);
 			$this->number_field( 'default_radius_km', __( 'Default search radius (km)', 'shuffles-social-services-jobs' ), '', 1, 500 );
@@ -227,6 +227,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.6.0 — 2026-06-06 · Google Maps + radius</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Places autocomplete on the job + participant posting forms — fills suburb/state/postcode and stores coordinates (manual entry still works without a key).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Radius (distance) filter on the job board and participant board; a results map on the job board. Participant needs are radius-searchable but never plotted (privacy).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Maps settings now list the exact Google APIs to enable: Maps JavaScript API, Places API, Geocoding API.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.5.0 — 2026-06-06 · Apply / respond flow</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Apply to jobs (panel on each job page) and respond to participant needs (button on the needs board), recorded in the applications table — duplicates blocked by the unique key.', 'shuffles-social-services-jobs' ); ?></li>

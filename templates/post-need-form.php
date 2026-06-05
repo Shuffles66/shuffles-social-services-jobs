@@ -45,9 +45,16 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 					<textarea class="sssj-textarea" id="sssj-ndetails" name="details" rows="5"></textarea>
 				</div>
 
-				<div class="sssj-row">
-					<div class="sssj-field"><label><?php esc_html_e( 'Suburb', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_suburb" /></div>
-					<div class="sssj-field"><label><?php esc_html_e( 'State', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_state" /></div>
+				<div class="sssj-field" data-sssj-place-group>
+					<label for="sssj-nplace"><?php esc_html_e( 'Suburb (location)', 'shuffles-social-services-jobs' ); ?></label>
+					<input class="sssj-input" id="sssj-nplace" type="text" data-sssj-place placeholder="<?php esc_attr_e( 'Start typing a suburb… (or fill the fields below)', 'shuffles-social-services-jobs' ); ?>" />
+					<div class="sssj-row" style="margin-top:8px">
+						<div class="sssj-field"><label><?php esc_html_e( 'Suburb', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_suburb" data-sssj-suburb /></div>
+						<div class="sssj-field"><label><?php esc_html_e( 'State', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_state" data-sssj-state /></div>
+					</div>
+					<input type="hidden" name="location_lat" data-sssj-lat value="" />
+					<input type="hidden" name="location_lng" data-sssj-lng value="" />
+					<p class="description"><?php esc_html_e( 'Only the suburb is shown publicly — never a street address.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
 				<div class="sssj-field">

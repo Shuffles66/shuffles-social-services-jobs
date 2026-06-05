@@ -256,8 +256,11 @@ class Shuffles_SSJ_Admin {
 		$allowed = array(
 			'a'      => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
 			'strong' => array(),
+			'em'     => array(),
 			'code'   => array(),
 			'br'     => array(),
+			'ul'     => array(),
+			'li'     => array(),
 		);
 		echo '<tr><th scope="row"><label for="sssj-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
 		echo '<input type="text" autocomplete="off" spellcheck="false" class="regular-text" id="sssj-' . esc_attr( $key ) . '" name="' . esc_attr( $this->field_name( $key ) ) . '" value="" placeholder="' . esc_attr( $ph ) . '" />';

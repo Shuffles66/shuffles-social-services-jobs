@@ -48,6 +48,8 @@ class Shuffles_SSJ_Query {
 			array( 'key' => 'expires_at', 'value' => current_time( 'Y-m-d' ), 'compare' => '>=', 'type' => 'DATE' ),
 		);
 
+		self::add_radius_clauses( $args, $extra );
+
 		if ( count( $args['meta_query'] ) > 1 ) {
 			$args['meta_query']['relation'] = 'AND';
 		}
@@ -156,6 +158,11 @@ class Shuffles_SSJ_Query {
 			'tax_query'      => array(),
 		);
 
+		self::add_radius_clauses( $args, $extra );
+		if ( count( $args['meta_query'] ) > 1 ) {
+			$args['meta_query']['relation'] = 'AND';
+		}
+
 		if ( ! empty( $extra['support'] ) ) {
 			$args['tax_query'][] = array(
 				'taxonomy' => 'sssjt_support_category',
@@ -175,5 +182,25 @@ class Shuffles_SSJ_Query {
 		}
 
 		return apply_filters( 'shuffles_ssj_need_query_args', $args, $extra );
+	}
+
+	/**
+	 * Append bounding-box lat/lng clauses when a geocoded centre + radius are supplied.
+	 * Approximate (square, not circle) — cheap, index-friendly, good enough for board filtering.
+	 *
+	 * @param array $args  WP_Query args (by reference).
+	 * @param array $extra lat, lng, radius (km).
+	 */
+	private static function add_radius_clauses( &$args, $extra ) {
+		if ( empty( $extra['lat'] ) || empty( $extra['lng'] ) || empty( $extra['radius'] ) ) {
+			return;
+		}
+		$lat   = (float) $extra['lat'];
+		$lng   = (float) $extra['lng'];
+		$r     = (float) $extra['radius'];
+		$d_lat = $r / 111.045;
+		$d_lng = $r / ( 111.045 * max( 0.05, cos( deg2rad( $lat ) ) ) );
+		$args['meta_query'][] = array( 'key' => 'location_lat', 'value' => array( $lat - $d_lat, $lat + $d_lat ), 'type' => 'DECIMAL(10,6)', 'compare' => 'BETWEEN' );
+		$args['meta_query'][] = array( 'key' => 'location_lng', 'value' => array( $lng - $d_lng, $lng + $d_lng ), 'type' => 'DECIMAL(10,6)', 'compare' => 'BETWEEN' );
 	}
 }

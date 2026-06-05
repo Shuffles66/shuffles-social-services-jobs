@@ -75,26 +75,90 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! empty( $_GET['sssj_q'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['s'] = sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
+		$this->read_radius( $extra );
 
-		$query = new WP_Query( Shuffles_SSJ_Query::base_args( $basis, $extra ) );
+		$query  = new WP_Query( Shuffles_SSJ_Query::base_args( $basis, $extra ) );
+		$points = $this->points_from_query( $query );
+		$maps   = $this->enqueue_maps( $points );
 
 		ob_start();
 		$this->load_template(
 			'job-board.php',
 			array(
-				'query' => $query,
-				'basis' => $basis,
-				'atts'  => $atts,
+				'query'      => $query,
+				'basis'      => $basis,
+				'atts'       => $atts,
+				'maps'       => $maps,
+				'has_points' => ! empty( $points ),
 			)
 		);
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
 
+	/* --- Maps helpers --- */
+
+	/** Read a geocoded centre + radius from the request into $extra. */
+	private function read_radius( &$extra ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! empty( $_GET['sssj_lat'] ) && ! empty( $_GET['sssj_lng'] ) && ! empty( $_GET['sssj_radius'] ) ) {
+			$extra['lat']    = (float) $_GET['sssj_lat'];
+			$extra['lng']    = (float) $_GET['sssj_lng'];
+			$extra['radius'] = (float) $_GET['sssj_radius'];
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+	}
+
+	/** Build map marker points from a query's results that carry coordinates. */
+	private function points_from_query( $query ) {
+		$points = array();
+		foreach ( $query->posts as $p ) {
+			$lat = (float) get_post_meta( $p->ID, 'location_lat', true );
+			$lng = (float) get_post_meta( $p->ID, 'location_lng', true );
+			if ( $lat && $lng ) {
+				$points[] = array(
+					'id'    => (int) $p->ID,
+					'title' => get_the_title( $p ),
+					'lat'   => $lat,
+					'lng'   => $lng,
+					'url'   => get_permalink( $p ),
+				);
+			}
+		}
+		return $points;
+	}
+
+	/**
+	 * Enqueue the maps script + Google Maps JS when a key is set. Returns true if maps are active.
+	 * De-dupes the Google loader so a second async maps/api/js can't break Places/Geocoder.
+	 */
+	private function enqueue_maps( $points = array() ) {
+		$key = (string) $this->settings->get( 'google_maps_api_key', '' );
+		if ( '' === $key ) {
+			return false;
+		}
+		wp_enqueue_script( 'sssj-maps', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-maps.js', array(), SHUFFLES_SSJ_VERSION, true );
+		wp_localize_script( 'sssj-maps', 'SSJ_Maps', array( 'points' => array_values( $points ) ) );
+		if ( ! wp_script_is( 'sssj-gmaps', 'enqueued' ) ) {
+			$src = add_query_arg(
+				array(
+					'key'       => $key,
+					'libraries' => 'places',
+					'loading'   => 'async',
+					'callback'  => 'sssjInitMaps',
+				),
+				'https://maps.googleapis.com/maps/api/js'
+			);
+			wp_enqueue_script( 'sssj-gmaps', $src, array( 'sssj-maps' ), null, true );
+		}
+		return true;
+	}
+
 	/* --- Posting form --- */
 
 	public function post_job_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-job-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
@@ -171,16 +235,19 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! empty( $_GET['sssj_funding'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['funding'] = sanitize_title( wp_unslash( $_GET['sssj_funding'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
+		$this->read_radius( $extra );
 
-		$query = new WP_Query( Shuffles_SSJ_Query::need_args( $extra ) );
+		$query   = new WP_Query( Shuffles_SSJ_Query::need_args( $extra ) );
+		$has_map = $this->enqueue_maps(); // autocomplete for the centre field only — needs are not plotted (privacy)
 		ob_start();
-		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts ) );
+		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts, 'has_map' => $has_map ) );
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
 
 	public function post_need_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-need-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
