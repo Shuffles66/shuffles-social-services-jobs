@@ -30,6 +30,7 @@ class Shuffles_SSJ_Settings {
 			'monetisation_enabled'      => '0',
 			'free_active_listings'      => 1,
 			'licence_key'               => '',
+			'license_item_id'           => '',
 			'delete_data_on_uninstall'  => '0',
 			'page_job_board'            => 0,
 			'page_tfn_board'            => 0,
@@ -84,7 +85,7 @@ class Shuffles_SSJ_Settings {
 			return $out;
 		}
 
-		$text_keys   = array( 'compliance_profile' );
+		$text_keys   = array( 'compliance_profile', 'license_item_id' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
 		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall' );
 		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job' );

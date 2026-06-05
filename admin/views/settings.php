@@ -99,12 +99,36 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->key_field(
 				'licence_key',
 				__( 'Resale licence key', 'shuffles-social-services-jobs' ),
-				__( 'After purchasing on <a href="https://shuffles.com.au" target="_blank" rel="noopener">shuffles.com.au</a>, find your key under <strong>My Account → Licences</strong> and paste it here. Your own primary site does not require a key.', 'shuffles-social-services-jobs' ),
+				__( 'After purchasing on <a href="https://shuffles.com.au" target="_blank" rel="noopener">shuffles.com.au</a>, find your key under <strong>My Account → Licences</strong> and paste it here. Save, then click <strong>Activate</strong> below. Your own primary site does not require a key.', 'shuffles-social-services-jobs' ),
 				__( 'Unlocks the premium / white-label features (monetisation, AI bridge, sector duplication). The core job boards work without it.', 'shuffles-social-services-jobs' )
 			);
+			$this->text_field( 'license_item_id', __( 'Product / item ID', 'shuffles-social-services-jobs' ), __( 'The FluentCart product ID for this plugin on the vendor store. Save the key + ID, then Activate.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
-			submit_button();
+			submit_button( __( 'Save licence settings', 'shuffles-social-services-jobs' ) );
 			echo '</form>';
+
+			if ( isset( $_GET['sssj_lic'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				echo '<div class="notice notice-info inline"><p>' . esc_html__( 'Licence updated.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+			echo '<h3>' . esc_html__( 'Licence status', 'shuffles-social-services-jobs' ) . '</h3>';
+			$is_pro = Shuffles_SSJ_License::is_pro();
+			echo '<p><strong>' . esc_html( Shuffles_SSJ_License::status_label() ) . '</strong> '
+				. ( $is_pro
+					? '<span class="sssj-badge sssj-badge--ok">' . esc_html__( 'Pro active', 'shuffles-social-services-jobs' ) . '</span>'
+					: '<span class="sssj-badge sssj-badge--off">' . esc_html__( 'Pro inactive', 'shuffles-social-services-jobs' ) . '</span>' )
+				. '</p>';
+			$ap = esc_url( admin_url( 'admin-post.php' ) );
+			echo '<form method="post" action="' . $ap . '" style="display:inline-block;margin-right:8px">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_nonce_field( 'sssj_license' );
+			echo '<input type="hidden" name="action" value="sssj_license_activate" />';
+			submit_button( __( 'Activate licence', 'shuffles-social-services-jobs' ), 'primary', 'submit', false );
+			echo '</form>';
+			echo '<form method="post" action="' . $ap . '" style="display:inline-block">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			wp_nonce_field( 'sssj_license' );
+			echo '<input type="hidden" name="action" value="sssj_license_deactivate" />';
+			submit_button( __( 'Deactivate', 'shuffles-social-services-jobs' ), 'secondary', 'submit', false );
+			echo '</form>';
+			echo '<p class="description">' . esc_html__( 'Premium features (monetisation, white-label, AI bridge) require an active licence. Your own primary site can bypass by defining SHUFFLES_SSJ_PRO = true in wp-config.php. Core boards always work. A grace window keeps a valid licence working if the vendor store is briefly unreachable.', 'shuffles-social-services-jobs' ) . '</p>';
 			break;
 
 		case 'privacy':
@@ -227,6 +251,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.9.0 — 2026-06-06 · Resale licensing (FluentCart)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Licence client: enter key + product ID, Activate/Deactivate, live status on the Licensing tab; daily re-validation with a grace window so a vendor-store outage never disables a valid licence.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'is_pro() gate for premium features (filter shuffles_ssj_is_pro); your own site bypasses via the SHUFFLES_SSJ_PRO constant in wp-config.php. Core boards always work.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.8.0 — 2026-06-06 · Interface translation (CALD)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Language picker in the accessibility toolbar — switches the interface into Arabic (RTL), Mandarin, Greek, Italian, Indonesian or Punjabi, live, no reload. Auto-translated, pending native review.', 'shuffles-social-services-jobs' ); ?></li>

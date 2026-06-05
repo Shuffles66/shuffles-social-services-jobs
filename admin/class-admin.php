@@ -34,6 +34,26 @@ class Shuffles_SSJ_Admin {
 		add_filter( 'plugin_action_links_' . SHUFFLES_SSJ_BASENAME, array( $this, 'action_links' ) );
 		add_filter( 'plugin_row_meta', array( $this, 'row_meta' ), 10, 2 );
 		add_action( 'wp_ajax_sssj_create_page', array( $this, 'ajax_create_page' ) );
+		add_action( 'admin_post_sssj_license_activate', array( $this, 'handle_license' ) );
+		add_action( 'admin_post_sssj_license_deactivate', array( $this, 'handle_license' ) );
+	}
+
+	/**
+	 * Activate / deactivate the resale licence (uses the saved key + product ID).
+	 */
+	public function handle_license() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_license' );
+		$action = isset( $_POST['action'] ) ? sanitize_key( wp_unslash( $_POST['action'] ) ) : '';
+		if ( 'sssj_license_deactivate' === $action ) {
+			Shuffles_SSJ_License::deactivate();
+		} else {
+			Shuffles_SSJ_License::activate();
+		}
+		wp_safe_redirect( add_query_arg( array( 'page' => self::PAGE_SLUG, 'tab' => 'licensing', 'sssj_lic' => '1' ), admin_url( 'admin.php' ) ) );
+		exit;
 	}
 
 	/**
