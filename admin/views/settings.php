@@ -286,6 +286,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.16.0 — 2026-06-06 · Featured placement for paid advertisers</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Advertisers with the advertising subscription get featured placement: their jobs float to the top of every board (rides the existing menu_order sort — no change to the segregation/query layer) and show a ★ Featured badge.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Featured state is stamped at post time and re-synced daily, so a lapsed subscription un-features automatically and a new one features without a re-save. Per-advertiser only — the site-wide resale licence never blanket-features every job.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Only active when monetisation is enabled (boards stay neutral by default). Pluggable via the shuffles_ssj_is_job_featured filter; ★ Featured badge translated into all six CALD languages; advertiser dashboard shows which listings are featured.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.15.0 — 2026-06-06 · Monetisation subscriptions</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Employer advertising subscription: free-tier active-listing cap enforced at posting; an active subscription (PMPro level) unlocks unlimited. Over-limit advertisers see an upgrade prompt.', 'shuffles-social-services-jobs' ); ?></li>

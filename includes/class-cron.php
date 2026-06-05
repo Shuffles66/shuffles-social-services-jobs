@@ -49,5 +49,10 @@ class Shuffles_SSJ_Cron {
 				)
 			);
 		}
+
+		// Re-sync featured placement so a lapsed/added advertiser subscription is reflected.
+		if ( class_exists( 'Shuffles_SSJ_Monetisation' ) ) {
+			Shuffles_SSJ_Monetisation::sync_featured();
+		}
 	}
 }

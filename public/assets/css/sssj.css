@@ -55,6 +55,8 @@
 .sssj .sssj-card--tfn{ border-left-color:var(--sssj-tfn); }
 .sssj .sssj-card--need{ border-left-color:var(--sssj-need); }
 .sssj .sssj-card--banned{ border:2px solid var(--sssj-danger); }
+.sssj .sssj-card--featured{ box-shadow:0 0 0 2px #fcd34d, var(--sssj-shadow); background:#fffdf5; }
+.sssj .sssj-card--featured:hover{ box-shadow:0 0 0 2px #fbbf24, var(--sssj-shadow-lift); }
 .sssj .sssj-grid{ display:grid; gap:var(--sssj-s4); grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); }
 .sssj .sssj-stack{ display:flex; flex-direction:column; gap:var(--sssj-s3); }
 .sssj .sssj-row{ display:flex; flex-wrap:wrap; gap:var(--sssj-s2); align-items:center; }
@@ -74,6 +76,7 @@
 .sssj .sssj-badge--abn{ background:#ede9fe; color:var(--sssj-abn); }
 .sssj .sssj-badge--tfn{ background:#cffafe; color:var(--sssj-tfn); }
 .sssj .sssj-badge--need{ background:#fce7f3; color:var(--sssj-need); }
+.sssj .sssj-badge--featured{ background:#fef3c7; color:#92400e; }
 .sssj .sssj-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--sssj-line); border-radius:var(--sssj-radius-pill); cursor:pointer; background:#fff; }
 .sssj .sssj-chip.is-on{ border-color:var(--sssj-blue); background:#eaf3fb; color:var(--sssj-blue-deep); }
 

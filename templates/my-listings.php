@@ -81,7 +81,8 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 			echo '<p class="description">' . esc_html__( 'You have not posted any jobs.', 'shuffles-social-services-jobs' ) . '</p>';
 		} else {
 			foreach ( $jobs as $j ) {
-				echo '<h3 style="margin:14px 0 4px"><a href="' . esc_url( (string) get_permalink( $j ) ) . '">' . esc_html( get_the_title( $j ) ) . '</a> <span class="sssj-badge">' . esc_html( get_post_status( $j ) ) . '</span></h3>';
+				$feat = get_post_meta( $j->ID, 'is_promoted', true ) ? ' <span class="sssj-badge sssj-badge--featured">' . esc_html__( '★ Featured', 'shuffles-social-services-jobs' ) . '</span>' : '';
+				echo '<h3 style="margin:14px 0 4px"><a href="' . esc_url( (string) get_permalink( $j ) ) . '">' . esc_html( get_the_title( $j ) ) . '</a> <span class="sssj-badge">' . esc_html( get_post_status( $j ) ) . '</span>' . $feat . '</h3>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				$render_apps( 'job', $j->ID );
 			}
 		}

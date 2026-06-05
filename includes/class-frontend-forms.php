@@ -122,6 +122,9 @@ class Shuffles_SSJ_Frontend_Forms {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'job', $post_id );
 		}
 
+		// Featured placement: stamp is_promoted + menu_order from the advertiser's sub.
+		Shuffles_SSJ_Monetisation::refresh_job_feature_flag( $post_id );
+
 		wp_safe_redirect( add_query_arg( 'sssj_posted', '1', $redirect ) );
 		exit;
 	}

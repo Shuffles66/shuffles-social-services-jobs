@@ -52,6 +52,7 @@ class Shuffles_SSJ_I18n {
 				'view_profile'  => 'عرض الملف',
 				'post_job'      => 'نشر وظيفة',
 				'submit_request' => 'إرسال الطلب',
+				'featured'      => '★ مميّزة',
 			),
 			'zh' => array(
 				'a11y_contrast' => '高对比度',
@@ -65,6 +66,7 @@ class Shuffles_SSJ_I18n {
 				'view_profile'  => '查看资料',
 				'post_job'      => '发布职位',
 				'submit_request' => '提交请求',
+				'featured'      => '★ 精选',
 			),
 			'el' => array(
 				'a11y_contrast' => 'Υψηλή αντίθεση',
@@ -78,6 +80,7 @@ class Shuffles_SSJ_I18n {
 				'view_profile'  => 'Προβολή προφίλ',
 				'post_job'      => 'Δημοσίευση θέσης',
 				'submit_request' => 'Υποβολή αιτήματος',
+				'featured'      => '★ Προβεβλημένη',
 			),
 			'it' => array(
 				'a11y_contrast' => 'Alto contrasto',
@@ -91,6 +94,7 @@ class Shuffles_SSJ_I18n {
 				'view_profile'  => 'Vedi profilo',
 				'post_job'      => 'Pubblica offerta',
 				'submit_request' => 'Invia richiesta',
+				'featured'      => '★ In evidenza',
 			),
 			'id' => array(
 				'a11y_contrast' => 'Kontras tinggi',
@@ -104,6 +108,7 @@ class Shuffles_SSJ_I18n {
 				'view_profile'  => 'Lihat profil',
 				'post_job'      => 'Pasang lowongan',
 				'submit_request' => 'Kirim permintaan',
+				'featured'      => '★ Unggulan',
 			),
 			'pa' => array(
 				'a11y_contrast' => 'ਉੱਚ ਕੰਟ੍ਰਾਸਟ',
@@ -117,6 +122,7 @@ class Shuffles_SSJ_I18n {
 				'view_profile'  => 'ਪ੍ਰੋਫਾਈਲ ਵੇਖੋ',
 				'post_job'      => 'ਨੌਕਰੀ ਪੋਸਟ ਕਰੋ',
 				'submit_request' => 'ਬੇਨਤੀ ਭੇਜੋ',
+				'featured'      => '★ ਵਿਸ਼ੇਸ਼',
 			),
 		);
 		return apply_filters( 'shuffles_ssj_i18n', $map );

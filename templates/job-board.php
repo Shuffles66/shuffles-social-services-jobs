@@ -83,12 +83,17 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 				$rmin    = (float) get_post_meta( $pid, 'rate_min', true );
 				$rmax    = (float) get_post_meta( $pid, 'rate_max', true );
 				$runit   = (string) get_post_meta( $pid, 'rate_unit', true );
-				$basis_m = (string) get_post_meta( $pid, 'engagement_basis', true );
-				$mod     = $card_mod ? $card_mod : ( 'tfn' === $basis_m ? 'sssj-card--tfn' : 'sssj-card--abn' );
+				$basis_m  = (string) get_post_meta( $pid, 'engagement_basis', true );
+				$featured = (bool) get_post_meta( $pid, 'is_promoted', true );
+				$mod      = $card_mod ? $card_mod : ( 'tfn' === $basis_m ? 'sssj-card--tfn' : 'sssj-card--abn' );
+				if ( $featured ) {
+					$mod .= ' sssj-card--featured';
+				}
 				?>
 				<article class="sssj-card <?php echo esc_attr( $mod ); ?>">
 					<h3 style="margin-top:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
 					<div class="sssj-row">
+						<?php if ( $featured ) : ?><span class="sssj-badge sssj-badge--featured" data-i18n="featured"><?php esc_html_e( '★ Featured', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis_m ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis_m ? __( 'TFN (employee)', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' ) ); ?></span>
 						<?php if ( $etype ) : ?><span class="sssj-badge"><?php echo esc_html( 'one-off' === $etype ? __( 'One-off', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
 					</div>
