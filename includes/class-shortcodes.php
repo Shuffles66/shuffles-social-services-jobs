@@ -28,6 +28,8 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_post_worker', array( $this, 'post_worker_form' ) );
 		add_shortcode( 'sssj_need_board', array( $this, 'need_board' ) );
 		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
+		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
+		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 	}
 
 	public function register_assets() {
@@ -181,6 +183,28 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'post-need-form.php', array( 'settings' => $this->settings ) );
+		return ob_get_clean();
+	}
+
+	/* --- Apply flow + dashboard --- */
+
+	/**
+	 * Append the apply panel to a single job page.
+	 */
+	public function maybe_apply_panel( $content ) {
+		if ( is_singular( 'sssj_job' ) && in_the_loop() && is_main_query() ) {
+			wp_enqueue_style( 'sssj' );
+			ob_start();
+			$this->load_template( 'apply-panel.php', array( 'job_id' => get_the_ID() ) );
+			return $content . ob_get_clean();
+		}
+		return $content;
+	}
+
+	public function my_listings( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		ob_start();
+		$this->load_template( 'my-listings.php', array() );
 		return ob_get_clean();
 	}
 

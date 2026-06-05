@@ -18,6 +18,9 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_post_worker', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_post_need', array( $this, 'handle_post_need' ) );
 		add_action( 'admin_post_nopriv_sssj_post_need', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_apply', array( $this, 'handle_apply' ) );
+		add_action( 'admin_post_nopriv_sssj_apply', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_app_status', array( $this, 'handle_app_status' ) );
 	}
 
 	public function deny() {
@@ -271,6 +274,78 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 
 		wp_safe_redirect( add_query_arg( 'sssj_need', 'pending', $redirect ) );
+		exit;
+	}
+
+	/**
+	 * Process an application to a job or a response to a participant need.
+	 */
+	public function handle_apply() {
+		$nonce = isset( $_POST['sssj_apply_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_apply_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_apply' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in to apply.', 'shuffles-social-services-jobs' ) );
+		}
+
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		$job_id   = isset( $_POST['job_id'] ) ? absint( $_POST['job_id'] ) : 0;
+		$need_id  = isset( $_POST['need_id'] ) ? absint( $_POST['need_id'] ) : 0;
+
+		if ( ! $job_id && ! $need_id ) {
+			wp_safe_redirect( add_query_arg( 'sssj_applied', 'error', $redirect ) );
+			exit;
+		}
+
+		// Validate the target is published + of the right type, and resolve the engagement basis.
+		if ( $need_id ) {
+			$post  = get_post( $need_id );
+			$valid = ( $post && 'sssj_need' === $post->post_type && 'publish' === $post->post_status );
+			$basis = 'abn'; // needs are always ABN
+		} else {
+			$post  = get_post( $job_id );
+			$valid = ( $post && 'sssj_job' === $post->post_type && 'publish' === $post->post_status );
+			$basis = ( 'abn' === (string) get_post_meta( $job_id, 'engagement_basis', true ) ) ? 'abn' : 'tfn';
+		}
+		if ( ! $valid ) {
+			wp_safe_redirect( add_query_arg( 'sssj_applied', 'error', $redirect ) );
+			exit;
+		}
+
+		if ( ! Shuffles_SSJ_Applications::can_respond( $basis ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_applied', 'denied', $redirect ) );
+			exit;
+		}
+
+		$cover = isset( $_POST['cover_message'] ) ? wp_unslash( $_POST['cover_message'] ) : '';
+		$res   = Shuffles_SSJ_Applications::apply( $job_id, $need_id, $cover );
+		if ( is_wp_error( $res ) ) {
+			$code = ( 'dup' === $res->get_error_code() ) ? 'dup' : 'error';
+			wp_safe_redirect( add_query_arg( 'sssj_applied', $code, $redirect ) );
+			exit;
+		}
+
+		wp_safe_redirect( add_query_arg( 'sssj_applied', '1', $redirect ) );
+		exit;
+	}
+
+	/**
+	 * Advertiser/nominee updates an application's status (ownership checked in the service).
+	 */
+	public function handle_app_status() {
+		$nonce = isset( $_POST['sssj_status_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_status_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_app_status' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$app_id = isset( $_POST['app_id'] ) ? absint( $_POST['app_id'] ) : 0;
+		$status = isset( $_POST['status'] ) ? sanitize_key( wp_unslash( $_POST['status'] ) ) : '';
+		Shuffles_SSJ_Applications::set_status( $app_id, $status, get_current_user_id() );
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		wp_safe_redirect( add_query_arg( 'sssj_status', '1', $redirect ) );
 		exit;
 	}
 }

@@ -227,6 +227,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.5.0 — 2026-06-06 · Apply / respond flow</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Apply to jobs (panel on each job page) and respond to participant needs (button on the needs board), recorded in the applications table — duplicates blocked by the unique key.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Gating: TFN jobs accept any member; ABN jobs and participant needs require a recorded, valid ABN (with a filter hook for the upcoming provider subscription).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Member dashboard [sssj_my_listings] — your applications, your job ads with applicants + status control, your participant requests with responses.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.4.0 — 2026-06-05 · Phase 1 (Participants) — four sides live</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Participant-need board [sssj_need_board] — logged-in only, shows published (admin-moderated) requests with pseudonym + suburb only; no names or contact details.', 'shuffles-social-services-jobs' ); ?></li>

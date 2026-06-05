@@ -24,6 +24,16 @@ $cur_f   = isset( $_GET['sssj_funding'] ) ? sanitize_title( wp_unslash( $_GET['s
 <div class="sssj sssj--needs">
 	<div class="sssj-panel">
 		<h2><?php echo esc_html( $heading ); ?></h2>
+		<?php
+		$applied = isset( $_GET['sssj_applied'] ) ? sanitize_key( wp_unslash( $_GET['sssj_applied'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( '1' === $applied ) {
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Your response was sent.', 'shuffles-social-services-jobs' ) . '</p>';
+		} elseif ( 'dup' === $applied ) {
+			echo '<p class="sssj-badge">' . esc_html__( 'You have already responded to that request.', 'shuffles-social-services-jobs' ) . '</p>';
+		} elseif ( 'denied' === $applied ) {
+			echo '<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c">' . esc_html__( 'A recorded ABN is required to respond.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		?>
 		<p class="description"><?php esc_html_e( 'These requests come from participants or their nominees. Identities are protected — first contact is made through the site, never by exposing personal details. Responding requires a recorded ABN.', 'shuffles-social-services-jobs' ); ?></p>
 		<form class="sssj-row" method="get">
 			<select class="sssj-select" name="sssj_support">
@@ -76,7 +86,25 @@ $cur_f   = isset( $_GET['sssj_funding'] ) ? sanitize_title( wp_unslash( $_GET['s
 					<?php if ( ! is_wp_error( $funds ) && ! empty( $funds ) ) : ?><p><strong><?php esc_html_e( 'Funding:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( implode( ', ', $funds ) ); ?></p><?php endif; ?>
 					<?php if ( $sched ) : ?><p><strong><?php esc_html_e( 'When:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( ucfirst( str_replace( '-', ' ', $sched ) ) ); ?></p><?php endif; ?>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 28 ) ); ?></p>
-					<p class="description"><?php esc_html_e( 'To respond you need a recorded ABN and an active provider subscription. Secure messaging is coming soon.', 'shuffles-social-services-jobs' ); ?></p>
+					<?php
+					if ( ! is_user_logged_in() ) {
+						echo '<p class="description">' . esc_html__( 'Log in to respond.', 'shuffles-social-services-jobs' ) . '</p>';
+					} elseif ( Shuffles_SSJ_Applications::already_applied( 0, $pid, get_current_user_id() ) ) {
+						echo '<p class="description">' . esc_html__( 'You have responded to this request.', 'shuffles-social-services-jobs' ) . '</p>';
+					} elseif ( Shuffles_SSJ_Applications::can_respond( 'abn' ) ) {
+						?>
+						<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" style="margin-top:8px">
+							<input type="hidden" name="action" value="sssj_apply" />
+							<input type="hidden" name="need_id" value="<?php echo esc_attr( $pid ); ?>" />
+							<?php wp_nonce_field( 'sssj_apply', 'sssj_apply_nonce' ); ?>
+							<textarea class="sssj-textarea" name="cover_message" rows="2" placeholder="<?php esc_attr_e( 'Short message (optional)', 'shuffles-social-services-jobs' ); ?>"></textarea>
+							<button class="sssj-btn sssj-btn--primary sssj-btn--sm" type="submit"><?php esc_html_e( 'Respond', 'shuffles-social-services-jobs' ); ?></button>
+						</form>
+						<?php
+					} else {
+						echo '<p class="description">' . esc_html__( 'To respond, add a valid ABN to your worker profile. (A provider subscription will also be required.)', 'shuffles-social-services-jobs' ) . '</p>';
+					}
+					?>
 				</article>
 			<?php endwhile; ?>
 		</div>
