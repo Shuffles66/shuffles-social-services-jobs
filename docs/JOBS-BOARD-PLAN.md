@@ -262,7 +262,7 @@ Use the existing `shuffles_growth_extra_search_results` filter to inject jobs-bo
 ```php
 [
   'title'   => 'Job Ad — Senior Support Worker · Armidale',
-  'url'     => 'https://provider.directory/jobs/1234',
+  'url'     => 'https://your-site.example/jobs/1234',
   'content' => "[JOBS BOARD — JOB ADVERTISER] {...details...}",
   'score'   => null   // let the AI score
 ]
@@ -348,7 +348,7 @@ class Shuffles_SSJ_Growth_Bridge {
     }
 
     public static function inject_queries( $queries, $profile, $run_id ) {
-        // Append: site:provider.directory/jobs "[location]" [category]
+        // Append: site:your-site.example/jobs "[location]" [category]
         return $queries;
     }
 

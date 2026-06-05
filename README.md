@@ -31,7 +31,7 @@ This plugin hooks into the shipped extension points in [`shuffles-growth-plugin`
 
 | Filter | Used for |
 |---|---|
-| `shuffles_growth_tavily_queries` | Append `site:provider.directory/jobs …` style queries |
+| `shuffles_growth_tavily_queries` | Append `site:your-site.example/jobs …` style queries |
 | `shuffles_growth_extra_search_results` | Inject internal listings directly (bypass external web search) |
 | `shuffles_growth_ai_prompt_extras` | Tell the AI how to label internal results |
 | `shuffles_growth_experimental_queries` | Opt-in jobs-board-specific queries |

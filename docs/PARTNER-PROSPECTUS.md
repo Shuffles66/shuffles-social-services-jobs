@@ -74,4 +74,4 @@ Shuffles Social Services Jobs and Engagements runs on the same trusted stack as 
 
 Let's talk. We'll show you the design, walk through your hiring workflow, and agree a simple founding-partner arrangement. Seeding a dozen real listings is enough to make launch feel alive — and to put your organisation at the front of a category that doesn't exist yet.
 
-> **Contact:** *[site team contact details]* · provider.directory
+> **Contact:** *[site team contact details]* · [your site]

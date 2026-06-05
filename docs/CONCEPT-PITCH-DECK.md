@@ -81,7 +81,7 @@
 
 ### Slide 18 — Close
 - *"A safer, smarter way to connect work and workers in the sectors that need it most."*
-- Contact + provider.directory.
+- Contact + [your site].
 
 ---
 

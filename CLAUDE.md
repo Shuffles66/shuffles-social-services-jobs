@@ -27,7 +27,7 @@ Every change session MUST complete ALL of the following steps in order:
 
 ## What You Are Building
 
-A WordPress plugin called **`shuffles-social-services-jobs`** for shuffles.com.au — a four-sided work marketplace for the NDIS / aged care / allied health sectors. Primary site is provider.directory.
+A WordPress plugin called **`shuffles-social-services-jobs`** — a four-sided work marketplace for the NDIS / aged care / allied health sectors. **The live-site domain is whatever the WordPress install uses; the plugin hardcodes no domain (it follows `home_url()`).** `shuffles.com.au` is only the brand / licence-vendor site, and both are editable in Settings.
 
 ### Four entity types
 
@@ -52,7 +52,7 @@ See [`docs/JOBS-BOARD-PLAN.md`](docs/JOBS-BOARD-PLAN.md) for the complete archit
 
 ## Environment
 
-- **Site URL:** https://provider.directory (primary); shuffles.com.au (secondary)
+- **Site URL:** domain-agnostic — set by the WordPress install (no domain hardcoded). `shuffles.com.au` = brand + licence-vendor store, both editable (Settings → General / Licensing)
 - **WordPress version:** assume 6.4+
 - **PHP version:** assume 8.1+
 - **Plugin slug:** `shuffles-social-services-jobs`

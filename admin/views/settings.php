@@ -45,6 +45,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<table class="form-table" role="presentation">';
 			$this->compliance_select();
 			$this->number_field( 'default_radius_km', __( 'Default search radius (km)', 'shuffles-social-services-jobs' ), __( 'Used when a user has not chosen a radius.', 'shuffles-social-services-jobs' ), 1, 500 );
+			$this->text_field( 'brand_url', __( 'Brand website URL', 'shuffles-social-services-jobs' ), __( 'Powers the "Shuffles website" link on the Plugins screen. Leave default to point at shuffles.com.au.', 'shuffles-social-services-jobs' ), 'url' );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -103,6 +104,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				__( 'Unlocks the premium / white-label features (monetisation, AI bridge, sector duplication). The core job boards work without it.', 'shuffles-social-services-jobs' )
 			);
 			$this->text_field( 'license_item_id', __( 'Product / item ID', 'shuffles-social-services-jobs' ), __( 'The FluentCart product ID for this plugin on the vendor store. Save the key + ID, then Activate.', 'shuffles-social-services-jobs' ) );
+			$this->text_field( 'vendor_url', __( 'Licence vendor store URL', 'shuffles-social-services-jobs' ), __( 'Where licences are validated (the FluentCart store). Default: https://shuffles.com.au.', 'shuffles-social-services-jobs' ), 'url' );
 			echo '</table>';
 			submit_button( __( 'Save licence settings', 'shuffles-social-services-jobs' ) );
 			echo '</form>';
@@ -253,6 +255,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.12.0 — 2026-06-06 · Configurable vendor/brand URLs + domain-neutral</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Licence vendor store URL (Licensing tab) and brand website URL (General tab) are now editable settings — repoint them without touching code.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Confirmed the plugin hardcodes no site domain (everything follows the WordPress site URL), so a domain change needs no code edit; docs made domain-neutral.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.11.0 — 2026-06-06 · Internal messaging relay</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Private inbox [sssj_messages]. Applying to a job or responding to a participant request starts a conversation with the listing owner (carrying your message); both sides reply in-app.', 'shuffles-social-services-jobs' ); ?></li>

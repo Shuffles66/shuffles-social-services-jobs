@@ -45,4 +45,4 @@ You are endorsing the **concept and its principles** — not auditing code or gu
 
 A 20-minute conversation. We'll walk you through the design and the safeguards, answer your questions, and — if you're comfortable — agree a simple form of words and a logo placement.
 
-> **Contact:** *[site team contact details]* · provider.directory
+> **Contact:** *[site team contact details]* · [your site]

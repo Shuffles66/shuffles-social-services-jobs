@@ -79,7 +79,11 @@ class Shuffles_SSJ_Admin {
 		if ( SHUFFLES_SSJ_BASENAME !== $file ) {
 			return $links;
 		}
-		$links[] = '<a href="' . esc_url( self::SITE_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Shuffles website', 'shuffles-social-services-jobs' ) . '</a>';
+		$brand = (string) $this->settings->get( 'brand_url', '' );
+		if ( '' === $brand ) {
+			$brand = self::SITE_URL;
+		}
+		$links[] = '<a href="' . esc_url( $brand ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Shuffles website', 'shuffles-social-services-jobs' ) . '</a>';
 		$links[] = '<a href="' . esc_url( self::REPO_URL . '/tree/main/docs' ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'Documentation', 'shuffles-social-services-jobs' ) . '</a>';
 		$links[] = '<a href="' . esc_url( self::REPO_URL ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'View details', 'shuffles-social-services-jobs' ) . '</a>';
 		return $links;

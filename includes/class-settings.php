@@ -31,6 +31,8 @@ class Shuffles_SSJ_Settings {
 			'free_active_listings'      => 1,
 			'licence_key'               => '',
 			'license_item_id'           => '',
+			'vendor_url'                => 'https://shuffles.com.au',
+			'brand_url'                 => 'https://shuffles.com.au',
 			'delete_data_on_uninstall'  => '0',
 			'page_job_board'            => 0,
 			'page_tfn_board'            => 0,
@@ -118,6 +120,11 @@ class Shuffles_SSJ_Settings {
 		foreach ( $int_keys as $k ) {
 			if ( isset( $input[ $k ] ) ) {
 				$out[ $k ] = absint( $input[ $k ] );
+			}
+		}
+		foreach ( array( 'vendor_url', 'brand_url' ) as $k ) {
+			if ( isset( $input[ $k ] ) ) {
+				$out[ $k ] = esc_url_raw( trim( (string) wp_unslash( $input[ $k ] ) ) );
 			}
 		}
 

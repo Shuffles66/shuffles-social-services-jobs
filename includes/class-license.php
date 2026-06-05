@@ -23,7 +23,11 @@ class Shuffles_SSJ_License {
 	const GRACE_DAYS = 14;
 
 	public static function vendor_url() {
-		return apply_filters( 'shuffles_ssj_vendor_url', 'https://shuffles.com.au' );
+		$u = (string) ( new Shuffles_SSJ_Settings() )->get( 'vendor_url', '' );
+		if ( '' === $u ) {
+			$u = 'https://shuffles.com.au';
+		}
+		return apply_filters( 'shuffles_ssj_vendor_url', $u );
 	}
 
 	private static function settings() {
