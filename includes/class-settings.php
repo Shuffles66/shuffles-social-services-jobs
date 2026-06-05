@@ -33,6 +33,19 @@ class Shuffles_SSJ_Settings {
 			'license_item_id'           => '',
 			'vendor_url'                => 'https://shuffles.com.au',
 			'brand_url'                 => 'https://shuffles.com.au',
+			'color_primary'             => '#3897e0',
+			'color_primary_deep'        => '#1e5d9c',
+			'color_ink'                 => '#0f172a',
+			'color_text'                => '#1f2937',
+			'color_line'                => '#e2e8f0',
+			'color_bg'                  => '#ffffff',
+			'color_bg_soft'             => '#f8fafc',
+			'color_abn'                 => '#7c3aed',
+			'color_tfn'                 => '#0e7490',
+			'color_need'                => '#db2777',
+			'ui_radius'                 => 10,
+			'font_family'               => '',
+			'custom_css'                => '',
 			'delete_data_on_uninstall'  => '0',
 			'page_job_board'            => 0,
 			'page_tfn_board'            => 0,
@@ -89,10 +102,10 @@ class Shuffles_SSJ_Settings {
 			return $out;
 		}
 
-		$text_keys   = array( 'compliance_profile', 'license_item_id' );
+		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
 		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall' );
-		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages' );
+		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'ui_radius' );
 
 		foreach ( $text_keys as $k ) {
 			if ( isset( $input[ $k ] ) ) {
@@ -126,6 +139,18 @@ class Shuffles_SSJ_Settings {
 			if ( isset( $input[ $k ] ) ) {
 				$out[ $k ] = esc_url_raw( trim( (string) wp_unslash( $input[ $k ] ) ) );
 			}
+		}
+		foreach ( array( 'color_primary', 'color_primary_deep', 'color_ink', 'color_text', 'color_line', 'color_bg', 'color_bg_soft', 'color_abn', 'color_tfn', 'color_need' ) as $k ) {
+			if ( isset( $input[ $k ] ) ) {
+				$c = sanitize_hex_color( wp_unslash( $input[ $k ] ) );
+				if ( $c ) {
+					$out[ $k ] = $c;
+				}
+			}
+		}
+		if ( isset( $input['custom_css'] ) ) {
+			// Allow CSS but never let it break out of the <style> tag.
+			$out['custom_css'] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input['custom_css'] ) );
 		}
 
 		return $out;

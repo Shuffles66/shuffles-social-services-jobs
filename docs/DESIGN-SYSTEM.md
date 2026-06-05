@@ -69,6 +69,7 @@ Declared on `.sssj` (front-end) and mirrored on `.sssj-admin` (wp-admin). These 
 ```
 
 A **reseller / sector white-label** changes only `--sssj-blue` + `--sssj-blue-deep` (and optionally the basis accents) to re-skin the entire plugin.
+Built-in: the **Appearance** settings tab exposes these tokens (colours, radius, font) as colour-pickers plus a Custom CSS box, output as inline CSS variables on `.sssj` — each install re-skins without code.
 
 ---
 

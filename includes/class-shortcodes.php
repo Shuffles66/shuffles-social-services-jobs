@@ -37,6 +37,11 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_style_is( 'sssj', 'registered' ) ) {
 			wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 		}
+		// Per-install re-skin: push the configured design tokens + custom CSS as an inline override.
+		$inline = $this->appearance_css();
+		if ( '' !== $inline ) {
+			wp_add_inline_style( 'sssj', $inline );
+		}
 		// Accessibility / CALD toolbar — master-gated. Loaded site-wide so the language choice
 		// and toolbar are available on every page (a floating bar appears where there's no board).
 		if ( '1' === (string) $this->settings->get( 'cald_enabled', '1' ) ) {
@@ -63,6 +68,48 @@ class Shuffles_SSJ_Shortcodes {
 				)
 			);
 		}
+	}
+
+	/**
+	 * Per-install appearance overrides — design-system CSS variables + Custom CSS, scoped to .sssj.
+	 */
+	private function appearance_css() {
+		$s    = $this->settings;
+		$vars = array(
+			'--sssj-blue'      => $s->get( 'color_primary', '' ),
+			'--sssj-blue-deep' => $s->get( 'color_primary_deep', '' ),
+			'--sssj-ink'       => $s->get( 'color_ink', '' ),
+			'--sssj-text'      => $s->get( 'color_text', '' ),
+			'--sssj-line'      => $s->get( 'color_line', '' ),
+			'--sssj-bg'        => $s->get( 'color_bg', '' ),
+			'--sssj-bg-soft'   => $s->get( 'color_bg_soft', '' ),
+			'--sssj-abn'       => $s->get( 'color_abn', '' ),
+			'--sssj-tfn'       => $s->get( 'color_tfn', '' ),
+			'--sssj-need'      => $s->get( 'color_need', '' ),
+		);
+		$radius = (int) $s->get( 'ui_radius', 0 );
+		if ( $radius > 0 ) {
+			$vars['--sssj-radius'] = $radius . 'px';
+		}
+		$font = trim( (string) $s->get( 'font_family', '' ) );
+		if ( '' !== $font ) {
+			$vars['--sssj-font'] = $font;
+		}
+
+		$decl = '';
+		foreach ( $vars as $k => $v ) {
+			$v = str_replace( array( '{', '}', '<', '>' ), '', trim( (string) $v ) );
+			if ( '' !== $v ) {
+				$decl .= $k . ':' . $v . ';';
+			}
+		}
+		$css = '' !== $decl ? '.sssj{' . $decl . '}' : '';
+
+		$custom = trim( (string) $s->get( 'custom_css', '' ) );
+		if ( '' !== $custom ) {
+			$css .= "\n" . $custom;
+		}
+		return $css;
 	}
 
 	/* --- Boards --- */

@@ -150,6 +150,7 @@ class Shuffles_SSJ_Admin {
 	public function tabs() {
 		return array(
 			'general'      => array( 'T1', __( 'General', 'shuffles-social-services-jobs' ), 'slate' ),
+			'appearance'   => array( 'T16', __( 'Appearance', 'shuffles-social-services-jobs' ), 'orange' ),
 			'boards'       => array( 'T2', __( 'Boards & Segregation', 'shuffles-social-services-jobs' ), 'indigo' ),
 			'taxonomies'   => array( 'T3', __( 'Taxonomies & Seeds', 'shuffles-social-services-jobs' ), 'indigo' ),
 			'compliance'   => array( 'T4', __( 'Compliance & Credentials', 'shuffles-social-services-jobs' ), 'amber' ),

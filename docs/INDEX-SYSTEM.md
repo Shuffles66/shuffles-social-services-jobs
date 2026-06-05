@@ -22,6 +22,7 @@ This mirrors the convention proven in Shuffles Provider Finder: settings tabs ar
 | Code | Tab | Domain |
 |---|---|---|
 | T1 | General | slate |
+| T16 | Appearance | orange |
 | T2 | Boards & Segregation (ABN/TFN) | indigo |
 | T3 | Taxonomies & Seeds | indigo |
 | T4 | Compliance & Credentials | amber |

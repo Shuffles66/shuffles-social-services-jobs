@@ -166,6 +166,32 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</tbody></table>';
 			break;
 
+		case 'appearance':
+			$open_form( 'appearance' );
+			echo '<p class="description">' . esc_html__( 'Re-skin the public-facing plugin for this install. Colours feed the design-system CSS variables on every .sssj surface; the Custom CSS box overrides anything. Scoped to the plugin — your wider theme is untouched.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<table class="form-table" role="presentation">';
+			$this->text_field( 'color_primary', __( 'Primary colour', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_primary_deep', __( 'Primary (hover / active)', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_ink', __( 'Headings / strong text', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_text', __( 'Body text', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_line', __( 'Borders / dividers', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_bg', __( 'Surface background', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_bg_soft', __( 'Sunken background', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_abn', __( 'ABN (contractor) accent', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_tfn', __( 'TFN (employee) accent', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->text_field( 'color_need', __( 'Participant-need accent', 'shuffles-social-services-jobs' ), '', 'color' );
+			$this->number_field( 'ui_radius', __( 'Corner radius (px)', 'shuffles-social-services-jobs' ), __( 'Rounding for cards, inputs and buttons.', 'shuffles-social-services-jobs' ), 0, 40 );
+			$this->text_field( 'font_family', __( 'Font family (CSS)', 'shuffles-social-services-jobs' ), __( 'e.g. "Poppins", sans-serif. Leave blank to inherit the theme font.', 'shuffles-social-services-jobs' ) );
+			$css_val = (string) $this->settings->get( 'custom_css', '' );
+			echo '<tr><th scope="row"><label for="sssj-custom_css">' . esc_html__( 'Custom CSS', 'shuffles-social-services-jobs' ) . '</label></th><td>';
+			echo '<textarea id="sssj-custom_css" class="large-text code" rows="8" name="' . esc_attr( $this->field_name( 'custom_css' ) ) . '">' . esc_textarea( $css_val ) . '</textarea>';
+			echo '<p class="description">' . esc_html__( 'Scope rules to ".sssj …" to target plugin surfaces. HTML tags are stripped for safety.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '</td></tr>';
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+			break;
+
 		case 'boards':
 			echo '<h2>' . esc_html__( 'ABN vs TFN — segregated boards', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p>' . esc_html__( 'Every job carries an engagement basis. The boards are kept strictly apart in the query layer:', 'shuffles-social-services-jobs' ) . '</p>';
@@ -255,6 +281,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.13.0 — 2026-06-06 · Appearance — per-install re-skin</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'New Appearance tab: set the primary/hover/ink/text/border/background colours, the ABN/TFN/participant accents, corner radius and font family with colour pickers — each install can be fully re-skinned without code.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'A Custom CSS box for anything else. Settings are output as inline CSS variables scoped to the plugin (.sssj), so the rest of your theme is untouched.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.12.0 — 2026-06-06 · Configurable vendor/brand URLs + domain-neutral</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Licence vendor store URL (Licensing tab) and brand website URL (General tab) are now editable settings — repoint them without touching code.', 'shuffles-social-services-jobs' ); ?></li>
