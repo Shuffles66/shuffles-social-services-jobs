@@ -36,6 +36,27 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_style_is( 'sssj', 'registered' ) ) {
 			wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 		}
+		// Accessibility / CALD toolbar — master-gated. Loaded once; the JS no-ops if no .sssj surface is present.
+		if ( '1' === (string) $this->settings->get( 'cald_enabled', '1' ) ) {
+			wp_enqueue_script( 'sssj-a11y', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-a11y.js', array(), SHUFFLES_SSJ_VERSION, true );
+			wp_localize_script(
+				'sssj-a11y',
+				'SSJ_A11y',
+				array(
+					'lang'   => str_replace( '_', '-', get_locale() ),
+					'labels' => array(
+						'region'   => __( 'Accessibility tools', 'shuffles-social-services-jobs' ),
+						'bigger'   => __( 'Larger text', 'shuffles-social-services-jobs' ),
+						'contrast' => __( 'High contrast', 'shuffles-social-services-jobs' ),
+						'mono'     => __( 'No colour', 'shuffles-social-services-jobs' ),
+						'easyread' => __( 'Easy read', 'shuffles-social-services-jobs' ),
+						'read'     => __( 'Read aloud', 'shuffles-social-services-jobs' ),
+						'reset'    => __( 'Reset', 'shuffles-social-services-jobs' ),
+						'voice'    => __( 'Voice input', 'shuffles-social-services-jobs' ),
+					),
+				)
+			);
+		}
 	}
 
 	/* --- Boards --- */

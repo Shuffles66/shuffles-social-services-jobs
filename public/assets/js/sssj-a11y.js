@@ -1,0 +1,118 @@
+/* Shuffles Social Services Jobs and Engagements — accessibility / CALD toolbar.
+ * Browser-side, $0 to run. Injects a toolbar into the first .sssj surface and provides:
+ * larger text, high-contrast, no-colour, Easy-Read, read-aloud (SpeechSynthesis), and
+ * voice input (Web Speech API) on search fields. Preferences persist in localStorage.
+ * Mode classes toggle on <html>; the no-colour FILTER targets .sssj content blocks
+ * (never the root) so it can't trap a fixed modal.
+ */
+( function () {
+	'use strict';
+
+	var cfg = window.SSJ_A11y || {};
+	var L   = cfg.labels || {};
+	var KEY = 'sssj_a11y_prefs';
+	var html = document.documentElement;
+
+	function load() {
+		try { return JSON.parse( localStorage.getItem( KEY ) ) || {}; } catch ( e ) { return {}; }
+	}
+	function save() {
+		try { localStorage.setItem( KEY, JSON.stringify( prefs ) ); } catch ( e ) {}
+	}
+	var prefs = load();
+
+	function applyPrefs() {
+		html.classList.toggle( 'sssj-a11y-contrast', !! prefs.contrast );
+		html.classList.toggle( 'sssj-a11y-mono', !! prefs.mono );
+		html.classList.toggle( 'sssj-a11y-easyread', !! prefs.easyread );
+		html.classList.remove( 'sssj-a11y-text-lg', 'sssj-a11y-text-xl' );
+		if ( 'lg' === prefs.textsize ) { html.classList.add( 'sssj-a11y-text-lg' ); }
+		else if ( 'xl' === prefs.textsize ) { html.classList.add( 'sssj-a11y-text-xl' ); }
+	}
+
+	function makeBtn( label, title ) {
+		var b = document.createElement( 'button' );
+		b.type = 'button';
+		b.className = 'sssj-a11y-btn';
+		b.textContent = label;
+		b.setAttribute( 'aria-label', title || label );
+		b.title = title || label;
+		return b;
+	}
+
+	function readAloud() {
+		if ( ! ( 'speechSynthesis' in window ) ) { return; }
+		if ( window.speechSynthesis.speaking ) { window.speechSynthesis.cancel(); return; }
+		var root = document.querySelector( '.sssj' );
+		if ( ! root ) { return; }
+		var text = ( root.innerText || root.textContent || '' ).replace( /\s+/g, ' ' ).trim();
+		if ( ! text ) { return; }
+		var u = new SpeechSynthesisUtterance( text.slice( 0, 5000 ) );
+		u.lang = cfg.lang || 'en-AU';
+		window.speechSynthesis.speak( u );
+	}
+
+	function attachVoice() {
+		var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+		if ( ! SR ) { return; }
+		document.querySelectorAll( 'input[name="sssj_q"], input[name="sssj_loc"], input[data-sssj-place]' ).forEach( function ( inp ) {
+			if ( inp.dataset.sssjMic ) { return; }
+			inp.dataset.sssjMic = '1';
+			var mic = makeBtn( '🎤', L.voice || 'Voice input' );
+			mic.classList.add( 'sssj-a11y-mic' );
+			inp.insertAdjacentElement( 'afterend', mic );
+			mic.addEventListener( 'click', function () {
+				var r = new SR();
+				r.lang = cfg.lang || 'en-AU';
+				r.interimResults = false;
+				r.maxAlternatives = 1;
+				mic.classList.add( 'is-listening' );
+				r.onresult = function ( e ) {
+					inp.value = e.results[ 0 ][ 0 ].transcript;
+					inp.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+				};
+				r.onerror = function () { mic.classList.remove( 'is-listening' ); };
+				r.onend = function () { mic.classList.remove( 'is-listening' ); };
+				try { r.start(); } catch ( e ) {}
+			} );
+		} );
+	}
+
+	function buildToolbar() {
+		var host = document.querySelector( '.sssj' );
+		if ( ! host || document.querySelector( '.sssj-a11y-bar' ) ) { return; }
+		var bar = document.createElement( 'div' );
+		bar.className = 'sssj-a11y-bar';
+		bar.setAttribute( 'role', 'region' );
+		bar.setAttribute( 'aria-label', L.region || 'Accessibility tools' );
+
+		function add( label, title, fn ) {
+			var b = makeBtn( label, title );
+			b.addEventListener( 'click', fn );
+			bar.appendChild( b );
+		}
+
+		add( 'A+', L.bigger || 'Larger text', function () {
+			prefs.textsize = 'lg' === prefs.textsize ? 'xl' : ( 'xl' === prefs.textsize ? '' : 'lg' );
+			save(); applyPrefs();
+		} );
+		add( L.contrast || 'High contrast', L.contrast || 'High contrast', function () { prefs.contrast = ! prefs.contrast; save(); applyPrefs(); } );
+		add( L.mono || 'No colour', L.mono || 'No colour', function () { prefs.mono = ! prefs.mono; save(); applyPrefs(); } );
+		add( L.easyread || 'Easy read', L.easyread || 'Easy read', function () { prefs.easyread = ! prefs.easyread; save(); applyPrefs(); } );
+		if ( 'speechSynthesis' in window ) {
+			add( '🔊', L.read || 'Read aloud', readAloud );
+		}
+		add( L.reset || 'Reset', L.reset || 'Reset', function () { prefs = {}; save(); applyPrefs(); } );
+
+		host.insertBefore( bar, host.firstChild );
+	}
+
+	function init() {
+		applyPrefs();
+		buildToolbar();
+		attachVoice();
+	}
+
+	if ( 'loading' !== document.readyState ) { init(); }
+	else { document.addEventListener( 'DOMContentLoaded', init ); }
+}() );

@@ -227,6 +227,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.7.0 — 2026-06-06 · Accessibility / CALD toolbar</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Browser-side accessibility toolbar on every board/form: larger text, high-contrast, no-colour, Easy-Read, read-aloud (speech), and voice input on search fields. $0 to run.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Preferences remembered (localStorage). Master-gated by the CALD & Access switch. Display-mode filters apply to content blocks, never the page root.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( '(7-language interface translation + RTL to follow.)', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.6.0 — 2026-06-06 · Google Maps + radius</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Places autocomplete on the job + participant posting forms — fills suburb/state/postcode and stores coordinates (manual entry still works without a key).', 'shuffles-social-services-jobs' ); ?></li>
