@@ -12,6 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $can_post = is_user_logged_in() && ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) );
 $status   = isset( $_GET['sssj_posted'] ) ? sanitize_key( wp_unslash( $_GET['sssj_posted'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$can_quota = ! is_user_logged_in() || Shuffles_SSJ_Monetisation::can_post_job( get_current_user_id() );
 $cats     = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
 $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty' => false ) );
 ?>
@@ -25,6 +26,8 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'That ABN failed validation. Please check the 11-digit ABN and try again.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php elseif ( 'error' === $status ) : ?>
 			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'Something was missing — a title and engagement type are required.', 'shuffles-social-services-jobs' ); ?></p>
+		<?php elseif ( 'limit' === $status ) : ?>
+			<p class="sssj-badge" style="background:#fef3c7;color:#92400e"><?php echo esc_html( Shuffles_SSJ_Monetisation::post_job_block_reason() ); ?></p>
 		<?php endif; ?>
 
 		<?php if ( ! $can_post ) : ?>
@@ -32,6 +35,9 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 				<?php esc_html_e( 'You need an advertiser account to post a job.', 'shuffles-social-services-jobs' ); ?>
 				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a>
 			</p>
+		<?php elseif ( ! $can_quota ) : ?>
+			<p class="sssj-badge" style="background:#fef3c7;color:#92400e"><?php echo esc_html( Shuffles_SSJ_Monetisation::post_job_block_reason() ); ?></p>
+			<p class="description"><?php esc_html_e( 'Upgrade your advertiser subscription to post more jobs.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php else : ?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">
 				<input type="hidden" name="action" value="sssj_post_job" />

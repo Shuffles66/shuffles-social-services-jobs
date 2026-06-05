@@ -70,6 +70,9 @@ final class Shuffles_SSJ_Plugin {
 		// Daily licence re-validation (cached + grace-handled; never on the hot path).
 		add_action( 'shuffles_ssj_daily', array( 'Shuffles_SSJ_License', 'check' ) );
 
+		// Monetisation gates (provider-response filter; employer cap enforced at posting).
+		Shuffles_SSJ_Monetisation::register();
+
 		// Apply schema upgrades in place on already-installed sites (cheap version guard).
 		add_action( 'admin_init', array( 'Shuffles_SSJ_Activator', 'maybe_upgrade' ) );
 

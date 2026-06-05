@@ -44,6 +44,12 @@ class Shuffles_SSJ_Frontend_Forms {
 
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 
+		// Employer advertising subscription / free-tier listing cap.
+		if ( ! Shuffles_SSJ_Monetisation::can_post_job( get_current_user_id() ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_posted', 'limit', $redirect ) );
+			exit;
+		}
+
 		$title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 		$basis = isset( $_POST['engagement_basis'] ) ? sanitize_key( wp_unslash( $_POST['engagement_basis'] ) ) : '';
 

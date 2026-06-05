@@ -88,7 +88,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$open_form( 'monetisation' );
 			echo '<table class="form-table" role="presentation">';
 			$this->checkbox_field( 'monetisation_enabled', __( 'Enable monetisation gates', 'shuffles-social-services-jobs' ), __( 'Employer advertising subscription + provider application-fee subscription (full billing in Phase 7).', 'shuffles-social-services-jobs' ) );
-			$this->number_field( 'free_active_listings', __( 'Free active listings per advertiser', 'shuffles-social-services-jobs' ), __( '0 = unlimited.', 'shuffles-social-services-jobs' ), 0, 999 );
+			$this->number_field( 'free_active_listings', __( 'Free active listings per advertiser', 'shuffles-social-services-jobs' ), __( '0 = unlimited. Beyond this, the advertiser needs the subscription below.', 'shuffles-social-services-jobs' ), 0, 999 );
+			$this->number_field( 'advertiser_pmpro_level', __( 'Advertiser subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'PMPro membership level that unlocks unlimited job posting. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
+			$this->number_field( 'provider_pmpro_level', __( 'Provider subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'PMPro level required to respond to participant needs / ABN tasks. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
+			echo '<p class="description">' . esc_html__( 'These gates are OFF unless "Enable monetisation gates" is ticked. Levels integrate with PMPro; FluentCart or custom logic can plug in via the shuffles_ssj_has_advertiser_sub / shuffles_ssj_has_provider_sub filters.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -283,6 +286,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.15.0 — 2026-06-06 · Monetisation subscriptions</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Employer advertising subscription: free-tier active-listing cap enforced at posting; an active subscription (PMPro level) unlocks unlimited. Over-limit advertisers see an upgrade prompt.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Provider application-fee subscription: required to respond to participant needs / ABN tasks (rides the existing response gate).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Both gates are OFF until enabled; PMPro level IDs configurable; FluentCart/custom logic pluggable via filters. Enforced server-side.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.14.0 — 2026-06-06 · Organisation / employer profiles</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Permanent, SEO-able organisation profiles (Organization structured data) with multiple locations: [sssj_post_org] to create/edit, [sssj_org_directory] to browse, and a company page that lists all that employer\'s open positions.', 'shuffles-social-services-jobs' ); ?></li>
