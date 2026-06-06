@@ -39,6 +39,7 @@ class Shuffles_SSJ_Integrations {
 			'fluentboards'    => defined( 'FLUENT_BOARDS_VERSION' ) || class_exists( 'FluentBoards\\App\\Application' ),
 			'fluentforms'     => defined( 'FLUENTFORM' ) || function_exists( 'wpFluentForm' ),
 			'acf'             => class_exists( 'ACF' ) || function_exists( 'get_field' ),
+			'elementor'       => defined( 'ELEMENTOR_VERSION' ) || did_action( 'elementor/loaded' ),
 			'shuffles_growth' => defined( 'SHUFFLES_GROWTH_VERSION' ),
 		);
 	}
@@ -70,6 +71,7 @@ class Shuffles_SSJ_Integrations {
 			'fluentboards'    => array( 'Fluent Boards', __( 'In-plugin application pipeline.', 'shuffles-social-services-jobs' ) ),
 			'fluentforms'     => array( 'Fluent Forms', __( 'Own native posting forms.', 'shuffles-social-services-jobs' ) ),
 			'acf'             => array( 'ACF', __( 'Own metaboxes.', 'shuffles-social-services-jobs' ) ),
+			'elementor'       => array( 'Elementor', __( 'Adds drag-and-drop "Shuffles Jobs" widgets (Hero, Stats, Featured, Recent, Menu). Without it, use the [sssj_*] shortcodes directly.', 'shuffles-social-services-jobs' ) ),
 			'shuffles_growth' => array( 'Shuffles Growth', __( 'AI referral bridge inactive; board still works.', 'shuffles-social-services-jobs' ) ),
 		);
 	}

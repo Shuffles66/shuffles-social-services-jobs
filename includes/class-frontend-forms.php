@@ -235,6 +235,42 @@ class Shuffles_SSJ_Frontend_Forms {
 			update_post_meta( $post_id, $k, $v );
 		}
 
+		// Profile photo → featured image; extra photos → gallery (attachment IDs in _sssj_gallery).
+		if ( ! empty( $_FILES['worker_photo']['name'] ) || ! empty( $_FILES['worker_gallery']['name'][0] ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+		}
+		if ( ! empty( $_FILES['worker_photo']['name'] ) ) {
+			$att = media_handle_upload( 'worker_photo', $post_id );
+			if ( ! is_wp_error( $att ) ) {
+				set_post_thumbnail( $post_id, $att );
+			}
+		}
+		if ( ! empty( $_FILES['worker_gallery']['name'][0] ) ) {
+			$files   = $_FILES['worker_gallery']; // phpcs:ignore WordPress.Security
+			$gallery = array_filter( array_map( 'intval', (array) get_post_meta( $post_id, '_sssj_gallery', true ) ) );
+			$n       = count( (array) $files['name'] );
+			for ( $i = 0; $i < $n && count( $gallery ) < 6; $i++ ) {
+				if ( empty( $files['name'][ $i ] ) ) {
+					continue;
+				}
+				$_FILES['sssj_g_one'] = array(
+					'name'     => $files['name'][ $i ],
+					'type'     => $files['type'][ $i ],
+					'tmp_name' => $files['tmp_name'][ $i ],
+					'error'    => $files['error'][ $i ],
+					'size'     => $files['size'][ $i ],
+				);
+				$gid = media_handle_upload( 'sssj_g_one', $post_id );
+				if ( ! is_wp_error( $gid ) ) {
+					$gallery[] = (int) $gid;
+				}
+			}
+			unset( $_FILES['sssj_g_one'] );
+			update_post_meta( $post_id, '_sssj_gallery', array_values( array_unique( array_map( 'intval', $gallery ) ) ) );
+		}
+
 		if ( ! empty( $_POST['services'] ) && is_array( $_POST['services'] ) ) {
 			$ids = array_filter( array_map( 'absint', (array) wp_unslash( $_POST['services'] ) ) );
 			wp_set_object_terms( $post_id, $ids, 'sssjt_category' );
@@ -249,6 +285,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'worker', $post_id );
 		}
+
+		do_action( 'shuffles_ssj_profile_saved', 'worker', $post_id, get_current_user_id() );
 
 		wp_safe_redirect( add_query_arg( 'sssj_worker', '1', $redirect ) );
 		exit;
@@ -338,6 +376,8 @@ class Shuffles_SSJ_Frontend_Forms {
 			$clids = ( ! empty( $_POST[ $clf ] ) && is_array( $_POST[ $clf ] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST[ $clf ] ) ) ) : array();
 			wp_set_object_terms( $post_id, $clids, $cltax );
 		}
+
+		do_action( 'shuffles_ssj_profile_saved', 'need', $post_id, get_current_user_id() );
 
 		wp_safe_redirect( add_query_arg( 'sssj_need', 'pending', $redirect ) );
 		exit;
@@ -570,6 +610,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'org', $post_id );
 		}
+
+		do_action( 'shuffles_ssj_profile_saved', 'org', $post_id, get_current_user_id() );
 
 		wp_safe_redirect( add_query_arg( 'sssj_org', '1', $redirect ) );
 		exit;

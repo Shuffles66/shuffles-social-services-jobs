@@ -55,7 +55,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 			<p><?php esc_html_e( 'Log in to create your worker profile.', 'shuffles-social-services-jobs' ); ?>
 				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		<?php else : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data">
 				<input type="hidden" name="action" value="sssj_post_worker" />
 				<?php wp_nonce_field( 'sssj_post_worker', 'sssj_worker_nonce' ); ?>
 
@@ -67,6 +67,20 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 				<div class="sssj-field">
 					<label for="sssj-wbio"><?php esc_html_e( 'About you', 'shuffles-social-services-jobs' ); ?></label>
 					<textarea class="sssj-textarea" id="sssj-wbio" name="bio" rows="5"><?php echo esc_textarea( $ex_bio ); ?></textarea>
+				</div>
+
+				<div class="sssj-field">
+					<label for="sssj-wphoto"><?php esc_html_e( 'Profile photo', 'shuffles-social-services-jobs' ); ?></label>
+					<?php $cur_photo = $existing ? get_the_post_thumbnail_url( $existing->ID, 'thumbnail' ) : ''; ?>
+					<?php if ( $cur_photo ) : ?><img src="<?php echo esc_url( $cur_photo ); ?>" alt="" class="sssj-worker-photo" style="width:72px;height:72px;margin-bottom:6px" /><?php endif; ?>
+					<input id="sssj-wphoto" type="file" name="worker_photo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" />
+					<p class="description"><?php esc_html_e( 'A friendly headshot helps employers and participants trust your profile. JPG, PNG or WebP.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+
+				<div class="sssj-field">
+					<label for="sssj-wgallery"><?php esc_html_e( 'More photos (optional gallery)', 'shuffles-social-services-jobs' ); ?></label>
+					<input id="sssj-wgallery" type="file" name="worker_gallery[]" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple />
+					<p class="description"><?php esc_html_e( 'Show your work — e.g. gardening, support activities. Up to 6 images; new uploads are added to any existing gallery.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
 				<div class="sssj-field">
@@ -108,6 +122,9 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					$existing ? (array) wp_get_post_terms( $existing->ID, 'sssjt_culture', array( 'fields' => 'ids' ) ) : array(),
 					$existing ? (array) wp_get_post_terms( $existing->ID, 'sssjt_language', array( 'fields' => 'ids' ) ) : array()
 				);
+				if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) {
+					Shuffles_SSJ_Field_Registry::render( 'worker', $existing ? $existing->ID : 0 );
+				}
 				?>
 
 				<div class="sssj-field" data-sssj-place-group>

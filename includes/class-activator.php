@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 4;
+	const DB_VERSION = 5;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -148,6 +148,24 @@ class Shuffles_SSJ_Activator {
   KEY expires (expires_date),
   KEY status (status),
   KEY verified (verified_at)
+) $charset_collate;";
+
+		// CRM sync log — per-user history of FluentCRM tag/list attach/detach + missing-target events.
+		$statements[] = "CREATE TABLE {$p}crm_log (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  email VARCHAR(190) NOT NULL DEFAULT '',
+  entity VARCHAR(10) NOT NULL DEFAULT '',
+  action VARCHAR(20) NOT NULL DEFAULT '',
+  object_type VARCHAR(10) NOT NULL DEFAULT '',
+  object_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  object_label VARCHAR(190) NOT NULL DEFAULT '',
+  token VARCHAR(190) NOT NULL DEFAULT '',
+  created_at DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY  (id),
+  KEY user_time (user_id,created_at),
+  KEY action (action),
+  KEY created (created_at)
 ) $charset_collate;";
 
 		foreach ( $statements as $sql ) {

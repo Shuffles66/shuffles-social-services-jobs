@@ -35,11 +35,20 @@ final class Shuffles_SSJ_Plugin {
 	/** @var Shuffles_SSJ_Display */
 	public $display;
 
+	/** @var Shuffles_SSJ_Elementor */
+	public $elementor;
+
 	/** @var Shuffles_SSJ_SEO */
 	public $seo;
 
 	/** @var Shuffles_SSJ_Frontend_Forms */
 	public $forms;
+
+	/** @var Shuffles_SSJ_Field_Registry */
+	public $field_registry;
+
+	/** @var Shuffles_SSJ_CRM_Sync */
+	public $crm_sync;
 
 	/** @var Shuffles_SSJ_Cron */
 	public $cron;
@@ -65,10 +74,16 @@ final class Shuffles_SSJ_Plugin {
 		$this->shortcodes->register();
 		$this->display = new Shuffles_SSJ_Display( $this->settings );
 		$this->display->register();
+		$this->elementor = new Shuffles_SSJ_Elementor();
+		$this->elementor->register();
 		$this->seo = new Shuffles_SSJ_SEO( $this->settings );
 		$this->seo->register();
 		$this->forms = new Shuffles_SSJ_Frontend_Forms();
 		$this->forms->register();
+		$this->field_registry = new Shuffles_SSJ_Field_Registry();
+		$this->field_registry->register();
+		$this->crm_sync = new Shuffles_SSJ_CRM_Sync( $this->settings );
+		$this->crm_sync->register();
 		$this->cron = new Shuffles_SSJ_Cron();
 		$this->cron->register();
 

@@ -102,6 +102,168 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo Shuffles_SSJ_Guides::render( array( 'title' => __( 'Guides', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
+		case 'fields':
+			$fstatus  = isset( $_GET['sssj_field'] ) ? sanitize_key( wp_unslash( $_GET['sssj_field'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$edit_key = isset( $_GET['edit'] ) ? sanitize_key( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$all_fields = Shuffles_SSJ_Field_Registry::fields();
+			$editing    = null;
+			foreach ( $all_fields as $ef ) {
+				if ( $ef['key'] === $edit_key ) {
+					$editing = $ef;
+				}
+			}
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #6366f1;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'Profile Fields', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php esc_html_e( 'Define extra fields shown on the worker/contractor, organisation and participant-request profile forms, beyond the built-in ones. Pick the input type, mark a field required, and tick “show on banner filters” for select/multi-select fields. Select and multi-select options can be mapped to FluentCRM tags/lists on the CRM Sync tab.', 'shuffles-social-services-jobs' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Values are saved on each profile. Deleting a field here does not delete values already saved.', 'shuffles-social-services-jobs' ); ?></p>
+			</div>
+			<?php
+			if ( 'saved' === $fstatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Field saved.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'deleted' === $fstatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Field deleted.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'error' === $fstatus ) {
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Please provide at least a label.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+
+			echo '<h3>' . esc_html__( 'Your custom fields', 'shuffles-social-services-jobs' ) . '</h3>';
+			if ( $all_fields ) {
+				echo '<table class="widefat striped" style="max-width:920px"><thead><tr><th>' . esc_html__( 'Label', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Key', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Type', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Shows on', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Banner', 'shuffles-social-services-jobs' ) . '</th><th></th></tr></thead><tbody>';
+				foreach ( $all_fields as $f ) {
+					$editurl = add_query_arg( array( 'page' => self::PAGE_SLUG, 'tab' => 'fields', 'edit' => $f['key'] ), admin_url( 'admin.php' ) );
+					echo '<tr><td><strong>' . esc_html( $f['label'] ) . '</strong>' . ( $f['required'] ? ' <span class="description">(' . esc_html__( 'required', 'shuffles-social-services-jobs' ) . ')</span>' : '' ) . '</td>';
+					echo '<td><code>' . esc_html( $f['key'] ) . '</code></td><td>' . esc_html( $f['type'] ) . '</td><td>' . esc_html( implode( ', ', $f['entities'] ) ) . '</td><td>' . ( $f['banner'] ? '&#10003;' : '&mdash;' ) . '</td>';
+					echo '<td style="white-space:nowrap"><a class="button button-small" href="' . esc_url( $editurl ) . '">' . esc_html__( 'Edit', 'shuffles-social-services-jobs' ) . '</a> ';
+					echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="display:inline" onsubmit="return confirm(\'' . esc_js( __( 'Delete this field?', 'shuffles-social-services-jobs' ) ) . '\')"><input type="hidden" name="action" value="sssj_delete_field" /><input type="hidden" name="key" value="' . esc_attr( $f['key'] ) . '" />' . wp_nonce_field( 'sssj_field_delete', '_wpnonce', true, false ) . '<button class="button button-small button-link-delete">' . esc_html__( 'Delete', 'shuffles-social-services-jobs' ) . '</button></form></td></tr>';
+				}
+				echo '</tbody></table>';
+			} else {
+				echo '<p class="description">' . esc_html__( 'No custom fields yet — add one below.', 'shuffles-social-services-jobs' ) . '</p>';
+			}
+
+			echo '<h3 style="margin-top:20px">' . ( $editing ? esc_html__( 'Edit field', 'shuffles-social-services-jobs' ) : esc_html__( 'Add a field', 'shuffles-social-services-jobs' ) ) . '</h3>';
+			?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj">
+				<input type="hidden" name="action" value="sssj_save_field" />
+				<?php wp_nonce_field( 'sssj_field' ); ?>
+				<table class="form-table" role="presentation">
+					<tr><th scope="row"><label for="sssj-fld-label"><?php esc_html_e( 'Label', 'shuffles-social-services-jobs' ); ?></label></th>
+						<td><input type="text" class="regular-text" id="sssj-fld-label" name="label" value="<?php echo esc_attr( $editing ? $editing['label'] : '' ); ?>" required /></td></tr>
+					<tr><th scope="row"><?php esc_html_e( 'Key', 'shuffles-social-services-jobs' ); ?></th>
+						<td><input type="text" class="regular-text" name="key" value="<?php echo esc_attr( $editing ? $editing['key'] : '' ); ?>" <?php echo $editing ? 'readonly' : ''; ?> placeholder="<?php esc_attr_e( 'auto from label', 'shuffles-social-services-jobs' ); ?>" />
+							<p class="description"><?php esc_html_e( 'Unique id; leave blank to generate from the label. Cannot be changed after creation.', 'shuffles-social-services-jobs' ); ?></p></td></tr>
+					<tr><th scope="row"><?php esc_html_e( 'Shows on', 'shuffles-social-services-jobs' ); ?></th>
+						<td><?php foreach ( array( 'worker' => __( 'Workers / contractors', 'shuffles-social-services-jobs' ), 'org' => __( 'Organisations', 'shuffles-social-services-jobs' ), 'need' => __( 'Participant requests', 'shuffles-social-services-jobs' ) ) as $ev => $el ) { $chk = $editing ? in_array( $ev, $editing['entities'], true ) : ( 'worker' === $ev ); echo '<label style="margin-right:16px"><input type="checkbox" name="entities[]" value="' . esc_attr( $ev ) . '" ' . checked( $chk, true, false ) . ' /> ' . esc_html( $el ) . '</label>'; } ?></td></tr>
+					<tr><th scope="row"><label for="sssj-fld-type"><?php esc_html_e( 'Type', 'shuffles-social-services-jobs' ); ?></label></th>
+						<td><select id="sssj-fld-type" name="type" data-no-enhance><?php foreach ( array( 'text' => __( 'Text', 'shuffles-social-services-jobs' ), 'textarea' => __( 'Paragraph', 'shuffles-social-services-jobs' ), 'number' => __( 'Number', 'shuffles-social-services-jobs' ), 'select' => __( 'Single select (searchable)', 'shuffles-social-services-jobs' ), 'multiselect' => __( 'Multi-select (searchable pills)', 'shuffles-social-services-jobs' ), 'toggle' => __( 'Yes / No toggle', 'shuffles-social-services-jobs' ) ) as $tv => $tl ) { echo '<option value="' . esc_attr( $tv ) . '" ' . selected( $editing ? $editing['type'] : 'text', $tv, false ) . '>' . esc_html( $tl ) . '</option>'; } ?></select></td></tr>
+					<tr><th scope="row"><label for="sssj-fld-options"><?php esc_html_e( 'Options', 'shuffles-social-services-jobs' ); ?></label></th>
+						<td><textarea id="sssj-fld-options" name="options" rows="4" class="large-text" placeholder="<?php esc_attr_e( 'One option per line (for single/multi-select only)', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_textarea( $editing ? implode( "\n", $editing['options'] ) : '' ); ?></textarea></td></tr>
+					<tr><th scope="row"><?php esc_html_e( 'Flags', 'shuffles-social-services-jobs' ); ?></th>
+						<td><label><input type="checkbox" name="required" value="1" <?php checked( $editing ? $editing['required'] : false ); ?> /> <?php esc_html_e( 'Required', 'shuffles-social-services-jobs' ); ?></label><br />
+							<label><input type="checkbox" name="banner" value="1" <?php checked( $editing ? $editing['banner'] : false ); ?> /> <?php esc_html_e( 'Show on directory banner filters (single/multi-select only)', 'shuffles-social-services-jobs' ); ?></label></td></tr>
+				</table>
+				<?php submit_button( $editing ? __( 'Update field', 'shuffles-social-services-jobs' ) : __( 'Add field', 'shuffles-social-services-jobs' ) ); ?>
+			</form>
+			<?php
+			break;
+
+		case 'crm':
+			$cstatus = isset( $_GET['sssj_crm'] ) ? sanitize_key( wp_unslash( $_GET['sssj_crm'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$has_crm = $this->integrations->has( 'fluentcrm' );
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2563eb;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'CRM Sync', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php esc_html_e( 'Keep each member’s FluentCRM tags & lists in step with the choices on their profile. Map a value — a funding source like NDIS, a sector, a culture/language, or a custom-field option — to a FluentCRM tag and/or list. Then, whenever a worker, organisation or participant profile is saved, ticking that value adds the tag/list to that person’s contact, and un-ticking removes it. Every change is recorded in a per-user log.', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'This syncs to the FluentCRM on THIS website. It only runs while the master switch below is on and FluentCRM is active. If a mapped tag/list is later deleted in FluentCRM, you’ll get an alert here so you can fix the mapping (the plugin maps to existing tags/lists — it never silently creates them).', 'shuffles-social-services-jobs' ); ?></p>
+			</div>
+			<?php
+			if ( 'saved' === $cstatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Mappings saved.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'cleared' === $cstatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Missing-target alerts cleared.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'resynced' === $cstatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'User re-synced.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+			if ( ! $has_crm ) {
+				echo '<div class="notice notice-warning"><p>' . esc_html__( 'FluentCRM is not active on this site, so sync is paused. Activate FluentCRM to enable it.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+
+			$open_form( 'crm' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'crm_sync_enabled', __( 'Enable CRM sync', 'shuffles-social-services-jobs' ), __( 'Master switch. When on (and FluentCRM is active), profile saves apply/remove the mapped tags & lists.', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'crm_create_contact', __( 'Create a contact if one does not exist', 'shuffles-social-services-jobs' ), __( 'If a member has no FluentCRM contact yet, create one (status: subscribed) so the tags/lists have somewhere to land. Off = skip that member and log it.', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+
+			$miss = Shuffles_SSJ_CRM_Sync::missing();
+			if ( $miss ) {
+				echo '<div class="notice notice-warning" style="max-width:920px"><p><strong>' . esc_html__( 'Some mapped tags/lists no longer exist in FluentCRM:', 'shuffles-social-services-jobs' ) . '</strong></p><ul style="list-style:disc;margin-left:22px">';
+				foreach ( $miss as $m ) {
+					echo '<li>' . esc_html( ucfirst( $m['type'] ) . ' #' . $m['id'] . ' — ' . __( 'last seen', 'shuffles-social-services-jobs' ) . ' ' . $m['last'] ) . '</li>';
+				}
+				echo '</ul><p class="description">' . esc_html__( 'Fix the mapping below (point it at a tag/list that exists), then dismiss.', 'shuffles-social-services-jobs' ) . '</p>';
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="sssj_crm_clear_missing" />' . wp_nonce_field( 'sssj_crm_missing', '_wpnonce', true, false ) . '<button class="button">' . esc_html__( 'Dismiss alerts', 'shuffles-social-services-jobs' ) . '</button></form></div>';
+			}
+
+			echo '<h3 style="margin-top:18px">' . esc_html__( 'Value &rarr; CRM tag / list mappings', 'shuffles-social-services-jobs' ) . '</h3>';
+			$mvals  = Shuffles_SSJ_CRM_Sync::mappable_values();
+			$ftags  = Shuffles_SSJ_CRM_Sync::fluent_tags();
+			$flists = Shuffles_SSJ_CRM_Sync::fluent_lists();
+			$rows   = Shuffles_SSJ_CRM_Sync::get_map();
+			if ( ! $ftags && ! $flists ) {
+				echo '<p class="description">' . esc_html__( 'No FluentCRM tags or lists were found on this site yet. Create some in FluentCRM first (or activate FluentCRM), then map them here.', 'shuffles-social-services-jobs' ) . '</p>';
+			}
+			?>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj">
+				<input type="hidden" name="action" value="sssj_save_crm_map" />
+				<?php wp_nonce_field( 'sssj_crm_map' ); ?>
+				<table class="widefat" style="max-width:1000px"><thead><tr><th style="width:34%"><?php esc_html_e( 'Profile value', 'shuffles-social-services-jobs' ); ?></th><th><?php esc_html_e( 'FluentCRM tags', 'shuffles-social-services-jobs' ); ?></th><th><?php esc_html_e( 'FluentCRM lists', 'shuffles-social-services-jobs' ); ?></th></tr></thead><tbody>
+				<?php
+				$render_row = function ( $i, $token, $sel_tags, $sel_lists ) use ( $mvals, $ftags, $flists ) {
+					echo '<tr><td><select name="token[' . (int) $i . ']" class="sssj-select" data-placeholder="' . esc_attr__( 'Choose a value…', 'shuffles-social-services-jobs' ) . '"><option value=""></option>';
+					foreach ( $mvals as $v ) {
+						echo '<option value="' . esc_attr( $v['token'] ) . '" ' . selected( $token, $v['token'], false ) . '>' . esc_html( $v['label'] ) . '</option>';
+					}
+					echo '</select></td><td><select name="tags[' . (int) $i . '][]" multiple class="sssj-select" data-placeholder="' . esc_attr__( 'Tags…', 'shuffles-social-services-jobs' ) . '">';
+					foreach ( $ftags as $tid => $tt ) {
+						echo '<option value="' . esc_attr( $tid ) . '" ' . ( in_array( (int) $tid, array_map( 'intval', (array) $sel_tags ), true ) ? 'selected' : '' ) . '>' . esc_html( $tt ) . '</option>';
+					}
+					echo '</select></td><td><select name="lists[' . (int) $i . '][]" multiple class="sssj-select" data-placeholder="' . esc_attr__( 'Lists…', 'shuffles-social-services-jobs' ) . '">';
+					foreach ( $flists as $lid => $lt ) {
+						echo '<option value="' . esc_attr( $lid ) . '" ' . ( in_array( (int) $lid, array_map( 'intval', (array) $sel_lists ), true ) ? 'selected' : '' ) . '>' . esc_html( $lt ) . '</option>';
+					}
+					echo '</select></td></tr>';
+				};
+				$ri = 0;
+				foreach ( $rows as $r ) {
+					$render_row( $ri, $r['token'], $r['tags'] ?? array(), $r['lists'] ?? array() );
+					$ri++;
+				}
+				for ( $b = 0; $b < 4; $b++ ) {
+					$render_row( $ri, '', array(), array() );
+					$ri++;
+				}
+				?>
+				</tbody></table>
+				<p class="description"><?php esc_html_e( 'Pick a value, then the tag(s) and/or list(s) to apply when it is chosen. A row with no tags and no lists is ignored. To remove a mapping, clear its tags + lists. Four blank rows are shown for adding more (save, then more appear).', 'shuffles-social-services-jobs' ); ?></p>
+				<?php submit_button( __( 'Save mappings', 'shuffles-social-services-jobs' ) ); ?>
+			</form>
+			<?php
+			$logs = Shuffles_SSJ_CRM_Sync::get_logs( array( 'limit' => 50 ) );
+			echo '<h3 style="margin-top:18px">' . esc_html__( 'Recent CRM sync activity (all users)', 'shuffles-social-services-jobs' ) . '</h3>';
+			if ( $logs ) {
+				echo '<table class="widefat striped" style="max-width:1000px"><thead><tr><th>' . esc_html__( 'When', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'User', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Action', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Tag / List', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Profile', 'shuffles-social-services-jobs' ) . '</th></tr></thead><tbody>';
+				foreach ( $logs as $l ) {
+					echo '<tr><td>' . esc_html( $l->created_at ) . '</td><td>' . esc_html( $l->email ) . '</td><td>' . esc_html( $l->action ) . '</td><td>' . esc_html( $l->object_type . ': ' . $l->object_label ) . '</td><td>' . esc_html( $l->entity ) . '</td></tr>';
+				}
+				echo '</tbody></table>';
+			} else {
+				echo '<p class="description">' . esc_html__( 'No CRM sync activity yet.', 'shuffles-social-services-jobs' ) . '</p>';
+			}
+			break;
+
 		case 'testing':
 			echo '<h2>' . esc_html__( 'Testing worksheet', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Hand this to a tester to confirm the plugin works as it should. Mark each case Pass or Fail — progress is saved in this browser, and Print gives a paper/PDF copy. The same checklist is available on the front end via the [sssj_tests] shortcode, and is kept up to date as the plugin changes.', 'shuffles-social-services-jobs' ) . '</p>';
@@ -525,7 +687,25 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v0.37.0 — 2026-06-06 · Branding (Foundational Supports + Thriving Kids) &amp; SEO · auto header menu · readable CSS examples</h3>
+				<h3>v0.40.0 — 2026-06-06 · Elementor widget pack for the front-page blocks</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New “Shuffles Jobs” Elementor widget category with drag-and-drop widgets for the home-page blocks: Hero banner, Animated stats, Featured roles, Recent items, and the Navigation menu. Each has visual controls (headings, button text/links, counts, type, layout) and previews live in the Elementor editor.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Standalone-first: the widgets only load when Elementor is active (no hard dependency). Without Elementor, use the [sssj_hero], [sssj_stats], [sssj_featured], [sssj_recent] and [sssj_menu] shortcodes as before. Elementor now also appears on the Integrations tab.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.39.0 — 2026-06-06 · Worker profile pages now show details + photos · compact accessibility language pill</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Worker / contractor profile pages now display the full details below the bio — availability, services, rate, location, languages & cultural focus, verified checks and any custom fields — instead of appearing blank.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Worker profiles can now have a profile photo (shown as a headshot on the card and profile) plus an optional photo gallery that displays as a swipeable strip. Add them on the worker profile form.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The accessibility-bar language picker is now a compact rounded pill sized to its text, matching the other accessibility controls, instead of a full-width box.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Added breathing room between the filter/header panel and the cards on every directory (panels now have consistent spacing below them).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.38.0 — 2026-06-06 · Custom Profile Fields + FluentCRM sync (with per-user log)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New “Profile Fields” settings tab: define your own custom fields on worker/contractor, organisation and participant-request profiles — text, paragraph, number, searchable single-select, searchable multi-select (pills) or yes/no toggle. Mark a field required or “show on banner filters”. Fields render on the relevant profile forms and save automatically.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “CRM Sync” settings tab: map any profile value — a funding source like NDIS, a sector, a culture/language, or a custom-field option — to a FluentCRM tag and/or list. When a member ticks that value on their profile, the tag/list is added to their contact; un-ticking removes it. Syncs to the FluentCRM on this site, gated by a master switch, and only ever maps to tags/lists that already exist.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Per-user CRM sync log: every attach/remove is recorded and viewable both on each user’s profile screen (with a “Re-sync now” button) and on the CRM Sync tab. If a mapped tag/list is later deleted in FluentCRM, an admin alert + a “missing” log entry appear so you can fix the mapping — a profile save is never broken by a CRM error.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.37.0 — 2026-06-06 · Branding (Foundational Supports + Thriving Kids) &amp; SEO · auto header menu · readable CSS examples</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Branding & SEO: a new “Focus programs” setting (General tab) lists the funding programs/sectors the site covers — defaulting to NDIS, Aged Care, DVA, Foundational Supports and Thriving Kids. It is emitted as SEO keywords on your job, worker and organisation pages, and becomes the default sub-text on the [sssj_hero] banner. “Foundational Supports” and “Thriving Kids” are also added to the seeded Funding Sources list (re-seed, or add via the taxonomy screen, to use them on existing sites).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'New “Show navigation menu at the top of every page” option (General tab) — outputs the [sssj_menu] bar at the top of every front-end page via wp_body_open, so you can navigate the marketplace while testing without editing your theme header.', 'shuffles-social-services-jobs' ); ?></li>

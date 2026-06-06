@@ -84,6 +84,7 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 				</div>
 
 				<?php Shuffles_SSJ_Shortcodes::culture_language_fields(); ?>
+				<?php if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) { Shuffles_SSJ_Field_Registry::render( 'need', 0 ); } ?>
 
 				<div class="sssj-row">
 					<div class="sssj-field">

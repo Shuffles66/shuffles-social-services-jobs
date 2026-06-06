@@ -39,6 +39,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
+		add_filter( 'the_content', array( $this, 'maybe_worker_panel' ) );
 
 		// Optional: auto-output the navigation menu at the top of every page (testing aid).
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
@@ -936,6 +937,17 @@ class Shuffles_SSJ_Shortcodes {
 			wp_enqueue_style( 'sssj' );
 			ob_start();
 			$this->load_template( 'org-single-panel.php', array( 'org_id' => get_the_ID() ) );
+			return $content . ob_get_clean();
+		}
+		return $content;
+	}
+
+	/** Render the worker's details (services, rate, location, credentials, photos) on their profile page. */
+	public function maybe_worker_panel( $content ) {
+		if ( is_singular( 'sssj_worker' ) && in_the_loop() && is_main_query() ) {
+			wp_enqueue_style( 'sssj' );
+			ob_start();
+			$this->load_template( 'worker-single-panel.php', array( 'worker_id' => get_the_ID() ) );
 			return $content . ob_get_clean();
 		}
 		return $content;

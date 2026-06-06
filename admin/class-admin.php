@@ -153,6 +153,13 @@ class Shuffles_SSJ_Admin {
 			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 			wp_enqueue_script( 'sssj-guides', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-guides.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
+		if ( 'crm' === $tab || 'fields' === $tab ) {
+			// Searchable pill pickers for the tag/list + field-option selects (design directive).
+			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
+			wp_enqueue_style( 'sssj-tomselect', SHUFFLES_SSJ_URL . 'public/assets/vendor/tom-select/tom-select.min.css', array(), '2.3.1' );
+			wp_enqueue_script( 'sssj-tomselect', SHUFFLES_SSJ_URL . 'public/assets/vendor/tom-select/tom-select.complete.min.js', array(), '2.3.1', true );
+			wp_enqueue_script( 'sssj-select', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-select.js', array( 'sssj-tomselect' ), SHUFFLES_SSJ_VERSION, true );
+		}
 		wp_localize_script(
 			'sssj-admin',
 			'SSJ_Admin',
@@ -190,6 +197,8 @@ class Shuffles_SSJ_Admin {
 			'monetisation' => array( 'T10', __( 'Monetisation', 'shuffles-social-services-jobs' ), 'orange' ),
 			'licensing'    => array( 'T11', __( 'Licensing', 'shuffles-social-services-jobs' ), 'orange' ),
 			'integrations' => array( 'T12', __( 'Integrations', 'shuffles-social-services-jobs' ), 'blue' ),
+			'fields'       => array( 'T21', __( 'Profile Fields', 'shuffles-social-services-jobs' ), 'indigo' ),
+			'crm'          => array( 'T22', __( 'CRM Sync', 'shuffles-social-services-jobs' ), 'blue' ),
 			'privacy'      => array( 'T13', __( 'Privacy & Moderation', 'shuffles-social-services-jobs' ), 'amber' ),
 			'guides'       => array( 'T20', __( 'Guides', 'shuffles-social-services-jobs' ), 'orange' ),
 			'testing'      => array( 'T19', __( 'Testing', 'shuffles-social-services-jobs' ), 'slate' ),

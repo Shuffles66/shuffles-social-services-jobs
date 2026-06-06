@@ -45,6 +45,8 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'worker-profile', 'do' => __( 'Create a worker profile; add Services via the search-and-add picker; set a location; choose visibility.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Profile saves; services show as pills; location geocodes; one profile per user.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-find', 'do' => __( 'On the Worker directory, search + tick “Available now” + set a location and radius.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only available, in-radius workers show, nearest first.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-vis', 'do' => __( 'Set a worker profile to “Logged-in members” and view the directory as a guest.', 'shuffles-social-services-jobs' ), 'expect' => __( 'That profile is hidden from guests but visible to logged-in members.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'worker-photo', 'do' => __( 'Add a profile photo and a couple of gallery photos to a worker profile; save and open the worker’s page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The headshot shows on the card and profile; gallery photos appear as a swipeable strip.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'worker-single', 'do' => __( 'Open a worker’s public profile page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Full details render below the bio: availability, services, rate, location, languages/culture, verified checks and any custom fields (not a blank page).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-hidden', 'do' => __( 'Set a worker profile to “Do not display”, then check the directory and the page source.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The profile is removed from the directory entirely and its page is noindex.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
@@ -88,6 +90,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'cald-lang', 'do' => __( 'Switch the language in the toolbar.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Tagged UI labels translate; right-to-left languages flip layout; the choice persists site-wide.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cald-english', 'do' => __( 'While in another language, hit the “English Hot Key”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The interface returns to English (button shows only when not in English).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cald-modes', 'do' => __( 'Toggle High contrast / No colour / Larger text / Read aloud / Voice input.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Each mode applies and persists; modals are not trapped.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'cald-langpill', 'do' => __( 'Look at the language picker in the accessibility bar.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is a compact rounded pill sized to its text (not a full-width box), matching the other accessibility controls.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'studio', 'do' => __( 'In Settings → Appearance, change colours and a preset; watch the live preview; Save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Preview updates live; saved styles apply on the front end; the theme is untouched.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
@@ -104,6 +107,16 @@ class Shuffles_SSJ_Tests {
 				),
 			),
 			array(
+				'title' => __( 'Custom profile fields & CRM sync', 'shuffles-social-services-jobs' ),
+				'cases' => array(
+					array( 'id' => 'field-add', 'do' => __( 'In Settings → Profile Fields, add a multi-select field (e.g. “Programs” with options NDIS, Aged Care, DVA), shown on Workers.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The field is listed; on the worker profile form it appears as a searchable multi-select pill picker and saves.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'field-banner', 'do' => __( 'Tick “show on banner filters” for a select field; edit and delete a field.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Edit pre-fills the form; delete removes the field (saved values are untouched).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'crm-map', 'do' => __( 'In Settings → CRM Sync, enable sync, then map a value (e.g. Funding: NDIS) to a FluentCRM tag and/or list.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The tag/list pickers list your FluentCRM tags & lists (searchable); the mapping saves.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'crm-apply', 'do' => __( 'As a member, choose that mapped value on your profile and save; then un-choose it and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Choosing attaches the mapped tag/list to your FluentCRM contact; un-choosing removes it. Each change shows in the per-user log (Users → edit, and Settings → CRM Sync).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'crm-missing', 'do' => __( 'Delete a mapped tag in FluentCRM, then save a profile that uses it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'An admin alert appears (and a “missing” log entry) so you can re-point the mapping; nothing breaks the save.', 'shuffles-social-services-jobs' ) ),
+				),
+			),
+			array(
 				'title' => __( 'Front-page display & animations', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'disp-hero', 'do' => __( 'Put [sssj_hero title="…" button_text="Browse jobs" button_url="/jobs"] on a page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A gradient hero banner fades in with the headline and call-to-action button(s).', 'shuffles-social-services-jobs' ) ),
@@ -111,6 +124,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'disp-recent', 'do' => __( 'Add [sssj_recent type="jobs" count="6"] and [sssj_recent type="orgs" layout="list"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Recent cards reveal with a staggered fade; list layout is a compact sidebar list. Participant requests only show to logged-in members.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'disp-featured', 'do' => __( 'Add [sssj_featured]. Promote a job (mark it featured) and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Featured roles show with a subtle shine; with none promoted it falls back to the newest jobs.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'disp-motion', 'do' => __( 'Turn on the OS “reduce motion” setting and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Animations are disabled — content appears immediately with final numbers.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'elementor', 'do' => __( 'With Elementor active, edit a page and open the “Shuffles Jobs” widget category; drag in Hero / Stats / Featured / Recent / Menu and set their controls.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Each widget renders the matching block with your settings, both in the editor preview and on the live page.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(

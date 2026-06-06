@@ -144,6 +144,8 @@ if ( $existing ) {
 					<p class="description"><?php esc_html_e( 'One location per line, fields separated by a vertical bar: e.g.  North office | Newcastle | NSW | 2300', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
+				<?php if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) { Shuffles_SSJ_Field_Registry::render( 'org', $existing ? $existing->ID : 0 ); } ?>
+
 				<div class="sssj-field">
 					<label><input type="checkbox" name="org_hidden" value="1" <?php checked( '1', (string) $gm( 'org_hidden' ) ); ?> /> <?php esc_html_e( 'Do not display — hide this organisation from search engines and the directory', 'shuffles-social-services-jobs' ); ?></label>
 				</div>

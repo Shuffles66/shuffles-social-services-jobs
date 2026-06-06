@@ -74,7 +74,11 @@ $w_pts   = ! empty( $has_points );
 				$svcs   = wp_get_post_terms( $pid, 'sssjt_category', array( 'fields' => 'names' ) );
 				?>
 				<article class="sssj-card">
-					<h3 style="margin-top:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
+						<?php $w_photo = get_the_post_thumbnail_url( $pid, 'thumbnail' ); ?>
+						<?php if ( $w_photo ) : ?><img class="sssj-worker-photo sssj-worker-photo--sm" src="<?php echo esc_url( $w_photo ); ?>" alt="" /><?php endif; ?>
+						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					</div>
 					<div class="sssj-row">
 						<?php if ( '1' === $avail2 ) : ?><span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Available', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<?php if ( $verified ) : ?><span class="sssj-badge sssj-badge--verified">✓ <?php esc_html_e( 'Verified', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
