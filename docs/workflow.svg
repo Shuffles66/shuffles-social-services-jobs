@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="720" viewBox="0 0 1180 720" font-family="-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
+    </marker>
+    <marker id="arrowDash" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#3897e0"/>
+    </marker>
+    <style>
+      .node{ fill:#ffffff; stroke:#e2e8f0; stroke-width:1.5; }
+      .t{ fill:#0f172a; font-size:14px; font-weight:600; }
+      .s{ fill:#64748b; font-size:11px; font-weight:500; }
+      .lane{ fill:#ffffff; font-size:13px; font-weight:700; letter-spacing:.4px; }
+      .flow{ stroke:#94a3b8; stroke-width:2; fill:none; }
+      .chip{ fill:#f8fafc; stroke:#e2e8f0; stroke-width:1; }
+      .chipt{ fill:#334155; font-size:12px; font-weight:600; }
+    </style>
+  </defs>
+
+  <!-- frame -->
+  <rect x="0.5" y="0.5" width="1179" height="719" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+
+  <!-- title -->
+  <text x="40" y="48" fill="#0f172a" font-size="26" font-weight="700">Shuffles Social Services Jobs &amp; Engagements</text>
+  <text x="40" y="73" fill="#64748b" font-size="14" font-weight="500">A four-sided, participant-safe marketplace — disability &#183; aged care &#183; social services</text>
+
+  <!-- ===================== LANE A: Advertisers / Organisations ===================== -->
+  <rect x="40" y="120" width="150" height="70" rx="10" fill="#1e5d9c"/>
+  <text x="115" y="150" text-anchor="middle" class="lane">ADVERTISERS</text>
+  <text x="115" y="168" text-anchor="middle" class="lane">&amp; ORGS</text>
+
+  <rect x="210" y="120" width="200" height="70" rx="10" class="node" stroke="#3897e0"/>
+  <text x="310" y="150" text-anchor="middle" class="t">Create org profile</text>
+  <text x="310" y="169" text-anchor="middle" class="s">logo &#183; locations &#183; socials</text>
+
+  <rect x="450" y="120" width="200" height="70" rx="10" class="node" stroke="#3897e0"/>
+  <text x="550" y="150" text-anchor="middle" class="t">Post a job</text>
+  <text x="550" y="169" text-anchor="middle" class="s">ABN &#124; TFN basis</text>
+
+  <rect x="690" y="120" width="200" height="70" rx="10" class="node" stroke="#3897e0"/>
+  <text x="790" y="150" text-anchor="middle" class="t">Segregated boards</text>
+  <text x="790" y="169" text-anchor="middle" class="s">+ geo radius search</text>
+
+  <rect x="930" y="120" width="200" height="70" rx="10" class="node" stroke="#3897e0"/>
+  <text x="1030" y="150" text-anchor="middle" class="t">Applications in</text>
+  <text x="1030" y="169" text-anchor="middle" class="s">message &amp; engage</text>
+
+  <path class="flow" d="M410 155 H450" marker-end="url(#arrow)"/>
+  <path class="flow" d="M650 155 H690" marker-end="url(#arrow)"/>
+  <path class="flow" d="M890 155 H930" marker-end="url(#arrow)"/>
+
+  <!-- ===================== LANE B: Workers ===================== -->
+  <rect x="40" y="250" width="150" height="70" rx="10" fill="#6366f1"/>
+  <text x="115" y="291" text-anchor="middle" class="lane">WORKERS</text>
+
+  <rect x="210" y="250" width="200" height="70" rx="10" class="node" stroke="#6366f1"/>
+  <text x="310" y="280" text-anchor="middle" class="t">Create worker profile</text>
+  <text x="310" y="299" text-anchor="middle" class="s">skills &#183; availability &#183; rate</text>
+
+  <rect x="450" y="250" width="200" height="70" rx="10" class="node" stroke="#6366f1"/>
+  <text x="550" y="280" text-anchor="middle" class="t">Upload credentials</text>
+  <text x="550" y="299" text-anchor="middle" class="s">WWCC &#183; NDIS &#183; police</text>
+
+  <rect x="690" y="250" width="200" height="70" rx="10" class="node" fill="#fffbeb" stroke="#b45309"/>
+  <text x="790" y="280" text-anchor="middle" class="t">Admin verifies</text>
+  <text x="790" y="299" text-anchor="middle" class="s">approve evidence &#10003;</text>
+
+  <rect x="930" y="250" width="200" height="70" rx="10" class="node" stroke="#6366f1"/>
+  <text x="1030" y="280" text-anchor="middle" class="t">&#10003; Verified &#183; apply</text>
+  <text x="1030" y="299" text-anchor="middle" class="s">search by location/radius</text>
+
+  <path class="flow" d="M410 285 H450" marker-end="url(#arrow)"/>
+  <path class="flow" d="M650 285 H690" marker-end="url(#arrow)"/>
+  <path class="flow" d="M890 285 H930" marker-end="url(#arrow)"/>
+
+  <!-- worker applies to advertiser jobs -->
+  <path d="M1030 250 V200" stroke="#3897e0" stroke-width="2" stroke-dasharray="5 4" fill="none" marker-end="url(#arrowDash)"/>
+  <text x="1042" y="225" fill="#1e5d9c" font-size="11" font-weight="600">applies to jobs</text>
+
+  <!-- ===================== LANE C: Participants ===================== -->
+  <rect x="40" y="380" width="150" height="70" rx="10" fill="#db2777"/>
+  <text x="115" y="411" text-anchor="middle" class="lane">PARTICIPANTS</text>
+  <text x="115" y="429" text-anchor="middle" class="lane">anonymous</text>
+
+  <rect x="210" y="380" width="200" height="70" rx="10" class="node" stroke="#db2777"/>
+  <text x="310" y="410" text-anchor="middle" class="t">Post support request</text>
+  <text x="310" y="429" text-anchor="middle" class="s">pseudonymous &#183; suburb only</text>
+
+  <rect x="450" y="380" width="200" height="70" rx="10" class="node" fill="#fffbeb" stroke="#b45309"/>
+  <text x="550" y="410" text-anchor="middle" class="t">Admin moderation</text>
+  <text x="550" y="429" text-anchor="middle" class="s">approve before publish</text>
+
+  <rect x="690" y="380" width="200" height="70" rx="10" class="node" stroke="#db2777"/>
+  <text x="790" y="410" text-anchor="middle" class="t">Needs board</text>
+  <text x="790" y="429" text-anchor="middle" class="s">members only &#183; ABN</text>
+
+  <rect x="930" y="380" width="200" height="70" rx="10" class="node" stroke="#db2777"/>
+  <text x="1030" y="410" text-anchor="middle" class="t">Provider responds</text>
+  <text x="1030" y="429" text-anchor="middle" class="s">via relay messaging</text>
+
+  <path class="flow" d="M410 415 H450" marker-end="url(#arrow)"/>
+  <path class="flow" d="M650 415 H690" marker-end="url(#arrow)"/>
+  <path class="flow" d="M890 415 H930" marker-end="url(#arrow)"/>
+
+  <!-- ===================== Private messaging relay (shared) ===================== -->
+  <rect x="450" y="500" width="440" height="48" rx="10" fill="#eff6ff" stroke="#3897e0"/>
+  <text x="670" y="524" text-anchor="middle" fill="#1e5d9c" font-size="14" font-weight="700">Private messaging relay</text>
+  <text x="670" y="540" text-anchor="middle" class="s">no emails exposed &#183; participants stay pseudonymous</text>
+  <path d="M1030 190 C1030 470 770 470 700 500" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+  <path d="M1030 450 C1030 480 720 478 700 500" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4" fill="none"/>
+
+  <!-- ===================== Platform capabilities ===================== -->
+  <text x="40" y="588" fill="#0f172a" font-size="13" font-weight="700" letter-spacing=".4px">ACROSS THE PLATFORM</text>
+  <g>
+    <rect x="40"  y="600" width="170" height="32" rx="16" class="chip"/><text x="125" y="620" text-anchor="middle" class="chipt">Geo radius search</text>
+    <rect x="222" y="600" width="210" height="32" rx="16" class="chip"/><text x="327" y="620" text-anchor="middle" class="chipt">CALD &amp; accessibility (7 langs)</text>
+    <rect x="444" y="600" width="190" height="32" rx="16" class="chip"/><text x="539" y="620" text-anchor="middle" class="chipt">SEO &#183; Google for Jobs</text>
+    <rect x="646" y="600" width="210" height="32" rx="16" class="chip"/><text x="751" y="620" text-anchor="middle" class="chipt">Monetisation &#183; FluentCart/PMPro</text>
+    <rect x="868" y="600" width="170" height="32" rx="16" class="chip"/><text x="953" y="620" text-anchor="middle" class="chipt">White-label Style Studio</text>
+  </g>
+  <g>
+    <rect x="40"  y="640" width="160" height="32" rx="16" class="chip"/><text x="120" y="660" text-anchor="middle" class="chipt">Login-aware menu</text>
+    <rect x="212" y="640" width="200" height="32" rx="16" class="chip"/><text x="312" y="660" text-anchor="middle" class="chipt">Compliance &amp; banning centre</text>
+    <rect x="424" y="640" width="170" height="32" rx="16" class="chip"/><text x="509" y="660" text-anchor="middle" class="chipt">Standalone-first</text>
+  </g>
+
+  <!-- legend -->
+  <g font-size="11" font-weight="600" fill="#475569">
+    <circle cx="640" cy="656" r="5" fill="#1e5d9c"/><text x="650" y="660">Advertisers/Orgs</text>
+    <circle cx="760" cy="656" r="5" fill="#6366f1"/><text x="770" y="660">Workers</text>
+    <circle cx="848" cy="656" r="5" fill="#db2777"/><text x="858" y="660">Participants</text>
+    <circle cx="952" cy="656" r="5" fill="#b45309"/><text x="962" y="660">Admin &amp; Trust</text>
+  </g>
+
+  <text x="1140" y="700" text-anchor="end" fill="#94a3b8" font-size="11">github.com/Shuffles66/shuffles-social-services-jobs</text>
+</svg>
