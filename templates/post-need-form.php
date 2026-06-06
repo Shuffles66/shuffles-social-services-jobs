@@ -83,6 +83,8 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 					</select>
 				</div>
 
+				<?php Shuffles_SSJ_Shortcodes::culture_language_fields(); ?>
+
 				<div class="sssj-row">
 					<div class="sssj-field">
 						<label><?php esc_html_e( 'When', 'shuffles-social-services-jobs' ); ?></label>

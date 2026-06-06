@@ -114,6 +114,8 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					</select>
 				</div>
 
+				<?php Shuffles_SSJ_Shortcodes::culture_language_fields(); ?>
+
 				<div class="sssj-field" data-sssj-place-group>
 					<label for="sssj-place"><?php esc_html_e( 'Location', 'shuffles-social-services-jobs' ); ?></label>
 					<input class="sssj-input" id="sssj-place" type="text" data-sssj-place placeholder="<?php esc_attr_e( 'Start typing a suburb… (or fill the fields below)', 'shuffles-social-services-jobs' ); ?>" />

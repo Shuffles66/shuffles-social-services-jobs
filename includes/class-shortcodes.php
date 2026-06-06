@@ -720,6 +720,32 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+	/**
+	 * Shared Culture + Language multi-select fields (typeahead pills). Used by job/worker/need forms.
+	 *
+	 * @param array $culture_ids  Pre-selected sssjt_culture term ids.
+	 * @param array $language_ids Pre-selected sssjt_language term ids.
+	 */
+	public static function culture_language_fields( $culture_ids = array(), $language_ids = array() ) {
+		$culture_ids  = array_map( 'intval', (array) $culture_ids );
+		$language_ids = array_map( 'intval', (array) $language_ids );
+		$render = function ( $tax, $name, $label, $selected, $ph ) {
+			$terms = get_terms( array( 'taxonomy' => $tax, 'hide_empty' => false ) );
+			echo '<div class="sssj-field"><label for="sssj-f-' . esc_attr( $name ) . '">' . esc_html( $label ) . '</label>';
+			echo '<select class="sssj-select" id="sssj-f-' . esc_attr( $name ) . '" name="' . esc_attr( $name ) . '[]" multiple data-placeholder="' . esc_attr( $ph ) . '">';
+			if ( ! is_wp_error( $terms ) ) {
+				foreach ( $terms as $t ) {
+					echo '<option value="' . esc_attr( $t->term_id ) . '" ' . ( in_array( (int) $t->term_id, $selected, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>';
+				}
+			}
+			echo '</select></div>';
+		};
+		echo '<div class="sssj-row">';
+		$render( 'sssjt_culture', 'culture', __( 'Cultural / community focus', 'shuffles-social-services-jobs' ), $culture_ids, __( 'Search and add…', 'shuffles-social-services-jobs' ) );
+		$render( 'sssjt_language', 'language', __( 'Languages spoken', 'shuffles-social-services-jobs' ), $language_ids, __( 'Search and add…', 'shuffles-social-services-jobs' ) );
+		echo '</div>';
+	}
+
 	/** Testing worksheet (the tester checklist). */
 	public function tests_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );

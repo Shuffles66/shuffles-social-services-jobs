@@ -480,6 +480,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.34.0 — 2026-06-06 · Culture & Language fields (shared, preseeded, multi-select)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'New Cultural/community-focus and Language taxonomies, preseeded (CALD communities, LGBTQIA+, First Nations… and 40+ community languages incl. Auslan). One shared lookup used across jobs, workers/contractors and participant requests.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Added to the job, worker and request forms as searchable multi-selects (typeahead pills). Manage the lists under the plugin menu’s taxonomy screens.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.33.0 — 2026-06-06 · Accessibility toggle + centred map + multi-select filters</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The accessibility toolbar is now hidden behind a single “♿ Accessibility” button (same position) and only opens when clicked — reclaiming page space.', 'shuffles-social-services-jobs' ); ?></li>

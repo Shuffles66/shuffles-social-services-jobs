@@ -103,6 +103,13 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					</select>
 				</div>
 
+				<?php
+				Shuffles_SSJ_Shortcodes::culture_language_fields(
+					$existing ? (array) wp_get_post_terms( $existing->ID, 'sssjt_culture', array( 'fields' => 'ids' ) ) : array(),
+					$existing ? (array) wp_get_post_terms( $existing->ID, 'sssjt_language', array( 'fields' => 'ids' ) ) : array()
+				);
+				?>
+
 				<div class="sssj-field" data-sssj-place-group>
 					<label for="sssj-wplace"><?php esc_html_e( 'Your location', 'shuffles-social-services-jobs' ); ?></label>
 					<input class="sssj-input" id="sssj-wplace" type="text" data-sssj-place placeholder="<?php esc_attr_e( 'Start typing a suburb…', 'shuffles-social-services-jobs' ); ?>" />

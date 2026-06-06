@@ -131,6 +131,12 @@ class Shuffles_SSJ_Frontend_Forms {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'job', $post_id );
 		}
 
+		// Culture + language (shared multi-select taxonomies).
+		foreach ( array( 'culture' => 'sssjt_culture', 'language' => 'sssjt_language' ) as $clf => $cltax ) {
+			$clids = ( ! empty( $_POST[ $clf ] ) && is_array( $_POST[ $clf ] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST[ $clf ] ) ) ) : array();
+			wp_set_object_terms( $post_id, $clids, $cltax );
+		}
+
 		// Featured placement: stamp is_promoted + menu_order from the advertiser's sub.
 		Shuffles_SSJ_Monetisation::refresh_job_feature_flag( $post_id );
 
@@ -234,6 +240,12 @@ class Shuffles_SSJ_Frontend_Forms {
 			wp_set_object_terms( $post_id, $ids, 'sssjt_category' );
 		}
 
+		// Culture + language (shared multi-select taxonomies).
+		foreach ( array( 'culture' => 'sssjt_culture', 'language' => 'sssjt_language' ) as $clf => $cltax ) {
+			$clids = ( ! empty( $_POST[ $clf ] ) && is_array( $_POST[ $clf ] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST[ $clf ] ) ) ) : array();
+			wp_set_object_terms( $post_id, $clids, $cltax );
+		}
+
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'worker', $post_id );
 		}
@@ -319,6 +331,12 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( ! empty( $_POST['funding_sources'] ) && is_array( $_POST['funding_sources'] ) ) {
 			$ids = array_filter( array_map( 'absint', (array) wp_unslash( $_POST['funding_sources'] ) ) );
 			wp_set_object_terms( $post_id, $ids, 'sssjt_funding_source' );
+		}
+
+		// Culture + language (shared multi-select taxonomies).
+		foreach ( array( 'culture' => 'sssjt_culture', 'language' => 'sssjt_language' ) as $clf => $cltax ) {
+			$clids = ( ! empty( $_POST[ $clf ] ) && is_array( $_POST[ $clf ] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST[ $clf ] ) ) ) : array();
+			wp_set_object_terms( $post_id, $clids, $cltax );
 		}
 
 		wp_safe_redirect( add_query_arg( 'sssj_need', 'pending', $redirect ) );

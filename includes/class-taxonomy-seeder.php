@@ -27,6 +27,8 @@ class Shuffles_SSJ_Taxonomy_Seeder {
 			'sssjt_employment_type'    => 'seed-employment-types.json',
 			'sssjt_support_category'   => 'seed-support-categories.json',
 			'sssjt_funding_source'     => 'seed-funding-sources.json',
+			'sssjt_culture'            => 'seed-cultures.json',
+			'sssjt_language'           => 'seed-languages.json',
 		);
 	}
 
