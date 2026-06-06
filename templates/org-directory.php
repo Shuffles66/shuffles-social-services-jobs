@@ -22,6 +22,8 @@ $rad_lbl = $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-ser
 $cur_sector  = isset( $_GET['sssj_sector'] ) ? sanitize_title( wp_unslash( $_GET['sssj_sector'] ) ) : '';
 $cur_funding = isset( $_GET['sssj_funding'] ) ? sanitize_title( wp_unslash( $_GET['sssj_funding'] ) ) : '';
 $cur_open    = ! empty( $_GET['sssj_open'] );
+$cur_orgcat  = isset( $_GET['sssj_orgcat'] ) ? sanitize_key( wp_unslash( $_GET['sssj_orgcat'] ) ) : '';
+$o_cats      = class_exists( 'Shuffles_SSJ_Org' ) ? Shuffles_SSJ_Org::categories() : array();
 $o_sectors   = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
 $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' => false ) );
 ?>
@@ -48,6 +50,12 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<option value=""><?php esc_html_e( 'All funding', 'shuffles-social-services-jobs' ); ?></option>
 					<?php if ( ! is_wp_error( $o_fundings ) ) { foreach ( $o_fundings as $t ) { echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_funding, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
 				</select>
+				<?php if ( $o_cats ) : ?>
+				<select class="sssj-select" name="sssj_orgcat">
+					<option value=""><?php esc_html_e( 'All organisation types', 'shuffles-social-services-jobs' ); ?></option>
+					<?php foreach ( $o_cats as $ck => $cl ) { echo '<option value="' . esc_attr( $ck ) . '" ' . selected( $cur_orgcat, $ck, false ) . '>' . esc_html( $cl ) . '</option>'; } ?>
+				</select>
+				<?php endif; ?>
 				<label class="sssj-chip <?php echo $cur_open ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_open" value="1" <?php checked( $cur_open ); ?> /> <span data-i18n="open_only"><?php esc_html_e( 'Only with open placements', 'shuffles-social-services-jobs' ); ?></span></label>
 			<?php Shuffles_SSJ_Field_Registry::render_banner_filters( 'org' ); Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
@@ -78,6 +86,9 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					</div>
 					<div class="sssj-row">
 						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $oid, isset( $center ) ? $center : null, true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php if ( Shuffles_SSJ_Org::is_sponsored( $oid ) ) : ?><span class="sssj-badge sssj-badge--featured" title="<?php esc_attr_e( 'Sponsored listing', 'shuffles-social-services-jobs' ); ?>">★ <?php esc_html_e( 'Sponsored', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
+						<?php $o_cat = Shuffles_SSJ_Org::category_label( get_post_meta( $oid, 'org_category', true ) ); ?>
+						<?php if ( $o_cat ) : ?><span class="sssj-badge"><?php echo esc_html( $o_cat ); ?></span><?php endif; ?>
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php echo Shuffles_SSJ_Org::ndis_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>

@@ -131,6 +131,28 @@ class Shuffles_SSJ_Org {
 		return array( 'open' => count( $open_ids ), 'placed' => $placed );
 	}
 
+	/** Organisation categories (what kind of organisation) → label. */
+	public static function categories() {
+		return array(
+			'support'      => __( 'Support provider', 'shuffles-social-services-jobs' ),
+			'supplier'     => __( 'Supplier / services to the sector', 'shuffles-social-services-jobs' ),
+			'sda_housing'  => __( 'SDA / housing', 'shuffles-social-services-jobs' ),
+			'real_estate'  => __( 'Real estate', 'shuffles-social-services-jobs' ),
+			'professional' => __( 'Professional services', 'shuffles-social-services-jobs' ),
+			'other'        => __( 'Other', 'shuffles-social-services-jobs' ),
+		);
+	}
+
+	public static function category_label( $key ) {
+		$c = self::categories();
+		return isset( $c[ (string) $key ] ) ? $c[ (string) $key ] : '';
+	}
+
+	/** Is this org flagged as a sponsor (admin-granted placement)? */
+	public static function is_sponsored( $org_id ) {
+		return '1' === (string) get_post_meta( (int) $org_id, 'org_sponsored', true );
+	}
+
 	/** Public NDIS Commission "find a registered provider" search URL (by number if given). */
 	public static function ndis_register_url( $number = '' ) {
 		$base = 'https://www.ndiscommission.gov.au/about/ndis-provider-register';

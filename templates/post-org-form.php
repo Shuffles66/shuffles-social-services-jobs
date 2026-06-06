@@ -96,6 +96,13 @@ if ( $existing ) {
 							?>
 						</select>
 					</div>
+					<div class="sssj-field">
+						<label><?php esc_html_e( 'Organisation category', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" name="org_category">
+							<?php $ex_cat = $gm( 'org_category', 'support' ); foreach ( Shuffles_SSJ_Org::categories() as $v => $l ) { echo '<option value="' . esc_attr( $v ) . '" ' . selected( $ex_cat, $v, false ) . '>' . esc_html( $l ) . '</option>'; } ?>
+						</select>
+						<p class="description"><?php esc_html_e( 'What kind of organisation — support provider, supplier/services, SDA/housing, real estate or professional services. Drives where you appear in the directory.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="url" name="org_website" value="<?php echo esc_attr( $gm( 'org_website' ) ); ?>" placeholder="https://" />
 						<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-sssj-autofill data-loading="<?php esc_attr_e( 'Reading your site…', 'shuffles-social-services-jobs' ); ?>" data-empty="<?php esc_attr_e( 'Enter your website URL first (including https://).', 'shuffles-social-services-jobs' ); ?>" style="margin-top:6px">✨ <?php esc_html_e( 'Fetch details from my website', 'shuffles-social-services-jobs' ); ?></button>
 						<p class="description"><?php esc_html_e( 'Our AI reads your website and suggests a name, description and phone — review before saving. (It only fills empty fields.)', 'shuffles-social-services-jobs' ); ?></p>

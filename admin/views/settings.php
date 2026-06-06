@@ -727,7 +727,15 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v0.51.0 — 2026-06-06 · NDIS provider registration · provider field seed · website auto-fill</h3>
+				<h3>v0.52.0 — 2026-06-06 · member roles · organisation categories · participant-free posting · provider directory fee &amp; sponsorship</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Member roles: a member can wear many hats. New [sssj_roles] form (and a “My roles” tab in the dashboard) lets each member tick the roles that apply — worker, candidate, participant, sole-trader provider, provider representative, or supplier — which grants the matching posting capabilities and tailors their dashboard. Change it any time.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Organisation categories: organisations now choose a type — Support provider, Supplier / services to the sector, SDA / housing, Real estate, Professional services, or Other. It shows as a badge on the card + profile and is a filter (“All organisation types”) on the Organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant-free posting: participants employing directly, or seeking workers or providers, are never charged — even when monetisation is on. Providers seeking staff, sponsorship, or a directory listing are the paid side.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Provider directory fee + sponsorship: when monetisation is on, only providers who hold a listing subscription (or admins) appear in the Organisations directory. Admins can grant a “Sponsored placement” (Verification box) — sponsored organisations sort to the top and show a ★ Sponsored badge.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fix: the recommended provider field set (Settings → Profile Fields → “Add recommended provider fields”) now also mirrors “Services Provided” (multi-select of NDIS/aged-care services) and “Peak Bodies” (multi-select of industry memberships such as NDS, ACCPA, DIA) — both were missing and so never synced. Both are banner filters on the Organisations directory. Re-run the button to add just the two new fields (existing fields are left untouched).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.51.0 — 2026-06-06 · NDIS provider registration · provider field seed · website auto-fill</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Organisations can mark themselves a registered NDIS provider with a registration number — shown as an “NDIS Registered · #number” badge linking to the NDIS Commission register. Registration status + groups are set by an admin or an auto-scan integration hook (there is no official public API, so it is best-effort/manual).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'New “Add recommended provider fields” button (Settings → Profile Fields) seeds a Shuffles-style organisation field set (specialisations, service delivery, ages supported, accepting clients, accessibility, languages, years operating, accreditations) — the banner-flagged ones become directory filters.', 'shuffles-social-services-jobs' ); ?></li>

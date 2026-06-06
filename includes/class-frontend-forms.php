@@ -25,6 +25,20 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
 		add_action( 'wp_ajax_sssj_autofill', array( $this, 'ajax_autofill' ) );
+		add_action( 'admin_post_sssj_save_roles', array( $this, 'handle_save_roles' ) );
+	}
+
+	/** Save a member's declared roles (from [sssj_roles]) and grant the matching capabilities. */
+	public function handle_save_roles() {
+		$nonce = isset( $_POST['sssj_roles_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_roles_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_save_roles' ) || ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		$roles = isset( $_POST['sssj_roles'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['sssj_roles'] ) ) : array();
+		Shuffles_SSJ_Roles::set_member_roles( get_current_user_id(), $roles );
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		wp_safe_redirect( add_query_arg( 'sssj_roles', '1', $redirect ) );
+		exit;
 	}
 
 	/**
@@ -631,6 +645,7 @@ class Shuffles_SSJ_Frontend_Forms {
 		$meta = array(
 			'org_user_id'       => $uid,
 			'org_hidden'        => empty( $_POST['org_hidden'] ) ? '' : '1',
+			'org_category'      => isset( $_POST['org_category'] ) ? sanitize_key( wp_unslash( $_POST['org_category'] ) ) : 'support',
 			'travel_radius_km'  => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
 			'ndis_registered'      => empty( $_POST['ndis_registered'] ) ? '' : '1',
 			'ndis_provider_number' => isset( $_POST['ndis_provider_number'] ) ? sanitize_text_field( wp_unslash( $_POST['ndis_provider_number'] ) ) : '',
@@ -685,6 +700,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( ! empty( $_POST['ndis_registered'] ) && '' !== (string) get_post_meta( $post_id, 'ndis_provider_number', true ) ) {
 			do_action( 'shuffles_ssj_ndis_recorded', (string) get_post_meta( $post_id, 'ndis_provider_number', true ), $post_id );
 		}
+		// Directory listing eligibility (providers pay to list) — stamped on save (free when monetisation off).
+		update_post_meta( $post_id, 'org_listed', ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::can_list_directory( $uid ) ) ? '1' : '' );
 
 		do_action( 'shuffles_ssj_profile_saved', 'org', $post_id, get_current_user_id() );
 

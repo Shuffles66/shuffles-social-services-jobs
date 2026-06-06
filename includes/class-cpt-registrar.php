@@ -173,6 +173,9 @@ class Shuffles_SSJ_CPT_Registrar {
 			'sssj_org' => array(
 				'org_user_id'     => array( 'integer', true, 'int' ),
 				'org_hidden'      => array( 'boolean', true, 'bool' ),
+				'org_category'    => array( 'string', true, 'key' ),
+				'org_sponsored'   => array( 'boolean', true, 'bool' ),
+				'org_listed'      => array( 'boolean', true, 'bool' ),
 				'org_abn'         => array( 'string', true, 'abn' ),
 				'ndis_registered'      => array( 'boolean', true, 'bool' ),
 				'ndis_provider_number' => array( 'string', true, 'text' ),

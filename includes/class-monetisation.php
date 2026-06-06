@@ -174,6 +174,22 @@ class Shuffles_SSJ_Monetisation {
 	 *
 	 * @return bool
 	 */
+	/**
+	 * May this provider be LISTED in the organisation directory? Providers pay to list.
+	 * Free when monetisation is off; admins + advertiser/provider subscribers qualify.
+	 */
+	public static function can_list_directory( $uid ) {
+		if ( ! self::enabled() ) {
+			return true;
+		}
+		$uid = (int) $uid;
+		if ( ! $uid ) {
+			return false;
+		}
+		$ok = user_can( $uid, 'manage_options' ) || self::has_advertiser_sub( $uid ) || self::has_provider_sub( $uid );
+		return (bool) apply_filters( 'shuffles_ssj_can_list_directory', $ok, $uid );
+	}
+
 	public static function can_post_job( $uid ) {
 		if ( ! self::enabled() ) {
 			return true;
@@ -181,6 +197,10 @@ class Shuffles_SSJ_Monetisation {
 		$uid = (int) $uid;
 		if ( ! $uid ) {
 			return false;
+		}
+		// Participants employing directly post for FREE — only providers/businesses are charged.
+		if ( class_exists( 'Shuffles_SSJ_Roles' ) && Shuffles_SSJ_Roles::is_participant( $uid ) && ! Shuffles_SSJ_Roles::is_provider( $uid ) ) {
+			return (bool) apply_filters( 'shuffles_ssj_can_post_job', true, $uid );
 		}
 		if ( user_can( $uid, 'manage_options' ) || self::has_advertiser_sub( $uid ) ) {
 			return (bool) apply_filters( 'shuffles_ssj_can_post_job', true, $uid );

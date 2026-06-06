@@ -31,6 +31,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
 		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
 		add_shortcode( 'sssj_dashboard', array( $this, 'dashboard' ) );
+		add_shortcode( 'sssj_roles', array( $this, 'roles_panel' ) );
 		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
@@ -212,6 +213,15 @@ class Shuffles_SSJ_Shortcodes {
 				'title'  => __( 'Messages (internal relay inbox)', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'The private messaging inbox: thread list, thread view and reply. Applying or responding starts a thread to the listing owner. Relay-only — email addresses are never exposed, and participants appear as their pseudonym.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "Messages" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_roles',
+				'title'  => __( 'My roles (declare how you use the marketplace)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets a logged-in member tick the role(s) that apply to them — worker, candidate, participant, sole-trader provider, provider representative, or supplier. This sets what they can post (e.g. participants post needs and direct jobs free; providers can advertise and list) and tailors their dashboard. Members can change it any time. (Also shown as the "My roles" tab inside the all-in-one dashboard.)', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "My roles" / onboarding page, or just use [sssj_dashboard].', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
@@ -699,6 +709,34 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+	/** [sssj_roles] — let a logged-in member declare their role(s); grants the matching capabilities. */
+	public function roles_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to set your roles.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+		$current = Shuffles_SSJ_Roles::member_roles( get_current_user_id() );
+		$saved   = isset( $_GET['sssj_roles'] ) && '1' === sanitize_key( wp_unslash( $_GET['sssj_roles'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		ob_start();
+		echo '<div class="sssj sssj--roles"><div class="sssj-panel">';
+		if ( $saved ) {
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Your roles were saved.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		echo '<h2 style="margin-top:0">' . esc_html__( 'How do you use the marketplace?', 'shuffles-social-services-jobs' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Tick all that apply — this sets what you can post and tailors your dashboard. You can change it any time. Participants post free; providers may need a subscription to advertise or list.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-stack">';
+		echo '<input type="hidden" name="action" value="sssj_save_roles" />';
+		wp_nonce_field( 'sssj_save_roles', 'sssj_roles_nonce' );
+		foreach ( Shuffles_SSJ_Roles::member_role_options() as $key => $label ) {
+			$on = in_array( $key, $current, true );
+			echo '<label class="sssj-chip ' . ( $on ? 'is-on' : '' ) . '" style="display:block;margin:4px 0"><input type="checkbox" name="sssj_roles[]" value="' . esc_attr( $key ) . '" ' . checked( $on, true, false ) . ' /> ' . esc_html( $label ) . '</label>';
+		}
+		echo '<div><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Save my roles', 'shuffles-social-services-jobs' ) . '</button></div>';
+		echo '</form></div></div>';
+		return ob_get_clean();
+	}
+
 	/**
 	 * [sssj_dashboard] — a single, tabbed member hub that pulls the member-facing pieces together.
 	 * Capability-aware: shows worker sections for workers, advertiser sections for advertisers.
@@ -733,6 +771,7 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
+		$tabs['roles']    = __( 'My roles', 'shuffles-social-services-jobs' );
 
 		$current = wp_get_current_user();
 		$name    = $current->display_name ? $current->display_name : $current->user_login;
@@ -775,6 +814,7 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';
 		echo '<section class="sssj-dash__panel" data-dash-panel="messages">' . do_shortcode( '[sssj_messages]' ) . '</section>';
+		echo '<section class="sssj-dash__panel" data-dash-panel="roles">' . do_shortcode( '[sssj_roles]' ) . '</section>';
 
 		echo '</div>';
 		return ob_get_clean();
@@ -853,11 +893,22 @@ class Shuffles_SSJ_Shortcodes {
 			array( 'key' => 'org_hidden', 'compare' => 'NOT EXISTS' ),
 			array( 'key' => 'org_hidden', 'value' => '1', 'compare' => '!=' ),
 		);
+		// Extra meta filters: organisation category, the directory-listing fee gate, and custom fields.
+		$extra_clauses = array();
+		if ( ! empty( $_GET['sssj_orgcat'] ) ) {
+			$extra_clauses[] = array( 'key' => 'org_category', 'value' => sanitize_key( wp_unslash( $_GET['sssj_orgcat'] ) ) );
+		}
+		// Providers pay to be listed — when monetisation is on, only org_listed orgs appear.
+		if ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::enabled() ) {
+			$extra_clauses[] = array( 'key' => 'org_listed', 'value' => '1' );
+		}
 		// Custom "show on banner filters" fields (organisations use a bespoke query, so merge here).
-		$cf_clauses = class_exists( 'Shuffles_SSJ_Field_Registry' ) ? Shuffles_SSJ_Field_Registry::filter_clauses( 'org' ) : array();
-		if ( $cf_clauses ) {
+		if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) {
+			$extra_clauses = array_merge( $extra_clauses, Shuffles_SSJ_Field_Registry::filter_clauses( 'org' ) );
+		}
+		if ( $extra_clauses ) {
 			$mq = array( 'relation' => 'AND', $org_hidden_group );
-			foreach ( $cf_clauses as $c ) {
+			foreach ( $extra_clauses as $c ) {
 				$mq[] = $c;
 			}
 			$base_filter['meta_query'] = $mq; // phpcs:ignore WordPress.DB.SlowDBQuery
@@ -888,7 +939,28 @@ class Shuffles_SSJ_Shortcodes {
 				$query->max_num_pages = (int) ceil( $total / $per );
 			}
 		} else {
-			$query = new WP_Query( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => $per, 'paged' => $paged, 's' => $q ), $base_filter ) );
+			// Sponsored orgs first, then newest — partitioned in PHP so orgs without the meta are never excluded
+			// and pagination stays correct (ordering by an optional meta inside a nested clause is unreliable in WP_Query).
+			$all_ids = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 's' => $q, 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ), $base_filter ) );
+			$spon = array();
+			$rest = array();
+			foreach ( $all_ids as $id ) {
+				if ( Shuffles_SSJ_Org::is_sponsored( $id ) ) {
+					$spon[] = $id;
+				} else {
+					$rest[] = $id;
+				}
+			}
+			$ids      = array_merge( $spon, $rest );
+			$total    = count( $ids );
+			$page_ids = array_slice( $ids, ( $paged - 1 ) * $per, $per );
+			if ( empty( $page_ids ) ) {
+				$query = new WP_Query( array( 'post_type' => 'sssj_org', 'post__in' => array( 0 ), 'posts_per_page' => $per ) );
+			} else {
+				$query = new WP_Query( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'post__in' => $page_ids, 'orderby' => 'post__in', 'posts_per_page' => $per, 'no_found_rows' => true ) );
+				$query->found_posts   = $total;
+				$query->max_num_pages = (int) ceil( $total / $per );
+			}
 		}
 
 		// Map points = every location of the orgs on this page.

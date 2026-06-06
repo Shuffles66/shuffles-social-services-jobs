@@ -77,6 +77,12 @@ class Shuffles_SSJ_Verification {
 		$on = self::is_verified( $post->ID );
 		echo '<p><label><input type="checkbox" name="sssj_blue_tick" value="1" ' . checked( $on, true, false ) . ' /> <strong>' . esc_html__( 'Account verified (blue tick)', 'shuffles-social-services-jobs' ) . '</strong></label></p>';
 		echo '<p class="description">' . esc_html__( 'Grant the blue tick once you have verified this account (identity + the key checks for their role). It appears next to the name across the site. This is separate from the green “✓ Verified” credential badge, which is set on the Verification screen per document.', 'shuffles-social-services-jobs' ) . '</p>';
+		// Organisations only: an admin-granted "Sponsored" placement (sorts to the top of the directory).
+		if ( 'sssj_org' === $post->post_type ) {
+			$spon = '1' === (string) get_post_meta( $post->ID, 'org_sponsored', true );
+			echo '<hr /><p><label><input type="checkbox" name="sssj_org_sponsored" value="1" ' . checked( $spon, true, false ) . ' /> <strong>' . esc_html__( 'Sponsored placement', 'shuffles-social-services-jobs' ) . '</strong></label></p>';
+			echo '<p class="description">' . esc_html__( 'Sponsored organisations sort to the top of the directory and show a ★ Sponsored badge. Grant this when a provider has paid for or been awarded a sponsored placement.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
 	}
 
 	public function save( $post_id, $post ) {
@@ -94,6 +100,14 @@ class Shuffles_SSJ_Verification {
 			delete_post_meta( $post_id, self::META );
 		} else {
 			update_post_meta( $post_id, self::META, '1' );
+		}
+		// Organisations only: sponsored placement.
+		if ( 'sssj_org' === $post->post_type ) {
+			if ( empty( $_POST['sssj_org_sponsored'] ) ) {
+				delete_post_meta( $post_id, 'org_sponsored' );
+			} else {
+				update_post_meta( $post_id, 'org_sponsored', '1' );
+			}
 		}
 	}
 }
