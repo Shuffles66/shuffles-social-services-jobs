@@ -154,6 +154,18 @@
 /* ---- Accessibility / CALD ---- */
 /* Toolbar (injected into the first .sssj surface by sssj-a11y.js). */
 .sssj .sssj-a11y-bar{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:0 0 var(--sssj-s4); padding:var(--sssj-s2); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); background:var(--sssj-bg-soft); }
+/* Accessibility toolbar collapsed behind a single toggle (hidden until clicked) */
+.sssj .sssj-a11y{ margin:0 0 var(--sssj-s4); }
+.sssj .sssj-a11y .sssj-a11y-bar{ display:none; margin:8px 0 0; }
+.sssj .sssj-a11y.is-open .sssj-a11y-bar{ display:flex; }
+.sssj .sssj-a11y-toggle{ border-color:var(--sssj-blue); color:var(--sssj-blue-deep); }
+.sssj .sssj-a11y-toggle[aria-expanded="true"]{ background:#eaf3fb; }
+/* Directory map: half-width, centred, with breathing room before the cards */
+.sssj .sssj-map-panel{ width:50%; min-width:280px; margin:0 auto var(--sssj-s5); }
+.sssj--board > .sssj-panel:first-of-type,
+.sssj--workers > .sssj-panel:first-of-type,
+.sssj--orgs > .sssj-panel:first-of-type{ margin-bottom:var(--sssj-s5); }
+@media (max-width:640px){ .sssj .sssj-map-panel{ width:100%; } }
 .sssj .sssj-a11y-btn{ min-height:36px; padding:4px 12px; border:2px solid var(--sssj-line); border-radius:var(--sssj-radius-pill); background:#fff; color:var(--sssj-text); font-size:var(--sssj-fs-sm); font-weight:var(--sssj-weight-strong); cursor:pointer; }
 .sssj .sssj-a11y-btn:hover{ border-color:var(--sssj-blue); }
 .sssj .sssj-a11y-btn:focus-visible{ outline:none; box-shadow:var(--sssj-ring); }

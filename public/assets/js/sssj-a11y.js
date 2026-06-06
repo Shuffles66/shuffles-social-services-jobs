@@ -166,13 +166,30 @@
 			bar.appendChild( engWrap );
 		}
 
+		// Hide the toolbar behind a single "Accessibility" toggle, in the same position.
+		var outer = document.createElement( 'div' );
+		outer.className = 'sssj-a11y' + ( floating ? ' sssj-a11y--floating' : '' );
+		if ( prefs.a11yOpen ) { outer.classList.add( 'is-open' ); }
+		var toggle = makeBtn( '♿ ' + ( L.region || 'Accessibility' ), L.region || 'Accessibility tools' );
+		toggle.className += ' sssj-a11y-toggle';
+		toggle.setAttribute( 'aria-expanded', prefs.a11yOpen ? 'true' : 'false' );
+		toggle.addEventListener( 'click', function () {
+			var open = ! outer.classList.contains( 'is-open' );
+			outer.classList.toggle( 'is-open', open );
+			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			prefs.a11yOpen = open;
+			save();
+		} );
+		outer.appendChild( toggle );
+		outer.appendChild( bar );
+
 		if ( floating ) {
 			var wrap = document.createElement( 'div' );
 			wrap.className = 'sssj';
-			wrap.appendChild( bar );
+			wrap.appendChild( outer );
 			document.body.appendChild( wrap );
 		} else {
-			host.insertBefore( bar, host.firstChild );
+			host.insertBefore( outer, host.firstChild );
 		}
 	}
 

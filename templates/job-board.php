@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $basis = isset( $basis ) ? $basis : '';
 $heading = ! empty( $atts['title'] ) ? $atts['title'] : ( 'tfn' === $basis ? __( 'Employee positions', 'shuffles-social-services-jobs' ) : ( 'abn' === $basis ? __( 'Contractor & ABN engagements', 'shuffles-social-services-jobs' ) : __( 'Jobs', 'shuffles-social-services-jobs' ) ) );
 $cats    = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
-$cur_cat = isset( $_GET['sssj_cat'] ) ? sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_cats = isset( $_GET['sssj_cat'] ) ? array_filter( array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_cat'] ) ) ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $cur_q   = isset( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $card_mod = 'tfn' === $basis ? 'sssj-card--tfn' : ( 'abn' === $basis ? 'sssj-card--abn' : '' );
 $maps       = ! empty( $maps );
@@ -39,12 +39,11 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 			}
 			?>
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search jobs…', 'shuffles-social-services-jobs' ); ?>" />
-			<select class="sssj-select" name="sssj_cat">
-				<option value=""><?php esc_html_e( 'All categories', 'shuffles-social-services-jobs' ); ?></option>
+			<select class="sssj-select" name="sssj_cat[]" multiple data-placeholder="<?php esc_attr_e( 'All categories', 'shuffles-social-services-jobs' ); ?>">
 				<?php
 				if ( ! is_wp_error( $cats ) ) {
 					foreach ( $cats as $t ) {
-						echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_cat, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>';
+						echo '<option value="' . esc_attr( $t->slug ) . '" ' . ( in_array( $t->slug, $cur_cats, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>';
 					}
 				}
 				?>
@@ -62,7 +61,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 	</div>
 
 	<?php if ( $maps && $has_points ) : ?>
-		<div class="sssj-panel" style="padding:0;overflow:hidden;margin-bottom:16px"><div data-sssj-map style="height:360px;width:100%"></div></div>
+		<div class="sssj-panel sssj-map-panel" style="padding:0;overflow:hidden"><div data-sssj-map style="height:320px;width:100%"></div></div>
 	<?php endif; ?>
 
 	<?php if ( $query->have_posts() ) : ?>

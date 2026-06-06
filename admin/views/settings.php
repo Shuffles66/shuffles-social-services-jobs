@@ -480,6 +480,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.33.0 — 2026-06-06 · Accessibility toggle + centred map + multi-select filters</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'The accessibility toolbar is now hidden behind a single “♿ Accessibility” button (same position) and only opens when clicked — reclaiming page space.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'The directory map is now half-width and centred, with tasteful spacing between the filter banner and the cards.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Directory category/service filters are now multi-select (search-and-add pills) — filter by several categories at once.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.32.0 — 2026-06-06 · Wider language coverage on the directories</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'More of each directory now translates: headings, the “Available now / Within” controls, the “Only with open placements” toggle, and the search/location field placeholders (the language switcher now translates placeholders too). New strings added to all six languages.', 'shuffles-social-services-jobs' ); ?></li>

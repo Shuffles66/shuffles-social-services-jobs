@@ -324,7 +324,7 @@ class Shuffles_SSJ_Shortcodes {
 			'posts_per_page' => (int) $atts['per_page'],
 		);
 		if ( ! empty( $_GET['sssj_cat'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$extra['category'] = sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['category'] = array_filter( array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_cat'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 		if ( ! empty( $_GET['sssj_q'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['s'] = sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -500,7 +500,7 @@ class Shuffles_SSJ_Shortcodes {
 			'posts_per_page' => (int) $atts['per_page'],
 		);
 		if ( ! empty( $_GET['sssj_cat'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			$extra['category'] = sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['category'] = array_filter( array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_cat'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 		if ( ! empty( $_GET['sssj_q'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['s'] = sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended

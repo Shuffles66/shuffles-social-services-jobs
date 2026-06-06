@@ -52,7 +52,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 	</div>
 
 	<?php if ( $maps && $has_pts ) : ?>
-		<div class="sssj-panel" style="padding:0;overflow:hidden;margin-bottom:16px"><div data-sssj-map style="height:360px;width:100%"></div></div>
+		<div class="sssj-panel sssj-map-panel" style="padding:0;overflow:hidden"><div data-sssj-map style="height:320px;width:100%"></div></div>
 	<?php endif; ?>
 
 	<?php if ( $query->have_posts() ) : ?>

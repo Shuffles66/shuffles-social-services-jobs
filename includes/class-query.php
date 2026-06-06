@@ -62,7 +62,7 @@ class Shuffles_SSJ_Query {
 			$args['tax_query'][] = array(
 				'taxonomy' => 'sssjt_category',
 				'field'    => 'slug',
-				'terms'    => sanitize_title( $extra['category'] ),
+				'terms'    => array_map( 'sanitize_title', (array) $extra['category'] ),
 			);
 		}
 
@@ -126,7 +126,7 @@ class Shuffles_SSJ_Query {
 			$args['tax_query'][] = array(
 				'taxonomy' => 'sssjt_category',
 				'field'    => 'slug',
-				'terms'    => sanitize_title( $extra['category'] ),
+				'terms'    => array_map( 'sanitize_title', (array) $extra['category'] ),
 			);
 		}
 		if ( ! empty( $extra['s'] ) ) {
