@@ -83,8 +83,8 @@
 .sssj .sssj-badge--expired{ background:#e2e8f0; color:#475569; }
 
 /* Organisation branding: logo + social icons */
-.sssj .sssj-org-logo{ max-width:120px; max-height:80px; width:auto; height:auto; border-radius:8px; object-fit:contain; background:#fff; border:1px solid var(--sssj-line); }
-.sssj .sssj-card .sssj-org-logo{ max-width:64px; max-height:48px; flex:0 0 auto; }
+.sssj .sssj-org-logo{ max-width:72px; max-height:52px; width:auto; height:auto; border-radius:8px; object-fit:contain; background:#fff; border:1px solid var(--sssj-line); }
+.sssj .sssj-card .sssj-org-logo{ max-width:44px; max-height:44px; flex:0 0 auto; }
 .sssj .sssj-socials{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 4px; }
 .sssj .sssj-social{ width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff; text-decoration:none; font-weight:700; font-size:13px; line-height:1; transition:opacity var(--sssj-dur); }
 .sssj .sssj-social:hover{ opacity:.85; color:#fff; }
@@ -295,3 +295,29 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-gallery{ display:flex; gap:10px; overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:6px; -webkit-overflow-scrolling:touch; }
 .sssj .sssj-gallery__item{ flex:0 0 auto; scroll-snap-align:start; border-radius:var(--sssj-radius); overflow:hidden; box-shadow:var(--sssj-shadow); }
 .sssj .sssj-gallery__item img{ height:180px; width:auto; display:block; }
+
+/* Directory "read me — things to know" collapsible (native <details>, no JS) */
+.sssj .sssj-readme{ margin:0 0 var(--sssj-s4); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); background:var(--sssj-bg-soft); overflow:hidden; }
+.sssj .sssj-readme__summary{ cursor:pointer; list-style:none; padding:10px 14px; font-weight:var(--sssj-weight-strong); color:var(--sssj-blue-deep); display:flex; align-items:center; gap:8px; }
+.sssj .sssj-readme__summary::-webkit-details-marker{ display:none; }
+.sssj .sssj-readme__summary::marker{ content:""; }
+.sssj .sssj-readme__summary:hover{ background:#eef4fb; }
+.sssj .sssj-readme[open] .sssj-readme__summary{ border-bottom:1px solid var(--sssj-line); }
+.sssj .sssj-readme__icon{ font-size:1.05em; }
+.sssj .sssj-readme__body{ padding:12px 16px; }
+.sssj .sssj-readme__body p{ margin:6px 0; color:var(--sssj-text); }
+.sssj .sssj-readme__body ul{ margin:6px 0 0; padding-left:18px; }
+.sssj .sssj-readme__body li{ margin:3px 0; color:var(--sssj-text); }
+
+/* Blue-tick account verification (distinct from the green credential ✓ Verified badge) */
+.sssj .sssj-bluetick{ display:inline-flex; align-items:center; gap:4px; vertical-align:middle; font-size:var(--sssj-fs-sm); font-weight:var(--sssj-weight-strong); }
+.sssj .sssj-bluetick__mark{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; flex:0 0 auto; border-radius:50%; background:#1d9bf0; box-shadow:0 0 0 2px #fff; }
+.sssj .sssj-bluetick__mark::before{ content:"✓"; color:#fff; font-size:11px; font-weight:800; line-height:1; }
+.sssj .sssj-bluetick__label{ color:#1d9bf0; }
+
+/* Single-job suburb map (keyless Google Maps embed) */
+.sssj .sssj-jobmap{ border-radius:var(--sssj-radius); overflow:hidden; border:1px solid var(--sssj-line); }
+.sssj .sssj-jobmap iframe{ display:block; width:100%; height:300px; border:0; }
+/* No-colour accessibility mode keeps the tick legible as a dark ring. */
+.sssj-a11y-mono .sssj .sssj-bluetick__mark,
+.sssj-a11y-mono.sssj .sssj-bluetick__mark{ background:#334155; }

@@ -43,6 +43,7 @@ $status_labels = array(
 				<img class="sssj-worker-photo" src="<?php echo esc_url( $photo ); ?>" alt="" />
 			<?php endif; ?>
 			<div class="sssj-row" style="gap:8px;flex-wrap:wrap">
+				<?php echo Shuffles_SSJ_Verification::tick_html( $worker_id, true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<?php if ( $avail ) : ?><span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 				<?php if ( $verified ) : ?><span class="sssj-badge sssj-badge--verified">✓ <?php esc_html_e( 'Verified', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 				<?php if ( $status && isset( $status_labels[ $status ] ) ) : ?><span class="sssj-badge"><?php echo esc_html( $status_labels[ $status ] ); ?></span><?php endif; ?>

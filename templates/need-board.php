@@ -40,6 +40,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 		}
 		?>
 		<p class="description"><?php esc_html_e( 'These requests come from participants or their nominees. Identities are protected — first contact is made through the site, never by exposing personal details. Responding requires a recorded ABN.', 'shuffles-social-services-jobs' ); ?></p>
+		<?php Shuffles_SSJ_Shortcodes::render_readme( 'needs' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
 			<select class="sssj-select" name="sssj_support">
 				<option value=""><?php esc_html_e( 'All support types', 'shuffles-social-services-jobs' ); ?></option>
@@ -104,7 +105,21 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 					<?php if ( ! is_wp_error( $supps ) && ! empty( $supps ) ) : ?><p><strong><?php esc_html_e( 'Support:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( implode( ', ', $supps ) ); ?></p><?php endif; ?>
 					<?php if ( ! is_wp_error( $funds ) && ! empty( $funds ) ) : ?><p><strong><?php esc_html_e( 'Funding:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( implode( ', ', $funds ) ); ?></p><?php endif; ?>
 					<?php if ( $sched ) : ?><p><strong><?php esc_html_e( 'When:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( ucfirst( str_replace( '-', ' ', $sched ) ) ); ?></p><?php endif; ?>
-					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 28 ) ); ?></p>
+					<?php
+					$need_full  = trim( wp_strip_all_tags( get_the_content() ) );
+					$need_short = wp_trim_words( $need_full, 28 );
+					?>
+					<p><?php echo esc_html( $need_short ); ?></p>
+					<?php if ( $need_full && mb_strlen( $need_full ) > mb_strlen( $need_short ) ) : ?>
+						<details class="sssj-readme sssj-need-more">
+							<summary class="sssj-readme__summary"><span class="sssj-readme__icon" aria-hidden="true">⤢</span> <?php esc_html_e( 'View full request', 'shuffles-social-services-jobs' ); ?></summary>
+							<div class="sssj-readme__body">
+								<?php if ( $sched ) : ?><p><strong><?php esc_html_e( 'When:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( ucfirst( str_replace( '-', ' ', $sched ) ) ); ?></p><?php endif; ?>
+								<?php if ( $gender ) : ?><p><strong><?php esc_html_e( 'Worker gender preference:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( ucfirst( str_replace( '-', ' ', $gender ) ) ); ?></p><?php endif; ?>
+								<?php echo wp_kses_post( wpautop( $need_full ) ); ?>
+							</div>
+						</details>
+					<?php endif; ?>
 					<?php
 					if ( ! is_user_logged_in() ) {
 						echo '<p class="description">' . esc_html__( 'Log in to respond.', 'shuffles-social-services-jobs' ) . '</p>';

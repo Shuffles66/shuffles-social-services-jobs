@@ -28,6 +28,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 <div class="sssj sssj--orgs">
 	<div class="sssj-panel">
 		<h2 data-i18n="d_orgs"><?php esc_html_e( 'Organisations', 'shuffles-social-services-jobs' ); ?></h2>
+			<?php Shuffles_SSJ_Shortcodes::render_readme( 'orgs' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search by company name…', 'shuffles-social-services-jobs' ); ?>" />
 			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
@@ -72,7 +73,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
 						<?php $logo = Shuffles_SSJ_Org::logo_url( $oid, 'thumbnail' ); ?>
 						<?php if ( $logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $logo ); ?>" alt="" /><?php endif; ?>
-						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php echo Shuffles_SSJ_Verification::tick_html( $oid, false ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
 					</div>
 					<div class="sssj-row">
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>

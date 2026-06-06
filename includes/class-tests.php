@@ -28,6 +28,8 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'job-search', 'do' => __( 'On the Jobs board, search a keyword and pick a category.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results filter to matching jobs; the count updates.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-radius', 'do' => __( 'Type a suburb in the location field and set a radius (with no Google key set).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results narrow to jobs within the radius, nearest first (keyless geocoding).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-expire', 'do' => __( 'Set a job’s “Closes on” date in the past and wait for the daily cron (or run it).', 'shuffles-social-services-jobs' ), 'expect' => __( 'The job moves to draft and drops off the board.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'job-logo', 'do' => __( 'Attach a job to an organisation and leave its logo blank; then post another job and upload a logo.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The first job shows its organisation’s logo on the board card; the second shows its own uploaded logo (overrides the org’s).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'job-map', 'do' => __( 'Open a single job that has a location.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A Google map of the job’s suburb/town shows on the page (suburb level, no exact address). Works without a Google Maps API key.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
@@ -56,6 +58,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'need-post', 'do' => __( 'Post a participant support request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is held for admin moderation; once approved it shows only a pseudonym + suburb — never a name or contact detail.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-gate', 'do' => __( 'Open the Participant requests board as a logged-out guest.', 'shuffles-social-services-jobs' ), 'expect' => __( 'You are prompted to log in; no requests are shown.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-noindex', 'do' => __( 'View the page source / robots of a participant request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is noindex and excluded from sitemaps.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'need-details', 'do' => __( 'On a participant request card, click “View full request”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The full request details expand in place (when, gender preference, full description) — no separate page, so privacy is preserved.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
@@ -75,6 +78,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'cred-verify', 'do' => __( 'As an admin, open Jobs & Engagements → Verification, view the evidence, Approve it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The worker gains the ✓ Verified badge (and the verified checks show on their card).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cred-serve', 'do' => __( 'Copy an evidence link and open it while logged out (or as a different non-admin).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Access is denied — only the owner or an admin can open it.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cred-expire', 'do' => __( 'Set a verified credential’s expiry in the past; run the daily cron.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It expires, the badge drops, and a reminder email is sent.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'blue-tick', 'do' => __( 'As an admin, edit a worker or organisation, tick “Account verified (blue tick)” in the Verification box and update; then view the directory and profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A blue tick shows next to the name on cards and the profile (and on jobs from a verified org). Un-ticking removes it. It is separate from the green ✓ Verified credential badge.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
@@ -104,6 +108,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'clear-all', 'do' => __( 'With several filters applied, click “Clear all”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Every filter resets and the full list returns.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'use-my-location', 'do' => __( 'Click “Use my location” next to the location field and allow the browser prompt.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A default radius is applied and results re-sort to nearest first; denying access shows a friendly message.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mobile', 'do' => __( 'Open the boards, directories and forms on a phone (or a narrow window).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Filter controls stack full-width, cards go single-column, nothing overflows; it looks professional.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'readme', 'do' => __( 'On each directory, click “Read me — things to know”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A collapsible note opens with tips specific to that directory (jobs / workers / organisations / participant requests); click again to close.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(

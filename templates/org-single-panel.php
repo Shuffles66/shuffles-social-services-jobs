@@ -27,6 +27,7 @@ $extra   = is_array( $extra ) ? $extra : array();
 		<?php $logo = Shuffles_SSJ_Org::logo_url( $org_id, 'medium' ); ?>
 		<?php if ( $logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $logo ); ?>" alt="" style="margin-bottom:10px" /><?php endif; ?>
 		<div class="sssj-row">
+			<?php echo Shuffles_SSJ_Verification::tick_html( $org_id, true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 			<?php if ( $website ) : ?><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener nofollow"><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></a><?php endif; ?>
 			<?php if ( $phone ) : ?><span class="sssj-badge"><?php echo esc_html( $phone ); ?></span><?php endif; ?>

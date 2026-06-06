@@ -44,6 +44,9 @@ final class Shuffles_SSJ_Plugin {
 	/** @var Shuffles_SSJ_Frontend_Forms */
 	public $forms;
 
+	/** @var Shuffles_SSJ_Verification */
+	public $verification;
+
 	/** @var Shuffles_SSJ_Field_Registry */
 	public $field_registry;
 
@@ -80,6 +83,8 @@ final class Shuffles_SSJ_Plugin {
 		$this->seo->register();
 		$this->forms = new Shuffles_SSJ_Frontend_Forms();
 		$this->forms->register();
+		$this->verification = new Shuffles_SSJ_Verification();
+		$this->verification->register();
 		$this->field_registry = new Shuffles_SSJ_Field_Registry();
 		$this->field_registry->register();
 		$this->crm_sync = new Shuffles_SSJ_CRM_Sync( $this->settings );

@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 1112" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" role="img" aria-label="Workflow: applying as a worker to an ABN contract">
+  <defs>
+    <filter id="sh" x="-10%" y="-20%" width="120%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.10"/>
+    </filter>
+    <style>
+      .card{ fill:#ffffff; stroke:#e2e8f0; stroke-width:1.5; filter:url(#sh); }
+      .num{ fill:#7c3aed; }
+      .numt{ fill:#ffffff; font-size:20px; font-weight:700; text-anchor:middle; }
+      .ttl{ fill:#0f172a; font-size:18px; font-weight:700; }
+      .dsc{ fill:#475569; font-size:13px; }
+      .htitle{ fill:#ffffff; font-size:22px; font-weight:800; text-anchor:middle; }
+      .hsub{ fill:#ede9fe; font-size:13px; text-anchor:middle; }
+      .foot{ fill:#94a3b8; font-size:12px; text-anchor:middle; }
+      .tag{ fill:#7c3aed; font-size:12px; font-weight:700; }
+    </style>
+  </defs>
+
+  <rect width="880" height="1112" fill="#f8fafc"/>
+
+  <!-- Header band -->
+  <rect x="80" y="24" width="720" height="72" rx="14" fill="#7c3aed"/>
+  <text class="htitle" x="440" y="58">Applying as a worker to an ABN contract</text>
+  <text class="hsub" x="440" y="80">Contractor / sole-trader &amp; participant tasks — you invoice via your ABN</text>
+
+  <!-- Step 1 -->
+  <rect class="card" x="80" y="120" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="162" r="22"/><text class="numt" x="128" y="169">1</text>
+  <text class="ttl" x="186" y="156">Create your worker / contractor profile</text>
+  <text class="dsc" x="186" y="180">Add your services, location, rate and a profile photo.</text>
+  <line x1="440" y1="210" x2="440" y2="228" stroke="#7c3aed" stroke-width="3"/><polygon points="440,236 433,226 447,226" fill="#7c3aed"/>
+
+  <!-- Step 2 -->
+  <rect class="card" x="80" y="238" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="280" r="22"/><text class="numt" x="128" y="287">2</text>
+  <text class="ttl" x="186" y="274">Record your ABN</text>
+  <text class="dsc" x="186" y="298">Enter your 11-digit ABN — it is validated and required for ABN work.</text>
+  <line x1="440" y1="328" x2="440" y2="346" stroke="#7c3aed" stroke-width="3"/><polygon points="440,354 433,344 447,344" fill="#7c3aed"/>
+
+  <!-- Step 3 -->
+  <rect class="card" x="80" y="356" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="398" r="22"/><text class="numt" x="128" y="405">3</text>
+  <text class="ttl" x="186" y="392">Get verified</text>
+  <text class="dsc" x="186" y="416">Upload credentials for admin approval → green &#10003; Verified &amp; the blue tick.</text>
+  <line x1="440" y1="446" x2="440" y2="464" stroke="#7c3aed" stroke-width="3"/><polygon points="440,472 433,462 447,462" fill="#7c3aed"/>
+
+  <!-- Step 4 -->
+  <rect class="card" x="80" y="474" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="516" r="22"/><text class="numt" x="128" y="523">4</text>
+  <text class="ttl" x="186" y="510">Find ABN work</text>
+  <text class="dsc" x="186" y="534">Browse the ABN board &amp; participant requests; filter by service, funding, area.</text>
+  <line x1="440" y1="564" x2="440" y2="582" stroke="#7c3aed" stroke-width="3"/><polygon points="440,590 433,580 447,580" fill="#7c3aed"/>
+
+  <!-- Step 5 -->
+  <rect class="card" x="80" y="592" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="634" r="22"/><text class="numt" x="128" y="641">5</text>
+  <text class="ttl" x="186" y="628">Respond or quote</text>
+  <text class="dsc" x="186" y="652">Send a response or quote (a provider subscription may be required).</text>
+  <line x1="440" y1="682" x2="440" y2="700" stroke="#7c3aed" stroke-width="3"/><polygon points="440,708 433,698 447,698" fill="#7c3aed"/>
+
+  <!-- Step 6 -->
+  <rect class="card" x="80" y="710" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="752" r="22"/><text class="numt" x="128" y="759">6</text>
+  <text class="ttl" x="186" y="746">Message securely</text>
+  <text class="dsc" x="186" y="770">First contact runs through the private relay — no personal details exposed.</text>
+  <line x1="440" y1="800" x2="440" y2="818" stroke="#7c3aed" stroke-width="3"/><polygon points="440,826 433,816 447,816" fill="#7c3aed"/>
+
+  <!-- Step 7 -->
+  <rect class="card" x="80" y="828" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="870" r="22"/><text class="numt" x="128" y="877">7</text>
+  <text class="ttl" x="186" y="864">Agree the terms</text>
+  <text class="dsc" x="186" y="888">Confirm the scope, schedule and rate with the client or participant.</text>
+  <line x1="440" y1="918" x2="440" y2="936" stroke="#7c3aed" stroke-width="3"/><polygon points="440,944 433,934 447,934" fill="#7c3aed"/>
+
+  <!-- Step 8 -->
+  <rect class="card" x="80" y="946" width="720" height="84" rx="14"/>
+  <circle class="num" cx="128" cy="988" r="22"/><text class="numt" x="128" y="995">8</text>
+  <text class="ttl" x="186" y="982">Invoice via your ABN</text>
+  <text class="dsc" x="186" y="1006">Deliver the work and invoice — you are a contractor, not an employee.</text>
+
+  <text class="foot" x="440" y="1072">Shuffles — Social Services Jobs &amp; Engagements   ·   ABN engagement pathway</text>
+</svg>

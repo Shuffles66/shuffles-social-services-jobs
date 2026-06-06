@@ -37,6 +37,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
+		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_panel' ) );
@@ -49,9 +50,12 @@ class Shuffles_SSJ_Shortcodes {
 
 	/** Echo the [sssj_menu] bar at the top of the page when the "auto header menu" option is on. */
 	public function auto_header_menu() {
-		if ( is_admin() ) {
+		static $done = false;
+		// Some themes fire wp_body_open more than once — only ever render the auto menu a single time.
+		if ( is_admin() || $done ) {
 			return;
 		}
+		$done = true;
 		echo '<div class="sssj-auto-menu">' . do_shortcode( '[sssj_menu]' ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
 	}
 
@@ -819,6 +823,68 @@ class Shuffles_SSJ_Shortcodes {
 		echo '<noscript><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Filter', 'shuffles-social-services-jobs' ) . '</button></noscript>';
 	}
 
+	/**
+	 * "Things to know" content per directory type — single source of truth for the read-me panels.
+	 *
+	 * @return array { title, intro, points[] } | null
+	 */
+	public static function readme( $type ) {
+		$map = array(
+			'jobs' => array(
+				'title'  => __( 'About this jobs board', 'shuffles-social-services-jobs' ),
+				'intro'  => __( 'Roles posted by organisations and sole traders across disability, aged care and social services.', 'shuffles-social-services-jobs' ),
+				'points' => array(
+					__( 'TFN roles are employee positions (wages, tax withheld). ABN roles are contractor / sole-trader work you invoice for.', 'shuffles-social-services-jobs' ),
+					__( 'Use the search, category, location and radius filters — results update as you change them.', 'shuffles-social-services-jobs' ),
+					__( 'Open a job to see full details and apply. First contact is made through the site.', 'shuffles-social-services-jobs' ),
+				),
+			),
+			'workers' => array(
+				'title'  => __( 'About finding workers', 'shuffles-social-services-jobs' ),
+				'intro'  => __( 'Available workers and contractors who have opted in to be found.', 'shuffles-social-services-jobs' ),
+				'points' => array(
+					__( 'Filter by service, “available now”, and location / radius. Tick “Use my location” to find people near you.', 'shuffles-social-services-jobs' ),
+					__( 'A ✓ Verified badge means an admin has confirmed that worker’s credentials.', 'shuffles-social-services-jobs' ),
+					__( 'Some profiles are visible to logged-in members only — log in to see everyone.', 'shuffles-social-services-jobs' ),
+				),
+			),
+			'orgs' => array(
+				'title'  => __( 'About organisations', 'shuffles-social-services-jobs' ),
+				'intro'  => __( 'Provider and employer profiles — browse open roles by company.', 'shuffles-social-services-jobs' ),
+				'points' => array(
+					__( 'Filter by sector, funding, location / radius, and “only with open placements”.', 'shuffles-social-services-jobs' ),
+					__( 'Each card shows current open jobs and people placed all-time.', 'shuffles-social-services-jobs' ),
+					__( 'Open a profile to see all locations and its open positions.', 'shuffles-social-services-jobs' ),
+				),
+			),
+			'needs' => array(
+				'title'  => __( 'About participant requests', 'shuffles-social-services-jobs' ),
+				'intro'  => __( 'Support requests from participants or their nominees. Privacy is protected at all times.', 'shuffles-social-services-jobs' ),
+				'points' => array(
+					__( 'Requests show a pseudonym and a suburb only — never a name or contact details.', 'shuffles-social-services-jobs' ),
+					__( 'You need a recorded ABN to respond. First contact is made through the site.', 'shuffles-social-services-jobs' ),
+					__( 'Be respectful and professional — these are vulnerable members of the community.', 'shuffles-social-services-jobs' ),
+				),
+			),
+		);
+		return isset( $map[ $type ] ) ? $map[ $type ] : null;
+	}
+
+	/** Render the collapsible "Things to know" read-me for a directory (native <details>, no JS). */
+	public static function render_readme( $type ) {
+		$r = self::readme( $type );
+		if ( ! $r ) {
+			return;
+		}
+		echo '<details class="sssj-readme"><summary class="sssj-readme__summary"><span class="sssj-readme__icon" aria-hidden="true">ℹ︎</span> ' . esc_html__( 'Read me — things to know', 'shuffles-social-services-jobs' ) . '</summary>';
+		echo '<div class="sssj-readme__body"><strong>' . esc_html( $r['title'] ) . '</strong>';
+		echo '<p>' . esc_html( $r['intro'] ) . '</p><ul>';
+		foreach ( $r['points'] as $p ) {
+			echo '<li>' . esc_html( $p ) . '</li>';
+		}
+		echo '</ul></div></details>';
+	}
+
 	/** Testing worksheet (the tester checklist). */
 	public function tests_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );
@@ -940,6 +1006,42 @@ class Shuffles_SSJ_Shortcodes {
 			return $content . ob_get_clean();
 		}
 		return $content;
+	}
+
+	/**
+	 * Append a Google map of the job's suburb/town on a single job page (keyless Google Maps embed,
+	 * so it works without an API key). Suburb-level only — no exact address is shown.
+	 */
+	public function maybe_job_map( $content ) {
+		if ( ! ( is_singular( 'sssj_job' ) && in_the_loop() && is_main_query() ) ) {
+			return $content;
+		}
+		$id    = get_the_ID();
+		$sub   = (string) get_post_meta( $id, 'location_suburb', true );
+		$state = (string) get_post_meta( $id, 'location_state', true );
+		$lat   = (float) get_post_meta( $id, 'location_lat', true );
+		$lng   = (float) get_post_meta( $id, 'location_lng', true );
+		if ( '' === $sub && ! ( $lat && $lng ) ) {
+			return $content; // no location to show
+		}
+		$query = ( $lat && $lng ) ? ( $lat . ',' . $lng ) : trim( $sub . ' ' . $state . ' Australia' );
+		$src   = 'https://maps.google.com/maps?q=' . rawurlencode( $query ) . '&z=12&output=embed';
+		$label = trim( $sub . ' ' . $state );
+
+		wp_enqueue_style( 'sssj' );
+		ob_start();
+		?>
+		<div class="sssj sssj--jobmap">
+			<div class="sssj-panel">
+				<h3 style="margin-top:0">📍 <?php echo esc_html( '' !== $label ? $label : __( 'Location', 'shuffles-social-services-jobs' ) ); ?></h3>
+				<div class="sssj-jobmap">
+					<iframe title="<?php echo esc_attr( sprintf( __( 'Map of %s', 'shuffles-social-services-jobs' ), $label ) ); ?>" src="<?php echo esc_url( $src ); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+				</div>
+				<p class="description"><?php esc_html_e( 'Approximate location — shown at suburb level.', 'shuffles-social-services-jobs' ); ?></p>
+			</div>
+		</div>
+		<?php
+		return $content . ob_get_clean();
 	}
 
 	/** Render the worker's details (services, rate, location, credentials, photos) on their profile page. */

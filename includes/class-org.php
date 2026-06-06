@@ -37,6 +37,23 @@ class Shuffles_SSJ_Org {
 		return $url ? (string) $url : '';
 	}
 
+	/**
+	 * A job's logo: its own featured image if set, otherwise the linked organisation's logo.
+	 * "Inherit from organisation by default" — so a job without a logo shows its company's brand.
+	 *
+	 * @param int    $job_id Job post ID.
+	 * @param string $size   Image size.
+	 * @return string URL or ''.
+	 */
+	public static function job_logo_url( $job_id, $size = 'thumbnail' ) {
+		$own = get_the_post_thumbnail_url( (int) $job_id, $size );
+		if ( $own ) {
+			return (string) $own;
+		}
+		$org = (int) get_post_meta( (int) $job_id, 'organisation_id', true );
+		return $org ? self::logo_url( $org, $size ) : '';
+	}
+
 	/** Rendered social-icon row for an org (empty string if none set). */
 	public static function social_html( $org_id ) {
 		$out = '';

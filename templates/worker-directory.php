@@ -29,6 +29,7 @@ $w_pts   = ! empty( $has_points );
 <div class="sssj sssj--workers">
 	<div class="sssj-panel">
 		<h2<?php echo empty( $atts['title'] ) ? ' data-i18n="d_workers"' : ''; ?>><?php echo esc_html( $heading ); ?></h2>
+		<?php Shuffles_SSJ_Shortcodes::render_readme( 'workers' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_workers" />
 			<select class="sssj-select" name="sssj_cat[]" multiple data-placeholder="<?php esc_attr_e( 'All services', 'shuffles-social-services-jobs' ); ?>">
@@ -77,7 +78,7 @@ $w_pts   = ! empty( $has_points );
 					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
 						<?php $w_photo = get_the_post_thumbnail_url( $pid, 'thumbnail' ); ?>
 						<?php if ( $w_photo ) : ?><img class="sssj-worker-photo sssj-worker-photo--sm" src="<?php echo esc_url( $w_photo ); ?>" alt="" /><?php endif; ?>
-						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php echo Shuffles_SSJ_Verification::tick_html( $pid, false ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
 					</div>
 					<div class="sssj-row">
 						<?php if ( '1' === $avail2 ) : ?><span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Available', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>

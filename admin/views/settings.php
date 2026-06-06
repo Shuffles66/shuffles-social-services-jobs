@@ -687,7 +687,24 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v0.40.0 — 2026-06-06 · Elementor widget pack for the front-page blocks</h3>
+				<h3>v0.43.0 — 2026-06-06 · Account verification “blue tick”</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New account-level “blue tick” verification for workers and organisations — an admin-granted trust mark, separate from the green ✓ Verified credential badge. Grant it from the “Verification (blue tick)” box on the worker/organisation edit screen.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The blue tick shows next to the name on directory cards and profiles (and on a job from a verified organisation). Use it for accounts whose identity and key checks you have confirmed.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Single job pages now show a Google map of the job’s suburb/town (suburb-level only — no exact address). Works without a Google Maps API key.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant request cards now have a “View full request” expander showing the full details in place. Participant requests stay private (pseudonymous, no public page), so the drill-down expands on the card rather than linking to a separate URL.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.42.0 — 2026-06-06 · Per-directory “read me” notes + job logos (inherit from organisation)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Each directory (jobs, workers, organisations, participant requests) now has a collapsible “Read me — things to know” note under the banner, with tips specific to that directory. Plain, accessible, no JavaScript.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Jobs now show a logo: by default a job inherits its organisation’s logo automatically; you can upload a per-job logo on the posting form to override it. Logos appear on the job board cards.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.41.0 — 2026-06-06 · Fix: auto header menu rendering twice</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “Show navigation menu at the top of every page” option could output the menu twice on themes that fire the wp_body_open hook more than once. It now renders at most once per page. (If you also placed an [sssj_menu] manually, switch this testing option off in Settings → General.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Organisation logos are now smaller on cards and profiles (less dominant).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.40.0 — 2026-06-06 · Elementor widget pack for the front-page blocks</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New “Shuffles Jobs” Elementor widget category with drag-and-drop widgets for the home-page blocks: Hero banner, Animated stats, Featured roles, Recent items, and the Navigation menu. Each has visual controls (headings, button text/links, counts, type, layout) and previews live in the Elementor editor.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Standalone-first: the widgets only load when Elementor is active (no hard dependency). Without Elementor, use the [sssj_hero], [sssj_stats], [sssj_featured], [sssj_recent] and [sssj_menu] shortcodes as before. Elementor now also appears on the Integrations tab.', 'shuffles-social-services-jobs' ); ?></li>

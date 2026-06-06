@@ -30,6 +30,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 <div class="sssj sssj--board">
 	<div class="sssj-panel">
 		<h2><?php echo esc_html( $heading ); ?></h2>
+			<?php Shuffles_SSJ_Shortcodes::render_readme( 'jobs' ); ?>
 
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
 			<?php
@@ -86,7 +87,11 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 				}
 				?>
 				<article class="sssj-card <?php echo esc_attr( $mod ); ?>">
-					<h3 style="margin-top:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
+						<?php $job_logo = class_exists( 'Shuffles_SSJ_Org' ) ? Shuffles_SSJ_Org::job_logo_url( $pid, 'thumbnail' ) : ''; ?>
+						<?php if ( $job_logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $job_logo ); ?>" alt="" /><?php endif; ?>
+						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php $job_org = (int) get_post_meta( $pid, 'organisation_id', true ); if ( $job_org ) { echo Shuffles_SSJ_Verification::tick_html( $job_org, false ); } // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
+					</div>
 					<div class="sssj-row">
 						<?php if ( $featured ) : ?><span class="sssj-badge sssj-badge--featured" data-i18n="featured"><?php esc_html_e( '★ Featured', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis_m ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis_m ? __( 'TFN (employee)', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' ) ); ?></span>

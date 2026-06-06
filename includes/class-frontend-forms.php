@@ -104,6 +104,17 @@ class Shuffles_SSJ_Frontend_Forms {
 			update_post_meta( $post_id, $k, $v );
 		}
 
+		// Optional per-job logo → featured image (otherwise the job inherits its organisation's logo).
+		if ( ! empty( $_FILES['job_logo']['name'] ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+			$att = media_handle_upload( 'job_logo', $post_id );
+			if ( ! is_wp_error( $att ) ) {
+				set_post_thumbnail( $post_id, $att );
+			}
+		}
+
 		if ( ! empty( $_POST['category'] ) ) {
 			$term_id = (int) $_POST['category'];
 			if ( $term_id > 0 ) {

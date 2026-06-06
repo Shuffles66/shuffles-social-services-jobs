@@ -39,7 +39,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 			<p class="sssj-badge" style="background:#fef3c7;color:#92400e"><?php echo esc_html( Shuffles_SSJ_Monetisation::post_job_block_reason() ); ?></p>
 			<p class="description"><?php esc_html_e( 'Upgrade your advertiser subscription to post more jobs.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php else : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data">
 				<input type="hidden" name="action" value="sssj_post_job" />
 				<?php wp_nonce_field( 'sssj_post_job', 'sssj_job_nonce' ); ?>
 
@@ -51,6 +51,12 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 				<div class="sssj-field">
 					<label for="sssj-desc"><?php esc_html_e( 'Description', 'shuffles-social-services-jobs' ); ?></label>
 					<textarea class="sssj-textarea" id="sssj-desc" name="description" rows="6"></textarea>
+				</div>
+
+				<div class="sssj-field">
+					<label for="sssj-joblogo"><?php esc_html_e( 'Logo (optional)', 'shuffles-social-services-jobs' ); ?></label>
+					<input id="sssj-joblogo" type="file" name="job_logo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" />
+					<p class="description"><?php esc_html_e( 'Leave blank to use your organisation’s logo automatically. Upload one only to override it for this job.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
 				<div class="sssj-field">
