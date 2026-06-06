@@ -95,6 +95,25 @@ class Shuffles_SSJ_Org {
 		return $min;
 	}
 
+	/**
+	 * Placement stats for an org card: open = currently-published jobs; placed = all-time applications
+	 * to ANY of the org's jobs (incl. closed) that reached 'offer' status (people the org placed).
+	 *
+	 * @return array { open, placed }
+	 */
+	public static function stats( $org_id ) {
+		global $wpdb;
+		$org_id   = (int) $org_id;
+		$open_ids = get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 'no_found_rows' => true, 'meta_query' => array( array( 'key' => 'organisation_id', 'value' => $org_id ) ) ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$all_ids  = get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'any', 'posts_per_page' => 1000, 'fields' => 'ids', 'no_found_rows' => true, 'meta_query' => array( array( 'key' => 'organisation_id', 'value' => $org_id ) ) ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$placed   = 0;
+		if ( $all_ids ) {
+			$in     = implode( ',', array_map( 'intval', $all_ids ) );
+			$placed = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}sssj_application WHERE status = 'offer' AND job_id IN ($in)" ); // phpcs:ignore WordPress.DB
+		}
+		return array( 'open' => count( $open_ids ), 'placed' => $placed );
+	}
+
 	/** Plain list of an org's social URLs (for JSON-LD sameAs). */
 	public static function social_urls( $org_id ) {
 		$urls = array();

@@ -76,6 +76,9 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<div class="sssj-row">
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 						<?php if ( $locn > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d location', '%d locations', $locn, 'shuffles-social-services-jobs' ), $locn ) ); ?></span><?php endif; ?>
+						<?php $o_stats = Shuffles_SSJ_Org::stats( $oid ); ?>
+						<span class="sssj-badge sssj-badge--verified" title="<?php esc_attr_e( 'Currently open positions', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_html( sprintf( _n( '%d open job', '%d open jobs', $o_stats['open'], 'shuffles-social-services-jobs' ), $o_stats['open'] ) ); ?></span>
+						<?php if ( $o_stats['placed'] > 0 ) : ?><span class="sssj-badge sssj-badge--featured" title="<?php esc_attr_e( 'People placed, all time', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_html( sprintf( _n( '%d placed', '%d placed', $o_stats['placed'], 'shuffles-social-services-jobs' ), $o_stats['placed'] ) ); ?></span><?php endif; ?>
 					</div>
 					<?php echo Shuffles_SSJ_Org::social_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<?php

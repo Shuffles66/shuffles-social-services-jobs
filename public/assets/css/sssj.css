@@ -102,6 +102,27 @@
 .sssj .ts-dropdown .option{ padding:9px 12px; }
 .sssj .ts-dropdown .active{ background:#eaf3fb; color:var(--sssj-blue-deep); }
 .sssj .ts-dropdown .ts-dropdown-content{ border-radius:var(--sssj-radius); }
+
+/* Filter banners — compact + tidy (the location field was far too wide) */
+.sssj form.sssj-row{ gap:8px; align-items:center; }
+.sssj form.sssj-row [name="sssj_q"]{ flex:1 1 170px; min-width:140px; }
+.sssj form.sssj-row [name="sssj_loc"]{ flex:0 1 160px; max-width:160px; min-width:120px; }
+.sssj form.sssj-row > .sssj-select,
+.sssj form.sssj-row > .ts-wrapper{ flex:0 1 180px; min-width:130px; }
+.sssj .sssj-radius{ flex:0 0 auto; white-space:nowrap; gap:6px; }
+.sssj .sssj-radius input[type="range"]{ width:104px; vertical-align:middle; accent-color:var(--sssj-blue); }
+.sssj .sssj-radius output{ min-width:46px; display:inline-block; font-weight:var(--sssj-weight-strong); color:var(--sssj-blue-deep); }
+
+/* Responsive: stack filter controls + single-column cards on small screens */
+@media (max-width:640px){
+	.sssj form.sssj-row{ flex-direction:column; align-items:stretch; }
+	.sssj form.sssj-row > *{ flex:1 1 auto !important; max-width:none !important; width:100%; }
+	.sssj form.sssj-row .sssj-radius{ flex-direction:row; justify-content:space-between; }
+	.sssj form.sssj-row .sssj-radius input[type="range"]{ flex:1; width:auto; }
+	.sssj .sssj-grid{ grid-template-columns:1fr; }
+	.sssj .sssj-panel{ padding:var(--sssj-s4); }
+	.sssj-a11y-bar--floating{ max-width:92vw; }
+}
 /* Navigation menu (login-aware) — responsive, wraps on small screens (no JS needed) */
 .sssj.sssj-nav{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 12px; background:var(--sssj-bg); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); }
 .sssj.sssj-nav .sssj-nav__brand{ font-weight:var(--sssj-weight-strong); color:var(--sssj-ink); margin-right:8px; }

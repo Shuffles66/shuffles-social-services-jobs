@@ -474,6 +474,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.30.0 — 2026-06-06 · Searchable multi-selects + tighter filter banner + org counters + responsive</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Checkbox grids are now searchable multi-selects (type-ahead pills): worker “Services you offer”, and the participant request’s support types + funding sources. Search and add, instead of scanning a long list.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Org cards show two counters: open jobs now, and total placed (all-time applicants the org marked as an Offer).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Tighter filter banners — the location field is no longer over-wide — and a mobile/responsive pass (controls stack full-width, single-column cards) for a more professional small-screen layout.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.29.0 — 2026-06-06 · Organisation sectors + funding sources (pills + filters)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Organisations can now select the sectors they cover and the funding sources they accept (NDIS, Aged Care, DVA, etc.). These show as pills on the org card and are emitted in the org profile.', 'shuffles-social-services-jobs' ); ?></li>

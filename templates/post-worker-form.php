@@ -91,17 +91,16 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 				</div>
 
 				<div class="sssj-field">
-					<label><?php esc_html_e( 'Services you offer', 'shuffles-social-services-jobs' ); ?></label>
-					<div class="sssj-row" style="flex-wrap:wrap">
+					<label for="sssj-wservices"><?php esc_html_e( 'Services you offer', 'shuffles-social-services-jobs' ); ?></label>
+					<select class="sssj-select" id="sssj-wservices" name="services[]" multiple data-placeholder="<?php esc_attr_e( 'Search and add services…', 'shuffles-social-services-jobs' ); ?>">
 						<?php
 						if ( ! is_wp_error( $cats ) ) {
 							foreach ( $cats as $t ) {
-								$checked = in_array( $t->term_id, (array) $ex_services, true ) ? 'checked' : '';
-								echo '<label class="sssj-chip"><input type="checkbox" name="services[]" value="' . esc_attr( $t->term_id ) . '" ' . esc_attr( $checked ) . ' /> ' . esc_html( $t->name ) . '</label>';
+								echo '<option value="' . esc_attr( $t->term_id ) . '" ' . ( in_array( $t->term_id, (array) $ex_services, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>';
 							}
 						}
 						?>
-					</div>
+					</select>
 				</div>
 
 				<div class="sssj-field" data-sssj-place-group>

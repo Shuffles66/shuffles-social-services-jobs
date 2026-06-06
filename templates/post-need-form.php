@@ -58,29 +58,29 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 				</div>
 
 				<div class="sssj-field">
-					<label><?php esc_html_e( 'Type of support', 'shuffles-social-services-jobs' ); ?></label>
-					<div class="sssj-row" style="flex-wrap:wrap">
+					<label for="sssj-support"><?php esc_html_e( 'Type of support', 'shuffles-social-services-jobs' ); ?></label>
+					<select class="sssj-select" id="sssj-support" name="support_categories[]" multiple data-placeholder="<?php esc_attr_e( 'Search and add support types…', 'shuffles-social-services-jobs' ); ?>">
 						<?php
 						if ( ! is_wp_error( $support ) ) {
 							foreach ( $support as $t ) {
-								echo '<label class="sssj-chip"><input type="checkbox" name="support_categories[]" value="' . esc_attr( $t->term_id ) . '" /> ' . esc_html( $t->name ) . '</label>';
+								echo '<option value="' . esc_attr( $t->term_id ) . '">' . esc_html( $t->name ) . '</option>';
 							}
 						}
 						?>
-					</div>
+					</select>
 				</div>
 
 				<div class="sssj-field">
-					<label><?php esc_html_e( 'Funding (choose one, several, or none)', 'shuffles-social-services-jobs' ); ?></label>
-					<div class="sssj-row" style="flex-wrap:wrap">
+					<label for="sssj-funding"><?php esc_html_e( 'Funding (choose one, several, or none)', 'shuffles-social-services-jobs' ); ?></label>
+					<select class="sssj-select" id="sssj-funding" name="funding_sources[]" multiple data-placeholder="<?php esc_attr_e( 'Search and add funding sources…', 'shuffles-social-services-jobs' ); ?>">
 						<?php
 						if ( ! is_wp_error( $funding ) ) {
 							foreach ( $funding as $t ) {
-								echo '<label class="sssj-chip"><input type="checkbox" name="funding_sources[]" value="' . esc_attr( $t->term_id ) . '" /> ' . esc_html( $t->name ) . '</label>';
+								echo '<option value="' . esc_attr( $t->term_id ) . '">' . esc_html( $t->name ) . '</option>';
 							}
 						}
 						?>
-					</div>
+					</select>
 				</div>
 
 				<div class="sssj-row">
