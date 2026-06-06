@@ -62,8 +62,8 @@ class Shuffles_SSJ_Integrations {
 	public function descriptors() {
 		return array(
 			'buddyboss'       => array( 'BuddyBoss', __( 'Worker profiles link to plain WP users.', 'shuffles-social-services-jobs' ) ),
-			'geomywp'         => array( 'Geo my WP', __( 'Own location meta + Haversine radius.', 'shuffles-social-services-jobs' ) ),
-			'google_maps'     => array( 'Google Maps / Places', __( 'Manual suburb/postcode; list view (no key).', 'shuffles-social-services-jobs' ) ),
+			'geomywp'         => array( 'Geo my WP (not required)', __( 'Geo is self-hosted — own location meta + Haversine radius + own geocoder. Geo my WP is never called.', 'shuffles-social-services-jobs' ) ),
+			'google_maps'     => array( 'Google Maps / Places (optional)', __( 'Keyless fallback: own OpenStreetMap geocoder + radius + list view. A key only adds autocomplete + the Google map.', 'shuffles-social-services-jobs' ) ),
 			'pmpro'           => array( 'Paid Memberships Pro', __( 'Own capability + per-role limits.', 'shuffles-social-services-jobs' ) ),
 			'fluentcart'      => array( 'FluentCart', __( 'Admin-set entitlements; billing notice.', 'shuffles-social-services-jobs' ) ),
 			'fluentcrm'       => array( 'FluentCRM', __( 'wp_mail reminders/notifications.', 'shuffles-social-services-jobs' ) ),

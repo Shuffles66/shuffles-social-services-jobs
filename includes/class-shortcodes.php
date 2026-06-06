@@ -155,7 +155,7 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		$this->read_radius( $extra );
 
-		$query  = new WP_Query( Shuffles_SSJ_Query::base_args( $basis, $extra ) );
+		$query  = $this->build_board_query( 'job', $basis, $extra, (int) $atts['per_page'] );
 		$points = $this->points_from_query( $query );
 		$maps   = $this->enqueue_maps( $points );
 
@@ -179,12 +179,76 @@ class Shuffles_SSJ_Shortcodes {
 	/** Read a geocoded centre + radius from the request into $extra. */
 	private function read_radius( &$extra ) {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
-		if ( ! empty( $_GET['sssj_lat'] ) && ! empty( $_GET['sssj_lng'] ) && ! empty( $_GET['sssj_radius'] ) ) {
+		$radius = isset( $_GET['sssj_radius'] ) ? (float) $_GET['sssj_radius'] : 0;
+		if ( $radius <= 0 ) {
+			return;
+		}
+		if ( ! empty( $_GET['sssj_lat'] ) && ! empty( $_GET['sssj_lng'] ) ) {
+			// Client-side coordinates (Google autocomplete).
 			$extra['lat']    = (float) $_GET['sssj_lat'];
 			$extra['lng']    = (float) $_GET['sssj_lng'];
-			$extra['radius'] = (float) $_GET['sssj_radius'];
+			$extra['radius'] = $radius;
+		} elseif ( ! empty( $_GET['sssj_loc'] ) ) {
+			// No client coordinates (e.g. no Google key) — geocode the typed place ourselves.
+			$hit = Shuffles_SSJ_Geo::geocode( sanitize_text_field( wp_unslash( $_GET['sssj_loc'] ) ) );
+			if ( $hit ) {
+				$extra['lat']    = (float) $hit['lat'];
+				$extra['lng']    = (float) $hit['lng'];
+				$extra['radius'] = $radius;
+			}
 		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+	}
+
+	/**
+	 * Build a board query. When a radius centre is present, the bounding box pre-filters
+	 * cheaply in the query layer, then we refine to the exact great-circle radius and order
+	 * nearest-first (pagination reflects the full in-radius set).
+	 *
+	 * @param string $which 'job' | 'need'
+	 */
+	private function build_board_query( $which, $basis, $extra, $per_page ) {
+		$per_page   = max( 1, (int) $per_page );
+		$has_centre = ! empty( $extra['lat'] ) && ! empty( $extra['lng'] ) && ! empty( $extra['radius'] );
+		if ( ! $has_centre ) {
+			$args = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $extra ) : Shuffles_SSJ_Query::base_args( $basis, $extra );
+			return new WP_Query( $args );
+		}
+
+		// 1) Cheap bounding-box candidate pass (ids only).
+		$cand                   = $extra;
+		$cand['posts_per_page'] = 500;
+		$cand['paged']          = 1;
+		$cand_args              = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $cand ) : Shuffles_SSJ_Query::base_args( $basis, $cand );
+		$cand_args['fields']         = 'ids';
+		$cand_args['posts_per_page'] = 500;
+		$cand_args['paged']          = 1;
+		$cand_args['no_found_rows']  = true;
+		$cand_ids = ( new WP_Query( $cand_args ) )->posts;
+
+		// 2) Exact radius + nearest-first ordering.
+		$ordered  = Shuffles_SSJ_Geo::order_ids_by_distance( $cand_ids, (float) $extra['lat'], (float) $extra['lng'], (float) $extra['radius'] );
+		$total    = count( $ordered );
+		$paged    = max( 1, (int) ( isset( $extra['paged'] ) ? $extra['paged'] : 1 ) );
+		$page_ids = array_slice( $ordered, ( $paged - 1 ) * $per_page, $per_page );
+
+		$post_type = ( 'need' === $which ) ? 'sssj_need' : 'sssj_job';
+		if ( empty( $page_ids ) ) {
+			return new WP_Query( array( 'post_type' => $post_type, 'post__in' => array( 0 ), 'posts_per_page' => $per_page ) );
+		}
+		$q = new WP_Query(
+			array(
+				'post_type'      => $post_type,
+				'post_status'    => 'publish',
+				'post__in'       => $page_ids,
+				'orderby'        => 'post__in',
+				'posts_per_page' => $per_page,
+				'no_found_rows'  => true,
+			)
+		);
+		$q->found_posts   = $total;
+		$q->max_num_pages = (int) ceil( $total / $per_page );
+		return $q;
 	}
 
 	/** Build map marker points from a query's results that carry coordinates. */
@@ -315,7 +379,7 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		$this->read_radius( $extra );
 
-		$query   = new WP_Query( Shuffles_SSJ_Query::need_args( $extra ) );
+		$query   = $this->build_board_query( 'need', '', $extra, (int) $atts['per_page'] );
 		$has_map = $this->enqueue_maps(); // autocomplete for the centre field only — needs are not plotted (privacy)
 		ob_start();
 		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts, 'has_map' => $has_map ) );

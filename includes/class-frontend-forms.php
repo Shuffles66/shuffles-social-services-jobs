@@ -117,6 +117,15 @@ class Shuffles_SSJ_Frontend_Forms {
 			}
 		}
 
+		// Geocode from address parts when no client-side coordinates were captured (keyless).
+		if ( empty( $meta['location_lat'] ) && empty( $meta['location_lng'] ) ) {
+			$geo = Shuffles_SSJ_Geo::geocode_parts( $meta['location_suburb'], $meta['location_state'], $meta['location_postcode'] );
+			if ( $geo ) {
+				update_post_meta( $post_id, 'location_lat', $geo['lat'] );
+				update_post_meta( $post_id, 'location_lng', $geo['lng'] );
+			}
+		}
+
 		// ABN recorded → let the Reference Check plugin cross-match later (flag-only).
 		if ( 'abn' === $basis && $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'job', $post_id );
@@ -278,6 +287,15 @@ class Shuffles_SSJ_Frontend_Forms {
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
+		}
+
+		// Geocode from suburb/state when no client-side coordinates were captured (keyless).
+		if ( empty( $meta['location_lat'] ) && empty( $meta['location_lng'] ) ) {
+			$geo = Shuffles_SSJ_Geo::geocode_parts( $meta['location_suburb'], $meta['location_state'], '' );
+			if ( $geo ) {
+				update_post_meta( $post_id, 'location_lat', $geo['lat'] );
+				update_post_meta( $post_id, 'location_lng', $geo['lng'] );
+			}
 		}
 
 		// Support categories + funding sources (one, many, or none).
@@ -478,6 +496,15 @@ class Shuffles_SSJ_Frontend_Forms {
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
+		}
+
+		// Geocode the primary location from address parts when none were captured (keyless).
+		if ( empty( $meta['location_lat'] ) && empty( $meta['location_lng'] ) ) {
+			$geo = Shuffles_SSJ_Geo::geocode_parts( $meta['location_suburb'], $meta['location_state'], $meta['location_postcode'] );
+			if ( $geo ) {
+				update_post_meta( $post_id, 'location_lat', $geo['lat'] );
+				update_post_meta( $post_id, 'location_lng', $geo['lng'] );
+			}
 		}
 
 		if ( '' !== $abn ) {

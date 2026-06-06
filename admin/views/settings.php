@@ -58,7 +58,17 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				'google_maps_api_key',
 				__( 'Google Maps API key', 'shuffles-social-services-jobs' ),
 				__( 'In the <a href="https://console.cloud.google.com/google/maps-apis/" target="_blank" rel="noopener">Google Cloud Console</a>, create or select a project and <strong>enable these three APIs</strong>:<ul><li><strong>Maps JavaScript API</strong> — draws the interactive map on the boards</li><li><strong>Places API</strong> — suburb/address autocomplete in the search and posting forms</li><li><strong>Geocoding API</strong> — turns a suburb or postcode into coordinates for radius search</li></ul>Then open <strong>APIs &amp; Services → Credentials → Create credentials → API key</strong>, restrict the key by <strong>HTTP referrer</strong> to your site, and paste it here.', 'shuffles-social-services-jobs' ),
-				__( 'Powers location autocomplete and the map / radius search on the boards. Optional — without it, boards fall back to manual suburb/postcode entry and a list view (radius still works from stored coordinates).', 'shuffles-social-services-jobs' )
+				__( 'Optional. A key adds Google address autocomplete + the Google map. It is NOT required for radius search — the plugin has its own geocoder (below) and Geo my WP is never used.', 'shuffles-social-services-jobs' )
+			);
+			$this->select_field(
+				'geocoder_provider',
+				__( 'Location lookup (geocoder)', 'shuffles-social-services-jobs' ),
+				array(
+					'osm' => __( 'OpenStreetMap — keyless, free (recommended)', 'shuffles-social-services-jobs' ),
+					'off' => __( 'Off — rely on Google autocomplete coordinates only', 'shuffles-social-services-jobs' ),
+				),
+				__( 'How the plugin turns a typed suburb/postcode into coordinates for radius search when no Google autocomplete coordinates are present. <strong>OpenStreetMap</strong> needs no API key (a bundled list of Australian cities resolves instantly; the rest is looked up free via OpenStreetMap and cached). This is what makes the geo a self-contained custom build — no Geo my WP, no mandatory Google.', 'shuffles-social-services-jobs' ),
+				'osm'
 			);
 			$this->number_field( 'default_radius_km', __( 'Default search radius (km)', 'shuffles-social-services-jobs' ), '', 1, 500 );
 			echo '</table>';
@@ -307,6 +317,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.18.0 — 2026-06-06 · Self-hosted geolocation (no Geo my WP, no mandatory Google)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'The geo is now a fully self-contained custom build. Geo my WP is never called (it was only ever an optional status row). New Shuffles_SSJ_Geo engine: true great-circle (Haversine) distance with nearest-first ordering, replacing the bounding-box-only filter.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Keyless geocoding: typing a suburb or postcode now resolves to coordinates with no Google key — a bundled list of Australian cities resolves instantly and the rest is looked up free via OpenStreetMap (cached). Radius search and stored listing coordinates work with no API key. Choose the geocoder in the Maps tab.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Listings are geocoded server-side from their suburb/state/postcode when posted without autocomplete. A Google key remains optional (it only adds Google autocomplete + the Google map). Pluggable via shuffles_ssj_geocode / shuffles_ssj_geo_dataset.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.17.0 — 2026-06-06 · Languages by site + FluentCart/PMPro provider choice</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Languages are now per-site: choose which built-in languages appear in the picker (CALD tab → Offered languages), add your own (code | Endonym | rtl) including right-to-left ones, and supply/override their wording via a small JSON box. The English hot-key and live switching are unchanged.', 'shuffles-social-services-jobs' ); ?></li>

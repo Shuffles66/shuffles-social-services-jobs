@@ -24,6 +24,7 @@ class Shuffles_SSJ_Settings {
 		return array(
 			'compliance_profile'        => 'NDIS Worker',
 			'google_maps_api_key'       => '',
+			'geocoder_provider'         => 'osm',
 			'default_radius_km'         => 25,
 			'cald_enabled'              => '1',
 			'seo_enabled'               => '1',
@@ -167,6 +168,12 @@ class Shuffles_SSJ_Settings {
 		if ( isset( $input['gating_provider'] ) ) {
 			$gp = sanitize_key( wp_unslash( (string) $input['gating_provider'] ) );
 			$out['gating_provider'] = in_array( $gp, array( 'pmpro', 'fluentcart' ), true ) ? $gp : 'pmpro';
+		}
+
+		// Server-side geocoder — whitelist.
+		if ( isset( $input['geocoder_provider'] ) ) {
+			$gc = sanitize_key( wp_unslash( (string) $input['geocoder_provider'] ) );
+			$out['geocoder_provider'] = in_array( $gc, array( 'osm', 'off' ), true ) ? $gc : 'osm';
 		}
 
 		// CALD: enabled language codes — normalise to a comma-separated list of sanitized keys.
