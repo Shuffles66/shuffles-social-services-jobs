@@ -30,6 +30,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_need_board', array( $this, 'need_board' ) );
 		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
 		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
+		add_shortcode( 'sssj_dashboard', array( $this, 'dashboard' ) );
 		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
@@ -37,10 +38,13 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
+		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_panel' ) );
+		add_filter( 'the_content', array( $this, 'maybe_job_matches' ) );
+		add_filter( 'the_content', array( $this, 'maybe_worker_matches' ) );
 
 		// Optional: auto-output the navigation menu at the top of every page (testing aid).
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
@@ -186,10 +190,19 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'   => array(),
 			),
 			array(
+				'tag'    => 'sssj_dashboard',
+				'title'  => __( 'Member dashboard (all-in-one)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'One tabbed hub that ties everything together for the logged-in member: an Overview with quick stats + actions, My listings & applicants (advertisers), Matched jobs and My credentials (workers), Saved searches, and Messages. Each tab shows only if it applies to that member.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'Your main "My account" / "Dashboard" page (the single page to send logged-in members to).', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
 				'tag'    => 'sssj_my_listings',
-				'title'  => __( 'Member dashboard', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A personal dashboard: the member’s own applications, their job ads with applicants (and a status control), and their participant requests with responses.', 'shuffles-social-services-jobs' ),
-				'where'  => __( 'A "My dashboard" / "My listings" page.', 'shuffles-social-services-jobs' ),
+				'title'  => __( 'My listings & applicants', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'The member’s own applications, their job ads with applicants (and a status control), and their participant requests with responses. (Also shown inside the all-in-one dashboard.)', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "My listings" page (or just use [sssj_dashboard]).', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
@@ -214,6 +227,24 @@ class Shuffles_SSJ_Shortcodes {
 					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
 					'only="…"'  => __( 'Optional comma-separated guide ids to show only some (write-job-post, respond-to-job, abn-contractor-work, standing-profile).', 'shuffles-social-services-jobs' ),
 				),
+			),
+			array(
+				'tag'    => 'sssj_saved_searches',
+				'title'  => __( 'Saved searches', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets a logged-in member manage the searches they saved (via the “Save & alert me” button on the directories) and get a daily email when new listings match. Remove searches here.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A member dashboard / “My alerts” page.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_matches',
+				'title'  => __( 'Matched jobs (for the logged-in worker)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows “Jobs matched to you” for the logged-in member’s worker profile — ranked on shared services, location, availability, engagement basis (ABN/TFN), rate and trust. (Job pages and worker profiles also show matches automatically.)', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A member dashboard / “My matches” page.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
 			),
 			array(
 				'tag'    => 'sssj_tests',
@@ -370,6 +401,9 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! empty( $_GET['sssj_cat'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['category'] = array_filter( array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_cat'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
+		if ( ! empty( $_GET['sssj_funding'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['funding'] = array_filter( array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_funding'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
 		if ( ! empty( $_GET['sssj_q'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['s'] = sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
@@ -388,6 +422,7 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'       => $atts,
 				'maps'       => $maps,
 				'has_points' => ! empty( $points ),
+				'center'     => $this->resolve_center(),
 			)
 		);
 		wp_reset_postdata();
@@ -395,6 +430,25 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/* --- Maps helpers --- */
+
+	/**
+	 * Resolve a search centre (lat/lng) from the request for distance display — independent of radius,
+	 * so cards can show "X km away" whenever a location is in the search. Returns array|null.
+	 */
+	private function resolve_center() {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! empty( $_GET['sssj_lat'] ) && ! empty( $_GET['sssj_lng'] ) ) {
+			return array( 'lat' => (float) $_GET['sssj_lat'], 'lng' => (float) $_GET['sssj_lng'] );
+		}
+		if ( ! empty( $_GET['sssj_loc'] ) && class_exists( 'Shuffles_SSJ_Geo' ) ) {
+			$hit = Shuffles_SSJ_Geo::geocode( sanitize_text_field( wp_unslash( $_GET['sssj_loc'] ) ) );
+			if ( $hit ) {
+				return array( 'lat' => (float) $hit['lat'], 'lng' => (float) $hit['lng'] );
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		return null;
+	}
 
 	/** Read a geocoded centre + radius from the request into $extra. */
 	private function read_radius( &$extra ) {
@@ -478,9 +532,12 @@ class Shuffles_SSJ_Shortcodes {
 			$lat = (float) get_post_meta( $p->ID, 'location_lat', true );
 			$lng = (float) get_post_meta( $p->ID, 'location_lng', true );
 			if ( $lat && $lng ) {
+				$sub   = (string) get_post_meta( $p->ID, 'location_suburb', true );
+				$state = (string) get_post_meta( $p->ID, 'location_state', true );
 				$points[] = array(
 					'id'    => (int) $p->ID,
 					'title' => get_the_title( $p ),
+					'sub'   => trim( $sub . ' ' . $state ),
 					'lat'   => $lat,
 					'lng'   => $lng,
 					'url'   => get_permalink( $p ),
@@ -559,7 +616,7 @@ class Shuffles_SSJ_Shortcodes {
 		$points = $this->points_from_query( $query );
 		$maps   = $this->enqueue_maps( $points );
 		ob_start();
-		$this->load_template( 'worker-directory.php', array( 'query' => $query, 'atts' => $atts, 'maps' => $maps, 'has_points' => ! empty( $points ) ) );
+		$this->load_template( 'worker-directory.php', array( 'query' => $query, 'atts' => $atts, 'maps' => $maps, 'has_points' => ! empty( $points ), 'center' => $this->resolve_center() ) );
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
@@ -607,7 +664,7 @@ class Shuffles_SSJ_Shortcodes {
 		$query   = $this->build_board_query( 'need', '', $extra, (int) $atts['per_page'] );
 		$has_map = $this->enqueue_maps(); // autocomplete for the centre field only — needs are not plotted (privacy)
 		ob_start();
-		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts, 'has_map' => $has_map ) );
+		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts, 'has_map' => $has_map, 'center' => $this->resolve_center() ) );
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
@@ -639,6 +696,87 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'my-listings.php', array() );
+		return ob_get_clean();
+	}
+
+	/**
+	 * [sssj_dashboard] — a single, tabbed member hub that pulls the member-facing pieces together.
+	 * Capability-aware: shows worker sections for workers, advertiser sections for advertisers.
+	 * Sections compose the existing shortcodes so there is one source of truth per feature.
+	 */
+	public function dashboard( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to view your dashboard.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+		wp_enqueue_script( 'sssj-dashboard', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-dashboard.js', array(), SHUFFLES_SSJ_VERSION, true );
+
+		$uid = get_current_user_id();
+		$has_worker = (bool) get_posts( array( 'post_type' => 'sssj_worker', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'meta_key' => 'worker_user_id', 'meta_value' => $uid ) );
+		$has_org    = (bool) get_posts( array( 'post_type' => 'sssj_org', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'meta_key' => 'org_user_id', 'meta_value' => $uid ) );
+		$is_adv     = current_user_can( 'sssj_post_job' ) || $has_org || (bool) get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) );
+		$is_worker  = $has_worker || current_user_can( 'sssj_post_worker' );
+
+		// Quick counts.
+		$n_apps = class_exists( 'Shuffles_SSJ_Applications' ) ? count( (array) Shuffles_SSJ_Applications::for_applicant( $uid ) ) : 0;
+		$n_jobs = (int) count( get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'publish', 'posts_per_page' => 100, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) ) );
+		$saved  = get_user_meta( $uid, '_sssj_saved_searches', true );
+		$n_saved = is_array( $saved ) ? count( $saved ) : 0;
+
+		// Tabs (slug => label), built per capability.
+		$tabs = array( 'overview' => __( 'Overview', 'shuffles-social-services-jobs' ) );
+		if ( $is_adv ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
+		if ( $is_worker ) {
+			$tabs['matches']     = __( 'Matched jobs', 'shuffles-social-services-jobs' );
+			$tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' );
+		}
+		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
+		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
+
+		$current = wp_get_current_user();
+		$name    = $current->display_name ? $current->display_name : $current->user_login;
+
+		ob_start();
+		echo '<div class="sssj sssj--dash" data-sssj-dash>';
+		echo '<div class="sssj-panel sssj-dash__head"><h2 style="margin-top:0">' . esc_html( sprintf( __( 'Welcome, %s', 'shuffles-social-services-jobs' ), $name ) ) . '</h2>';
+		echo '<nav class="sssj-dash__tabs" role="tablist">';
+		$first = true;
+		foreach ( $tabs as $slug => $label ) {
+			echo '<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-dash__tab' . ( $first ? ' is-active' : '' ) . '" role="tab" data-dash-tab="' . esc_attr( $slug ) . '">' . esc_html( $label ) . '</button>';
+			$first = false;
+		}
+		echo '</nav></div>';
+
+		// Overview panel.
+		echo '<section class="sssj-dash__panel is-active" data-dash-panel="overview">';
+		echo '<div class="sssj-panel"><div class="sssj-dash__stats">';
+		$tiles = array();
+		if ( $is_worker ) { $tiles[] = array( $n_apps, __( 'Applications sent', 'shuffles-social-services-jobs' ) ); }
+		if ( $is_adv ) { $tiles[] = array( $n_jobs, __( 'Active job listings', 'shuffles-social-services-jobs' ) ); }
+		$tiles[] = array( $n_saved, __( 'Saved searches', 'shuffles-social-services-jobs' ) );
+		foreach ( $tiles as $t ) {
+			echo '<div class="sssj-dash__stat"><span class="sssj-dash__num">' . esc_html( (string) $t[0] ) . '</span><span class="sssj-dash__lbl">' . esc_html( $t[1] ) . '</span></div>';
+		}
+		echo '</div><div class="sssj-row" style="margin-top:14px;flex-wrap:wrap">';
+		if ( $is_adv ) { echo '<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) ) . '">' . esc_html__( 'Post a job', 'shuffles-social-services-jobs' ) . '</a>'; }
+		if ( $is_worker ) { echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) ) . '">' . esc_html( $has_worker ? __( 'Edit my profile', 'shuffles-social-services-jobs' ) : __( 'Create my profile', 'shuffles-social-services-jobs' ) ) . '</a>'; }
+		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>';
+		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a>';
+		echo '</div></div></section>';
+
+		// Composed sections.
+		if ( $is_adv ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="listings">' . do_shortcode( '[sssj_my_listings]' ) . '</section>';
+		}
+		if ( $is_worker ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="matches">' . do_shortcode( '[sssj_matches]' ) . '</section>';
+			echo '<section class="sssj-dash__panel" data-dash-panel="credentials">' . do_shortcode( '[sssj_credentials]' ) . '</section>';
+		}
+		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';
+		echo '<section class="sssj-dash__panel" data-dash-panel="messages">' . do_shortcode( '[sssj_messages]' ) . '</section>';
+
+		echo '</div>';
 		return ob_get_clean();
 	}
 
@@ -710,11 +848,22 @@ class Shuffles_SSJ_Shortcodes {
 			$base_filter['post__in'] = $open_ids;
 		}
 		// Never list orgs whose owner flagged "Do not display".
-		$base_filter['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery
+		$org_hidden_group = array(
 			'relation' => 'OR',
 			array( 'key' => 'org_hidden', 'compare' => 'NOT EXISTS' ),
 			array( 'key' => 'org_hidden', 'value' => '1', 'compare' => '!=' ),
 		);
+		// Custom "show on banner filters" fields (organisations use a bespoke query, so merge here).
+		$cf_clauses = class_exists( 'Shuffles_SSJ_Field_Registry' ) ? Shuffles_SSJ_Field_Registry::filter_clauses( 'org' ) : array();
+		if ( $cf_clauses ) {
+			$mq = array( 'relation' => 'AND', $org_hidden_group );
+			foreach ( $cf_clauses as $c ) {
+				$mq[] = $c;
+			}
+			$base_filter['meta_query'] = $mq; // phpcs:ignore WordPress.DB.SlowDBQuery
+		} else {
+			$base_filter['meta_query'] = $org_hidden_group; // phpcs:ignore WordPress.DB.SlowDBQuery
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		if ( $radius > 0 && $clat && $clng ) {
@@ -746,13 +895,13 @@ class Shuffles_SSJ_Shortcodes {
 		$points = array();
 		foreach ( $query->posts as $p ) {
 			foreach ( Shuffles_SSJ_Org::location_points( $p->ID ) as $pt ) {
-				$points[] = array( 'id' => (int) $p->ID, 'title' => get_the_title( $p ), 'lat' => $pt['lat'], 'lng' => $pt['lng'], 'url' => get_permalink( $p ) );
+				$points[] = array( 'id' => (int) $p->ID, 'title' => get_the_title( $p ), 'sub' => ( isset( $pt['label'] ) && $pt['label'] ) ? (string) $pt['label'] : (string) get_post_meta( $p->ID, 'location_suburb', true ), 'lat' => $pt['lat'], 'lng' => $pt['lng'], 'url' => get_permalink( $p ) );
 			}
 		}
 		$maps = $this->enqueue_maps( $points );
 
 		ob_start();
-		$this->load_template( 'org-directory.php', array( 'query' => $query, 'maps' => $maps, 'has_points' => ! empty( $points ) ) );
+		$this->load_template( 'org-directory.php', array( 'query' => $query, 'maps' => $maps, 'has_points' => ! empty( $points ), 'center' => ( $clat && $clng ) ? array( 'lat' => $clat, 'lng' => $clng ) : $this->resolve_center() ) );
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
@@ -760,6 +909,8 @@ class Shuffles_SSJ_Shortcodes {
 	public function post_org_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		$this->enqueue_maps();
+		wp_enqueue_script( 'sssj-autofill', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-autofill.js', array(), SHUFFLES_SSJ_VERSION, true );
+		wp_localize_script( 'sssj-autofill', 'SSJ_Autofill', array( 'ajax' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'sssj_autofill' ) ) );
 		ob_start();
 		$this->load_template( 'post-org-form.php', array() );
 		return ob_get_clean();
@@ -815,12 +966,59 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
+	 * Funding tick-box filter chips (NDIS / Aged Care / DVA / …) for the jobs board.
+	 * Data-driven from the Funding Sources taxonomy; OR within the ticked set.
+	 */
+	public static function funding_chips() {
+		$terms = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' => false ) );
+		if ( is_wp_error( $terms ) || ! $terms ) {
+			return;
+		}
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$cur = isset( $_GET['sssj_funding'] ) ? array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_funding'] ) ) : array();
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		echo '<span class="sssj-fundingchips" role="group" aria-label="' . esc_attr__( 'Funding', 'shuffles-social-services-jobs' ) . '">';
+		foreach ( $terms as $t ) {
+			$on = in_array( $t->slug, $cur, true );
+			echo '<label class="sssj-chip sssj-chip--funding ' . ( $on ? 'is-on' : '' ) . '"><input type="checkbox" name="sssj_funding[]" value="' . esc_attr( $t->slug ) . '" ' . checked( $on, true, false ) . ' /> ' . esc_html( $t->name ) . '</label>';
+		}
+		echo '</span>';
+	}
+
+	/**
 	 * Filter actions: a "Clear all" button + a no-JS "Filter" submit fallback.
 	 * With dynamic filters the form auto-applies, so no Filter button is needed when JS runs.
 	 */
 	public static function filter_actions() {
 		echo '<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-clear" data-sssj-clear data-i18n="clear_all">' . esc_html__( 'Clear all', 'shuffles-social-services-jobs' ) . '</button>';
 		echo '<noscript><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Filter', 'shuffles-social-services-jobs' ) . '</button></noscript>';
+	}
+
+	/**
+	 * A highlighted "X km away" pill for a result card, when the search has a centre. '' otherwise.
+	 * For orgs, pass $is_org=true to use the nearest of the org's locations.
+	 *
+	 * @param int        $post_id Result post.
+	 * @param array|null $center  [ 'lat' => float, 'lng' => float ] | null.
+	 * @param bool       $is_org  Use Org::nearest_km (multi-location) instead of primary coords.
+	 */
+	public static function distance_pill( $post_id, $center, $is_org = false ) {
+		if ( empty( $center['lat'] ) || empty( $center['lng'] ) || ! class_exists( 'Shuffles_SSJ_Geo' ) ) {
+			return '';
+		}
+		if ( $is_org && class_exists( 'Shuffles_SSJ_Org' ) ) {
+			$d = Shuffles_SSJ_Org::nearest_km( $post_id, (float) $center['lat'], (float) $center['lng'] );
+		} else {
+			$lat = (float) get_post_meta( $post_id, 'location_lat', true );
+			$lng = (float) get_post_meta( $post_id, 'location_lng', true );
+			$d   = ( $lat && $lng ) ? Shuffles_SSJ_Geo::distance_km( (float) $center['lat'], (float) $center['lng'], $lat, $lng ) : null;
+		}
+		if ( null === $d ) {
+			return '';
+		}
+		$km = max( 1, (int) round( $d ) );
+		/* translators: %d: distance in km */
+		return '<span class="sssj-badge sssj-dist">📍 ' . esc_html( sprintf( _n( '%d km away', '%d km away', $km, 'shuffles-social-services-jobs' ), $km ) ) . '</span>';
 	}
 
 	/**
@@ -868,6 +1066,15 @@ class Shuffles_SSJ_Shortcodes {
 			),
 		);
 		return isset( $map[ $type ] ) ? $map[ $type ] : null;
+	}
+
+	/** The logged-in member's "willing to travel" radius (from their worker profile), 0 if none. */
+	public static function default_travel_radius() {
+		if ( ! is_user_logged_in() ) {
+			return 0;
+		}
+		$w = get_posts( array( 'post_type' => 'sssj_worker', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'meta_key' => 'worker_user_id', 'meta_value' => get_current_user_id() ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		return $w ? (int) get_post_meta( $w[0], 'travel_radius_km', true ) : 0;
 	}
 
 	/** Render the collapsible "Things to know" read-me for a directory (native <details>, no JS). */
@@ -946,7 +1153,7 @@ class Shuffles_SSJ_Shortcodes {
 		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
 
 		if ( $logged_in ) {
-			$this->add_nav_item( $items, __( 'Participant requests', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ) );
+			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ) );
 			if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
 				$this->add_nav_item( $items, __( 'Post a job', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) );
 			}
@@ -957,7 +1164,8 @@ class Shuffles_SSJ_Shortcodes {
 				$this->add_nav_item( $items, __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) );
 			}
 			$this->add_nav_item( $items, __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
-			$this->add_nav_item( $items, __( 'My dashboard', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' ) );
+			$dash = $this->resolve_page( 'page_my_listings', '[sssj_dashboard]' );
+			$this->add_nav_item( $items, __( 'My dashboard', 'shuffles-social-services-jobs' ), $dash ? $dash : $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' ) );
 			$items[] = array( 'label' => __( 'Log out', 'shuffles-social-services-jobs' ), 'url' => wp_logout_url( home_url( '/' ) ), 'cta' => false );
 		} else {
 			$here    = esc_url_raw( home_url( add_query_arg( array() ) ) );
@@ -1042,6 +1250,52 @@ class Shuffles_SSJ_Shortcodes {
 		</div>
 		<?php
 		return $content . ob_get_clean();
+	}
+
+	/** Best-matched workers appended to a single job page. */
+	public function maybe_job_matches( $content ) {
+		if ( is_singular( 'sssj_job' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Matcher' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Matcher::render_worker_matches( get_the_ID() );
+			if ( $html ) {
+				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Best-matched jobs appended to a single worker profile. */
+	public function maybe_worker_matches( $content ) {
+		if ( is_singular( 'sssj_worker' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Matcher' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Matcher::render_job_matches( get_the_ID() );
+			if ( $html ) {
+				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** [sssj_matches] — jobs matched to the logged-in member's own worker profile (dashboard widget). */
+	public function matches_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to see jobs matched to your profile.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+		}
+		$found = get_posts( array(
+			'post_type'      => 'sssj_worker',
+			'post_status'    => 'any',
+			'posts_per_page' => 1,
+			'fields'         => 'ids',
+			'no_found_rows'  => true,
+			'meta_key'       => 'worker_user_id',
+			'meta_value'     => get_current_user_id(),
+		) );
+		if ( ! $found ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Create your worker profile to see matched jobs.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+		}
+		$html = class_exists( 'Shuffles_SSJ_Matcher' ) ? Shuffles_SSJ_Matcher::render_job_matches( (int) $found[0], __( 'Jobs matched to you', 'shuffles-social-services-jobs' ) ) : '';
+		return $html ? $html : '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'No matched jobs yet — add services and a location to your profile.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
 	}
 
 	/** Render the worker's details (services, rate, location, credentials, photos) on their profile page. */

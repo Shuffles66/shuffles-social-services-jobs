@@ -58,6 +58,16 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 				</div>
 
 				<div class="sssj-field">
+					<label for="sssj-seeking"><?php esc_html_e( 'What are you seeking?', 'shuffles-social-services-jobs' ); ?></label>
+					<select class="sssj-select" id="sssj-seeking" name="seeking_type">
+						<option value="support"><?php esc_html_e( 'Ongoing support — a worker', 'shuffles-social-services-jobs' ); ?></option>
+						<option value="task"><?php esc_html_e( 'A one-off task', 'shuffles-social-services-jobs' ); ?></option>
+						<option value="provider"><?php esc_html_e( 'A provider / organisation — ongoing services', 'shuffles-social-services-jobs' ); ?></option>
+					</select>
+					<p class="description"><?php esc_html_e( 'Are you after ongoing support from a worker, help with a single task, or an ongoing provider/organisation?', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+
+				<div class="sssj-field">
 					<label for="sssj-support"><?php esc_html_e( 'Type of support', 'shuffles-social-services-jobs' ); ?></label>
 					<select class="sssj-select" id="sssj-support" name="support_categories[]" multiple data-placeholder="<?php esc_attr_e( 'Search and add support types…', 'shuffles-social-services-jobs' ); ?>">
 						<?php
@@ -85,6 +95,12 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 
 				<?php Shuffles_SSJ_Shortcodes::culture_language_fields(); ?>
 				<?php if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) { Shuffles_SSJ_Field_Registry::render( 'need', 0 ); } ?>
+
+				<div class="sssj-field">
+					<label for="sssj-ntravel"><?php esc_html_e( 'How far can a worker be? (km)', 'shuffles-social-services-jobs' ); ?></label>
+					<input class="sssj-input" id="sssj-ntravel" type="number" min="0" max="500" step="5" name="travel_radius_km" />
+					<p class="description"><?php esc_html_e( 'Helps match nearby workers. Leave blank for no limit.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
 
 				<div class="sssj-row">
 					<div class="sssj-field">

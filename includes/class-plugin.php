@@ -47,6 +47,9 @@ final class Shuffles_SSJ_Plugin {
 	/** @var Shuffles_SSJ_Verification */
 	public $verification;
 
+	/** @var Shuffles_SSJ_Alerts */
+	public $alerts;
+
 	/** @var Shuffles_SSJ_Field_Registry */
 	public $field_registry;
 
@@ -85,6 +88,12 @@ final class Shuffles_SSJ_Plugin {
 		$this->forms->register();
 		$this->verification = new Shuffles_SSJ_Verification();
 		$this->verification->register();
+		$this->alerts = new Shuffles_SSJ_Alerts( $this->settings );
+		$this->alerts->register();
+		// ABR enrichment whenever an ABN is recorded (free GUID required; no-op otherwise).
+		add_action( 'shuffles_ssj_abn_recorded', array( 'Shuffles_SSJ_ABN', 'on_abn_recorded' ), 10, 3 );
+		// NDIS register auto-scan hook whenever an NDIS provider number is recorded (best-effort).
+		add_action( 'shuffles_ssj_ndis_recorded', array( 'Shuffles_SSJ_Org', 'on_ndis_recorded' ), 10, 2 );
 		$this->field_registry = new Shuffles_SSJ_Field_Registry();
 		$this->field_registry->register();
 		$this->crm_sync = new Shuffles_SSJ_CRM_Sync( $this->settings );

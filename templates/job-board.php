@@ -25,7 +25,7 @@ $has_points = ! empty( $has_points );
 $cur_loc    = isset( $_GET['sssj_loc'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_loc'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $cur_lat    = isset( $_GET['sssj_lat'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_lat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $cur_lng    = isset( $_GET['sssj_lng'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_lng'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-$cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuffles_SSJ_Shortcodes::default_travel_radius(); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 ?>
 <div class="sssj sssj--board">
 	<div class="sssj-panel">
@@ -49,6 +49,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 				}
 				?>
 			</select>
+			<?php Shuffles_SSJ_Shortcodes::funding_chips(); ?>
 			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
 			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
@@ -60,6 +61,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 			<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
 			<?php Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
+			<?php if ( class_exists( 'Shuffles_SSJ_Alerts' ) ) { Shuffles_SSJ_Alerts::save_search_button( 'jobs' ); } ?>
 	</div>
 
 	<?php if ( $maps && $has_points ) : ?>
@@ -86,16 +88,18 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 					$mod .= ' sssj-card--featured';
 				}
 				?>
-				<article class="sssj-card <?php echo esc_attr( $mod ); ?>">
+				<article class="sssj-card <?php echo esc_attr( $mod ); ?>" data-sssj-id="<?php echo esc_attr( $pid ); ?>">
 					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
 						<?php $job_logo = class_exists( 'Shuffles_SSJ_Org' ) ? Shuffles_SSJ_Org::job_logo_url( $pid, 'thumbnail' ) : ''; ?>
 						<?php if ( $job_logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $job_logo ); ?>" alt="" /><?php endif; ?>
 						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php $job_org = (int) get_post_meta( $pid, 'organisation_id', true ); if ( $job_org ) { echo Shuffles_SSJ_Verification::tick_html( $job_org, false ); } // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
 					</div>
 					<div class="sssj-row">
+						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $pid, isset( $center ) ? $center : null ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $featured ) : ?><span class="sssj-badge sssj-badge--featured" data-i18n="featured"><?php esc_html_e( '★ Featured', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis_m ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis_m ? __( 'TFN (employee)', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' ) ); ?></span>
 						<?php if ( $etype ) : ?><span class="sssj-badge"><?php echo esc_html( 'one-off' === $etype ? __( 'One-off', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
+						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</div>
 					<?php if ( $suburb || $state ) : ?>
 						<p>📍 <?php echo esc_html( trim( $suburb . ' ' . $state ) ); ?></p>

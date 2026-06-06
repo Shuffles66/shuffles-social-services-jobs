@@ -29,7 +29,7 @@ class Shuffles_SSJ_Taxonomy_Registrar {
 			'sssjt_mode'               => array( __( 'Work Mode', 'shuffles-social-services-jobs' ), __( 'Work Modes', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker' ), 'work-mode' ),
 			'sssjt_employment_type'    => array( __( 'Employment Type', 'shuffles-social-services-jobs' ), __( 'Employment Types', 'shuffles-social-services-jobs' ), array( 'sssj_job' ), 'employment-type' ),
 			'sssjt_support_category'   => array( __( 'Support Category', 'shuffles-social-services-jobs' ), __( 'Support Categories', 'shuffles-social-services-jobs' ), array( 'sssj_need' ), 'support-category' ),
-			'sssjt_funding_source'     => array( __( 'Funding Source', 'shuffles-social-services-jobs' ), __( 'Funding Sources', 'shuffles-social-services-jobs' ), array( 'sssj_need', 'sssj_org' ), 'funding-source' ),
+			'sssjt_funding_source'     => array( __( 'Funding Source', 'shuffles-social-services-jobs' ), __( 'Funding Sources', 'shuffles-social-services-jobs' ), array( 'sssj_need', 'sssj_org', 'sssj_job' ), 'funding-source' ),
 			'sssjt_culture'            => array( __( 'Cultural / Community Focus', 'shuffles-social-services-jobs' ), __( 'Cultural / Community Focus', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker', 'sssj_need' ), 'culture' ),
 			'sssjt_language'           => array( __( 'Language', 'shuffles-social-services-jobs' ), __( 'Languages', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker', 'sssj_need' ), 'language' ),
 		);

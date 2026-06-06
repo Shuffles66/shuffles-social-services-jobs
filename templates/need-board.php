@@ -76,8 +76,9 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 				</select>
 				<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
 			<?php endif; ?>
-			<?php Shuffles_SSJ_Shortcodes::filter_actions(); ?>
+			<?php Shuffles_SSJ_Field_Registry::render_banner_filters( 'need' ); Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
+		<?php if ( class_exists( 'Shuffles_SSJ_Alerts' ) ) { Shuffles_SSJ_Alerts::save_search_button( 'needs' ); } ?>
 	</div>
 
 	<?php if ( $query->have_posts() ) : ?>
@@ -95,10 +96,15 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 				$supps   = wp_get_post_terms( $pid, 'sssjt_support_category', array( 'fields' => 'names' ) );
 				$funds   = wp_get_post_terms( $pid, 'sssjt_funding_source', array( 'fields' => 'names' ) );
 				?>
-				<article class="sssj-card sssj-card--need">
+				<article class="sssj-card sssj-card--need" data-sssj-id="<?php echo esc_attr( $pid ); ?>">
 					<div class="sssj-row">
 						<span class="sssj-badge sssj-badge--need"><?php echo esc_html( $ref ? $ref : __( 'Participant', 'shuffles-social-services-jobs' ) ); ?></span>
+						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $pid, isset( $center ) ? $center : null ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $ongoing ) : ?><span class="sssj-badge"><?php echo esc_html( 'temporary' === $ongoing ? __( 'Temporary', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
+						<?php
+						$seeking  = (string) get_post_meta( $pid, 'seeking_type', true );
+						$seek_lbl = array( 'provider' => __( 'Seeking a provider', 'shuffles-social-services-jobs' ), 'task' => __( 'One-off task', 'shuffles-social-services-jobs' ), 'support' => __( 'Ongoing support', 'shuffles-social-services-jobs' ) );
+						if ( isset( $seek_lbl[ $seeking ] ) ) : ?><span class="sssj-badge sssj-badge--abn"><?php echo esc_html( $seek_lbl[ $seeking ] ); ?></span><?php endif; ?>
 					</div>
 					<h3 style="margin:8px 0"><?php the_title(); ?></h3>
 					<?php if ( $suburb || $state ) : ?><p>📍 <?php echo esc_html( trim( $suburb . ' ' . $state ) ); ?></p><?php endif; ?>

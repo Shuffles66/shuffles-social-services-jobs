@@ -3,6 +3,8 @@
  * - Places autocomplete on inputs[data-sssj-place] → fills the sibling
  *   data-sssj-suburb/state/postcode/lat/lng fields within the [data-sssj-place-group] wrapper.
  * - Renders a results map in [data-sssj-map] from window.SSJ_Maps.points.
+ *   • Single click a marker  → info box (summary + View link).
+ *   • Double click a marker  → scroll to that result's card + a rainbow "tracer" highlight.
  */
 ( function () {
 	'use strict';
@@ -25,6 +27,23 @@
 		else if ( comp.postal_town ) { set( '[data-sssj-suburb]', comp.postal_town.long_name ); }
 		if ( comp.administrative_area_level_1 ) { set( '[data-sssj-state]', comp.administrative_area_level_1.short_name ); }
 		if ( comp.postal_code ) { set( '[data-sssj-postcode]', comp.postal_code.long_name ); }
+	}
+
+	function esc( s ) {
+		return String( s == null ? '' : s ).replace( /[&<>"']/g, function ( c ) {
+			return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ c ];
+		} );
+	}
+
+	// Scroll to a result card and run the rainbow tracer highlight.
+	function highlightCard( id ) {
+		var card = document.querySelector( '[data-sssj-id="' + String( id ).replace( /[^0-9]/g, '' ) + '"]' );
+		if ( ! card ) { return; }
+		card.scrollIntoView( { behavior: 'smooth', block: 'center' } );
+		card.classList.remove( 'sssj-card--tracer' );
+		void card.offsetWidth; // force reflow so the animation restarts
+		card.classList.add( 'sssj-card--tracer' );
+		window.setTimeout( function () { card.classList.remove( 'sssj-card--tracer' ); }, 3400 );
 	}
 
 	window.sssjInitMaps = function () {
@@ -56,6 +75,8 @@
 			} );
 			var bounds = new google.maps.LatLngBounds();
 			var shown = 0;
+			var info = new google.maps.InfoWindow();
+
 			cfg.points.forEach( function ( pt ) {
 				if ( ! pt.lat || ! pt.lng ) { return; }
 				var marker = new google.maps.Marker( {
@@ -63,12 +84,30 @@
 					map: map,
 					title: pt.title || ''
 				} );
-				if ( pt.url ) {
-					marker.addListener( 'click', function () { window.location = pt.url; } );
-				}
+
+				var clickTimer = null;
+				marker.addListener( 'click', function () {
+					// Delay so a double-click can cancel the single-click info box.
+					window.clearTimeout( clickTimer );
+					clickTimer = window.setTimeout( function () {
+						var html = '<div class="sssj-iw"><strong>' + esc( pt.title ) + '</strong>'
+							+ ( pt.sub ? '<br><span class="sssj-iw__sub">📍 ' + esc( pt.sub ) + '</span>' : '' )
+							+ ( pt.url ? '<br><a class="sssj-iw__link" href="' + esc( pt.url ) + '">View &rarr;</a>' : '' )
+							+ '<br><span class="sssj-iw__hint">Double-click the pin to find this card.</span></div>';
+						info.setContent( html );
+						info.open( map, marker );
+					}, 240 );
+				} );
+				marker.addListener( 'dblclick', function () {
+					window.clearTimeout( clickTimer );
+					info.close();
+					highlightCard( pt.id );
+				} );
+
 				bounds.extend( marker.getPosition() );
 				shown++;
 			} );
+
 			if ( shown > 0 ) {
 				map.fitBounds( bounds );
 				if ( shown === 1 ) { google.maps.event.addListenerOnce( map, 'idle', function () { map.setZoom( 11 ); } ); }

@@ -25,6 +25,7 @@ class Shuffles_SSJ_Settings {
 			'compliance_profile'        => 'NDIS Worker',
 			'credential_reminder_days'  => 30,
 			'google_maps_api_key'       => '',
+			'abr_guid'                  => '',
 			'geocoder_provider'         => 'osm',
 			'default_radius_km'         => 25,
 			'auto_header_menu'          => '0',
@@ -33,6 +34,7 @@ class Shuffles_SSJ_Settings {
 			'seo_enabled'               => '1',
 			'crm_sync_enabled'          => '0',
 			'crm_create_contact'        => '1',
+			'alerts_enabled'            => '1',
 			'monetisation_enabled'      => '0',
 			'free_active_listings'      => 1,
 			'gating_provider'           => 'pmpro',
@@ -128,8 +130,8 @@ class Shuffles_SSJ_Settings {
 		}
 
 		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family', 'font_size', 'heading_weight', 'focus_programs' );
-		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
-		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact' );
+		$secret_keys = array( 'google_maps_api_key', 'licence_key', 'abr_guid' );
+		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled' );
 		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
 
 		foreach ( $text_keys as $k ) {
@@ -231,6 +233,7 @@ class Shuffles_SSJ_Settings {
 			'auto_header_menu'         => 'general',
 			'crm_sync_enabled'         => 'crm',
 			'crm_create_contact'       => 'crm',
+			'alerts_enabled'           => 'alerts',
 		);
 		return isset( $owner[ $key ] ) && sanitize_key( (string) $tab ) === $owner[ $key ];
 	}

@@ -73,6 +73,7 @@
 
 /* Badges + chips */
 .sssj .sssj-badge{ display:inline-block; padding:2px 10px; border-radius:var(--sssj-radius-pill); font-size:var(--sssj-fs-sm); font-weight:var(--sssj-weight-strong); background:var(--sssj-bg-soft); color:var(--sssj-muted); }
+.sssj .sssj-badge.sssj-dist{ background:var(--sssj-blue); color:#fff; }
 .sssj .sssj-badge--verified{ background:#dcfce7; color:var(--sssj-success); }
 .sssj .sssj-badge--abn{ background:#ede9fe; color:var(--sssj-abn); }
 .sssj .sssj-badge--tfn{ background:#cffafe; color:var(--sssj-tfn); }
@@ -315,9 +316,42 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-bluetick__mark::before{ content:"✓"; color:#fff; font-size:11px; font-weight:800; line-height:1; }
 .sssj .sssj-bluetick__label{ color:#1d9bf0; }
 
+/* Map → card "rainbow tracer" highlight (double-click a marker travels to its card) */
+@keyframes sssj-tracer-rot{ to{ transform:rotate(1turn); } }
+.sssj .sssj-card--tracer{ position:relative; z-index:1; }
+.sssj .sssj-card--tracer::before{ content:""; position:absolute; inset:-4px; border-radius:calc(var(--sssj-radius) + 4px); z-index:-1; background:conic-gradient(from 0deg,#ef4444,#f59e0b,#eab308,#22c55e,#3b82f6,#8b5cf6,#ec4899,#ef4444); animation:sssj-tracer-rot 1.2s linear infinite; }
+.sssj .sssj-card--tracer::after{ content:""; position:absolute; inset:0; border-radius:var(--sssj-radius); background:var(--sssj-bg); z-index:-1; }
+@media (prefers-reduced-motion: reduce){ .sssj .sssj-card--tracer::before{ animation:none; } }
+/* Map info window */
+.sssj-iw{ font-size:13px; line-height:1.5; min-width:160px; }
+.sssj-iw__sub{ color:#475569; }
+.sssj-iw__link{ font-weight:600; }
+.sssj-iw__hint{ color:#94a3b8; font-size:11px; }
+/* Funding tick-box chips on the jobs board */
+.sssj .sssj-fundingchips{ display:inline-flex; flex-wrap:wrap; gap:6px; align-items:center; }
+
 /* Single-job suburb map (keyless Google Maps embed) */
 .sssj .sssj-jobmap{ border-radius:var(--sssj-radius); overflow:hidden; border:1px solid var(--sssj-line); }
 .sssj .sssj-jobmap iframe{ display:block; width:100%; height:300px; border:0; }
+
+/* "Best matches" panels (matching engine) */
+.sssj .sssj-match h4{ font-size:1rem; }
+.sssj .sssj-match h4 a{ color:var(--sssj-blue-deep); text-decoration:none; }
+.sssj .sssj-match__why{ margin:6px 0 10px; font-size:var(--sssj-fs-sm); color:var(--sssj-blue-deep); background:#eef4fb; border-radius:var(--sssj-radius-pill); padding:4px 10px; display:inline-block; }
+
+/* Saved-search "Save & alert me" button (sits under the filter form) */
+.sssj .sssj-savesearch{ margin-top:8px; }
+.sssj--saved .sssj-tests__table td{ padding:8px 6px; border-bottom:1px solid var(--sssj-line); }
+
+/* Member dashboard (all-in-one, tabbed) */
+.sssj--dash .sssj-dash__tabs{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.sssj--dash .sssj-dash__tab.is-active{ background:var(--sssj-blue); color:#fff; border-color:var(--sssj-blue); }
+.sssj--dash.is-enhanced .sssj-dash__panel{ display:none; }
+.sssj--dash.is-enhanced .sssj-dash__panel.is-active{ display:block; }
+.sssj .sssj-dash__stats{ display:grid; gap:var(--sssj-s4); grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+.sssj .sssj-dash__stat{ text-align:center; background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); padding:var(--sssj-s4); }
+.sssj .sssj-dash__num{ display:block; font-size:2rem; font-weight:800; line-height:1; color:var(--sssj-blue-deep); }
+.sssj .sssj-dash__lbl{ display:block; margin-top:4px; color:var(--sssj-muted); font-size:var(--sssj-fs-sm); font-weight:var(--sssj-weight-strong); }
 /* No-colour accessibility mode keeps the tick legible as a dark ring. */
 .sssj-a11y-mono .sssj .sssj-bluetick__mark,
 .sssj-a11y-mono.sssj .sssj-bluetick__mark{ background:#334155; }

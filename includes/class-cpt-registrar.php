@@ -151,6 +151,7 @@ class Shuffles_SSJ_CPT_Registrar {
 				'location_postcode'       => array( 'string', true, 'text' ),
 				'location_lat'            => array( 'number', true, 'float' ),
 				'location_lng'            => array( 'number', true, 'float' ),
+				'travel_radius_km'        => array( 'integer', true, 'int' ),
 			),
 			// Participant Need: sensitive — REST off for everything except non-identifying flags.
 			'sssj_need' => array(
@@ -160,6 +161,8 @@ class Shuffles_SSJ_CPT_Registrar {
 				'location_state'     => array( 'string', false, 'text' ),
 				'location_lat'       => array( 'number', false, 'float' ),
 				'location_lng'       => array( 'number', false, 'float' ),
+				'travel_radius_km'   => array( 'integer', false, 'int' ),
+				'seeking_type'       => array( 'string', false, 'key' ),
 				'schedule_pattern'   => array( 'string', false, 'key' ),
 				'ongoing_or_temp'    => array( 'string', false, 'key' ),
 				'funding_management' => array( 'string', false, 'key' ),
@@ -171,6 +174,10 @@ class Shuffles_SSJ_CPT_Registrar {
 				'org_user_id'     => array( 'integer', true, 'int' ),
 				'org_hidden'      => array( 'boolean', true, 'bool' ),
 				'org_abn'         => array( 'string', true, 'abn' ),
+				'ndis_registered'      => array( 'boolean', true, 'bool' ),
+				'ndis_provider_number' => array( 'string', true, 'text' ),
+				'ndis_status'          => array( 'string', true, 'text' ),
+				'ndis_groups'          => array( 'string', true, 'text' ),
 				'org_website'     => array( 'string', true, 'text' ),
 				'org_type'        => array( 'string', true, 'key' ),
 				'org_phone'       => array( 'string', true, 'text' ),
@@ -186,6 +193,7 @@ class Shuffles_SSJ_CPT_Registrar {
 				'location_postcode' => array( 'string', true, 'text' ),
 				'location_lat'    => array( 'number', true, 'float' ),
 				'location_lng'    => array( 'number', true, 'float' ),
+				'travel_radius_km' => array( 'integer', true, 'int' ),
 			),
 		);
 	}

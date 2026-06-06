@@ -51,8 +51,9 @@ $w_pts   = ! empty( $has_points );
 			</label>
 			<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
 			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <span data-i18n="avail_now"><?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></span></label>
-			<?php Shuffles_SSJ_Shortcodes::filter_actions(); ?>
+			<?php Shuffles_SSJ_Field_Registry::render_banner_filters( 'worker' ); Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
+		<?php if ( class_exists( 'Shuffles_SSJ_Alerts' ) ) { Shuffles_SSJ_Alerts::save_search_button( 'workers' ); } ?>
 	</div>
 
 	<?php if ( $w_maps && $w_pts ) : ?>
@@ -74,13 +75,14 @@ $w_pts   = ! empty( $has_points );
 				$vkinds   = (array) get_post_meta( $pid, 'verified_kinds', true );
 				$svcs   = wp_get_post_terms( $pid, 'sssjt_category', array( 'fields' => 'names' ) );
 				?>
-				<article class="sssj-card">
+				<article class="sssj-card" data-sssj-id="<?php echo esc_attr( $pid ); ?>">
 					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
 						<?php $w_photo = get_the_post_thumbnail_url( $pid, 'thumbnail' ); ?>
 						<?php if ( $w_photo ) : ?><img class="sssj-worker-photo sssj-worker-photo--sm" src="<?php echo esc_url( $w_photo ); ?>" alt="" /><?php endif; ?>
 						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php echo Shuffles_SSJ_Verification::tick_html( $pid, false ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
 					</div>
 					<div class="sssj-row">
+						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $pid, isset( $center ) ? $center : null ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( '1' === $avail2 ) : ?><span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Available', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<?php if ( $verified ) : ?><span class="sssj-badge sssj-badge--verified">✓ <?php esc_html_e( 'Verified', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<?php if ( $yrs > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d yr', '%d yrs', $yrs, 'shuffles-social-services-jobs' ), $yrs ) ); ?></span><?php endif; ?>

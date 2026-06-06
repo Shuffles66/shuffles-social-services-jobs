@@ -24,6 +24,56 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
+		add_action( 'wp_ajax_sssj_autofill', array( $this, 'ajax_autofill' ) );
+	}
+
+	/**
+	 * AJAX: read a provider's website and return suggested profile fields (name, description, phone).
+	 * Keyless by default; an AI/Tavily integration can enhance/replace via the shuffles_ssj_autofill
+	 * filter. Member-facing copy calls this "our AI" — never names a vendor.
+	 */
+	public function ajax_autofill() {
+		check_ajax_referer( 'sssj_autofill', 'nonce' );
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'msg' => __( 'Please log in.', 'shuffles-social-services-jobs' ) ) );
+		}
+		$url = isset( $_POST['url'] ) ? esc_url_raw( wp_unslash( $_POST['url'] ) ) : '';
+		if ( '' === $url || ! preg_match( '#^https?://#i', $url ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Enter your website URL first (including https://).', 'shuffles-social-services-jobs' ) ) );
+		}
+		$resp = wp_remote_get( $url, array( 'timeout' => 15, 'redirection' => 3, 'user-agent' => 'Mozilla/5.0 (compatible; ShufflesJobs/1.0)' ) );
+		if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Could not read that website. Check the address and try again.', 'shuffles-social-services-jobs' ) ) );
+		}
+		$html = (string) wp_remote_retrieve_body( $resp );
+		$data = array( 'org_name' => '', 'description' => '', 'org_phone' => '' );
+
+		$meta_content = function ( $attr, $val ) use ( $html ) {
+			if ( preg_match( '/<meta[^>]*(?:name|property)=["\']' . preg_quote( $val, '/' ) . '["\'][^>]*>/i', $html, $tag )
+				&& preg_match( '/content=["\'](.*?)["\']/is', $tag[0], $c ) ) {
+				return trim( wp_strip_all_tags( html_entity_decode( $c[1], ENT_QUOTES ) ) );
+			}
+			return '';
+		};
+		if ( preg_match( '/<title[^>]*>(.*?)<\/title>/is', $html, $m ) ) {
+			$data['org_name'] = trim( wp_strip_all_tags( html_entity_decode( $m[1], ENT_QUOTES ) ) );
+		}
+		$og_site = $meta_content( 'property', 'og:site_name' );
+		if ( $og_site ) {
+			$data['org_name'] = $og_site;
+		}
+		$desc = $meta_content( 'name', 'description' );
+		if ( '' === $desc ) {
+			$desc = $meta_content( 'property', 'og:description' );
+		}
+		$data['description'] = $desc;
+		if ( preg_match( '/tel:\+?([0-9 ()\-]{6,})/i', $html, $m ) ) {
+			$data['org_phone'] = trim( $m[1] );
+		}
+
+		// Let an AI/Tavily integration enhance/replace these suggestions.
+		$data = apply_filters( 'shuffles_ssj_autofill', $data, $url, $html );
+		wp_send_json_success( $data );
 	}
 
 	public function deny() {
@@ -99,6 +149,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'rate_unit'         => isset( $_POST['rate_unit'] ) ? sanitize_key( wp_unslash( $_POST['rate_unit'] ) ) : 'hour',
 			'expires_at'        => isset( $_POST['expires_at'] ) ? sanitize_text_field( wp_unslash( $_POST['expires_at'] ) ) : '',
 			'organisation_id'   => isset( $_POST['organisation_id'] ) ? absint( $_POST['organisation_id'] ) : 0,
+			'sssj_alert_candidates' => empty( $_POST['alert_candidates'] ) ? '' : '1',
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
@@ -121,6 +172,9 @@ class Shuffles_SSJ_Frontend_Forms {
 				wp_set_object_terms( $post_id, array( $term_id ), 'sssjt_category' );
 			}
 		}
+		// Funding source(s) — how the role is funded (NDIS / Aged Care / DVA / …).
+		$fund_ids = ( ! empty( $_POST['funding_sources'] ) && is_array( $_POST['funding_sources'] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST['funding_sources'] ) ) ) : array();
+		wp_set_object_terms( $post_id, $fund_ids, 'sssjt_funding_source' );
 		if ( ! empty( $_POST['employment_type'] ) ) {
 			$et = (int) $_POST['employment_type'];
 			if ( $et > 0 ) {
@@ -224,6 +278,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'employment_status' => isset( $_POST['employment_status'] ) ? sanitize_key( wp_unslash( $_POST['employment_status'] ) ) : 'seeking',
 			'worker_abn'        => $abn,
 			'years_experience'  => isset( $_POST['years_experience'] ) ? absint( $_POST['years_experience'] ) : 0,
+			'travel_radius_km'  => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
 			'rate_min'          => isset( $_POST['rate_min'] ) ? (float) $_POST['rate_min'] : 0,
 			'rate_max'          => isset( $_POST['rate_max'] ) ? (float) $_POST['rate_max'] : 0,
 			'rate_unit'         => isset( $_POST['rate_unit'] ) ? sanitize_key( wp_unslash( $_POST['rate_unit'] ) ) : 'hour',
@@ -352,6 +407,8 @@ class Shuffles_SSJ_Frontend_Forms {
 			'location_state'     => isset( $_POST['location_state'] ) ? sanitize_text_field( wp_unslash( $_POST['location_state'] ) ) : '',
 			'location_lat'       => isset( $_POST['location_lat'] ) ? (float) $_POST['location_lat'] : 0,
 			'location_lng'       => isset( $_POST['location_lng'] ) ? (float) $_POST['location_lng'] : 0,
+			'travel_radius_km'   => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
+			'seeking_type'       => isset( $_POST['seeking_type'] ) ? sanitize_key( wp_unslash( $_POST['seeking_type'] ) ) : 'support',
 			'schedule_pattern'   => isset( $_POST['schedule_pattern'] ) ? sanitize_key( wp_unslash( $_POST['schedule_pattern'] ) ) : 'flexible',
 			'ongoing_or_temp'    => isset( $_POST['ongoing_or_temp'] ) ? sanitize_key( wp_unslash( $_POST['ongoing_or_temp'] ) ) : 'ongoing',
 			'funding_management' => isset( $_POST['funding_management'] ) ? sanitize_key( wp_unslash( $_POST['funding_management'] ) ) : 'self',
@@ -512,8 +569,9 @@ class Shuffles_SSJ_Frontend_Forms {
 			wp_safe_redirect( add_query_arg( 'sssj_org', 'error', $redirect ) );
 			exit;
 		}
+		// Organisations are businesses (non-TFN) — a valid ABN is required.
 		$abn = isset( $_POST['org_abn'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['org_abn'] ) ) : '';
-		if ( '' !== $abn && ! Shuffles_SSJ_ABN::is_valid( $abn ) ) {
+		if ( '' === $abn || ! Shuffles_SSJ_ABN::is_valid( $abn ) ) {
 			wp_safe_redirect( add_query_arg( 'sssj_org', 'abn', $redirect ) );
 			exit;
 		}
@@ -573,6 +631,9 @@ class Shuffles_SSJ_Frontend_Forms {
 		$meta = array(
 			'org_user_id'       => $uid,
 			'org_hidden'        => empty( $_POST['org_hidden'] ) ? '' : '1',
+			'travel_radius_km'  => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
+			'ndis_registered'      => empty( $_POST['ndis_registered'] ) ? '' : '1',
+			'ndis_provider_number' => isset( $_POST['ndis_provider_number'] ) ? sanitize_text_field( wp_unslash( $_POST['ndis_provider_number'] ) ) : '',
 			'org_abn'           => $abn,
 			'org_website'       => isset( $_POST['org_website'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['org_website'] ) ) ) : '',
 			'org_type'          => isset( $_POST['org_type'] ) ? sanitize_key( wp_unslash( $_POST['org_type'] ) ) : 'employer',
@@ -620,6 +681,9 @@ class Shuffles_SSJ_Frontend_Forms {
 
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'org', $post_id );
+		}
+		if ( ! empty( $_POST['ndis_registered'] ) && '' !== (string) get_post_meta( $post_id, 'ndis_provider_number', true ) ) {
+			do_action( 'shuffles_ssj_ndis_recorded', (string) get_post_meta( $post_id, 'ndis_provider_number', true ), $post_id );
 		}
 
 		do_action( 'shuffles_ssj_profile_saved', 'org', $post_id, get_current_user_id() );

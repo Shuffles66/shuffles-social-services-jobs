@@ -61,6 +61,9 @@ $status_labels = array(
 			<?php if ( $suburb || $state ) : ?>
 				<p><strong><?php esc_html_e( 'Location:', 'shuffles-social-services-jobs' ); ?></strong> 📍 <?php echo esc_html( trim( $suburb . ' ' . $state ) ); ?></p>
 			<?php endif; ?>
+			<?php $travel = (int) get_post_meta( $worker_id, 'travel_radius_km', true ); if ( $travel > 0 ) : ?>
+				<p><strong><?php esc_html_e( 'Willing to travel:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( sprintf( __( 'up to %d km', 'shuffles-social-services-jobs' ), $travel ) ); ?></p>
+			<?php endif; ?>
 			<?php if ( ! is_wp_error( $culture ) && $culture ) : ?>
 				<p><strong><?php esc_html_e( 'Cultural / community focus:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( implode( ', ', $culture ) ); ?></p>
 			<?php endif; ?>

@@ -140,6 +140,12 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<p class="description"><?php esc_html_e( 'Lets employers and participants find you by location / radius. Only your suburb is shown publicly.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
+				<div class="sssj-field">
+					<label for="sssj-wtravel"><?php esc_html_e( 'How far are you willing to travel? (km)', 'shuffles-social-services-jobs' ); ?></label>
+					<input class="sssj-input" id="sssj-wtravel" type="number" min="0" max="500" step="5" name="travel_radius_km" value="<?php echo esc_attr( (string) $gm( 'travel_radius_km', '' ) ); ?>" />
+					<p class="description"><?php esc_html_e( 'Used to match you to nearby work, and to set the default distance on your searches. Leave blank for no limit.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+
 				<div class="sssj-row">
 					<div class="sssj-field"><label><?php esc_html_e( 'Years experience', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="number" min="0" name="years_experience" value="<?php echo esc_attr( (string) $gm( 'years_experience', '' ) ); ?>" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Rate min', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="number" min="0" step="0.01" name="rate_min" value="<?php echo esc_attr( (string) $gm( 'rate_min', '' ) ); ?>" /></div>
@@ -168,6 +174,10 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 						<option value="public" <?php selected( $ex_vis, 'public' ); ?>><?php esc_html_e( 'Everyone (public)', 'shuffles-social-services-jobs' ); ?></option>
 						<option value="hidden" <?php selected( $ex_vis, 'hidden' ); ?>><?php esc_html_e( 'Do not display — hide from search engines and public listings', 'shuffles-social-services-jobs' ); ?></option>
 					</select>
+				</div>
+
+				<div class="sssj-field">
+					<label><input type="checkbox" name="alert_jobs" value="1" <?php checked( '1', (string) get_user_meta( get_current_user_id(), 'sssj_alert_jobs', true ) ); ?> /> <?php esc_html_e( 'Email me when new jobs match my profile', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
 				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php echo $existing ? esc_html__( 'Save profile', 'shuffles-social-services-jobs' ) : esc_html__( 'Create profile', 'shuffles-social-services-jobs' ); ?></button></div>

@@ -13,6 +13,7 @@ class Shuffles_SSJ_Deactivator {
 
 	public static function deactivate() {
 		wp_clear_scheduled_hook( 'shuffles_ssj_daily' );
+		wp_clear_scheduled_hook( 'sssj_alerts_daily' );
 		flush_rewrite_rules();
 	}
 }

@@ -125,7 +125,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Field deleted.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			} elseif ( 'error' === $fstatus ) {
 				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Please provide at least a label.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'seeded' === $fstatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Recommended provider fields added (existing fields were left untouched).', 'shuffles-social-services-jobs' ) . '</p></div>';
 			}
+
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0 0 12px">';
+			echo '<input type="hidden" name="action" value="sssj_seed_provider_fields" />' . wp_nonce_field( 'sssj_seed_provider_fields', '_wpnonce', true, false );
+			echo '<button class="button">' . esc_html__( 'Add recommended provider fields', 'shuffles-social-services-jobs' ) . '</button> <span class="description">' . esc_html__( 'One-shot: adds a Shuffles-style organisation field set (specialisations, service delivery, ages supported, accepting clients, accessibility, languages, years operating, accreditations). Skips any you already have.', 'shuffles-social-services-jobs' ) . '</span></form>';
 
 			echo '<h3>' . esc_html__( 'Your custom fields', 'shuffles-social-services-jobs' ) . '</h3>';
 			if ( $all_fields ) {
@@ -262,6 +268,35 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			} else {
 				echo '<p class="description">' . esc_html__( 'No CRM sync activity yet.', 'shuffles-social-services-jobs' ) . '</p>';
 			}
+			break;
+
+		case 'alerts':
+			$astatus = isset( $_GET['sssj_alerts'] ) ? sanitize_key( wp_unslash( $_GET['sssj_alerts'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #ea580c;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'Email Alerts', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php esc_html_e( 'A daily digest emails members about new matches. There are three opt-in alert types — nobody is emailed unless they opt in:', 'shuffles-social-services-jobs' ); ?></p>
+				<ol>
+					<li><strong><?php esc_html_e( 'Workers → new matching jobs', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'a worker ticks “Email me when new jobs match my profile” on their profile. They get new roles matching their services/area.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Advertisers → new candidates', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'when posting a job, the advertiser ticks “Email me when new candidates match this job”. They get new worker profiles that match.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Saved searches', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'members click “Save & alert me” on any directory; they get new listings matching that search. Manage them with the [sssj_saved_searches] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+				</ol>
+				<p><?php echo wp_kses_post( __( 'Matching reuses the matching engine; “new” means published since the last alert. Email is sent via the site mailer (FluentSMTP/wp_mail) unless a FluentCRM automation claims it via the <code>shuffles_ssj_alert_sent</code> action / <code>shuffles_ssj_alert_suppress_default</code> filter. Frequency is daily.', 'shuffles-social-services-jobs' ) ); ?></p>
+			</div>
+			<?php
+			if ( 'ran' === $astatus ) {
+				echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Alerts run complete (digests sent to opted-in members with new matches).', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+			$open_form( 'alerts' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'alerts_enabled', __( 'Enable email alerts', 'shuffles-social-services-jobs' ), __( 'Master switch for the daily alert digests. Off = no alert emails are sent (opt-ins are remembered).', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:8px">';
+			echo '<input type="hidden" name="action" value="sssj_alerts_run_now" />' . wp_nonce_field( 'sssj_alerts_run', '_wpnonce', true, false );
+			echo '<button class="button">' . esc_html__( 'Run alerts now', 'shuffles-social-services-jobs' ) . '</button> <span class="description">' . esc_html__( 'Send today’s digests immediately (for testing).', 'shuffles-social-services-jobs' ) . '</span>';
+			echo '</form>';
 			break;
 
 		case 'testing':
@@ -626,6 +661,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$open_form( 'compliance' );
 			echo '<table class="form-table" role="presentation">';
 			$this->number_field( 'credential_reminder_days', __( 'Expiry reminder lead time (days)', 'shuffles-social-services-jobs' ), __( 'Workers are emailed this many days before a credential expires, and again on the expiry day. An expired credential automatically drops the verified badge.', 'shuffles-social-services-jobs' ), 1, 365 );
+			$this->key_field(
+				'abr_guid',
+				__( 'ABR Web Services GUID (ABN verification)', 'shuffles-social-services-jobs' ),
+				__( 'Register free for an authentication GUID at the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank" rel="noopener">ABR Web Services</a> site (you receive the GUID by email). Paste it here. When set, any ABN entered on a job, worker or organisation is <strong>checked against the Australian Business Register</strong> on save — the entity name + ABN status are stored and shown as an “ABR Active · &lt;Name&gt;” badge. Leave blank to keep the offline checksum validation only.', 'shuffles-social-services-jobs' )
+			);
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -687,7 +727,50 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v0.43.0 — 2026-06-06 · Account verification “blue tick”</h3>
+				<h3>v0.51.0 — 2026-06-06 · NDIS provider registration · provider field seed · website auto-fill</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Organisations can mark themselves a registered NDIS provider with a registration number — shown as an “NDIS Registered · #number” badge linking to the NDIS Commission register. Registration status + groups are set by an admin or an auto-scan integration hook (there is no official public API, so it is best-effort/manual).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Add recommended provider fields” button (Settings → Profile Fields) seeds a Shuffles-style organisation field set (specialisations, service delivery, ages supported, accepting clients, accessibility, languages, years operating, accreditations) — the banner-flagged ones become directory filters.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Website auto-fill: on the organisation form, “Fetch details from my website” reads the site and pre-fills empty name/description/phone fields for review (our AI; only empty fields are touched). An AI/web-read integration can enrich it via the shuffles_ssj_autofill filter.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.50.0 — 2026-06-06 · ABR verification · ABN required for businesses · “what are you seeking”</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'ABR check: set a free ABR Web Services GUID (Settings → Compliance) and any ABN entered on a job, worker or organisation is verified against the Australian Business Register on save — the entity name + status are stored and shown as an “🏢 ABR Active · <Name>” badge on cards/profiles. Without a GUID the offline checksum still runs.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'A valid ABN is now required for organisations (they are non-TFN businesses), in addition to ABN-basis job ads which already required it. TFN (employee) job ads never ask for an ABN.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant requests now have a “What are you seeking?” option — ongoing support (a worker), a one-off task, or a provider/organisation — shown as a badge on the request card.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.49.0 — 2026-06-06 · Job funding filter · clearer menu · interactive map markers</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Jobs can now carry funding source(s) (NDIS, Aged Care, DVA, Foundational Supports, …) — set on the posting form — and the Jobs board has funding tick-box filter chips so job-seekers can narrow by funding.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The navigation menu’s participant link is now labelled “Participants seeking workers” (providers are under “Organisations”), and “My dashboard” points at the all-in-one dashboard when present.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Map markers are now interactive (where a Google Maps API key is set): single-click shows an info box with a summary + View link; double-click scrolls to that result’s card and surrounds it with an animated rainbow “tracer” highlight.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.48.0 — 2026-06-06 · “Willing to travel” radius + distance pills on cards</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New “How far are you willing to travel?” field on worker profiles (and a “Service area radius” on organisations, and “How far can a worker be?” on participant requests). The worker value also sets the default radius on the Jobs board for that member.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'When you search a directory with a location, each result card now shows a highlighted “X km away” distance pill (the nearest location for organisations). Travel radius is shown on worker and organisation profiles.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.47.0 — 2026-06-06 · All-in-one member dashboard</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New [sssj_dashboard] shortcode — a single tabbed hub for logged-in members that ties everything together: an Overview (quick stats + actions), My listings & applicants (advertisers), Matched jobs and My credentials (workers), Saved searches, and Messages. Each tab appears only if it applies to that member.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'It composes the existing feature shortcodes (single source of truth per feature). Progressive enhancement: tabs switch panels with JavaScript; with JS off every section is still shown.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.46.0 — 2026-06-06 · Email alerts (job matches, new candidates, saved searches)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Workers can opt in (on their profile) to a daily email when new jobs match their profile; advertisers can opt in (when posting a job) to a daily email when new candidates match the role.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Saved searches: a “Save & alert me” button on every directory saves the current filters and emails the member when new listings match. Manage via the new [sssj_saved_searches] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'All driven by a daily cron and the matching engine; “new” = published since the last alert. New Settings → Email Alerts tab with a master switch + “Run alerts now”. Emails go via the site mailer unless a FluentCRM automation claims them (shuffles_ssj_alert_sent / shuffles_ssj_alert_suppress_default).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.45.0 — 2026-06-06 · Smart matching engine (“Best matches” panels)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New real-time matching: job pages show “Workers who may suit this role”, worker profiles show “Open roles this worker may suit”, and the new [sssj_matches] shortcode shows “Jobs matched to you” for a logged-in worker. Each match lists short reasons.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Matches are ranked on shared services, location proximity, availability, engagement basis (ABN/TFN — an ABN role favours workers with a recorded ABN), rate compatibility and trust (verified / blue tick). Respects worker visibility.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.44.0 — 2026-06-06 · Custom field “banner filters” now work on the directories</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Custom Profile Fields marked “show on banner filters” now appear as searchable filter dropdowns on the relevant directory (worker, organisation, participant-request) and actually filter the results — completing that option. Multi-select fields match within their stored values; “Clear all” resets them along with the other filters.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+					<h3>v0.43.0 — 2026-06-06 · Account verification “blue tick”</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New account-level “blue tick” verification for workers and organisations — an admin-granted trust mark, separate from the green ✓ Verified credential badge. Grant it from the “Verification (blue tick)” box on the worker/organisation edit screen.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The blue tick shows next to the name on directory cards and profiles (and on a job from a verified organisation). Use it for accounts whose identity and key checks you have confirmed.', 'shuffles-social-services-jobs' ); ?></li>

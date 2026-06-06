@@ -107,6 +107,21 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 				</div>
 
 				<div class="sssj-field">
+					<label for="sssj-job-funding"><?php esc_html_e( 'Funding source(s)', 'shuffles-social-services-jobs' ); ?></label>
+					<select class="sssj-select" id="sssj-job-funding" name="funding_sources[]" multiple data-placeholder="<?php esc_attr_e( 'Search and add… (NDIS, Aged Care, DVA…)', 'shuffles-social-services-jobs' ); ?>">
+						<?php
+						$job_fundings = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' => false ) );
+						if ( ! is_wp_error( $job_fundings ) ) {
+							foreach ( $job_fundings as $t ) {
+								echo '<option value="' . esc_attr( $t->term_id ) . '">' . esc_html( $t->name ) . '</option>';
+							}
+						}
+						?>
+					</select>
+					<p class="description"><?php esc_html_e( 'How the role is funded — lets job-seekers filter by NDIS, Aged Care, DVA, etc.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+
+				<div class="sssj-field">
 					<label for="sssj-emp"><?php esc_html_e( 'Employment type', 'shuffles-social-services-jobs' ); ?></label>
 					<select class="sssj-select" id="sssj-emp" name="employment_type">
 						<option value=""><?php esc_html_e( '— Select —', 'shuffles-social-services-jobs' ); ?></option>
@@ -149,6 +164,10 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 				<div class="sssj-field">
 					<label for="sssj-exp"><?php esc_html_e( 'Closes on', 'shuffles-social-services-jobs' ); ?></label>
 					<input class="sssj-input" id="sssj-exp" type="date" name="expires_at" />
+				</div>
+
+				<div class="sssj-field">
+					<label><input type="checkbox" name="alert_candidates" value="1" /> <?php esc_html_e( 'Email me when new candidates match this job', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
 				<div><button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="post_job"><?php esc_html_e( 'Post job', 'shuffles-social-services-jobs' ); ?></button></div>

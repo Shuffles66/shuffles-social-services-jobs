@@ -66,6 +66,20 @@ class Shuffles_SSJ_Query {
 			);
 		}
 
+		// Funding tick-box filter (NDIS / Aged Care / DVA / …) — OR within the selected set.
+		if ( ! empty( $extra['funding'] ) ) {
+			$args['tax_query'][] = array(
+				'taxonomy' => 'sssjt_funding_source',
+				'field'    => 'slug',
+				'terms'    => array_map( 'sanitize_title', (array) $extra['funding'] ),
+				'operator' => 'IN',
+			);
+		}
+
+		if ( count( $args['tax_query'] ) > 1 ) {
+			$args['tax_query']['relation'] = 'AND';
+		}
+
 		if ( ! empty( $extra['s'] ) ) {
 			$args['s'] = sanitize_text_field( $extra['s'] );
 		}

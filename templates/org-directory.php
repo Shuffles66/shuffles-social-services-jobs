@@ -49,8 +49,9 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<?php if ( ! is_wp_error( $o_fundings ) ) { foreach ( $o_fundings as $t ) { echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_funding, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
 				</select>
 				<label class="sssj-chip <?php echo $cur_open ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_open" value="1" <?php checked( $cur_open ); ?> /> <span data-i18n="open_only"><?php esc_html_e( 'Only with open placements', 'shuffles-social-services-jobs' ); ?></span></label>
-			<?php Shuffles_SSJ_Shortcodes::filter_actions(); ?>
+			<?php Shuffles_SSJ_Field_Registry::render_banner_filters( 'org' ); Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
+		<?php if ( class_exists( 'Shuffles_SSJ_Alerts' ) ) { Shuffles_SSJ_Alerts::save_search_button( 'orgs' ); } ?>
 	</div>
 
 	<?php if ( $maps && $has_pts ) : ?>
@@ -69,14 +70,17 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 				$extra = json_decode( (string) get_post_meta( $oid, 'locations', true ), true );
 				$locn  = ( is_array( $extra ) ? count( $extra ) : 0 ) + ( ( $sub || $state ) ? 1 : 0 );
 				?>
-				<article class="sssj-card">
+				<article class="sssj-card" data-sssj-id="<?php echo esc_attr( $oid ); ?>">
 					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
 						<?php $logo = Shuffles_SSJ_Org::logo_url( $oid, 'thumbnail' ); ?>
 						<?php if ( $logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $logo ); ?>" alt="" /><?php endif; ?>
 						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php echo Shuffles_SSJ_Verification::tick_html( $oid, false ); // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
 					</div>
 					<div class="sssj-row">
+						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $oid, isset( $center ) ? $center : null, true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
+						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php echo Shuffles_SSJ_Org::ndis_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $locn > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d location', '%d locations', $locn, 'shuffles-social-services-jobs' ), $locn ) ); ?></span><?php endif; ?>
 						<?php $o_stats = Shuffles_SSJ_Org::stats( $oid ); ?>
 						<span class="sssj-badge sssj-badge--verified" title="<?php esc_attr_e( 'Currently open positions', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_html( sprintf( _n( '%d open job', '%d open jobs', $o_stats['open'], 'shuffles-social-services-jobs' ), $o_stats['open'] ) ); ?></span>

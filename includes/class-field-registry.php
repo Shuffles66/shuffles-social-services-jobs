@@ -24,6 +24,86 @@ class Shuffles_SSJ_Field_Registry {
 		add_action( 'shuffles_ssj_profile_saved', array( $this, 'save_from_post' ), 10, 3 );
 		add_action( 'admin_post_sssj_save_field', array( $this, 'handle_save_field' ) );
 		add_action( 'admin_post_sssj_delete_field', array( $this, 'handle_delete_field' ) );
+		add_action( 'admin_post_sssj_seed_provider_fields', array( $this, 'handle_seed_provider_fields' ) );
+		// Apply "show on banner filters" custom fields to the directory queries.
+		add_filter( 'shuffles_ssj_worker_query_args', array( $this, 'filter_worker_args' ), 10, 2 );
+		add_filter( 'shuffles_ssj_need_query_args', array( $this, 'filter_need_args' ), 10, 2 );
+		// (Organisations use a bespoke query — handled inline in Shortcodes::org_directory via filter_clauses.)
+	}
+
+	/* --------------------------------------------------------------- Banner filters */
+
+	/**
+	 * meta_query clauses for the active custom-field filters in the request, for one entity.
+	 * A single chosen value per field; multi-select fields match within their stored array (LIKE).
+	 *
+	 * @return array list of meta_query clause arrays (possibly empty)
+	 */
+	public static function filter_clauses( $entity ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$in = ( isset( $_GET['sssj_cf'] ) && is_array( $_GET['sssj_cf'] ) ) ? wp_unslash( $_GET['sssj_cf'] ) : array();
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		if ( ! $in ) {
+			return array();
+		}
+		$clauses = array();
+		foreach ( self::banner_filter_fields( $entity ) as $f ) {
+			$raw = isset( $in[ $f['key'] ] ) ? ( is_array( $in[ $f['key'] ] ) ? reset( $in[ $f['key'] ] ) : $in[ $f['key'] ] ) : '';
+			$val = sanitize_text_field( (string) $raw );
+			if ( '' === $val ) {
+				continue;
+			}
+			if ( 'multiselect' === $f['type'] ) {
+				$clauses[] = array( 'key' => '_sssj_cf_' . $f['key'], 'value' => '"' . $val . '"', 'compare' => 'LIKE' );
+			} else {
+				$clauses[] = array( 'key' => '_sssj_cf_' . $f['key'], 'value' => $val, 'compare' => '=' );
+			}
+		}
+		return $clauses;
+	}
+
+	/** Merge custom-field filter clauses into a query args array's meta_query (AND). */
+	public static function apply_clauses( $args, $entity ) {
+		$clauses = self::filter_clauses( $entity );
+		if ( ! $clauses ) {
+			return $args;
+		}
+		if ( empty( $args['meta_query'] ) || ! is_array( $args['meta_query'] ) ) {
+			$args['meta_query'] = array();
+		}
+		foreach ( $clauses as $c ) {
+			$args['meta_query'][] = $c;
+		}
+		if ( count( $args['meta_query'] ) > 1 && empty( $args['meta_query']['relation'] ) ) {
+			$args['meta_query']['relation'] = 'AND';
+		}
+		return $args;
+	}
+
+	public function filter_worker_args( $args, $extra ) {
+		return self::apply_clauses( $args, 'worker' );
+	}
+
+	public function filter_need_args( $args, $extra ) {
+		return self::apply_clauses( $args, 'need' );
+	}
+
+	/** Render the banner-filter custom fields as searchable single-select filter controls. */
+	public static function render_banner_filters( $entity ) {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$in = ( isset( $_GET['sssj_cf'] ) && is_array( $_GET['sssj_cf'] ) ) ? wp_unslash( $_GET['sssj_cf'] ) : array();
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		foreach ( self::banner_filter_fields( $entity ) as $f ) {
+			$cur = isset( $in[ $f['key'] ] ) ? sanitize_text_field( (string) ( is_array( $in[ $f['key'] ] ) ? reset( $in[ $f['key'] ] ) : $in[ $f['key'] ] ) ) : '';
+			/* translators: %s: field label */
+			$all = sprintf( __( 'All %s', 'shuffles-social-services-jobs' ), $f['label'] );
+			echo '<select class="sssj-select" name="sssj_cf[' . esc_attr( $f['key'] ) . ']" data-placeholder="' . esc_attr( $all ) . '">';
+			echo '<option value="">' . esc_html( $all ) . '</option>';
+			foreach ( $f['options'] as $opt ) {
+				echo '<option value="' . esc_attr( $opt ) . '" ' . selected( $cur, $opt, false ) . '>' . esc_html( $opt ) . '</option>';
+			}
+			echo '</select>';
+		}
 	}
 
 	/* --------------------------------------------------------------- Store */
@@ -242,6 +322,44 @@ class Shuffles_SSJ_Field_Registry {
 		} ) );
 		self::save_all( $all );
 		$this->redirect_fields( 'deleted' );
+	}
+
+	/** Recommended provider (organisation) field set — mirrors a typical Shuffles XProfile provider set. */
+	public static function provider_field_seed() {
+		return array(
+			array( 'key' => 'specialisations', 'label' => __( 'Specialisations', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'multiselect', 'options' => array( 'Autism', 'Intellectual disability', 'Psychosocial / mental health', 'Physical disability', 'Acquired brain injury', 'Sensory (vision / hearing)', 'Aged care', 'Complex / high needs' ), 'required' => false, 'banner' => true ),
+			array( 'key' => 'service_delivery', 'label' => __( 'Service delivery', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'select', 'options' => array( 'In person', 'Telehealth', 'Both in person & telehealth' ), 'required' => false, 'banner' => true ),
+			array( 'key' => 'ages_supported', 'label' => __( 'Ages supported', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'multiselect', 'options' => array( 'Children (0–12)', 'Teens (13–17)', 'Adults (18–64)', 'Older adults (65+)' ), 'required' => false, 'banner' => true ),
+			array( 'key' => 'accepting_clients', 'label' => __( 'Currently accepting new clients', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'toggle', 'options' => array(), 'required' => false, 'banner' => true ),
+			array( 'key' => 'accessible_premises', 'label' => __( 'Wheelchair-accessible premises', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'toggle', 'options' => array(), 'required' => false, 'banner' => false ),
+			array( 'key' => 'languages_offered', 'label' => __( 'Languages offered (other than English)', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'text', 'options' => array(), 'required' => false, 'banner' => false ),
+			array( 'key' => 'years_operating', 'label' => __( 'Years operating', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'number', 'options' => array(), 'required' => false, 'banner' => false ),
+			array( 'key' => 'accreditations', 'label' => __( 'Accreditations / memberships', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'text', 'options' => array(), 'required' => false, 'banner' => false ),
+		);
+	}
+
+	/** One-shot: add the recommended provider fields that don't already exist (by key). */
+	public function handle_seed_provider_fields() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_seed_provider_fields' );
+		$all  = get_option( self::OPTION, array() );
+		$all  = is_array( $all ) ? $all : array();
+		$have = array();
+		foreach ( $all as $f ) {
+			if ( ! empty( $f['key'] ) ) {
+				$have[ $f['key'] ] = true;
+			}
+		}
+		foreach ( self::provider_field_seed() as $f ) {
+			$f = self::normalise( $f );
+			if ( $f && empty( $have[ $f['key'] ] ) ) {
+				$all[] = $f;
+			}
+		}
+		self::save_all( $all );
+		$this->redirect_fields( 'seeded' );
 	}
 
 	private function redirect_fields( $status ) {

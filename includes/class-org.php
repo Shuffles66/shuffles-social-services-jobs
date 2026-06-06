@@ -131,6 +131,49 @@ class Shuffles_SSJ_Org {
 		return array( 'open' => count( $open_ids ), 'placed' => $placed );
 	}
 
+	/** Public NDIS Commission "find a registered provider" search URL (by number if given). */
+	public static function ndis_register_url( $number = '' ) {
+		$base = 'https://www.ndiscommission.gov.au/about/ndis-provider-register';
+		$number = preg_replace( '/[^0-9A-Za-z]/', '', (string) $number );
+		return $number ? add_query_arg( 'q', $number, $base ) : $base;
+	}
+
+	/** Badge + Commission link for an org's NDIS registration ('' if not flagged registered). */
+	public static function ndis_badge_html( $org_id ) {
+		$org_id = (int) $org_id;
+		if ( '1' !== (string) get_post_meta( $org_id, 'ndis_registered', true ) ) {
+			return '';
+		}
+		$num    = (string) get_post_meta( $org_id, 'ndis_provider_number', true );
+		$status = (string) get_post_meta( $org_id, 'ndis_status', true );
+		$active = ( '' === $status ) || ( false !== stripos( $status, 'register' ) || false !== stripos( $status, 'active' ) );
+		$label  = $num ? sprintf( __( 'NDIS Registered · #%s', 'shuffles-social-services-jobs' ), $num ) : __( 'NDIS Registered', 'shuffles-social-services-jobs' );
+		$out    = '<a class="sssj-badge ' . ( $active ? 'sssj-badge--verified' : '' ) . '" href="' . esc_url( self::ndis_register_url( $num ) ) . '" target="_blank" rel="noopener" title="' . esc_attr__( 'Check on the NDIS Commission register', 'shuffles-social-services-jobs' ) . '">🛡️ ' . esc_html( $label ) . '</a>';
+		$groups = (string) get_post_meta( $org_id, 'ndis_groups', true );
+		if ( '' !== $groups ) {
+			$out .= ' <span class="sssj-badge" title="' . esc_attr__( 'Registration groups', 'shuffles-social-services-jobs' ) . '">' . esc_html( wp_trim_words( $groups, 8 ) ) . '</span>';
+		}
+		return $out;
+	}
+
+	/**
+	 * Fired on shuffles_ssj_ndis_recorded — give an integration the chance to auto-scan the
+	 * NDIS Commission register (there is no official public API, so this is hook-driven /
+	 * best-effort). A filter returning [ 'status' => …, 'groups' => … ] is stored; else manual.
+	 */
+	public static function on_ndis_recorded( $number, $org_id ) {
+		$org_id = (int) $org_id;
+		$scan   = apply_filters( 'shuffles_ssj_ndis_scan', null, $number, $org_id );
+		if ( is_array( $scan ) ) {
+			if ( isset( $scan['status'] ) ) {
+				update_post_meta( $org_id, 'ndis_status', sanitize_text_field( (string) $scan['status'] ) );
+			}
+			if ( isset( $scan['groups'] ) ) {
+				update_post_meta( $org_id, 'ndis_groups', sanitize_text_field( (string) $scan['groups'] ) );
+			}
+		}
+	}
+
 	/** Plain list of an org's social URLs (for JSON-LD sameAs). */
 	public static function social_urls( $org_id ) {
 		$urls = array();

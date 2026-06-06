@@ -29,10 +29,22 @@ $extra   = is_array( $extra ) ? $extra : array();
 		<div class="sssj-row">
 			<?php echo Shuffles_SSJ_Verification::tick_html( $org_id, true ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
+			<?php echo Shuffles_SSJ_ABN::abr_badge_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+			<?php echo Shuffles_SSJ_Org::ndis_badge_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php if ( $website ) : ?><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener nofollow"><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></a><?php endif; ?>
 			<?php if ( $phone ) : ?><span class="sssj-badge"><?php echo esc_html( $phone ); ?></span><?php endif; ?>
 		</div>
 		<?php echo Shuffles_SSJ_Org::social_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+		<?php $org_travel = (int) get_post_meta( $org_id, 'travel_radius_km', true ); if ( $org_travel > 0 ) : ?>
+			<p><strong><?php esc_html_e( 'Service area:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( sprintf( __( 'up to %d km from our location(s)', 'shuffles-social-services-jobs' ), $org_travel ) ); ?></p>
+		<?php endif; ?>
+		<?php
+		if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) {
+			foreach ( Shuffles_SSJ_Field_Registry::display_pairs( 'org', $org_id ) as $pair ) {
+				echo '<p><strong>' . esc_html( $pair[0] ) . ':</strong> ' . esc_html( $pair[1] ) . '</p>';
+			}
+		}
+		?>
 
 		<?php if ( $p_sub || $p_state || ! empty( $extra ) ) : ?>
 			<h3><?php esc_html_e( 'Locations', 'shuffles-social-services-jobs' ); ?></h3>
