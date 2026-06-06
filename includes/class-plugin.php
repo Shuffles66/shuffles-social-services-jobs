@@ -73,6 +73,9 @@ final class Shuffles_SSJ_Plugin {
 		// Monetisation gates (provider-response filter; employer cap enforced at posting).
 		Shuffles_SSJ_Monetisation::register();
 
+		// Compliance & verification — credential add/delete/serve + admin approve/reject handlers.
+		Shuffles_SSJ_Credentials::register();
+
 		// Apply schema upgrades in place on already-installed sites (cheap version guard).
 		add_action( 'admin_init', array( 'Shuffles_SSJ_Activator', 'maybe_upgrade' ) );
 

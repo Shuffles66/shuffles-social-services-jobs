@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 2;
+	const DB_VERSION = 4;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -28,6 +28,10 @@ class Shuffles_SSJ_Activator {
 		$taxes->register_taxonomies();
 
 		self::create_tables();
+
+		if ( class_exists( 'Shuffles_SSJ_Credentials' ) ) {
+			Shuffles_SSJ_Credentials::ensure_protected_dir();
+		}
 
 		$seeder = new Shuffles_SSJ_Taxonomy_Seeder();
 		$seeder->seed_all();
@@ -131,11 +135,18 @@ class Shuffles_SSJ_Activator {
   issued_date DATE NULL DEFAULT NULL,
   expires_date DATE NULL DEFAULT NULL,
   evidence_path VARCHAR(255) NULL,
+  evidence_data LONGTEXT NULL,
+  evidence_mime VARCHAR(100) NULL,
+  original_name VARCHAR(255) NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  note TEXT NULL,
+  created_at DATETIME NULL DEFAULT NULL,
   verified_at DATETIME NULL DEFAULT NULL,
   verified_by_admin_id BIGINT UNSIGNED NULL,
   PRIMARY KEY  (id),
   KEY worker_kind (worker_id,kind),
   KEY expires (expires_date),
+  KEY status (status),
   KEY verified (verified_at)
 ) $charset_collate;";
 

@@ -107,6 +107,17 @@ class Shuffles_SSJ_Admin {
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
 		);
+
+		$pending = class_exists( 'Shuffles_SSJ_Credentials' ) ? Shuffles_SSJ_Credentials::count_by_status( 'pending' ) : 0;
+		$badge   = $pending ? ' <span class="awaiting-mod count-' . (int) $pending . '"><span class="pending-count">' . (int) $pending . '</span></span>' : '';
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Verification', 'shuffles-social-services-jobs' ),
+			__( 'Verification', 'shuffles-social-services-jobs' ) . $badge, // phpcs:ignore WordPress.WP.I18n
+			'manage_options',
+			'shuffles-ssj-verify',
+			array( $this, 'render_verification' )
+		);
 	}
 
 	public function register_setting() {
@@ -418,5 +429,75 @@ class Shuffles_SSJ_Admin {
 			return;
 		}
 		include SHUFFLES_SSJ_DIR . 'admin/views/settings.php';
+	}
+
+	/**
+	 * Admin verification queue — review credential evidence and approve / reject.
+	 * The ✓ Verified badge is set ONLY here (never from user input).
+	 */
+	public function render_verification() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+		$filter  = isset( $_GET['status'] ) ? sanitize_key( wp_unslash( $_GET['status'] ) ) : 'pending'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$allowed = array( 'pending', 'verified', 'rejected', 'expired', 'all' );
+		if ( ! in_array( $filter, $allowed, true ) ) {
+			$filter = 'pending';
+		}
+		$rows = Shuffles_SSJ_Credentials::query( $filter, 300 );
+		$back = admin_url( 'admin.php?page=shuffles-ssj-verify&status=' . $filter );
+		$post = esc_url( admin_url( 'admin-post.php' ) );
+
+		echo '<div class="wrap"><h1>' . esc_html__( 'Credential verification', 'shuffles-social-services-jobs' ) . '</h1>';
+		echo '<p class="description">' . esc_html__( 'Review each worker’s uploaded evidence, then approve or reject. Approving a current (non-expired) credential gives that worker the ✓ Verified badge on their profile.', 'shuffles-social-services-jobs' ) . '</p>';
+
+		// Status filter tabs.
+		echo '<ul class="subsubsub">';
+		$labels = array(
+			'pending'  => __( 'Pending', 'shuffles-social-services-jobs' ),
+			'verified' => __( 'Verified', 'shuffles-social-services-jobs' ),
+			'rejected' => __( 'Rejected', 'shuffles-social-services-jobs' ),
+			'expired'  => __( 'Expired', 'shuffles-social-services-jobs' ),
+			'all'      => __( 'All', 'shuffles-social-services-jobs' ),
+		);
+		$i = 0;
+		foreach ( $labels as $k => $label ) {
+			$count = ( 'all' === $k ) ? '' : ' (' . (int) Shuffles_SSJ_Credentials::count_by_status( $k ) . ')';
+			$url   = admin_url( 'admin.php?page=shuffles-ssj-verify&status=' . $k );
+			$sep   = ( ++$i < count( $labels ) ) ? ' | ' : '';
+			echo '<li><a href="' . esc_url( $url ) . '" ' . ( $filter === $k ? 'class="current"' : '' ) . '>' . esc_html( $label . $count ) . '</a>' . esc_html( $sep ) . '</li>';
+		}
+		echo '</ul><table class="wp-list-table widefat fixed striped" style="margin-top:8px"><thead><tr>';
+		foreach ( array( __( 'Worker', 'shuffles-social-services-jobs' ), __( 'Credential', 'shuffles-social-services-jobs' ), __( 'Reference', 'shuffles-social-services-jobs' ), __( 'Expires', 'shuffles-social-services-jobs' ), __( 'Evidence', 'shuffles-social-services-jobs' ), __( 'Status', 'shuffles-social-services-jobs' ), __( 'Action', 'shuffles-social-services-jobs' ) ) as $h ) {
+			echo '<th>' . esc_html( $h ) . '</th>';
+		}
+		echo '</tr></thead><tbody>';
+
+		if ( empty( $rows ) ) {
+			echo '<tr><td colspan="7">' . esc_html__( 'Nothing here.', 'shuffles-social-services-jobs' ) . '</td></tr>';
+		}
+		foreach ( (array) $rows as $r ) {
+			$u                     = get_userdata( (int) $r->worker_id );
+			list( $bcls, $blabel ) = Shuffles_SSJ_Credentials::status_badge( $r->status );
+			$expired_soon          = ( $r->expires_date && $r->expires_date < current_time( 'Y-m-d' ) );
+			echo '<tr>';
+			echo '<td><strong>' . esc_html( $u ? $u->display_name : '#' . (int) $r->worker_id ) . '</strong><br><span class="description">' . esc_html( $u ? $u->user_email : '' ) . '</span></td>';
+			echo '<td>' . esc_html( Shuffles_SSJ_Credentials::kind_label( $r->kind ) ) . '</td>';
+			echo '<td>' . esc_html( $r->number ? $r->number : '—' ) . '</td>';
+			echo '<td>' . esc_html( $r->expires_date ? $r->expires_date : '—' ) . ( $expired_soon ? ' <span style="color:#b91c1c">(' . esc_html__( 'past', 'shuffles-social-services-jobs' ) . ')</span>' : '' ) . '</td>';
+			echo '<td>' . ( ! empty( $r->has_evidence ) ? '<a href="' . esc_url( Shuffles_SSJ_Credentials::file_url( $r->id ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'Open', 'shuffles-social-services-jobs' ) . '</a>' : '<span class="description">' . esc_html__( 'none', 'shuffles-social-services-jobs' ) . '</span>' ) . '</td>';
+			echo '<td><span class="sssj-badge ' . esc_attr( $bcls ) . '" style="padding:2px 8px;border-radius:10px">' . esc_html( $blabel ) . '</span></td>';
+			echo '<td><form method="post" action="' . $post . '" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<input type="hidden" name="action" value="sssj_cred_status" />';
+			echo '<input type="hidden" name="id" value="' . esc_attr( $r->id ) . '" />';
+			echo '<input type="hidden" name="_back" value="' . esc_attr( $back ) . '" />';
+			wp_nonce_field( 'sssj_cred_status' );
+			echo '<input type="text" name="note" placeholder="' . esc_attr__( 'note (for rejections)', 'shuffles-social-services-jobs' ) . '" style="width:130px" />';
+			echo '<button class="button button-primary" name="status" value="verified">' . esc_html__( 'Approve', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '<button class="button" name="status" value="rejected">' . esc_html__( 'Reject', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</form></td>';
+			echo '</tr>';
+		}
+		echo '</tbody></table></div>';
 	}
 }

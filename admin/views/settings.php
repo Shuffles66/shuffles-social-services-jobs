@@ -255,10 +255,18 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<h2>' . esc_html__( 'Compliance & credentials', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p>' . sprintf(
 				/* translators: %s: current compliance profile name */
-				esc_html__( 'Current default profile: %s. WWCC / NDIS Worker Screening / police checks / certifications and the admin verification queue arrive in Phase 5; verified badges are only ever set by an admin.', 'shuffles-social-services-jobs' ),
+				esc_html__( 'Current default profile: %s. Workers upload their checks (WWCC, NDIS Worker Screening, police check, certifications) via the [sssj_credentials] shortcode; an administrator reviews the evidence and approves or rejects. The ✓ Verified badge is set ONLY by admin approval — never from user input. Evidence files are stored privately and served only to the owner and admins.', 'shuffles-social-services-jobs' ),
 				'<strong>' . esc_html( (string) $this->settings()->get( 'compliance_profile', '' ) ) . '</strong>'
 			) . '</p>';
-			echo '<p><a class="button" href="' . esc_url( admin_url( 'edit-tags.php?taxonomy=sssjt_compliance_profile&post_type=sssj_job' ) ) . '">' . esc_html__( 'Manage compliance profiles', 'shuffles-social-services-jobs' ) . '</a></p>';
+			$pend_c = class_exists( 'Shuffles_SSJ_Credentials' ) ? Shuffles_SSJ_Credentials::count_by_status( 'pending' ) : 0;
+			echo '<p><a class="button button-primary" href="' . esc_url( admin_url( 'admin.php?page=shuffles-ssj-verify' ) ) . '">' . esc_html( sprintf( __( 'Open verification queue (%d pending)', 'shuffles-social-services-jobs' ), $pend_c ) ) . '</a> ';
+			echo '<a class="button" href="' . esc_url( admin_url( 'edit-tags.php?taxonomy=sssjt_compliance_profile&post_type=sssj_job' ) ) . '">' . esc_html__( 'Manage compliance profiles', 'shuffles-social-services-jobs' ) . '</a></p>';
+			$open_form( 'compliance' );
+			echo '<table class="form-table" role="presentation">';
+			$this->number_field( 'credential_reminder_days', __( 'Expiry reminder lead time (days)', 'shuffles-social-services-jobs' ), __( 'Workers are emailed this many days before a credential expires, and again on the expiry day. An expired credential automatically drops the verified badge.', 'shuffles-social-services-jobs' ), 1, 365 );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
 			break;
 
 		case 'funding':
@@ -317,6 +325,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.19.0 — 2026-06-06 · Compliance & verification (credentials → admin approval → ✓ Verified)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Workers add their checks (NDIS Worker Screening, WWCC, police check, First Aid, qualifications, insurance) with the [sssj_credentials] shortcode — type, reference, issue/expiry dates and an evidence file (PDF/JPG/PNG).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Evidence is stored in the database — no file on disk and no URL, so it is never directly fetchable even on Nginx (which ignores .htaccess). Server-side MIME + size checks (PDF/JPG/PNG, 8 MB). Served only to its owner or an admin through a nonce-signed handler.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'New admin Verification queue (Jobs & Engagements → Verification, with a pending count): review each document and Approve or Reject with a note. The ✓ Verified badge is set ONLY by admin approval — never from user input.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Daily expiry sweep: a lapsed credential auto-expires and drops the verified badge; workers get an email reminder at the configurable lead time (Compliance tab) and on the expiry day. Worker cards show which checks are verified (labels only).', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.18.0 — 2026-06-06 · Self-hosted geolocation (no Geo my WP, no mandatory Google)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The geo is now a fully self-contained custom build. Geo my WP is never called (it was only ever an optional status row). New Shuffles_SSJ_Geo engine: true great-circle (Haversine) distance with nearest-first ordering, replacing the bounding-box-only filter.', 'shuffles-social-services-jobs' ); ?></li>

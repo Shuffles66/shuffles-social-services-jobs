@@ -54,5 +54,10 @@ class Shuffles_SSJ_Cron {
 		if ( class_exists( 'Shuffles_SSJ_Monetisation' ) ) {
 			Shuffles_SSJ_Monetisation::sync_featured();
 		}
+
+		// Expire lapsed credentials, refresh verified badges, send renewal reminders.
+		if ( class_exists( 'Shuffles_SSJ_Credentials' ) ) {
+			Shuffles_SSJ_Credentials::expiry_sweep();
+		}
 	}
 }

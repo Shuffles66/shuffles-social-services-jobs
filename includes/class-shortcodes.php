@@ -32,6 +32,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
+		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 	}
@@ -449,6 +450,14 @@ class Shuffles_SSJ_Shortcodes {
 		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-org-form.php', array() );
+		return ob_get_clean();
+	}
+
+	/** Worker credential manager: list + add (with secure evidence upload) + delete. */
+	public function credentials_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		ob_start();
+		$this->load_template( 'credentials-panel.php', array() );
 		return ob_get_clean();
 	}
 

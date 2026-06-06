@@ -52,6 +52,7 @@ $avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.No
 				$rmin   = (float) get_post_meta( $pid, 'rate_min', true );
 				$runit  = (string) get_post_meta( $pid, 'rate_unit', true );
 				$verified = (string) get_post_meta( $pid, 'verified_at', true );
+				$vkinds   = (array) get_post_meta( $pid, 'verified_kinds', true );
 				$svcs   = wp_get_post_terms( $pid, 'sssjt_category', array( 'fields' => 'names' ) );
 				?>
 				<article class="sssj-card">
@@ -61,6 +62,13 @@ $avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.No
 						<?php if ( $verified ) : ?><span class="sssj-badge sssj-badge--verified">✓ <?php esc_html_e( 'Verified', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<?php if ( $yrs > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d yr', '%d yrs', $yrs, 'shuffles-social-services-jobs' ), $yrs ) ); ?></span><?php endif; ?>
 					</div>
+					<?php if ( $verified && ! empty( $vkinds ) && class_exists( 'Shuffles_SSJ_Credentials' ) ) : ?>
+						<p class="description" style="margin:4px 0">✓ <?php
+						$names = array();
+						foreach ( array_slice( $vkinds, 0, 4 ) as $vk ) { $names[] = Shuffles_SSJ_Credentials::kind_label( $vk ); }
+						echo esc_html( implode( ' · ', $names ) );
+						?></p>
+					<?php endif; ?>
 					<?php if ( ! is_wp_error( $svcs ) && ! empty( $svcs ) ) : ?>
 						<p><?php echo esc_html( implode( ', ', array_slice( $svcs, 0, 4 ) ) ); ?></p>
 					<?php endif; ?>

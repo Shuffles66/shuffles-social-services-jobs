@@ -77,6 +77,9 @@
 .sssj .sssj-badge--tfn{ background:#cffafe; color:var(--sssj-tfn); }
 .sssj .sssj-badge--need{ background:#fce7f3; color:var(--sssj-need); }
 .sssj .sssj-badge--featured{ background:#fef3c7; color:#92400e; }
+.sssj .sssj-badge--pending{ background:#fef3c7; color:#92400e; }
+.sssj .sssj-badge--rejected{ background:#fee2e2; color:#b91c1c; }
+.sssj .sssj-badge--expired{ background:#e2e8f0; color:#475569; }
 .sssj .sssj-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--sssj-line); border-radius:var(--sssj-radius-pill); cursor:pointer; background:#fff; }
 .sssj .sssj-chip.is-on{ border-color:var(--sssj-blue); background:#eaf3fb; color:var(--sssj-blue-deep); }
 
