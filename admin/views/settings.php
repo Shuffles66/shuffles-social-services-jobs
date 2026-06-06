@@ -474,6 +474,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.27.0 — 2026-06-06 · Keyless location finder on the job boards + friendlier English hot-key</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'The Jobs / TFN / ABN boards now show the location search + a radius slider even without a Google Maps key (geocoding runs server-side). The map still needs a key; the radius search itself is keyless.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'The English hot-key now reads “English Hot Key” with a friendly note: “Have you chosen a language you can’t read, and want to go back to English? We got you! Hit the Hot Key.”', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.26.0 — 2026-06-06 · Select2-style pill pickers everywhere</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Every plugin dropdown is now a searchable, professional select2-style picker; multi-selects show removable pills. Powered by a self-hosted Tom Select (no jQuery), themed to your design system / Style Studio colours.', 'shuffles-social-services-jobs' ); ?></li>

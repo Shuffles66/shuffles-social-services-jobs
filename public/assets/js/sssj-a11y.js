@@ -148,10 +148,16 @@
 			bar.appendChild( sel );
 
 			// Always-visible English escape — shown only when the UI is not English.
-			var eng = makeBtn( 'English', 'Switch to English' );
-			eng.className += ' sssj-a11y-english';
+			var engWrap = document.createElement( 'div' );
+			engWrap.className = 'sssj-a11y-english';
+			var eng = makeBtn( 'English Hot Key', 'Switch back to English' );
 			eng.addEventListener( 'click', function () { applyLang( 'en' ); } );
-			bar.appendChild( eng );
+			engWrap.appendChild( eng );
+			var engNote = document.createElement( 'small' );
+			engNote.className = 'sssj-a11y-english-note';
+			engNote.textContent = "Have you chosen a language you can't read, and want to go back to English? We got you! Hit the Hot Key";
+			engWrap.appendChild( engNote );
+			bar.appendChild( engWrap );
 		}
 
 		if ( floating ) {

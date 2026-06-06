@@ -49,19 +49,14 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 				}
 				?>
 			</select>
-			<?php if ( $maps ) : ?>
-				<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" />
-				<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
-				<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
-				<select class="sssj-select" name="sssj_radius">
-					<option value="0"><?php esc_html_e( 'Any distance', 'shuffles-social-services-jobs' ); ?></option>
-					<?php
-					foreach ( array( 5, 10, 25, 50, 100 ) as $km ) {
-						echo '<option value="' . esc_attr( $km ) . '" ' . selected( $cur_rad, $km, false ) . '>' . esc_html( sprintf( __( 'within %d km', 'shuffles-social-services-jobs' ), $km ) ) . '</option>';
-					}
-					?>
-				</select>
-			<?php endif; ?>
+			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" />
+			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
+			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
+			<label class="sssj-radius" style="display:flex;align-items:center;gap:8px">
+				<span><?php esc_html_e( 'Within', 'shuffles-social-services-jobs' ); ?></span>
+				<input type="range" name="sssj_radius" min="0" max="200" step="5" value="<?php echo esc_attr( $cur_rad ); ?>" oninput="this.nextElementSibling.value=(this.value==0?'<?php echo esc_js( __( 'Any', 'shuffles-social-services-jobs' ) ); ?>':this.value+' km')" />
+				<output><?php echo esc_html( $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-services-jobs' ) ); ?></output>
+			</label>
 			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>
