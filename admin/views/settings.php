@@ -474,6 +474,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.29.0 — 2026-06-06 · Organisation sectors + funding sources (pills + filters)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Organisations can now select the sectors they cover and the funding sources they accept (NDIS, Aged Care, DVA, etc.). These show as pills on the org card and are emitted in the org profile.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'The Organisations directory filter panel gains Sector and Funding filters plus an “Only with open placements” toggle (organisations that currently have at least one open job).', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.28.0 — 2026-06-06 · Worker location + worker-directory finder</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Workers can now add their location (suburb/state/postcode, geocoded server-side). The worker directory gains a location search + radius slider + map, matching the job and organisation finders. Only the suburb is shown publicly.', 'shuffles-social-services-jobs' ); ?></li>

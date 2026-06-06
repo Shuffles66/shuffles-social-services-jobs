@@ -22,14 +22,14 @@ class Shuffles_SSJ_Taxonomy_Registrar {
 	 */
 	public function definitions() {
 		return array(
-			'sssjt_category'           => array( __( 'Service Category', 'shuffles-social-services-jobs' ), __( 'Service Categories', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker', 'sssj_need' ), 'job-category' ),
+			'sssjt_category'           => array( __( 'Service Category', 'shuffles-social-services-jobs' ), __( 'Service Categories', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker', 'sssj_need', 'sssj_org' ), 'job-category' ),
 			'sssjt_role'               => array( __( 'Role', 'shuffles-social-services-jobs' ), __( 'Roles', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker' ), 'job-role' ),
 			'sssjt_qualification'      => array( __( 'Qualification', 'shuffles-social-services-jobs' ), __( 'Qualifications', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker' ), 'qualification' ),
 			'sssjt_compliance_profile' => array( __( 'Compliance Profile', 'shuffles-social-services-jobs' ), __( 'Compliance Profiles', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker' ), 'compliance-profile' ),
 			'sssjt_mode'               => array( __( 'Work Mode', 'shuffles-social-services-jobs' ), __( 'Work Modes', 'shuffles-social-services-jobs' ), array( 'sssj_job', 'sssj_worker' ), 'work-mode' ),
 			'sssjt_employment_type'    => array( __( 'Employment Type', 'shuffles-social-services-jobs' ), __( 'Employment Types', 'shuffles-social-services-jobs' ), array( 'sssj_job' ), 'employment-type' ),
 			'sssjt_support_category'   => array( __( 'Support Category', 'shuffles-social-services-jobs' ), __( 'Support Categories', 'shuffles-social-services-jobs' ), array( 'sssj_need' ), 'support-category' ),
-			'sssjt_funding_source'     => array( __( 'Funding Source', 'shuffles-social-services-jobs' ), __( 'Funding Sources', 'shuffles-social-services-jobs' ), array( 'sssj_need' ), 'funding-source' ),
+			'sssjt_funding_source'     => array( __( 'Funding Source', 'shuffles-social-services-jobs' ), __( 'Funding Sources', 'shuffles-social-services-jobs' ), array( 'sssj_need', 'sssj_org' ), 'funding-source' ),
 		);
 	}
 

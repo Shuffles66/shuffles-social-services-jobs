@@ -19,6 +19,11 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0;
 $maps    = ! empty( $maps );
 $has_pts = ! empty( $has_points );
 $rad_lbl = $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-services-jobs' );
+$cur_sector  = isset( $_GET['sssj_sector'] ) ? sanitize_title( wp_unslash( $_GET['sssj_sector'] ) ) : '';
+$cur_funding = isset( $_GET['sssj_funding'] ) ? sanitize_title( wp_unslash( $_GET['sssj_funding'] ) ) : '';
+$cur_open    = ! empty( $_GET['sssj_open'] );
+$o_sectors   = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
+$o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' => false ) );
 ?>
 <div class="sssj sssj--orgs">
 	<div class="sssj-panel">
@@ -33,6 +38,15 @@ $rad_lbl = $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-ser
 				<input type="range" name="sssj_radius" min="0" max="200" step="5" value="<?php echo esc_attr( $cur_rad ); ?>" oninput="this.nextElementSibling.value=(this.value==0?'<?php echo esc_js( __( 'Any', 'shuffles-social-services-jobs' ) ); ?>':this.value+' km')" />
 				<output><?php echo esc_html( $rad_lbl ); ?></output>
 			</label>
+				<select class="sssj-select" name="sssj_sector">
+					<option value=""><?php esc_html_e( 'All sectors', 'shuffles-social-services-jobs' ); ?></option>
+					<?php if ( ! is_wp_error( $o_sectors ) ) { foreach ( $o_sectors as $t ) { echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_sector, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
+				</select>
+				<select class="sssj-select" name="sssj_funding">
+					<option value=""><?php esc_html_e( 'All funding', 'shuffles-social-services-jobs' ); ?></option>
+					<?php if ( ! is_wp_error( $o_fundings ) ) { foreach ( $o_fundings as $t ) { echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_funding, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
+				</select>
+				<label class="sssj-chip <?php echo $cur_open ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_open" value="1" <?php checked( $cur_open ); ?> /> <?php esc_html_e( 'Only with open placements', 'shuffles-social-services-jobs' ); ?></label>
 			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>
@@ -64,6 +78,17 @@ $rad_lbl = $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-ser
 						<?php if ( $locn > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d location', '%d locations', $locn, 'shuffles-social-services-jobs' ), $locn ) ); ?></span><?php endif; ?>
 					</div>
 					<?php echo Shuffles_SSJ_Org::social_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					<?php
+					$o_sec = wp_get_post_terms( $oid, 'sssjt_category', array( 'fields' => 'names' ) );
+					$o_fun = wp_get_post_terms( $oid, 'sssjt_funding_source', array( 'fields' => 'names' ) );
+					$has_tags = ( ! is_wp_error( $o_sec ) && $o_sec ) || ( ! is_wp_error( $o_fun ) && $o_fun );
+					?>
+					<?php if ( $has_tags ) : ?>
+						<div class="sssj-row" style="margin-top:6px">
+							<?php foreach ( array_slice( (array) $o_sec, 0, 4 ) as $n ) { echo '<span class="sssj-badge sssj-badge--abn">' . esc_html( $n ) . '</span>'; } ?>
+							<?php foreach ( array_slice( (array) $o_fun, 0, 4 ) as $n ) { echo '<span class="sssj-badge sssj-badge--need">' . esc_html( $n ) . '</span>'; } ?>
+						</div>
+					<?php endif; ?>
 					<?php if ( $sub || $state ) : ?><p>📍 <?php echo esc_html( trim( $sub . ' ' . $state ) ); ?></p><?php endif; ?>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 22 ) ); ?></p>
 					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View profile & jobs', 'shuffles-social-services-jobs' ); ?></a>

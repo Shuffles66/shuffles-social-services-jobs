@@ -619,11 +619,44 @@ class Shuffles_SSJ_Shortcodes {
 				}
 			}
 		}
+		// Sector / funding / open-placements filters (applied to both the radius and plain paths).
+		$tax_query = array();
+		if ( ! empty( $_GET['sssj_sector'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$tax_query[] = array( 'taxonomy' => 'sssjt_category', 'field' => 'slug', 'terms' => sanitize_title( wp_unslash( $_GET['sssj_sector'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+		if ( ! empty( $_GET['sssj_funding'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$tax_query[] = array( 'taxonomy' => 'sssjt_funding_source', 'field' => 'slug', 'terms' => sanitize_title( wp_unslash( $_GET['sssj_funding'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+		if ( count( $tax_query ) > 1 ) {
+			$tax_query['relation'] = 'AND';
+		}
+		$open_ids = null;
+		if ( ! empty( $_GET['sssj_open'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$open_ids = array();
+			$jobs = get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'publish', 'posts_per_page' => 1000, 'fields' => 'ids', 'no_found_rows' => true, 'meta_query' => array( array( 'key' => 'organisation_id', 'value' => 0, 'compare' => '>' ) ) ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+			foreach ( $jobs as $jid ) {
+				$o = (int) get_post_meta( $jid, 'organisation_id', true );
+				if ( $o ) {
+					$open_ids[ $o ] = true;
+				}
+			}
+			$open_ids = array_keys( $open_ids );
+			if ( empty( $open_ids ) ) {
+				$open_ids = array( 0 ); // no open placements anywhere → match nothing
+			}
+		}
+		$base_filter = array();
+		if ( $tax_query ) {
+			$base_filter['tax_query'] = $tax_query; // phpcs:ignore WordPress.DB.SlowDBQuery
+		}
+		if ( null !== $open_ids ) {
+			$base_filter['post__in'] = $open_ids;
+		}
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		if ( $radius > 0 && $clat && $clng ) {
 			// Match an org if ANY of its locations is within the radius; order by nearest.
-			$cand = get_posts( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 's' => $q, 'no_found_rows' => true ) );
+			$cand = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 's' => $q, 'no_found_rows' => true ), $base_filter ) );
 			$dist = array();
 			foreach ( $cand as $id ) {
 				$d = Shuffles_SSJ_Org::nearest_km( $id, $clat, $clng );
@@ -643,7 +676,7 @@ class Shuffles_SSJ_Shortcodes {
 				$query->max_num_pages = (int) ceil( $total / $per );
 			}
 		} else {
-			$query = new WP_Query( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => $per, 'paged' => $paged, 's' => $q ) );
+			$query = new WP_Query( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => $per, 'paged' => $paged, 's' => $q ), $base_filter ) );
 		}
 
 		// Map points = every location of the orgs on this page.

@@ -542,6 +542,12 @@ class Shuffles_SSJ_Frontend_Forms {
 			}
 		}
 
+		// Sectors covered + funding sources accepted.
+		foreach ( array( 'org_sectors' => 'sssjt_category', 'org_funding' => 'sssjt_funding_source' ) as $field => $tax ) {
+			$ids = ( ! empty( $_POST[ $field ] ) && is_array( $_POST[ $field ] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST[ $field ] ) ) ) : array();
+			wp_set_object_terms( $post_id, $ids, $tax );
+		}
+
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'org', $post_id );
 		}

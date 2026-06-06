@@ -33,6 +33,10 @@ $gm = function ( $k, $d = '' ) use ( $existing ) {
 $ex_name = $existing ? $existing->post_title : '';
 $ex_desc = $existing ? $existing->post_content : '';
 $ex_type = $gm( 'org_type', 'employer' );
+$ex_sectors    = $existing ? (array) wp_get_post_terms( $existing->ID, 'sssjt_category', array( 'fields' => 'ids' ) ) : array();
+$ex_funding    = $existing ? (array) wp_get_post_terms( $existing->ID, 'sssjt_funding_source', array( 'fields' => 'ids' ) ) : array();
+$sector_terms  = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
+$funding_terms = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' => false ) );
 $ex_locs = '';
 if ( $existing ) {
 	$arr = json_decode( (string) get_post_meta( $existing->ID, 'locations', true ), true );
@@ -95,6 +99,21 @@ if ( $existing ) {
 					<div class="sssj-field"><label><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="url" name="org_website" value="<?php echo esc_attr( $gm( 'org_website' ) ); ?>" placeholder="https://" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Phone', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="org_phone" value="<?php echo esc_attr( $gm( 'org_phone' ) ); ?>" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'ABN (optional)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="org_abn" inputmode="numeric" value="<?php echo esc_attr( $gm( 'org_abn' ) ); ?>" /></div>
+				</div>
+
+				<div class="sssj-row">
+					<div class="sssj-field">
+						<label for="sssj-osectors"><?php esc_html_e( 'Sectors you cover', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" id="sssj-osectors" name="org_sectors[]" multiple data-placeholder="<?php esc_attr_e( 'Choose sectors…', 'shuffles-social-services-jobs' ); ?>">
+							<?php if ( ! is_wp_error( $sector_terms ) ) { foreach ( $sector_terms as $t ) { echo '<option value="' . esc_attr( $t->term_id ) . '" ' . ( in_array( $t->term_id, $ex_sectors, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
+						</select>
+					</div>
+					<div class="sssj-field">
+						<label for="sssj-ofunding"><?php esc_html_e( 'Funding sources accepted', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" id="sssj-ofunding" name="org_funding[]" multiple data-placeholder="<?php esc_attr_e( 'Choose funding…', 'shuffles-social-services-jobs' ); ?>">
+							<?php if ( ! is_wp_error( $funding_terms ) ) { foreach ( $funding_terms as $t ) { echo '<option value="' . esc_attr( $t->term_id ) . '" ' . ( in_array( $t->term_id, $ex_funding, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
+						</select>
+					</div>
 				</div>
 
 				<div class="sssj-field">
