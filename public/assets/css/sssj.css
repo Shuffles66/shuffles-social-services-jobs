@@ -88,6 +88,20 @@
 .sssj .sssj-socials{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 4px; }
 .sssj .sssj-social{ width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff; text-decoration:none; font-weight:700; font-size:13px; line-height:1; transition:opacity var(--sssj-dur); }
 .sssj .sssj-social:hover{ opacity:.85; color:#fff; }
+
+/* Select2-style pickers (Tom Select), themed to the design system */
+.sssj .ts-wrapper{ width:100%; }
+.sssj .ts-control{ min-height:44px; border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); background:#fff; color:var(--sssj-text); padding:4px 8px; font-size:var(--sssj-fs); box-shadow:none; gap:4px; }
+.sssj .ts-wrapper.focus .ts-control,.sssj .ts-control:focus-within{ border-color:var(--sssj-blue); box-shadow:var(--sssj-ring); }
+.sssj .ts-control > input{ color:var(--sssj-text); font-size:var(--sssj-fs); }
+.sssj .ts-control .item{ background:var(--sssj-blue); color:#fff; border-radius:var(--sssj-radius-pill); padding:3px 10px; font-weight:var(--sssj-weight-strong); font-size:var(--sssj-fs-sm); display:inline-flex; align-items:center; }
+.sssj .ts-control .item .remove{ border-left:1px solid rgba(255,255,255,.4); color:#fff; padding:0 6px; margin-left:6px; }
+.sssj .ts-control .item .remove:hover{ background:rgba(255,255,255,.2); }
+.sssj .ts-wrapper.single .ts-control{ background:#fff; }
+.sssj .ts-dropdown{ border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow-lift); margin-top:4px; }
+.sssj .ts-dropdown .option{ padding:9px 12px; }
+.sssj .ts-dropdown .active{ background:#eaf3fb; color:var(--sssj-blue-deep); }
+.sssj .ts-dropdown .ts-dropdown-content{ border-radius:var(--sssj-radius); }
 /* Navigation menu (login-aware) — responsive, wraps on small screens (no JS needed) */
 .sssj.sssj-nav{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 12px; background:var(--sssj-bg); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); }
 .sssj.sssj-nav .sssj-nav__brand{ font-weight:var(--sssj-weight-strong); color:var(--sssj-ink); margin-right:8px; }

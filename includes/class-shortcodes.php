@@ -20,6 +20,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function register() {
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_assets' ) );
+		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_select_assets' ), 20 );
 		add_shortcode( 'sssj_job_board', array( $this, 'board' ) );
 		add_shortcode( 'sssj_tfn_board', array( $this, 'tfn_board' ) );
 		add_shortcode( 'sssj_abn_board', array( $this, 'abn_board' ) );
@@ -780,6 +781,29 @@ class Shuffles_SSJ_Shortcodes {
 			return $content . ob_get_clean();
 		}
 		return $content;
+	}
+
+	/* --- Select2-style pill pickers (Tom Select), site-wide where plugin content renders --- */
+
+	/** Heuristic: does this request render plugin content (a plugin CPT singular or an sssj_ shortcode)? */
+	public function has_plugin_content() {
+		if ( is_singular( array( 'sssj_job', 'sssj_worker', 'sssj_need', 'sssj_org' ) ) ) {
+			return true;
+		}
+		$post = get_post();
+		$hit  = ( $post instanceof WP_Post && false !== strpos( (string) $post->post_content, '[sssj_' ) );
+		return (bool) apply_filters( 'shuffles_ssj_load_select_enhancer', $hit );
+	}
+
+	/** Enqueue Tom Select + the initializer so every plugin <select> becomes a searchable pill picker. */
+	public function enqueue_select_assets() {
+		if ( ! $this->has_plugin_content() ) {
+			return;
+		}
+		wp_enqueue_style( 'sssj' );
+		wp_enqueue_style( 'sssj-tomselect', SHUFFLES_SSJ_URL . 'public/assets/vendor/tom-select/tom-select.min.css', array(), '2.3.1' );
+		wp_enqueue_script( 'sssj-tomselect', SHUFFLES_SSJ_URL . 'public/assets/vendor/tom-select/tom-select.complete.min.js', array(), '2.3.1', true );
+		wp_enqueue_script( 'sssj-select', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-select.js', array( 'sssj-tomselect' ), SHUFFLES_SSJ_VERSION, true );
 	}
 
 	/* --- Template loader (theme-overridable) --- */

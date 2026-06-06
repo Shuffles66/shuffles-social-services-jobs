@@ -474,6 +474,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.26.0 — 2026-06-06 · Select2-style pill pickers everywhere</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Every plugin dropdown is now a searchable, professional select2-style picker; multi-selects show removable pills. Powered by a self-hosted Tom Select (no jQuery), themed to your design system / Style Studio colours.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Loaded only on pages with plugin content; the accessibility language picker is left untouched. Opt a select out with a data-no-enhance attribute.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.25.0 — 2026-06-06 · Organisation finder — location + radius + map</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The Organisations directory gains a location search with a radius slider and a map of org locations. An organisation matches if ANY of its locations is within the radius, ordered by nearest.', 'shuffles-social-services-jobs' ); ?></li>
