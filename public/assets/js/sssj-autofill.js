@@ -24,8 +24,10 @@
 		if ( ! url ) { window.alert( btn.getAttribute( 'data-empty' ) || 'Enter your website URL first.' ); return; }
 
 		var original = btn.textContent;
+		var loadingMsg = btn.getAttribute( 'data-loading' ) || 'Reading…';
 		btn.disabled = true;
-		btn.textContent = btn.getAttribute( 'data-loading' ) || 'Reading…';
+		btn.textContent = loadingMsg;
+		if ( window.SSSJSpinner ) { window.SSSJSpinner.show( form, loadingMsg ); }
 
 		var body = new FormData();
 		body.append( 'action', 'sssj_autofill' );
@@ -37,6 +39,7 @@
 			.then( function ( res ) {
 				btn.disabled = false;
 				btn.textContent = original;
+				if ( window.SSSJSpinner ) { window.SSSJSpinner.hide( form ); }
 				if ( ! res || ! res.success ) {
 					window.alert( ( res && res.data && res.data.msg ) || 'Could not read that website.' );
 					return;
@@ -49,6 +52,7 @@
 			.catch( function () {
 				btn.disabled = false;
 				btn.textContent = original;
+				if ( window.SSSJSpinner ) { window.SSSJSpinner.hide( form ); }
 				window.alert( 'Could not read that website.' );
 			} );
 	} );

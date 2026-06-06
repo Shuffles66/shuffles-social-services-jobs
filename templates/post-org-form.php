@@ -64,7 +64,7 @@ if ( $existing ) {
 			<p><?php esc_html_e( 'Log in with an employer account to create a profile.', 'shuffles-social-services-jobs' ); ?>
 				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		<?php else : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data" data-sssj-busy="<?php esc_attr_e( 'Saving and checking your details (NDIS register, ABN and location)…', 'shuffles-social-services-jobs' ); ?>">
 				<input type="hidden" name="action" value="sssj_post_org" />
 				<?php wp_nonce_field( 'sssj_post_org', 'sssj_org_nonce' ); ?>
 
@@ -114,9 +114,9 @@ if ( $existing ) {
 					<label><input type="checkbox" name="ndis_registered" value="1" <?php checked( '1', (string) $gm( 'ndis_registered' ) ); ?> /> <?php esc_html_e( 'We are a registered NDIS provider', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 				<div class="sssj-field">
-					<label for="sssj-ndisnum"><?php esc_html_e( 'NDIS provider / registration number', 'shuffles-social-services-jobs' ); ?></label>
-					<input class="sssj-input" id="sssj-ndisnum" type="text" name="ndis_provider_number" value="<?php echo esc_attr( $gm( 'ndis_provider_number' ) ); ?>" />
-					<p class="description"><?php echo wp_kses_post( sprintf( __( 'Shown with a link to your listing on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a>. Registration status &amp; groups are confirmed by an administrator (or an automated check where available).', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/about/ndis-provider-register' ) ) ); ?></p>
+					<label for="sssj-ndisid"><?php esc_html_e( 'NDIS Registration No', 'shuffles-social-services-jobs' ); ?></label>
+					<input class="sssj-input" id="sssj-ndisid" type="text" inputmode="numeric" name="ndis_register_id" value="<?php echo esc_attr( $gm( 'ndis_register_id' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. 902439', 'shuffles-social-services-jobs' ); ?>" />
+					<p class="description"><?php echo wp_kses_post( sprintf( __( 'The number after <code>?id=</code> in your listing URL on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a> (e.g. <code>…find-registered-provider?id=902439</code> → <code>902439</code>). When set, we read your public listing and show your verified registration status, the approved registration groups and the expiry date — refreshed automatically each month.', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/provider-registration/find-registered-provider' ) ) ); ?></p>
 				</div>
 				</div>
 

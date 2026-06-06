@@ -166,7 +166,9 @@ class Shuffles_SSJ_Org {
 		if ( '1' !== (string) get_post_meta( $org_id, 'ndis_registered', true ) ) {
 			return '';
 		}
-		$num    = (string) get_post_meta( $org_id, 'ndis_provider_number', true );
+		$num    = class_exists( 'Shuffles_SSJ_NDIS_Register' )
+			? (string) Shuffles_SSJ_NDIS_Register::register_id_for( $org_id )
+			: (string) get_post_meta( $org_id, 'ndis_provider_number', true );
 		$status = (string) get_post_meta( $org_id, 'ndis_status', true );
 		$active = ( '' === $status ) || ( false !== stripos( $status, 'register' ) || false !== stripos( $status, 'active' ) );
 		$label  = $num ? sprintf( __( 'NDIS Registered · #%s', 'shuffles-social-services-jobs' ), $num ) : __( 'NDIS Registered', 'shuffles-social-services-jobs' );

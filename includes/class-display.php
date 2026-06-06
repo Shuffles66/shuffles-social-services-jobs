@@ -42,7 +42,7 @@ class Shuffles_SSJ_Display {
 			array(
 				'tag'    => 'sssj_hero',
 				'title'  => __( 'Hero banner', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A bold, animated hero banner with a headline, sub-text and up to two call-to-action buttons. Great at the very top of the home page.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A bold, animated hero banner with a headline, sub-text and up to two call-to-action buttons, plus a “Safety, built in” strip that lists the platform’s privacy & verification guardrails. Great at the very top of the home page.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'Top of the front page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
@@ -53,6 +53,7 @@ class Shuffles_SSJ_Display {
 					'button_url="…"'   => __( 'Primary button link.', 'shuffles-social-services-jobs' ),
 					'button2_text="…"' => __( 'Optional second button label.', 'shuffles-social-services-jobs' ),
 					'button2_url="…"'  => __( 'Optional second button link.', 'shuffles-social-services-jobs' ),
+					'safety="on|off"'  => __( 'Show the “Safety, built in” guardrails strip (default on).', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
@@ -65,6 +66,7 @@ class Shuffles_SSJ_Display {
 				'atts'   => array(
 					'show="…"'  => __( 'Comma list of any of: jobs, workers, orgs, placed (default all four).', 'shuffles-social-services-jobs' ),
 					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
+					'min="25"'  => __( 'Hide any counter whose number is below this — so small/unimpressive totals stay hidden until the marketplace grows (default 0 = always show).', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
@@ -116,6 +118,7 @@ class Shuffles_SSJ_Display {
 				'button_url'   => '',
 				'button2_text' => '',
 				'button2_url'  => '',
+				'safety'       => 'on',
 			),
 			is_array( $atts ) ? $atts : array(),
 			'sssj_hero'
@@ -150,10 +153,41 @@ class Shuffles_SSJ_Display {
 						</div>
 					<?php endif; ?>
 				</div>
-			</section>
+			<?php
+					if ( 'off' !== $a['safety'] ) {
+						$sssj_guards = self::safety_guardrails();
+						if ( $sssj_guards ) {
+							echo '<div class="sssj-hero__inner sssj-hero__safety"><h2 class="sssj-hero__safety-title">🛡️ ' . esc_html__( 'Safety, built in', 'shuffles-social-services-jobs' ) . '</h2><ul class="sssj-hero__guards">';
+							foreach ( $sssj_guards as $sssj_g ) {
+								echo '<li>' . esc_html( $sssj_g ) . '</li>';
+							}
+							echo '</ul></div>';
+						}
+					}
+					?>
+				</section>
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * The platform's safety/trust guardrails (member-safe wording — never names a vendor).
+	 * Single source for the hero "Safety, built in" strip; mirrored in docs/SAFETY-GUARDRAILS.md.
+	 *
+	 * @return string[]
+	 */
+	public static function safety_guardrails() {
+		return apply_filters(
+			'shuffles_ssj_hero_guardrails',
+			array(
+				__( 'Participant privacy is structural — listings are pseudonymous and contact runs through a safe internal relay.', 'shuffles-social-services-jobs' ),
+				__( 'The ✓ Verified badge is granted only after an administrator checks the evidence — never self-claimed.', 'shuffles-social-services-jobs' ),
+				__( 'NDIS provider registration is read live from the NDIS Commission’s public register and re-checked monthly.', 'shuffles-social-services-jobs' ),
+				__( 'Credential documents are stored privately and shown only to you and our team — never on a public page.', 'shuffles-social-services-jobs' ),
+				__( 'Worker screening, WWCC, police checks and insurances are tracked with expiry reminders.', 'shuffles-social-services-jobs' ),
+			)
+		);
 	}
 
 	/* --------------------------------------------------------------- Stats */
@@ -163,11 +197,13 @@ class Shuffles_SSJ_Display {
 			array(
 				'show'  => 'jobs,workers,orgs,placed',
 				'title' => '',
+				'min'   => 0,
 			),
 			is_array( $atts ) ? $atts : array(),
 			'sssj_stats'
 		);
 		$this->enqueue();
+		$min   = max( 0, (int) $a['min'] );
 		$want  = array_filter( array_map( 'trim', explode( ',', (string) $a['show'] ) ) );
 		$all   = $this->counts();
 		$meta  = array(
@@ -187,6 +223,7 @@ class Shuffles_SSJ_Display {
 				foreach ( $want as $key ) :
 					if ( ! isset( $meta[ $key ] ) ) { continue; }
 					$val = isset( $all[ $key ] ) ? (int) $all[ $key ] : 0;
+					if ( $val < $min ) { continue; } // hide counters until the number is sizeable
 					?>
 					<div class="sssj-stat sssj-reveal" style="transition-delay:<?php echo esc_attr( ( $i * 90 ) . 'ms' ); ?>">
 						<span class="sssj-stat__icon" aria-hidden="true"><?php echo esc_html( $meta[ $key ][0] ); ?></span>

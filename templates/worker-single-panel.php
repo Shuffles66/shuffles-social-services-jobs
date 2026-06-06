@@ -87,6 +87,7 @@ $status_labels = array(
 				<?php endforeach; ?>
 			</div>
 		<?php endif; ?>
+		<?php if ( class_exists( 'Shuffles_SSJ_NDIS_Register' ) ) { echo Shuffles_SSJ_NDIS_Register::status_table_html( $worker_id ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
 	</div>
 
 	<?php if ( $gallery ) : ?>

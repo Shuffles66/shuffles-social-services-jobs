@@ -94,12 +94,17 @@ final class Shuffles_SSJ_Plugin {
 		add_action( 'shuffles_ssj_abn_recorded', array( 'Shuffles_SSJ_ABN', 'on_abn_recorded' ), 10, 3 );
 		// NDIS register auto-scan hook whenever an NDIS provider number is recorded (best-effort).
 		add_action( 'shuffles_ssj_ndis_recorded', array( 'Shuffles_SSJ_Org', 'on_ndis_recorded' ), 10, 2 );
+		// Live NDIS Commission register reader: on-save lookup + monthly change-scan/alert.
+		Shuffles_SSJ_NDIS_Register::set_settings( $this->settings );
+		Shuffles_SSJ_NDIS_Register::register();
 		$this->field_registry = new Shuffles_SSJ_Field_Registry();
 		$this->field_registry->register();
 		$this->crm_sync = new Shuffles_SSJ_CRM_Sync( $this->settings );
 		$this->crm_sync->register();
 		$this->cron = new Shuffles_SSJ_Cron();
 		$this->cron->register();
+		// Cron monitor — records last-run/next-run/status for the “Cron Jobs” tab.
+		Shuffles_SSJ_Cron_Monitor::register();
 
 		// Daily licence re-validation (cached + grace-handled; never on the hot path).
 		add_action( 'shuffles_ssj_daily', array( 'Shuffles_SSJ_License', 'check' ) );

@@ -31,7 +31,7 @@ $funding = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' 
 			<p><?php esc_html_e( 'Log in to post a participant request.', 'shuffles-social-services-jobs' ); ?>
 				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		<?php else : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" data-sssj-busy="<?php esc_attr_e( 'Saving your request…', 'shuffles-social-services-jobs' ); ?>">
 				<input type="hidden" name="action" value="sssj_post_need" />
 				<?php wp_nonce_field( 'sssj_post_need', 'sssj_need_nonce' ); ?>
 

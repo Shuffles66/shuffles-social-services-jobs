@@ -280,6 +280,11 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_script_is( 'sssj-filters', 'registered' ) ) {
 			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
+		// Shuffles spinner — branded busy state for lookups/queries (form submits + AJAX).
+		if ( ! wp_script_is( 'sssj-spinner', 'registered' ) ) {
+			wp_register_script( 'sssj-spinner', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-spinner.js', array(), SHUFFLES_SSJ_VERSION, true );
+			wp_localize_script( 'sssj-spinner', 'SSSJ_Spinner', array( 'logo' => self::site_logo_url() ) );
+		}
 		// Auto header menu prints at wp_body_open (too late to enqueue its own CSS) — load it here.
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
 			wp_enqueue_style( 'sssj' );
@@ -316,6 +321,19 @@ class Shuffles_SSJ_Shortcodes {
 				)
 			);
 		}
+	}
+
+	/** Site logo URL for the branded spinner (custom_logo, else site icon), or '' if none. */
+	public static function site_logo_url() {
+		$lid = (int) get_theme_mod( 'custom_logo' );
+		if ( $lid ) {
+			$src = wp_get_attachment_image_src( $lid, 'medium' );
+			if ( $src && ! empty( $src[0] ) ) {
+				return (string) $src[0];
+			}
+		}
+		$icon = function_exists( 'get_site_icon_url' ) ? get_site_icon_url( 120 ) : '';
+		return $icon ? (string) $icon : '';
 	}
 
 	/**
@@ -633,6 +651,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function post_worker_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-spinner' );
 		ob_start();
 		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
@@ -681,6 +700,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function post_need_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-spinner' );
 		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-need-form.php', array( 'settings' => $this->settings ) );
@@ -737,6 +757,7 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+
 	/**
 	 * [sssj_dashboard] — a single, tabbed member hub that pulls the member-facing pieces together.
 	 * Capability-aware: shows worker sections for workers, advertiser sections for advertisers.
@@ -764,6 +785,7 @@ class Shuffles_SSJ_Shortcodes {
 
 		// Tabs (slug => label), built per capability.
 		$tabs = array( 'overview' => __( 'Overview', 'shuffles-social-services-jobs' ) );
+		$tabs['profile'] = __( 'My profile', 'shuffles-social-services-jobs' );
 		if ( $is_adv ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
 		if ( $is_worker ) {
 			$tabs['matches']     = __( 'Matched jobs', 'shuffles-social-services-jobs' );
@@ -803,6 +825,17 @@ class Shuffles_SSJ_Shortcodes {
 		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>';
 		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a>';
 		echo '</div></div></section>';
+
+		// My profile — edit the personal profile inline; link out to the entity editors.
+		echo '<section class="sssj-dash__panel" data-dash-panel="profile">';
+		echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'My profile', 'shuffles-social-services-jobs' ) . '</h3>';
+		echo '<p class="description">' . esc_html__( 'Edit your personal worker / candidate profile here. To manage an organisation or a participant support request, use the buttons below.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<div class="sssj-row" style="flex-wrap:wrap;margin-bottom:10px">';
+		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>';
+		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Participant support request', 'shuffles-social-services-jobs' ) . '</a>';
+		echo '</div><p class="description">' . esc_html__( 'Tip: use the “My roles” tab to set what you are (worker, participant, provider, …) — that controls what you can post.', 'shuffles-social-services-jobs' ) . '</p></div>';
+		echo do_shortcode( '[sssj_post_worker]' );
+		echo '</section>';
 
 		// Composed sections.
 		if ( $is_adv ) {
@@ -980,8 +1013,9 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function post_org_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-spinner' );
 		$this->enqueue_maps();
-		wp_enqueue_script( 'sssj-autofill', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-autofill.js', array(), SHUFFLES_SSJ_VERSION, true );
+		wp_enqueue_script( 'sssj-autofill', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-autofill.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
 		wp_localize_script( 'sssj-autofill', 'SSJ_Autofill', array( 'ajax' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'sssj_autofill' ) ) );
 		ob_start();
 		$this->load_template( 'post-org-form.php', array() );

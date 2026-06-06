@@ -291,6 +291,8 @@ class Shuffles_SSJ_Frontend_Forms {
 			'is_available'      => empty( $_POST['is_available'] ) ? 0 : 1,
 			'employment_status' => isset( $_POST['employment_status'] ) ? sanitize_key( wp_unslash( $_POST['employment_status'] ) ) : 'seeking',
 			'worker_abn'        => $abn,
+			'ndis_registered'   => empty( $_POST['ndis_registered'] ) ? '' : '1',
+			'ndis_register_id'  => isset( $_POST['ndis_register_id'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['ndis_register_id'] ) ) : '',
 			'years_experience'  => isset( $_POST['years_experience'] ) ? absint( $_POST['years_experience'] ) : 0,
 			'travel_radius_km'  => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
 			'rate_min'          => isset( $_POST['rate_min'] ) ? (float) $_POST['rate_min'] : 0,
@@ -364,6 +366,11 @@ class Shuffles_SSJ_Frontend_Forms {
 
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'worker', $post_id );
+		}
+
+		// Sole-trader NDIS registration → live register lookup (same hook the org form uses).
+		if ( ! empty( $_POST['ndis_registered'] ) && '' !== (string) get_post_meta( $post_id, 'ndis_register_id', true ) ) {
+			do_action( 'shuffles_ssj_ndis_recorded', (string) get_post_meta( $post_id, 'ndis_register_id', true ), $post_id );
 		}
 
 		do_action( 'shuffles_ssj_profile_saved', 'worker', $post_id, get_current_user_id() );
@@ -642,13 +649,18 @@ class Shuffles_SSJ_Frontend_Forms {
 			$locations[] = $loc;
 		}
 
+		$ndis_reg_no = isset( $_POST['ndis_register_id'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['ndis_register_id'] ) ) : '';
+
 		$meta = array(
 			'org_user_id'       => $uid,
 			'org_hidden'        => empty( $_POST['org_hidden'] ) ? '' : '1',
 			'org_category'      => isset( $_POST['org_category'] ) ? sanitize_key( wp_unslash( $_POST['org_category'] ) ) : 'support',
 			'travel_radius_km'  => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
+			// One field now: "NDIS Registration No" (the ?id= value). Mirror it into the legacy
+			// ndis_provider_number key so older readers (e.g. the directory badge) keep working.
 			'ndis_registered'      => empty( $_POST['ndis_registered'] ) ? '' : '1',
-			'ndis_provider_number' => isset( $_POST['ndis_provider_number'] ) ? sanitize_text_field( wp_unslash( $_POST['ndis_provider_number'] ) ) : '',
+			'ndis_register_id'     => $ndis_reg_no,
+			'ndis_provider_number' => $ndis_reg_no,
 			'org_abn'           => $abn,
 			'org_website'       => isset( $_POST['org_website'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['org_website'] ) ) ) : '',
 			'org_type'          => isset( $_POST['org_type'] ) ? sanitize_key( wp_unslash( $_POST['org_type'] ) ) : 'employer',
@@ -697,8 +709,14 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( '' !== $abn ) {
 			do_action( 'shuffles_ssj_abn_recorded', $abn, 'org', $post_id );
 		}
-		if ( ! empty( $_POST['ndis_registered'] ) && '' !== (string) get_post_meta( $post_id, 'ndis_provider_number', true ) ) {
-			do_action( 'shuffles_ssj_ndis_recorded', (string) get_post_meta( $post_id, 'ndis_provider_number', true ), $post_id );
+		if ( ! empty( $_POST['ndis_registered'] ) ) {
+			$ndis_ref = (string) get_post_meta( $post_id, 'ndis_register_id', true );
+			if ( '' === trim( $ndis_ref ) ) {
+				$ndis_ref = (string) get_post_meta( $post_id, 'ndis_provider_number', true );
+			}
+			if ( '' !== trim( $ndis_ref ) ) {
+				do_action( 'shuffles_ssj_ndis_recorded', $ndis_ref, $post_id );
+			}
 		}
 		// Directory listing eligibility (providers pay to list) — stamped on save (free when monetisation off).
 		update_post_meta( $post_id, 'org_listed', ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::can_list_directory( $uid ) ) ? '1' : '' );

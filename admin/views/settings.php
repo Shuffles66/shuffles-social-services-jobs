@@ -648,6 +648,53 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</form>';
 			break;
 
+		case 'cron':
+			echo '<h2>' . esc_html__( 'Cron Job List & Status', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description">' . esc_html__( 'The plugin’s scheduled background jobs (WordPress cron). For each: how often it runs, when it last ran, when it is next due, and whether the last run completed. “Run now” triggers a job immediately (useful for testing).', 'shuffles-social-services-jobs' ) . '</p>';
+			if ( ! empty( $_GET['sssj_cron_ran'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				echo '<div class="notice notice-success inline"><p>' . esc_html( sprintf( __( 'Ran “%s” now.', 'shuffles-social-services-jobs' ), sanitize_text_field( wp_unslash( $_GET['sssj_cron_ran'] ) ) ) ) . '</p></div>'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			}
+			if ( defined( 'DISABLE_WP_CRON' ) && DISABLE_WP_CRON ) {
+				echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Note: DISABLE_WP_CRON is on for this site, so jobs run from a real system cron hitting wp-cron.php rather than on page loads. Next-run times below are still the scheduled times.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+			$rows     = class_exists( 'Shuffles_SSJ_Cron_Monitor' ) ? Shuffles_SSJ_Cron_Monitor::rows() : array();
+			$fmt      = get_option( 'date_format' ) . ' ' . get_option( 'time_format' );
+			$state_lbl = array(
+				'ok'         => array( __( 'Completed OK', 'shuffles-social-services-jobs' ), '#166534', '#dcfce7' ),
+				'running'    => array( __( 'Running…', 'shuffles-social-services-jobs' ), '#92400e', '#fef3c7' ),
+				'never'      => array( __( 'Not run yet', 'shuffles-social-services-jobs' ), '#475569', '#e2e8f0' ),
+				'incomplete' => array( __( 'Did not complete', 'shuffles-social-services-jobs' ), '#b91c1c', '#fee2e2' ),
+				'failed'     => array( __( 'Reported errors', 'shuffles-social-services-jobs' ), '#b91c1c', '#fee2e2' ),
+			);
+			echo '<table class="widefat striped"><thead><tr>'
+				. '<th>' . esc_html__( 'Job', 'shuffles-social-services-jobs' ) . '</th>'
+				. '<th>' . esc_html__( 'Frequency', 'shuffles-social-services-jobs' ) . '</th>'
+				. '<th>' . esc_html__( 'Last run', 'shuffles-social-services-jobs' ) . '</th>'
+				. '<th>' . esc_html__( 'Next run due', 'shuffles-social-services-jobs' ) . '</th>'
+				. '<th>' . esc_html__( 'Status', 'shuffles-social-services-jobs' ) . '</th>'
+				. '<th>' . esc_html__( 'Action', 'shuffles-social-services-jobs' ) . '</th>'
+				. '</tr></thead><tbody>';
+			foreach ( $rows as $r ) {
+				$sl   = isset( $state_lbl[ $r['state'] ] ) ? $state_lbl[ $r['state'] ] : $state_lbl['never'];
+				$last = $r['last'] ? date_i18n( $fmt, $r['last'] + ( (int) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) ) : '—';
+				$next = $r['next'] ? date_i18n( $fmt, $r['next'] + ( (int) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) ) : esc_html__( 'Not scheduled', 'shuffles-social-services-jobs' );
+				$run  = wp_nonce_url( admin_url( 'admin-post.php?action=sssj_cron_run&hook=' . rawurlencode( $r['hook'] ) ), 'sssj_cron_run_' . $r['hook'] );
+				echo '<tr>';
+				echo '<td><strong>' . esc_html( $r['label'] ) . '</strong><br /><span class="description">' . esc_html( $r['desc'] ) . '</span><br /><code style="font-size:11px">' . esc_html( $r['hook'] ) . '</code></td>';
+				echo '<td>' . esc_html( $r['frequency'] ) . '</td>';
+				echo '<td>' . esc_html( $last ) . '</td>';
+				echo '<td>' . esc_html( $next ) . '</td>';
+				echo '<td><span style="display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;color:' . esc_attr( $sl[1] ) . ';background:' . esc_attr( $sl[2] ) . '">' . esc_html( $sl[0] ) . '</span>';
+				if ( '' !== $r['note'] ) {
+					echo '<br /><span class="description">' . esc_html( $r['note'] ) . '</span>';
+				}
+				echo '</td>';
+				echo '<td><a class="button button-small" href="' . esc_url( $run ) . '">' . esc_html__( 'Run now', 'shuffles-social-services-jobs' ) . '</a></td>';
+				echo '</tr>';
+			}
+			echo '</tbody></table>';
+			break;
+
 		case 'compliance':
 			echo '<h2>' . esc_html__( 'Compliance & credentials', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p>' . sprintf(
@@ -666,6 +713,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				__( 'ABR Web Services GUID (ABN verification)', 'shuffles-social-services-jobs' ),
 				__( 'Register free for an authentication GUID at the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank" rel="noopener">ABR Web Services</a> site (you receive the GUID by email). Paste it here. When set, any ABN entered on a job, worker or organisation is <strong>checked against the Australian Business Register</strong> on save — the entity name + ABN status are stored and shown as an “ABR Active · &lt;Name&gt;” badge. Leave blank to keep the offline checksum validation only.', 'shuffles-social-services-jobs' )
 			);
+			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'NDIS provider register auto-check', 'shuffles-social-services-jobs' ) . '</h3>'
+				. '<p class="description">' . esc_html__( 'When an organisation enters its NDIS Registration No (the number after ?id= in its provider-register URL), the plugin reads that public listing and stores the Registration status, the approved registration groups and the “in force until” date — shown as a table on the organisation’s profile. A monthly background check re-reads each listing and emails you if anything changes (status, groups, or the expiry date), so you can re-verify. Nothing is ever emailed to the provider. This reads the NDIS Commission’s own public register; keep it on unless you prefer to verify entirely by hand.', 'shuffles-social-services-jobs' ) . '</p></td></tr>';
+			$this->checkbox_field( 'ndis_scan_enabled', __( 'Monthly NDIS register check', 'shuffles-social-services-jobs' ), __( 'Read each registered organisation’s NDIS Commission listing on save and once a month, and alert on any change.', 'shuffles-social-services-jobs' ) );
+			$this->text_field( 'ndis_alert_email', __( 'Change-alert email', 'shuffles-social-services-jobs' ), __( 'Where to send “NDIS registration changed” alerts. Leave blank to use the site admin email. Alerts go to staff only — never to the provider.', 'shuffles-social-services-jobs' ), 'email' );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -727,6 +778,25 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.54.0 — 2026-06-06 · Cron Jobs tab · My profile in the dashboard · home-page hero</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Cron Job List & Status tab: a new admin tab listing every scheduled background job (daily maintenance, daily email alerts, monthly NDIS check) with its frequency, last run, next run due, completion status, any reported errors, and a “Run now” button. Last-run/status are recorded automatically (a job that starts but never finishes is flagged “Did not complete”).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'My profile in the dashboard: the member dashboard now has a “My profile” tab that lets you edit your personal worker/candidate profile right there, with one-click links to manage an organisation or a participant support request.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Home-page hero safety strip: the [sssj_hero] banner now carries a “Safety, built in” strip listing the platform’s privacy & verification guardrails (toggle with safety="off"). The wording comes from one place (shuffles_ssj_hero_guardrails filter).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Counters that wait until you’re impressive: the [sssj_stats] counters take a new min="…" attribute that hides any counter below that number — so small early totals stay hidden and simply appear as the marketplace grows (e.g. [sssj_stats min="25"]).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Marketing: a docs/SAFETY-GUARDRAILS.md reference (not shipped publicly) collects all the trust & safety guardrails with copy-ready “sales angle” lines, and is the single source for the hero strip wording.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Sole-trader NDIS registration: individuals registered with the NDIS Commission in their own right can now add their NDIS Registration No on their worker profile — the same live status / registration-groups / expiry table and monthly auto-check that organisations get.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Shuffles spinner: lookups and saves that take a few seconds (the website auto-fill, profile saves that check the NDIS register / ABR / location, and the “Re-check NDIS register now” button) now show the branded Shuffles spinner — the site logo when one is set, otherwise a brand-blue ring.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Tidy-up: the organisation form’s two NDIS number fields are merged into one — “NDIS Registration No”. (The value is still mirrored to the old field internally, so existing badges/links keep working with no migration.)', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.53.0 — 2026-06-06 · live NDIS provider-register check + monthly change alerts</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'NDIS Registration No: organisations can enter the number after ?id= in their provider-register URL (e.g. 902439). On save, the plugin reads that public listing and stores the live Registration status, the approved registration groups and the “in force until” date.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Registration table on the profile: a neat “NDIS provider registration” table shows the status (colour-coded), the approved registration groups, the expiry date, a link to the Commission register and a “Last checked” date. Admins get a “Re-check NDIS register now” button.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Monthly auto-check + alerts: a background check re-reads every registered organisation’s listing once a month and emails staff (Settings → Compliance → change-alert email, default the site admin) only when something changes — status, groups, or the expiry date. The provider is never emailed.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Safe-by-design: a fetch or parse failure never overwrites the stored details and instead alerts staff (so a register-page layout change can’t silently read as “no change”). Reads only the NDIS Commission’s own public data, on a gentle cadence. Toggle the whole feature on/off in Settings → Compliance.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Hooks for integrators: shuffles_ssj_ndis_changed (fires with the change list), shuffles_ssj_ndis_alert_email, shuffles_ssj_ndis_suppress_default_email, shuffles_ssj_ndis_base_url, shuffles_ssj_ndis_user_agent.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.52.0 — 2026-06-06 · member roles · organisation categories · participant-free posting · provider directory fee &amp; sponsorship</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Member roles: a member can wear many hats. New [sssj_roles] form (and a “My roles” tab in the dashboard) lets each member tick the roles that apply — worker, candidate, participant, sole-trader provider, provider representative, or supplier — which grants the matching posting capabilities and tailors their dashboard. Change it any time.', 'shuffles-social-services-jobs' ); ?></li>

@@ -203,6 +203,7 @@ class Shuffles_SSJ_Admin {
 			'privacy'      => array( 'T13', __( 'Privacy & Moderation', 'shuffles-social-services-jobs' ), 'amber' ),
 			'guides'       => array( 'T20', __( 'Guides', 'shuffles-social-services-jobs' ), 'orange' ),
 			'testing'      => array( 'T19', __( 'Testing', 'shuffles-social-services-jobs' ), 'slate' ),
+			'cron'         => array( 'T24', __( 'Cron Job List & Status', 'shuffles-social-services-jobs' ), 'slate' ),
 			'diagnostics'  => array( 'T14', __( 'Diagnostics', 'shuffles-social-services-jobs' ), 'slate' ),
 			'changelog'    => array( 'T15', __( 'Changelog', 'shuffles-social-services-jobs' ), 'slate' ),
 			'pm'           => array( 'PM', __( 'Project Management', 'shuffles-social-services-jobs' ), 'slate' ),

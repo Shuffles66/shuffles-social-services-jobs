@@ -23,6 +23,8 @@ Every change session MUST complete ALL of the following steps in order:
 
 **Never ship a version without a matching changelog entry. The changelog step is not optional.**
 
+**Also keep `docs/business_rules_and_logic.md` current** — whenever a business rule changes, a gate is added, or a default flips, update that doc and bump its "Last updated" line. It is the authoritative plain-English record of the plugin's decision logic.
+
 ---
 
 ## What You Are Building
