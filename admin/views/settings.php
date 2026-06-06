@@ -474,6 +474,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.24.0 — 2026-06-06 · Organisation branding — logo + social links</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Organisations can upload a logo (shown on their profile, directory cards and search results, and added to the Organization structured data for SEO).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Social + profile links: Facebook, LinkedIn, Instagram, X, YouTube and a Shuffles profile link, shown as branded icons and emitted as schema.org sameAs for richer search results.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.23.0 — 2026-06-06 · Appearance "Style Studio" (live preview)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The Appearance tab is now a Style Studio: visual controls (colours, corner radius, font, base size, heading weight, density) alongside a live preview of a realistic mock board (nav, search, ABN/TFN/featured/need cards) that updates as you edit — nothing saved until you click Save.', 'shuffles-social-services-jobs' ); ?></li>

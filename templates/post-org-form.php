@@ -60,7 +60,7 @@ if ( $existing ) {
 			<p><?php esc_html_e( 'Log in with an employer account to create a profile.', 'shuffles-social-services-jobs' ); ?>
 				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		<?php else : ?>
-			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data">
 				<input type="hidden" name="action" value="sssj_post_org" />
 				<?php wp_nonce_field( 'sssj_post_org', 'sssj_org_nonce' ); ?>
 
@@ -71,6 +71,15 @@ if ( $existing ) {
 				<div class="sssj-field">
 					<label for="sssj-odesc"><?php esc_html_e( 'About the organisation', 'shuffles-social-services-jobs' ); ?></label>
 					<textarea class="sssj-textarea" id="sssj-odesc" name="description" rows="5"><?php echo esc_textarea( $ex_desc ); ?></textarea>
+				</div>
+
+				<div class="sssj-field">
+					<label for="sssj-ologo"><?php esc_html_e( 'Logo', 'shuffles-social-services-jobs' ); ?></label>
+					<?php if ( $existing && has_post_thumbnail( $existing->ID ) ) : ?>
+						<div style="margin-bottom:6px"><?php echo get_the_post_thumbnail( $existing->ID, 'thumbnail', array( 'class' => 'sssj-org-logo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
+					<?php endif; ?>
+					<input id="sssj-ologo" type="file" name="org_logo" accept="image/png,image/jpeg,image/webp,image/svg+xml,.png,.jpg,.jpeg,.webp,.svg" />
+					<p class="description"><?php esc_html_e( 'PNG, JPG, WebP or SVG. Shown on your profile, cards and search results.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 				<div class="sssj-row">
 					<div class="sssj-field">
@@ -86,6 +95,16 @@ if ( $existing ) {
 					<div class="sssj-field"><label><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="url" name="org_website" value="<?php echo esc_attr( $gm( 'org_website' ) ); ?>" placeholder="https://" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Phone', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="org_phone" value="<?php echo esc_attr( $gm( 'org_phone' ) ); ?>" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'ABN (optional)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="org_abn" inputmode="numeric" value="<?php echo esc_attr( $gm( 'org_abn' ) ); ?>" /></div>
+				</div>
+
+				<div class="sssj-field">
+					<label><?php esc_html_e( 'Social & profile links', 'shuffles-social-services-jobs' ); ?></label>
+					<div class="sssj-stack">
+						<?php foreach ( Shuffles_SSJ_Org::networks() as $nk => $net ) : ?>
+							<input class="sssj-input" type="url" name="<?php echo esc_attr( $nk ); ?>" value="<?php echo esc_attr( $gm( $nk ) ); ?>" placeholder="<?php echo esc_attr( sprintf( __( '%s URL', 'shuffles-social-services-jobs' ), $net['label'] ) ); ?>" />
+						<?php endforeach; ?>
+					</div>
+					<p class="description"><?php esc_html_e( 'Optional. Use the full URL for each (e.g. https://facebook.com/yourpage). “Shuffles profile” is your page on the Shuffles site.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
 				<div class="sssj-field" data-sssj-place-group>

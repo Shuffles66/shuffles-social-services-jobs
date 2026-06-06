@@ -92,9 +92,16 @@ class Shuffles_SSJ_SEO {
 		if ( $logo ) {
 			$data['logo'] = $logo;
 		}
-		$web = (string) get_post_meta( $id, 'org_website', true );
+		$same = array();
+		$web  = (string) get_post_meta( $id, 'org_website', true );
 		if ( $web ) {
-			$data['sameAs'] = array( $web );
+			$same[] = $web;
+		}
+		if ( class_exists( 'Shuffles_SSJ_Org' ) ) {
+			$same = array_merge( $same, Shuffles_SSJ_Org::social_urls( $id ) );
+		}
+		if ( $same ) {
+			$data['sameAs'] = array_values( array_unique( $same ) );
 		}
 		$phone = (string) get_post_meta( $id, 'org_phone', true );
 		if ( $phone ) {

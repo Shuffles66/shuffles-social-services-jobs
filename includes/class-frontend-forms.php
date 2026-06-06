@@ -494,8 +494,23 @@ class Shuffles_SSJ_Frontend_Forms {
 			'location_lng'      => isset( $_POST['location_lng'] ) ? (float) $_POST['location_lng'] : 0,
 			'locations'         => wp_json_encode( $locations ),
 		);
+		// Social + profile links (single source of truth).
+		foreach ( array_keys( Shuffles_SSJ_Org::networks() ) as $netkey ) {
+			$meta[ $netkey ] = isset( $_POST[ $netkey ] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST[ $netkey ] ) ) ) : '';
+		}
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
+		}
+
+		// Logo → the org post's featured image (also used by Organization JSON-LD).
+		if ( ! empty( $_FILES['org_logo']['name'] ) ) {
+			require_once ABSPATH . 'wp-admin/includes/image.php';
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			require_once ABSPATH . 'wp-admin/includes/media.php';
+			$att = media_handle_upload( 'org_logo', $post_id );
+			if ( ! is_wp_error( $att ) ) {
+				set_post_thumbnail( $post_id, $att );
+			}
 		}
 
 		// Geocode the primary location from address parts when none were captured (keyless).

@@ -34,11 +34,16 @@ $cur_q = isset( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj
 				$locn  = ( is_array( $extra ) ? count( $extra ) : 0 ) + ( ( $sub || $state ) ? 1 : 0 );
 				?>
 				<article class="sssj-card">
-					<h3 style="margin-top:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
+						<?php $logo = Shuffles_SSJ_Org::logo_url( $oid, 'thumbnail' ); ?>
+						<?php if ( $logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $logo ); ?>" alt="" /><?php endif; ?>
+						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+					</div>
 					<div class="sssj-row">
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 						<?php if ( $locn > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d location', '%d locations', $locn, 'shuffles-social-services-jobs' ), $locn ) ); ?></span><?php endif; ?>
 					</div>
+					<?php echo Shuffles_SSJ_Org::social_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					<?php if ( $sub || $state ) : ?><p>📍 <?php echo esc_html( trim( $sub . ' ' . $state ) ); ?></p><?php endif; ?>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 22 ) ); ?></p>
 					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View profile & jobs', 'shuffles-social-services-jobs' ); ?></a>

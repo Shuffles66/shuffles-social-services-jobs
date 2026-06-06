@@ -168,6 +168,12 @@ class Shuffles_SSJ_CPT_Registrar {
 				'org_website'     => array( 'string', true, 'text' ),
 				'org_type'        => array( 'string', true, 'key' ),
 				'org_phone'       => array( 'string', true, 'text' ),
+				'org_facebook'    => array( 'string', true, 'text' ),
+				'org_linkedin'    => array( 'string', true, 'text' ),
+				'org_instagram'   => array( 'string', true, 'text' ),
+				'org_twitter'     => array( 'string', true, 'text' ),
+				'org_youtube'     => array( 'string', true, 'text' ),
+				'org_shuffles'    => array( 'string', true, 'text' ),
 				'locations'       => array( 'string', false, 'text' ), // JSON array of extra locations
 				'location_suburb' => array( 'string', true, 'text' ),
 				'location_state'  => array( 'string', true, 'text' ),

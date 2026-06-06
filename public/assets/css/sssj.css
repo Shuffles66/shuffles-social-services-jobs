@@ -81,6 +81,13 @@
 .sssj .sssj-badge--pending{ background:#fef3c7; color:#92400e; }
 .sssj .sssj-badge--rejected{ background:#fee2e2; color:#b91c1c; }
 .sssj .sssj-badge--expired{ background:#e2e8f0; color:#475569; }
+
+/* Organisation branding: logo + social icons */
+.sssj .sssj-org-logo{ max-width:120px; max-height:80px; width:auto; height:auto; border-radius:8px; object-fit:contain; background:#fff; border:1px solid var(--sssj-line); }
+.sssj .sssj-card .sssj-org-logo{ max-width:64px; max-height:48px; flex:0 0 auto; }
+.sssj .sssj-socials{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:10px 0 4px; }
+.sssj .sssj-social{ width:34px; height:34px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; color:#fff; text-decoration:none; font-weight:700; font-size:13px; line-height:1; transition:opacity var(--sssj-dur); }
+.sssj .sssj-social:hover{ opacity:.85; color:#fff; }
 /* Navigation menu (login-aware) — responsive, wraps on small screens (no JS needed) */
 .sssj.sssj-nav{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 12px; background:var(--sssj-bg); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); }
 .sssj.sssj-nav .sssj-nav__brand{ font-weight:var(--sssj-weight-strong); color:var(--sssj-ink); margin-right:8px; }
