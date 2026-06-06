@@ -146,6 +146,11 @@ class Shuffles_SSJ_CPT_Registrar {
 				'verified_at'             => array( 'string', true, 'text' ),
 				'verified_by_admin_id'    => array( 'integer', false, 'int' ),
 				'visibility'              => array( 'string', true, 'key' ), // public | logged_in | verified_only
+				'location_suburb'         => array( 'string', true, 'text' ),
+				'location_state'          => array( 'string', true, 'text' ),
+				'location_postcode'       => array( 'string', true, 'text' ),
+				'location_lat'            => array( 'number', true, 'float' ),
+				'location_lng'            => array( 'number', true, 'float' ),
 			),
 			// Participant Need: sensitive — REST off for everything except non-identifying flags.
 			'sssj_need' => array(

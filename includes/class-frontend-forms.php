@@ -211,7 +211,20 @@ class Shuffles_SSJ_Frontend_Forms {
 			'rate_max'          => isset( $_POST['rate_max'] ) ? (float) $_POST['rate_max'] : 0,
 			'rate_unit'         => isset( $_POST['rate_unit'] ) ? sanitize_key( wp_unslash( $_POST['rate_unit'] ) ) : 'hour',
 			'visibility'        => $visibility,
+			'location_suburb'   => isset( $_POST['location_suburb'] ) ? sanitize_text_field( wp_unslash( $_POST['location_suburb'] ) ) : '',
+			'location_state'    => isset( $_POST['location_state'] ) ? sanitize_text_field( wp_unslash( $_POST['location_state'] ) ) : '',
+			'location_postcode' => isset( $_POST['location_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['location_postcode'] ) ) : '',
+			'location_lat'      => isset( $_POST['location_lat'] ) ? (float) $_POST['location_lat'] : 0,
+			'location_lng'      => isset( $_POST['location_lng'] ) ? (float) $_POST['location_lng'] : 0,
 		);
+		// Geocode from suburb/state when no client-side coordinates (keyless), so radius search finds them.
+		if ( empty( $meta['location_lat'] ) && empty( $meta['location_lng'] ) ) {
+			$geo = Shuffles_SSJ_Geo::geocode_parts( $meta['location_suburb'], $meta['location_state'], $meta['location_postcode'] );
+			if ( $geo ) {
+				$meta['location_lat'] = $geo['lat'];
+				$meta['location_lng'] = $geo['lng'];
+			}
+		}
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
 		}

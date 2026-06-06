@@ -19,11 +19,17 @@ $cats    = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => fal
 $cur_cat = isset( $_GET['sssj_cat'] ) ? sanitize_title( wp_unslash( $_GET['sssj_cat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $cur_q   = isset( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_loc = isset( $_GET['sssj_loc'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_loc'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_lat = isset( $_GET['sssj_lat'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_lat'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_lng = isset( $_GET['sssj_lng'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_lng'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+$w_maps  = ! empty( $maps );
+$w_pts   = ! empty( $has_points );
 ?>
 <div class="sssj sssj--workers">
 	<div class="sssj-panel">
 		<h2><?php echo esc_html( $heading ); ?></h2>
-		<form class="sssj-row" method="get">
+		<form class="sssj-row" method="get" data-sssj-place-group>
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" />
 			<select class="sssj-select" name="sssj_cat">
 				<option value=""><?php esc_html_e( 'All services', 'shuffles-social-services-jobs' ); ?></option>
@@ -35,10 +41,22 @@ $avail   = ! empty( $_GET['sssj_avail'] ); // phpcs:ignore WordPress.Security.No
 				}
 				?>
 			</select>
+			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" />
+			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
+			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
+			<label class="sssj-radius" style="display:flex;align-items:center;gap:8px">
+				<span><?php esc_html_e( 'Within', 'shuffles-social-services-jobs' ); ?></span>
+				<input type="range" name="sssj_radius" min="0" max="200" step="5" value="<?php echo esc_attr( $cur_rad ); ?>" oninput="this.nextElementSibling.value=(this.value==0?'<?php echo esc_js( __( 'Any', 'shuffles-social-services-jobs' ) ); ?>':this.value+' km')" />
+				<output><?php echo esc_html( $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-services-jobs' ) ); ?></output>
+			</label>
 			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></label>
 			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>
+
+	<?php if ( $w_maps && $w_pts ) : ?>
+		<div class="sssj-panel" style="padding:0;overflow:hidden;margin-bottom:16px"><div data-sssj-map style="height:360px;width:100%"></div></div>
+	<?php endif; ?>
 
 	<?php if ( $query->have_posts() ) : ?>
 		<div class="sssj-grid">

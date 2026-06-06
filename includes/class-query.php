@@ -118,6 +118,7 @@ class Shuffles_SSJ_Query {
 				'value' => 1,
 			);
 		}
+		self::add_radius_clauses( $args, $extra );
 		if ( count( $args['meta_query'] ) > 1 ) {
 			$args['meta_query']['relation'] = 'AND';
 		}

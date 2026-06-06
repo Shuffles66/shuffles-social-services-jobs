@@ -474,6 +474,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.28.0 — 2026-06-06 · Worker location + worker-directory finder</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'Workers can now add their location (suburb/state/postcode, geocoded server-side). The worker directory gains a location search + radius slider + map, matching the job and organisation finders. Only the suburb is shown publicly.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.27.0 — 2026-06-06 · Keyless location finder on the job boards + friendlier English hot-key</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The Jobs / TFN / ABN boards now show the location search + a radius slider even without a Google Maps key (geocoding runs server-side). The map still needs a key; the radius search itself is keyless.', 'shuffles-social-services-jobs' ); ?></li>

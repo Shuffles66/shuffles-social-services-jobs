@@ -104,6 +104,19 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					</div>
 				</div>
 
+				<div class="sssj-field" data-sssj-place-group>
+					<label for="sssj-wplace"><?php esc_html_e( 'Your location', 'shuffles-social-services-jobs' ); ?></label>
+					<input class="sssj-input" id="sssj-wplace" type="text" data-sssj-place placeholder="<?php esc_attr_e( 'Start typing a suburb…', 'shuffles-social-services-jobs' ); ?>" />
+					<div class="sssj-row" style="margin-top:8px">
+						<div class="sssj-field"><label><?php esc_html_e( 'Suburb', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_suburb" data-sssj-suburb value="<?php echo esc_attr( (string) $gm( 'location_suburb' ) ); ?>" /></div>
+						<div class="sssj-field"><label><?php esc_html_e( 'State', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_state" data-sssj-state value="<?php echo esc_attr( (string) $gm( 'location_state' ) ); ?>" /></div>
+						<div class="sssj-field"><label><?php esc_html_e( 'Postcode', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="location_postcode" data-sssj-postcode value="<?php echo esc_attr( (string) $gm( 'location_postcode' ) ); ?>" /></div>
+					</div>
+					<input type="hidden" name="location_lat" data-sssj-lat value="<?php echo esc_attr( (string) $gm( 'location_lat' ) ); ?>" />
+					<input type="hidden" name="location_lng" data-sssj-lng value="<?php echo esc_attr( (string) $gm( 'location_lng' ) ); ?>" />
+					<p class="description"><?php esc_html_e( 'Lets employers and participants find you by location / radius. Only your suburb is shown publicly.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+
 				<div class="sssj-row">
 					<div class="sssj-field"><label><?php esc_html_e( 'Years experience', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="number" min="0" name="years_experience" value="<?php echo esc_attr( (string) $gm( 'years_experience', '' ) ); ?>" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Rate min', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="number" min="0" step="0.01" name="rate_min" value="<?php echo esc_attr( (string) $gm( 'rate_min', '' ) ); ?>" /></div>

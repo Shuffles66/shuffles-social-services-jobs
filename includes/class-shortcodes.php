@@ -377,7 +377,7 @@ class Shuffles_SSJ_Shortcodes {
 		$per_page   = max( 1, (int) $per_page );
 		$has_centre = ! empty( $extra['lat'] ) && ! empty( $extra['lng'] ) && ! empty( $extra['radius'] );
 		if ( ! $has_centre ) {
-			$args = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $extra ) : Shuffles_SSJ_Query::base_args( $basis, $extra );
+			$args = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $extra ) : ( ( 'worker' === $which ) ? Shuffles_SSJ_Query::worker_args( $extra ) : Shuffles_SSJ_Query::base_args( $basis, $extra ) );
 			return new WP_Query( $args );
 		}
 
@@ -385,7 +385,7 @@ class Shuffles_SSJ_Shortcodes {
 		$cand                   = $extra;
 		$cand['posts_per_page'] = 500;
 		$cand['paged']          = 1;
-		$cand_args              = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $cand ) : Shuffles_SSJ_Query::base_args( $basis, $cand );
+		$cand_args              = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $cand ) : ( ( 'worker' === $which ) ? Shuffles_SSJ_Query::worker_args( $cand ) : Shuffles_SSJ_Query::base_args( $basis, $cand ) );
 		$cand_args['fields']         = 'ids';
 		$cand_args['posts_per_page'] = 500;
 		$cand_args['paged']          = 1;
@@ -398,7 +398,7 @@ class Shuffles_SSJ_Shortcodes {
 		$paged    = max( 1, (int) ( isset( $extra['paged'] ) ? $extra['paged'] : 1 ) );
 		$page_ids = array_slice( $ordered, ( $paged - 1 ) * $per_page, $per_page );
 
-		$post_type = ( 'need' === $which ) ? 'sssj_need' : 'sssj_job';
+		$post_type = ( 'need' === $which ) ? 'sssj_need' : ( ( 'worker' === $which ) ? 'sssj_worker' : 'sssj_job' );
 		if ( empty( $page_ids ) ) {
 			return new WP_Query( array( 'post_type' => $post_type, 'post__in' => array( 0 ), 'posts_per_page' => $per_page ) );
 		}
@@ -498,10 +498,13 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! empty( $_GET['sssj_avail'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['available'] = 1;
 		}
+		$this->read_radius( $extra );
 
-		$query = new WP_Query( Shuffles_SSJ_Query::worker_args( $extra ) );
+		$query  = $this->build_board_query( 'worker', '', $extra, (int) $atts['per_page'] );
+		$points = $this->points_from_query( $query );
+		$maps   = $this->enqueue_maps( $points );
 		ob_start();
-		$this->load_template( 'worker-directory.php', array( 'query' => $query, 'atts' => $atts ) );
+		$this->load_template( 'worker-directory.php', array( 'query' => $query, 'atts' => $atts, 'maps' => $maps, 'has_points' => ! empty( $points ) ) );
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
