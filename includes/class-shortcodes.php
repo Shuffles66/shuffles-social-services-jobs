@@ -37,6 +37,141 @@ class Shuffles_SSJ_Shortcodes {
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 	}
 
+	/**
+	 * Single source of truth for the public shortcodes — drives the Settings → Shortcodes tab.
+	 * When you ADD a shortcode, add an entry here so it is documented automatically.
+	 *
+	 * Each entry: tag, title, what (description), where (page + audience), atts (array tag=>desc),
+	 * access ('public' | 'members' | 'advertisers' | 'workers' | 'participants'), group.
+	 *
+	 * @return array
+	 */
+	public static function reference() {
+		return array(
+			array(
+				'tag'    => 'sssj_job_board',
+				'title'  => __( 'Job board (all engagements)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'The main jobs board: every published job ad, with search, category and location/radius filters plus a results map. Shows both ABN (contractor) and TFN (employee) roles unless restricted.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Jobs" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'basis="abn|tfn"' => __( 'Optional — restrict to one engagement basis (omit to show both).', 'shuffles-social-services-jobs' ),
+					'title="Jobs"'    => __( 'Optional heading shown above the board.', 'shuffles-social-services-jobs' ),
+					'per_page="12"'   => __( 'Optional — results per page (default 12).', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
+				'tag'    => 'sssj_tfn_board',
+				'title'  => __( 'Employee jobs board (TFN only)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows ONLY TFN employee positions (wages, tax withheld). Never shows ABN listings or participant requests — segregation is enforced in the query layer.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Employee jobs" page, if you want the two engagement types on separate pages.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+			),
+			array(
+				'tag'    => 'sssj_abn_board',
+				'title'  => __( 'Contractor jobs board (ABN only)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows ONLY ABN contractor / sole-trader engagements (worker invoices via an ABN). Never shows TFN listings.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Contractor & ABN engagements" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+			),
+			array(
+				'tag'    => 'sssj_post_job',
+				'title'  => __( 'Post a job (advertiser form)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'The job-posting form: title, description, ABN/TFN basis (with ABN validation), category, location autocomplete, rate and expiry, and an optional link to the advertiser’s organisation profile. Enforces the advertising subscription / free-listing cap when monetisation is on.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Post a job" page for advertisers.', 'shuffles-social-services-jobs' ),
+				'access' => 'advertisers',
+				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_worker_directory',
+				'title'  => __( 'Worker directory', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Browse worker / support-worker profiles with search, service category and "available now" filters. Verified workers show the ✓ Verified badge and which checks they hold. Visibility is enforced in the query layer (guests see public profiles; members also see logged-in-only ones).', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Find a worker" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+			),
+			array(
+				'tag'    => 'sssj_post_worker',
+				'title'  => __( 'Create / edit worker profile', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets a logged-in worker create or update their own profile (one per user): name, bio, services, availability, employment status, rate, optional ABN and visibility (public / members-only).', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Create your worker profile" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'workers',
+				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_credentials',
+				'title'  => __( 'My credentials (verification)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A worker manages their checks here: add NDIS Worker Screening, WWCC, police check, First Aid, qualifications, insurance, with an evidence file. An admin reviews each one; only admin-approved credentials earn the ✓ Verified badge. Documents are stored privately and never shown publicly.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "My credentials" page (best near the worker profile / dashboard).', 'shuffles-social-services-jobs' ),
+				'access' => 'workers',
+				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_need_board',
+				'title'  => __( 'Participant requests board', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lists participant support requests (always ABN). Participants are shown only by a pseudonym and suburb — never a name or contact detail. First contact goes through the internal relay.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Participant requests" page. LOGIN-GATED — guests are blocked and prompted to log in.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Participants', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+			),
+			array(
+				'tag'    => 'sssj_post_need',
+				'title'  => __( 'Post a support request (participant)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A participant or their nominee posts a support need. The plugin generates a pseudonym (never stores a name on the listing), records suburb-level location only, and sends the post to admin moderation before it appears.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Request support" page for participants / nominees.', 'shuffles-social-services-jobs' ),
+				'access' => 'participants',
+				'group'  => __( 'Participants', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_org_directory',
+				'title'  => __( 'Organisation directory', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Browse employer / provider organisation profiles. Each public org page (Organization structured data for SEO) lists the company’s locations and its open positions — i.e. browse jobs by company.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Organisations" / "Providers" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+			),
+			array(
+				'tag'    => 'sssj_post_org',
+				'title'  => __( 'Create / edit organisation profile', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets an advertiser create or update their organisation profile (one per user): name, description, ABN, website, phone, type, primary location and additional locations.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Create your organisation profile" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'advertisers',
+				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_my_listings',
+				'title'  => __( 'Member dashboard', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A personal dashboard: the member’s own applications, their job ads with applicants (and a status control), and their participant requests with responses.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "My dashboard" / "My listings" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_messages',
+				'title'  => __( 'Messages (internal relay inbox)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'The private messaging inbox: thread list, thread view and reply. Applying or responding starts a thread to the listing owner. Relay-only — email addresses are never exposed, and participants appear as their pseudonym.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Messages" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+		);
+	}
+
 	public function register_assets() {
 		if ( ! wp_style_is( 'sssj', 'registered' ) ) {
 			wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );

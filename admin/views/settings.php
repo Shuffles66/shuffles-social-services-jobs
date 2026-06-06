@@ -51,6 +51,49 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</form>';
 			break;
 
+		case 'shortcodes':
+			echo '<h2>' . esc_html__( 'Shortcodes', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'Place these on your pages to build the marketplace. In the block editor add a <strong>Shortcode</strong> block; in Elementor use the <strong>Shortcode</strong> widget; in the classic editor paste the code directly. Each shortcode is self-contained and loads its own styles. A typical set of pages: Jobs · Post a job · Find a worker · Create worker profile · My credentials · Participant requests · Request support · Organisations · Create organisation profile · My dashboard · Messages.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Tip: pages marked “logged-in” should sit behind your membership/menu so guests are routed to log in; the participant pages are privacy-sensitive (pseudonymous + moderated) and should not be in your public sitemap.', 'shuffles-social-services-jobs' ) . '</p>';
+
+			$access_labels = array(
+				'public'       => array( __( 'Anyone', 'shuffles-social-services-jobs' ), '#0d9488' ),
+				'members'      => array( __( 'Logged-in members', 'shuffles-social-services-jobs' ), '#2563eb' ),
+				'advertisers'  => array( __( 'Advertisers', 'shuffles-social-services-jobs' ), '#ea580c' ),
+				'workers'      => array( __( 'Workers', 'shuffles-social-services-jobs' ), '#6366f1' ),
+				'participants' => array( __( 'Participants / nominees', 'shuffles-social-services-jobs' ), '#db2777' ),
+			);
+
+			$groups = array();
+			foreach ( Shuffles_SSJ_Shortcodes::reference() as $sc ) {
+				$groups[ $sc['group'] ][] = $sc;
+			}
+			foreach ( $groups as $gname => $items ) {
+				echo '<h3 style="margin:22px 0 6px">' . esc_html( $gname ) . '</h3>';
+				echo '<table class="widefat striped" style="max-width:900px"><tbody>';
+				foreach ( $items as $sc ) {
+					$al = isset( $access_labels[ $sc['access'] ] ) ? $access_labels[ $sc['access'] ] : array( ucfirst( $sc['access'] ), '#64748b' );
+					echo '<tr><td style="padding:12px 14px">';
+					echo '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">';
+					echo '<code style="font-size:13px;background:#0f172a;color:#f8fafc;padding:4px 10px;border-radius:6px">[' . esc_html( $sc['tag'] ) . ']</code>';
+					echo '<strong>' . esc_html( $sc['title'] ) . '</strong>';
+					echo '<span style="font-size:11px;font-weight:600;color:#fff;background:' . esc_attr( $al[1] ) . ';padding:2px 8px;border-radius:10px">' . esc_html( $al[0] ) . '</span>';
+					echo '</div>';
+					echo '<p style="margin:8px 0 4px">' . esc_html( $sc['what'] ) . '</p>';
+					echo '<p style="margin:2px 0;color:#475569"><strong>' . esc_html__( 'Where to use:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html( $sc['where'] ) . '</p>';
+					if ( ! empty( $sc['atts'] ) ) {
+						echo '<p style="margin:6px 0 2px;color:#475569"><strong>' . esc_html__( 'Optional attributes:', 'shuffles-social-services-jobs' ) . '</strong></p><ul style="margin:0 0 2px 18px;list-style:disc">';
+						foreach ( $sc['atts'] as $a => $adesc ) {
+							echo '<li><code>' . esc_html( $a ) . '</code> — ' . esc_html( $adesc ) . '</li>';
+						}
+						echo '</ul>';
+					}
+					echo '</td></tr>';
+				}
+				echo '</tbody></table>';
+			}
+			break;
+
 		case 'maps':
 			$open_form( 'maps' );
 			echo '<table class="form-table" role="presentation">';
@@ -325,6 +368,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.20.0 — 2026-06-06 · Shortcodes reference tab</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'New Settings → Shortcodes tab: every public shortcode listed and explained, grouped by area (Job ads, Workers, Participants, Organisations, Member account), with a copy-ready code, what it does, where to use it, who can see it, and any optional attributes.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Driven by a single source of truth (Shuffles_SSJ_Shortcodes::reference()) co-located with the shortcode registration, so adding a shortcode documents it automatically.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.19.0 — 2026-06-06 · Compliance & verification (credentials → admin approval → ✓ Verified)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Workers add their checks (NDIS Worker Screening, WWCC, police check, First Aid, qualifications, insurance) with the [sssj_credentials] shortcode — type, reference, issue/expiry dates and an evidence file (PDF/JPG/PNG).', 'shuffles-social-services-jobs' ); ?></li>
