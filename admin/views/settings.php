@@ -267,6 +267,66 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</table>';
 			submit_button();
 			echo '</form>';
+
+			// --- Custom CSS guide: tokens, classes, examples, rules ---
+			echo '<details open style="margin-top:18px;max-width:880px"><summary style="cursor:pointer;font-weight:600;font-size:14px">' . esc_html__( 'Custom CSS guide — tokens, classes & examples', 'shuffles-social-services-jobs' ) . '</summary>';
+			echo '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-top:10px">';
+			echo '<p>' . wp_kses_post( __( 'Two ways to restyle, easiest first: <strong>1)</strong> change the colour / radius / font controls above — they set the design tokens for you. <strong>2)</strong> write Custom CSS for anything else. Everything the plugin renders sits inside a <code>.sssj</code> wrapper, so <strong>prefix every rule with <code>.sssj</code></strong> and the rest of your theme is never touched.', 'shuffles-social-services-jobs' ) ) . '</p>';
+
+			echo '<h4 style="margin:14px 0 6px">' . esc_html__( 'Design tokens (the easy way)', 'shuffles-social-services-jobs' ) . '</h4>';
+			echo '<p class="description">' . esc_html__( 'Override these CSS variables on .sssj to recolour/resize everything at once:', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<table class="widefat striped" style="max-width:760px"><tbody>';
+			$tokens = array(
+				'--sssj-blue'      => __( 'Primary colour — buttons, links, focus ring', 'shuffles-social-services-jobs' ),
+				'--sssj-blue-deep' => __( 'Primary hover / active', 'shuffles-social-services-jobs' ),
+				'--sssj-ink'       => __( 'Headings / strong text', 'shuffles-social-services-jobs' ),
+				'--sssj-text'      => __( 'Body text', 'shuffles-social-services-jobs' ),
+				'--sssj-line'      => __( 'Borders / dividers', 'shuffles-social-services-jobs' ),
+				'--sssj-bg'        => __( 'Surface background (cards / panels)', 'shuffles-social-services-jobs' ),
+				'--sssj-bg-soft'   => __( 'Sunken background', 'shuffles-social-services-jobs' ),
+				'--sssj-abn'       => __( 'ABN (contractor) accent', 'shuffles-social-services-jobs' ),
+				'--sssj-tfn'       => __( 'TFN (employee) accent', 'shuffles-social-services-jobs' ),
+				'--sssj-need'      => __( 'Participant-need accent', 'shuffles-social-services-jobs' ),
+				'--sssj-radius'    => __( 'Corner radius (e.g. 16px)', 'shuffles-social-services-jobs' ),
+				'--sssj-font'      => __( 'Font family', 'shuffles-social-services-jobs' ),
+			);
+			foreach ( $tokens as $t => $d ) {
+				echo '<tr><td style="width:160px"><code>' . esc_html( $t ) . '</code></td><td>' . esc_html( $d ) . '</td></tr>';
+			}
+			echo '</tbody></table>';
+
+			echo '<h4 style="margin:16px 0 6px">' . esc_html__( 'Main classes to target', 'shuffles-social-services-jobs' ) . '</h4>';
+			echo '<ul class="ul-disc" style="max-width:760px">';
+			echo '<li><code>.sssj</code> — ' . esc_html__( 'the wrapper around everything (always prefix your rules with it).', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-panel</code> — ' . esc_html__( 'a bordered content panel.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-card</code> <code>--abn</code> <code>--tfn</code> <code>--need</code> <code>--featured</code> <code>--banned</code> — ' . esc_html__( 'result cards + their accents.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-btn</code> <code>--primary</code> <code>--secondary</code> <code>--ghost</code> <code>--danger</code> <code>--sm</code> — ' . esc_html__( 'buttons.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-badge</code> <code>--verified</code> <code>--featured</code> <code>--pending</code> <code>--rejected</code> <code>--expired</code> — ' . esc_html__( 'status chips.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-input</code> <code>.sssj-select</code> <code>.sssj-textarea</code> <code>.sssj-field</code> <code>.sssj-row</code> <code>.sssj-stack</code> <code>.sssj-grid</code> — ' . esc_html__( 'form fields + layout helpers.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-nav</code> <code>.sssj-nav__item</code> <code>--cta</code> — ' . esc_html__( 'the [sssj_menu] navigation bar.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '</ul>';
+
+			echo '<h4 style="margin:16px 0 6px">' . esc_html__( 'Copy-paste examples', 'shuffles-social-services-jobs' ) . '</h4>';
+			$examples = array(
+				__( 'Brand font + softer corners + brand blue (via tokens)', 'shuffles-social-services-jobs' ) => ".sssj{\n  --sssj-font:'Poppins',sans-serif;\n  --sssj-radius:16px;\n  --sssj-blue:#0ea5e9;\n  --sssj-blue-deep:#0369a1;\n}",
+				__( 'Bigger, bolder primary buttons', 'shuffles-social-services-jobs' )               => ".sssj .sssj-btn--primary{\n  font-size:1.05rem;\n  padding:14px 22px;\n  letter-spacing:.2px;\n}",
+				__( 'Make featured jobs really stand out', 'shuffles-social-services-jobs' )           => ".sssj .sssj-card--featured{\n  border-left:6px solid #f59e0b;\n  background:#fffbeb;\n}",
+				__( 'Wider cards / fewer columns', 'shuffles-social-services-jobs' )                   => ".sssj .sssj-grid{\n  grid-template-columns:repeat(auto-fill,minmax(360px,1fr));\n}",
+				__( 'Pill-shaped navigation links', 'shuffles-social-services-jobs' )                  => ".sssj .sssj-nav__item a{\n  border-radius:999px;\n}",
+			);
+			foreach ( $examples as $title => $code ) {
+				echo '<p style="margin:10px 0 2px"><strong>' . esc_html( $title ) . '</strong></p>';
+				echo '<pre style="background:#0f172a;color:#e2e8f0;padding:10px 12px;border-radius:6px;overflow:auto;font-size:12px;line-height:1.5"><code>' . esc_html( $code ) . '</code></pre>';
+			}
+
+			echo '<h4 style="margin:16px 0 6px">' . esc_html__( 'Rules of thumb', 'shuffles-social-services-jobs' ) . '</h4>';
+			echo '<ul class="ul-disc" style="max-width:760px">';
+			echo '<li>' . wp_kses_post( __( 'Always prefix selectors with <code>.sssj</code>.', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . esc_html__( 'Prefer changing tokens over hard-coding values — one change recolours everything consistently.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li>' . wp_kses_post( __( 'Avoid <code>!important</code> — it can stop the High-contrast / No-colour accessibility modes from working.', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . esc_html__( 'Changes apply only to plugin surfaces; your theme and other pages are unaffected. HTML typed in the box is stripped for safety.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '</ul>';
+			echo '</div></details>';
 			break;
 
 		case 'boards':
@@ -277,23 +337,37 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<li>' . wp_kses_post( __( '<strong>ABN board</strong> — contractor / sole-trader work only.', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '<li>' . wp_kses_post( __( '<strong>Participant-needs board</strong> — always ABN; never shows TFN positions.', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '</ul>';
-			echo '<h3>' . esc_html__( 'Board pages', 'shuffles-social-services-jobs' ) . '</h3>';
-			echo '<p class="description">' . esc_html__( 'Pick an existing page, or create one (the matching shortcode is inserted for you), then edit or view it.', 'shuffles-social-services-jobs' ) . '</p>';
-			$open_form( 'boards' );
+			echo '<p class="description">' . esc_html__( 'The board (and all other) pages are mapped in the Pages tab.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p><a class="button" href="' . esc_url( $this->tab_url( 'pages' ) ) . '">' . esc_html__( 'Go to the Pages tab →', 'shuffles-social-services-jobs' ) . '</a></p>';
+			break;
+
+		case 'pages':
+			echo '<h2>' . esc_html__( 'Pages', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Map each feature to a WordPress page. Pick an existing page, or use “Create page” (the matching shortcode is inserted for you), then Edit or View it. These mappings power the [sssj_menu] navigation and the board links.', 'shuffles-social-services-jobs' ) . '</p>';
+			$open_form( 'pages' );
 			echo '<table class="form-table" role="presentation">';
+
+			echo '<tr><td colspan="2"><h3 style="margin:6px 0 0">' . esc_html__( 'Browse (public)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_job_board', __( 'All jobs board', 'shuffles-social-services-jobs' ), '[sssj_job_board]', __( 'Both bases in a labelled split.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tfn_board', __( 'TFN (employee) board', 'shuffles-social-services-jobs' ), '[sssj_tfn_board]', __( 'Employee positions only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_abn_board', __( 'ABN (contractor) board', 'shuffles-social-services-jobs' ), '[sssj_abn_board]', __( 'Contractor / ABN engagements only.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_post_job', __( 'Post-a-job page', 'shuffles-social-services-jobs' ), '[sssj_post_job]', __( 'Advertiser posting form.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_my_listings', __( 'Member dashboard page', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Applications, your listings + applicants.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_messages', __( 'Messages (inbox) page', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_org_directory', __( 'Organisations directory page', 'shuffles-social-services-jobs' ), '[sssj_org_directory]', __( 'Browse employers/companies (SEO-able).', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_post_org', __( 'Create organisation profile page', 'shuffles-social-services-jobs' ), '[sssj_post_org]', __( 'Employer profile form.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_worker_directory', __( 'Worker directory page', 'shuffles-social-services-jobs' ), '[sssj_worker_directory]', __( 'Find a worker (public).', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_post_worker', __( 'Create worker profile page', 'shuffles-social-services-jobs' ), '[sssj_post_worker]', __( 'Worker profile form.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_need_board', __( 'Participant requests page', 'shuffles-social-services-jobs' ), '[sssj_need_board]', __( 'Members-only; pseudonymous.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_post_need', __( 'Request support page', 'shuffles-social-services-jobs' ), '[sssj_post_need]', __( 'Participant/nominee request form (moderated).', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_credentials', __( 'My credentials page', 'shuffles-social-services-jobs' ), '[sssj_credentials]', __( 'Workers upload checks for verification.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_worker_directory', __( 'Worker directory', 'shuffles-social-services-jobs' ), '[sssj_worker_directory]', __( 'Find a worker (public).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_org_directory', __( 'Organisations directory', 'shuffles-social-services-jobs' ), '[sssj_org_directory]', __( 'Browse employers/companies (SEO-able).', 'shuffles-social-services-jobs' ) );
+
+			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Participants (members only)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
+			$this->page_picker_field( 'page_need_board', __( 'Participant requests', 'shuffles-social-services-jobs' ), '[sssj_need_board]', __( 'Members-only; pseudonymous.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_need', __( 'Request support (form)', 'shuffles-social-services-jobs' ), '[sssj_post_need]', __( 'Participant/nominee request form (moderated).', 'shuffles-social-services-jobs' ) );
+
+			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Post / create (member forms)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
+			$this->page_picker_field( 'page_post_job', __( 'Post a job', 'shuffles-social-services-jobs' ), '[sssj_post_job]', __( 'Advertiser posting form.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_worker', __( 'Create worker profile', 'shuffles-social-services-jobs' ), '[sssj_post_worker]', __( 'Worker profile form.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_org', __( 'Create organisation profile', 'shuffles-social-services-jobs' ), '[sssj_post_org]', __( 'Employer profile form.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_credentials', __( 'My credentials', 'shuffles-social-services-jobs' ), '[sssj_credentials]', __( 'Workers upload checks for verification.', 'shuffles-social-services-jobs' ) );
+
+			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Member account', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
+			$this->page_picker_field( 'page_my_listings', __( 'Member dashboard', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Applications, your listings + applicants.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_messages', __( 'Messages (inbox)', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
+
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -373,6 +447,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.22.0 — 2026-06-06 · Pages tab + Custom CSS guide</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'New Pages tab gathers ALL page mappings in one place, grouped (Browse / Participants / Post-create / Member account), each with lookup + create + edit. The Boards tab now points here.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Appearance tab now includes a Custom CSS guide: the design tokens you can override, the main classes to target, five copy-paste examples, and rules of thumb (scope to .sssj, prefer tokens, avoid !important so accessibility modes still win).', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.21.0 — 2026-06-06 · Login-aware navigation menu + remaining page pickers</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New [sssj_menu] shortcode: a responsive navigation bar that adapts to the visitor. Logged-out users see browse links + Log in / Register; logged-in users see their dashboard, messages, participant requests, log out, plus action links (Post a job / My credentials / Request support) shown only when their account can use them.', 'shuffles-social-services-jobs' ); ?></li>

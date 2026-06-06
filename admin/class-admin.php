@@ -164,6 +164,7 @@ class Shuffles_SSJ_Admin {
 			'shortcodes'   => array( 'T17', __( 'Shortcodes', 'shuffles-social-services-jobs' ), 'orange' ),
 			'appearance'   => array( 'T16', __( 'Appearance', 'shuffles-social-services-jobs' ), 'orange' ),
 			'boards'       => array( 'T2', __( 'Boards & Segregation', 'shuffles-social-services-jobs' ), 'indigo' ),
+			'pages'        => array( 'T18', __( 'Pages', 'shuffles-social-services-jobs' ), 'orange' ),
 			'taxonomies'   => array( 'T3', __( 'Taxonomies & Seeds', 'shuffles-social-services-jobs' ), 'indigo' ),
 			'compliance'   => array( 'T4', __( 'Compliance & Credentials', 'shuffles-social-services-jobs' ), 'amber' ),
 			'funding'      => array( 'T5', __( 'Funding Sources', 'shuffles-social-services-jobs' ), 'amber' ),
