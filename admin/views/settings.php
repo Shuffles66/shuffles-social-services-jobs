@@ -289,6 +289,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox) page', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_org_directory', __( 'Organisations directory page', 'shuffles-social-services-jobs' ), '[sssj_org_directory]', __( 'Browse employers/companies (SEO-able).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_post_org', __( 'Create organisation profile page', 'shuffles-social-services-jobs' ), '[sssj_post_org]', __( 'Employer profile form.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_worker_directory', __( 'Worker directory page', 'shuffles-social-services-jobs' ), '[sssj_worker_directory]', __( 'Find a worker (public).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_worker', __( 'Create worker profile page', 'shuffles-social-services-jobs' ), '[sssj_post_worker]', __( 'Worker profile form.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_need_board', __( 'Participant requests page', 'shuffles-social-services-jobs' ), '[sssj_need_board]', __( 'Members-only; pseudonymous.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_need', __( 'Request support page', 'shuffles-social-services-jobs' ), '[sssj_post_need]', __( 'Participant/nominee request form (moderated).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_credentials', __( 'My credentials page', 'shuffles-social-services-jobs' ), '[sssj_credentials]', __( 'Workers upload checks for verification.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -368,6 +373,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.21.0 — 2026-06-06 · Login-aware navigation menu + remaining page pickers</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'New [sssj_menu] shortcode: a responsive navigation bar that adapts to the visitor. Logged-out users see browse links + Log in / Register; logged-in users see their dashboard, messages, participant requests, log out, plus action links (Post a job / My credentials / Request support) shown only when their account can use them.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'It maintains itself — links resolve from your configured pages (Boards tab) or by finding the page that contains each shortcode, and it re-renders for each visitor. Fully customisable via the shuffles_ssj_menu_items filter.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Added the remaining page pickers (worker directory, create worker profile, participant requests, request support, my credentials) so every page has a lookup / create / edit control — and the menu can link to all of them.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.20.0 — 2026-06-06 · Shortcodes reference tab</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New Settings → Shortcodes tab: every public shortcode listed and explained, grouped by area (Job ads, Workers, Participants, Organisations, Member account), with a copy-ready code, what it does, where to use it, who can see it, and any optional attributes.', 'shuffles-social-services-jobs' ); ?></li>

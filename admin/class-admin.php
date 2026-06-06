@@ -393,6 +393,11 @@ class Shuffles_SSJ_Admin {
 			'page_messages'    => '[sssj_messages]',
 			'page_org_directory' => '[sssj_org_directory]',
 			'page_post_org'    => '[sssj_post_org]',
+			'page_worker_directory' => '[sssj_worker_directory]',
+			'page_post_worker' => '[sssj_post_worker]',
+			'page_need_board'  => '[sssj_need_board]',
+			'page_post_need'   => '[sssj_post_need]',
+			'page_credentials' => '[sssj_credentials]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );

@@ -65,6 +65,11 @@ class Shuffles_SSJ_Settings {
 			'page_messages'             => 0,
 			'page_org_directory'        => 0,
 			'page_post_org'             => 0,
+			'page_worker_directory'     => 0,
+			'page_post_worker'          => 0,
+			'page_need_board'           => 0,
+			'page_post_need'            => 0,
+			'page_credentials'          => 0,
 		);
 	}
 
@@ -117,7 +122,7 @@ class Shuffles_SSJ_Settings {
 		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
 		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall' );
-		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
+		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
 
 		foreach ( $text_keys as $k ) {
 			if ( isset( $input[ $k ] ) ) {

@@ -80,6 +80,16 @@
 .sssj .sssj-badge--pending{ background:#fef3c7; color:#92400e; }
 .sssj .sssj-badge--rejected{ background:#fee2e2; color:#b91c1c; }
 .sssj .sssj-badge--expired{ background:#e2e8f0; color:#475569; }
+/* Navigation menu (login-aware) — responsive, wraps on small screens (no JS needed) */
+.sssj.sssj-nav{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 12px; background:var(--sssj-bg); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); }
+.sssj.sssj-nav .sssj-nav__brand{ font-weight:var(--sssj-weight-strong); color:var(--sssj-ink); margin-right:8px; }
+.sssj.sssj-nav .sssj-nav__list{ display:flex; flex-wrap:wrap; gap:4px; list-style:none; margin:0; padding:0; align-items:center; }
+.sssj.sssj-nav .sssj-nav__item a{ display:inline-block; padding:8px 12px; border-radius:8px; color:var(--sssj-text); text-decoration:none; font-weight:var(--sssj-weight-strong); }
+.sssj.sssj-nav .sssj-nav__item a:hover{ background:var(--sssj-bg-soft); color:var(--sssj-blue-deep); }
+.sssj.sssj-nav .sssj-nav__item a[aria-current="page"]{ background:#eaf3fb; color:var(--sssj-blue-deep); }
+.sssj.sssj-nav .sssj-nav__item--cta a{ background:var(--sssj-blue); color:#fff; }
+.sssj.sssj-nav .sssj-nav__item--cta a:hover{ background:var(--sssj-blue-deep); color:#fff; }
+
 .sssj .sssj-chip{ display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border:1px solid var(--sssj-line); border-radius:var(--sssj-radius-pill); cursor:pointer; background:#fff; }
 .sssj .sssj-chip.is-on{ border-color:var(--sssj-blue); background:#eaf3fb; color:var(--sssj-blue-deep); }
 

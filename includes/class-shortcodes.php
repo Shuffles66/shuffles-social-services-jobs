@@ -33,6 +33,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
 		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
+		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 	}
@@ -48,6 +49,18 @@ class Shuffles_SSJ_Shortcodes {
 	 */
 	public static function reference() {
 		return array(
+			array(
+				'tag'    => 'sssj_menu',
+				'title'  => __( 'Navigation menu (login-aware)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A ready-made navigation bar that adapts to the visitor. Logged-OUT: Jobs, Find a worker, Organisations, Log in (and Register if open). Logged-IN: Participant requests, Messages, My dashboard, Log out — plus Post a job / My credentials / Request support shown only when the account can use them. Links resolve automatically from your configured pages (Boards tab), or by finding the page that contains each shortcode.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'Your site header, a navigation/widget area, or the top of key pages. It maintains itself — no separate menu to edit.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Navigation', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'title="…"' => __( 'Optional brand text shown at the left of the bar.', 'shuffles-social-services-jobs' ),
+					'class="…"' => __( 'Optional extra CSS class for styling.', 'shuffles-social-services-jobs' ),
+				),
+			),
 			array(
 				'tag'    => 'sssj_job_board',
 				'title'  => __( 'Job board (all engagements)', 'shuffles-social-services-jobs' ),
@@ -593,6 +606,104 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'credentials-panel.php', array() );
+		return ob_get_clean();
+	}
+
+	/* --- Navigation menu (login-aware) --- */
+
+	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
+	private function resolve_page( $key, $shortcode ) {
+		$id = (int) $this->settings->get( $key, 0 );
+		if ( $id && 'publish' === get_post_status( $id ) ) {
+			return (string) get_permalink( $id );
+		}
+		$tag   = trim( $shortcode, '[]' );
+		$cached = get_transient( 'sssj_menu_pg_' . $tag );
+		if ( false === $cached ) {
+			$cached = 0;
+			$pages  = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'posts_per_page' => 50, 'fields' => 'ids', 's' => $tag, 'no_found_rows' => true ) );
+			foreach ( $pages as $pid ) {
+				$p = get_post( $pid );
+				if ( $p && has_shortcode( (string) $p->post_content, $tag ) ) {
+					$cached = (int) $pid;
+					break;
+				}
+			}
+			set_transient( 'sssj_menu_pg_' . $tag, $cached, HOUR_IN_SECONDS );
+		}
+		return $cached ? (string) get_permalink( $cached ) : '';
+	}
+
+	private function add_nav_item( &$items, $label, $url, $cta = false ) {
+		if ( '' !== (string) $url ) {
+			$items[] = array( 'label' => $label, 'url' => $url, 'cta' => (bool) $cta );
+		}
+	}
+
+	/**
+	 * Build the navigation items for the current visitor (login + capability aware). Filterable
+	 * via `shuffles_ssj_menu_items`. Items whose destination page is not configured are omitted.
+	 *
+	 * @return array of [ label, url, cta ]
+	 */
+	public function menu_items() {
+		$logged_in = is_user_logged_in();
+		$items     = array();
+
+		// Browse — everyone.
+		$this->add_nav_item( $items, __( 'Jobs', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_job_board', '[sssj_job_board]' ) );
+		$this->add_nav_item( $items, __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) );
+		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
+
+		if ( $logged_in ) {
+			$this->add_nav_item( $items, __( 'Participant requests', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ) );
+			if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
+				$this->add_nav_item( $items, __( 'Post a job', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) );
+			}
+			if ( current_user_can( 'sssj_post_worker' ) || current_user_can( 'manage_options' ) ) {
+				$this->add_nav_item( $items, __( 'My credentials', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_credentials', '[sssj_credentials]' ) );
+			}
+			if ( current_user_can( 'sssj_post_need' ) || current_user_can( 'manage_options' ) ) {
+				$this->add_nav_item( $items, __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) );
+			}
+			$this->add_nav_item( $items, __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
+			$this->add_nav_item( $items, __( 'My dashboard', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' ) );
+			$items[] = array( 'label' => __( 'Log out', 'shuffles-social-services-jobs' ), 'url' => wp_logout_url( home_url( '/' ) ), 'cta' => false );
+		} else {
+			$here    = esc_url_raw( home_url( add_query_arg( array() ) ) );
+			$items[] = array( 'label' => __( 'Log in', 'shuffles-social-services-jobs' ), 'url' => wp_login_url( $here ), 'cta' => false );
+			if ( get_option( 'users_can_register' ) ) {
+				$items[] = array( 'label' => __( 'Register', 'shuffles-social-services-jobs' ), 'url' => wp_registration_url(), 'cta' => true );
+			}
+		}
+
+		return apply_filters( 'shuffles_ssj_menu_items', $items, $logged_in );
+	}
+
+	/**
+	 * [sssj_menu] — a responsive navigation bar that adapts to logged-in vs logged-out visitors.
+	 * Atts: title (optional brand text), class (optional extra CSS class).
+	 */
+	public function menu( $atts ) {
+		$atts = shortcode_atts( array( 'title' => '', 'class' => '' ), is_array( $atts ) ? $atts : array(), 'sssj_menu' );
+		wp_enqueue_style( 'sssj' );
+		$items = $this->menu_items();
+		if ( empty( $items ) ) {
+			return '';
+		}
+		$cur = untrailingslashit( (string) home_url( add_query_arg( array() ) ) );
+		ob_start();
+		echo '<nav class="sssj sssj-nav ' . esc_attr( $atts['class'] ) . '" aria-label="' . esc_attr__( 'Jobs and engagements navigation', 'shuffles-social-services-jobs' ) . '">';
+		if ( '' !== $atts['title'] ) {
+			echo '<span class="sssj-nav__brand">' . esc_html( $atts['title'] ) . '</span>';
+		}
+		echo '<ul class="sssj-nav__list">';
+		foreach ( $items as $it ) {
+			$is_cur = ( untrailingslashit( (string) $it['url'] ) === $cur );
+			$cls    = 'sssj-nav__item' . ( ! empty( $it['cta'] ) ? ' sssj-nav__item--cta' : '' );
+			echo '<li class="' . esc_attr( $cls ) . '"><a href="' . esc_url( $it['url'] ) . '"' . ( $is_cur ? ' aria-current="page"' : '' ) . '>' . esc_html( $it['label'] ) . '</a></li>';
+		}
+		echo '</ul></nav>';
 		return ob_get_clean();
 	}
 
