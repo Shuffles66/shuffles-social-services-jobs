@@ -163,7 +163,7 @@
 			engNote.className = 'sssj-a11y-english-note';
 			engNote.textContent = "Have you chosen a language you can't read, and want to go back to English? We got you! Hit the Hot Key";
 			engWrap.appendChild( engNote );
-			bar.appendChild( engWrap );
+			// NB: engWrap is appended to the OUTER container (next to the Accessibility button), not the bar.
 		}
 
 		// Hide the toolbar behind a single "Accessibility" toggle, in the same position.
@@ -181,6 +181,8 @@
 			save();
 		} );
 		outer.appendChild( toggle );
+		// English hot-key sits OUTSIDE the collapsible bar, next to the Accessibility button.
+		if ( typeof engWrap !== 'undefined' && engWrap ) { outer.appendChild( engWrap ); }
 		outer.appendChild( bar );
 
 		if ( floating ) {

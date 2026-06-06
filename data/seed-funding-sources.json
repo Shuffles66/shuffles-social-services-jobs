@@ -2,6 +2,8 @@
   { "name": "NDIS", "description": "National Disability Insurance Scheme." },
   { "name": "Aged Care (HCP/CHSP)", "description": "Home Care Package or Commonwealth Home Support Programme." },
   { "name": "DVA", "description": "Department of Veterans' Affairs." },
+  { "name": "Foundational Supports", "description": "Foundational Supports — general/targeted supports outside individual NDIS plans (NDIS reform)." },
+  { "name": "Thriving Kids", "description": "Thriving Kids — early childhood and developmental supports for children." },
   { "name": "iCare / Workers' Compensation", "description": "Workers compensation or insurance scheme." },
   { "name": "Medicare / Chronic Disease Management", "description": "Medicare-funded allied health (CDM / EPC)." },
   { "name": "Privately funded", "description": "Self-funded by the participant or their family." },

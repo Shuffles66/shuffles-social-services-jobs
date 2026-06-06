@@ -45,6 +45,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'worker-profile', 'do' => __( 'Create a worker profile; add Services via the search-and-add picker; set a location; choose visibility.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Profile saves; services show as pills; location geocodes; one profile per user.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-find', 'do' => __( 'On the Worker directory, search + tick “Available now” + set a location and radius.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only available, in-radius workers show, nearest first.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-vis', 'do' => __( 'Set a worker profile to “Logged-in members” and view the directory as a guest.', 'shuffles-social-services-jobs' ), 'expect' => __( 'That profile is hidden from guests but visible to logged-in members.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'worker-hidden', 'do' => __( 'Set a worker profile to “Do not display”, then check the directory and the page source.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The profile is removed from the directory entirely and its page is noindex.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
@@ -62,6 +63,7 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'org-find', 'do' => __( 'On the Organisations directory, filter by sector, funding, location/radius, and “Only with open placements”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results match all filters; multi-location orgs match if ANY site is in range.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-counters', 'do' => __( 'Check an org card’s counters.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Shows current open jobs and total placed (all-time Offers).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-jobs', 'do' => __( 'Attach a job to an org, open the org page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The org page lists its open positions (browse jobs by company) + Organization structured data.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'org-hidden', 'do' => __( 'Tick “Do not display” on an org profile, then check the Organisations directory and the page source.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The org drops off the directory and its page is noindex with no Organization structured data.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
@@ -93,8 +95,29 @@ class Shuffles_SSJ_Tests {
 				'title' => __( 'Navigation, selects & responsive', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'menu', 'do' => __( 'View [sssj_menu] logged out, then logged in.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Logged-out shows browse + Log in/Register; logged-in shows dashboard/messages/log out + capability links.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'auto-menu', 'do' => __( 'In Settings → General, tick “Show navigation menu at the top of every page”, save, and open any front-end page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The navigation bar appears at the very top of every page; un-ticking removes it.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'pills', 'do' => __( 'Open any form/filter with a dropdown or multi-pick.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Single selects are searchable; multi-picks show removable pills (no bare checkbox grids).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'dynamic-filter', 'do' => __( 'On any directory, change a category, tick a chip or drag the radius — without clicking any button.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results update automatically (no “Filter” button needed). Typing in the search box updates shortly after you stop.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'clear-all', 'do' => __( 'With several filters applied, click “Clear all”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Every filter resets and the full list returns.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'use-my-location', 'do' => __( 'Click “Use my location” next to the location field and allow the browser prompt.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A default radius is applied and results re-sort to nearest first; denying access shows a friendly message.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mobile', 'do' => __( 'Open the boards, directories and forms on a phone (or a narrow window).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Filter controls stack full-width, cards go single-column, nothing overflows; it looks professional.', 'shuffles-social-services-jobs' ) ),
+				),
+			),
+			array(
+				'title' => __( 'Front-page display & animations', 'shuffles-social-services-jobs' ),
+				'cases' => array(
+					array( 'id' => 'disp-hero', 'do' => __( 'Put [sssj_hero title="…" button_text="Browse jobs" button_url="/jobs"] on a page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A gradient hero banner fades in with the headline and call-to-action button(s).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'disp-stats', 'do' => __( 'Add [sssj_stats] and scroll it into view.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The counters animate up from zero to the live totals (open jobs, available workers, organisations, people placed).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'disp-recent', 'do' => __( 'Add [sssj_recent type="jobs" count="6"] and [sssj_recent type="orgs" layout="list"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Recent cards reveal with a staggered fade; list layout is a compact sidebar list. Participant requests only show to logged-in members.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'disp-featured', 'do' => __( 'Add [sssj_featured]. Promote a job (mark it featured) and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Featured roles show with a subtle shine; with none promoted it falls back to the newest jobs.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'disp-motion', 'do' => __( 'Turn on the OS “reduce motion” setting and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Animations are disabled — content appears immediately with final numbers.', 'shuffles-social-services-jobs' ) ),
+				),
+			),
+			array(
+				'title' => __( 'Guides & help', 'shuffles-social-services-jobs' ),
+				'cases' => array(
+					array( 'id' => 'guides-show', 'do' => __( 'Put [sssj_guides] on a page (or open Settings → Guides) and click each guide header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Four guides show (write a job post, respond to a job, ABN contractor, standing profile); the first is open; clicking expands/collapses each.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'guides-only', 'do' => __( 'Use [sssj_guides only="respond-to-job"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the chosen guide renders.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 		);

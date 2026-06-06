@@ -144,6 +144,10 @@ if ( $existing ) {
 					<p class="description"><?php esc_html_e( 'One location per line, fields separated by a vertical bar: e.g.  North office | Newcastle | NSW | 2300', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
+				<div class="sssj-field">
+					<label><input type="checkbox" name="org_hidden" value="1" <?php checked( '1', (string) $gm( 'org_hidden' ) ); ?> /> <?php esc_html_e( 'Do not display — hide this organisation from search engines and the directory', 'shuffles-social-services-jobs' ); ?></label>
+				</div>
+
 				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php echo $existing ? esc_html__( 'Save profile', 'shuffles-social-services-jobs' ) : esc_html__( 'Create profile', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>

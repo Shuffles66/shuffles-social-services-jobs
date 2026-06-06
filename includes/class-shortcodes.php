@@ -36,8 +36,22 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
+		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
+
+		// Optional: auto-output the navigation menu at the top of every page (testing aid).
+		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
+			add_action( 'wp_body_open', array( $this, 'auto_header_menu' ), 5 );
+		}
+	}
+
+	/** Echo the [sssj_menu] bar at the top of the page when the "auto header menu" option is on. */
+	public function auto_header_menu() {
+		if ( is_admin() ) {
+			return;
+		}
+		echo '<div class="sssj-auto-menu">' . do_shortcode( '[sssj_menu]' ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
 	}
 
 	/**
@@ -50,7 +64,7 @@ class Shuffles_SSJ_Shortcodes {
 	 * @return array
 	 */
 	public static function reference() {
-		return array(
+		$items = array(
 			array(
 				'tag'    => 'sssj_menu',
 				'title'  => __( 'Navigation menu (login-aware)', 'shuffles-social-services-jobs' ),
@@ -185,6 +199,18 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'   => array(),
 			),
 			array(
+				'tag'    => 'sssj_guides',
+				'title'  => __( 'Guides', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Plain-language how-to guides for each side of the marketplace: writing a successful job post, responding to a job, working as an ABN contractor, and building a standing profile. Collapsible panels. Same content as Settings → Guides.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Guides" / "Help" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
+					'only="…"'  => __( 'Optional comma-separated guide ids to show only some (write-job-post, respond-to-job, abn-contractor-work, standing-profile).', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
 				'tag'    => 'sssj_tests',
 				'title'  => __( 'Testing worksheet', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'A tester checklist covering every feature — work through each case and mark Pass/Fail (progress saved in the browser; printable). Same content as Settings → Testing.', 'shuffles-social-services-jobs' ),
@@ -194,11 +220,23 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ) ),
 			),
 		);
+		// Fold in the animated front-page display shortcodes (single source of truth in class-display.php).
+		if ( class_exists( 'Shuffles_SSJ_Display' ) ) {
+			$items = array_merge( $items, Shuffles_SSJ_Display::reference() );
+		}
+		return $items;
 	}
 
 	public function register_assets() {
 		if ( ! wp_style_is( 'sssj', 'registered' ) ) {
 			wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
+		}
+		if ( ! wp_script_is( 'sssj-filters', 'registered' ) ) {
+			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array(), SHUFFLES_SSJ_VERSION, true );
+		}
+		// Auto header menu prints at wp_body_open (too late to enqueue its own CSS) — load it here.
+		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
+			wp_enqueue_style( 'sssj' );
 		}
 		// Per-install re-skin: push the configured design tokens + custom CSS as an inline override.
 		$inline = $this->appearance_css();
@@ -317,6 +355,7 @@ class Shuffles_SSJ_Shortcodes {
 			'sssj_job_board'
 		);
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-filters' );
 
 		$basis = sanitize_key( (string) $atts['basis'] );
 		$extra = array(
@@ -494,6 +533,7 @@ class Shuffles_SSJ_Shortcodes {
 			'sssj_worker_directory'
 		);
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-filters' );
 
 		$extra = array(
 			'paged'          => isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -538,6 +578,7 @@ class Shuffles_SSJ_Shortcodes {
 			'sssj_need_board'
 		);
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-filters' );
 
 		// Needs are never public — require login before querying.
 		if ( ! is_user_logged_in() ) {
@@ -607,6 +648,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function org_directory( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-filters' );
 		$atts  = shortcode_atts( array( 'per_page' => 12 ), is_array( $atts ) ? $atts : array(), 'sssj_org_directory' );
 		$per   = max( 1, (int) $atts['per_page'] );
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
@@ -662,6 +704,12 @@ class Shuffles_SSJ_Shortcodes {
 		if ( null !== $open_ids ) {
 			$base_filter['post__in'] = $open_ids;
 		}
+		// Never list orgs whose owner flagged "Do not display".
+		$base_filter['meta_query'] = array( // phpcs:ignore WordPress.DB.SlowDBQuery
+			'relation' => 'OR',
+			array( 'key' => 'org_hidden', 'compare' => 'NOT EXISTS' ),
+			array( 'key' => 'org_hidden', 'value' => '1', 'compare' => '!=' ),
+		);
 		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 
 		if ( $radius > 0 && $clat && $clng ) {
@@ -746,11 +794,42 @@ class Shuffles_SSJ_Shortcodes {
 		echo '</div>';
 	}
 
+	/**
+	 * "Use my location" button — browser geolocation → radius search. Placed next to the location field.
+	 * Carries its own translated status strings as data-attributes for sssj-filters.js.
+	 */
+	public static function location_button() {
+		printf(
+			'<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-here" data-sssj-here data-i18n="use_my_location" data-locating="%s" data-denied="%s" data-unsupported="%s" data-mylocation="%s">%s</button>',
+			esc_attr__( 'Locating…', 'shuffles-social-services-jobs' ),
+			esc_attr__( 'Could not get your location. Please allow location access or type a suburb.', 'shuffles-social-services-jobs' ),
+			esc_attr__( 'Location is not available in this browser.', 'shuffles-social-services-jobs' ),
+			esc_attr__( '📍 My location', 'shuffles-social-services-jobs' ),
+			esc_html__( '📍 Use my location', 'shuffles-social-services-jobs' )
+		);
+	}
+
+	/**
+	 * Filter actions: a "Clear all" button + a no-JS "Filter" submit fallback.
+	 * With dynamic filters the form auto-applies, so no Filter button is needed when JS runs.
+	 */
+	public static function filter_actions() {
+		echo '<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-clear" data-sssj-clear data-i18n="clear_all">' . esc_html__( 'Clear all', 'shuffles-social-services-jobs' ) . '</button>';
+		echo '<noscript><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Filter', 'shuffles-social-services-jobs' ) . '</button></noscript>';
+	}
+
 	/** Testing worksheet (the tester checklist). */
 	public function tests_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-tests', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-tests.js', array(), SHUFFLES_SSJ_VERSION, true );
 		return Shuffles_SSJ_Tests::render( is_array( $atts ) ? $atts : array() );
+	}
+
+	/** Guides (collapsible how-to panels). */
+	public function guides_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-guides', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-guides.js', array(), SHUFFLES_SSJ_VERSION, true );
+		return Shuffles_SSJ_Guides::render( is_array( $atts ) ? $atts : array() );
 	}
 
 	/* --- Navigation menu (login-aware) --- */

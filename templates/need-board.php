@@ -40,7 +40,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 		}
 		?>
 		<p class="description"><?php esc_html_e( 'These requests come from participants or their nominees. Identities are protected — first contact is made through the site, never by exposing personal details. Responding requires a recorded ABN.', 'shuffles-social-services-jobs' ); ?></p>
-		<form class="sssj-row" method="get" data-sssj-place-group>
+		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
 			<select class="sssj-select" name="sssj_support">
 				<option value=""><?php esc_html_e( 'All support types', 'shuffles-social-services-jobs' ); ?></option>
 				<?php
@@ -73,8 +73,9 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 					}
 					?>
 				</select>
+				<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
 			<?php endif; ?>
-			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
+			<?php Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
 	</div>
 

@@ -149,6 +149,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<select class="sssj-select" id="sssj-wvis" name="visibility">
 						<option value="logged_in" <?php selected( $ex_vis, 'logged_in' ); ?>><?php esc_html_e( 'Logged-in members', 'shuffles-social-services-jobs' ); ?></option>
 						<option value="public" <?php selected( $ex_vis, 'public' ); ?>><?php esc_html_e( 'Everyone (public)', 'shuffles-social-services-jobs' ); ?></option>
+						<option value="hidden" <?php selected( $ex_vis, 'hidden' ); ?>><?php esc_html_e( 'Do not display — hide from search engines and public listings', 'shuffles-social-services-jobs' ); ?></option>
 					</select>
 				</div>
 

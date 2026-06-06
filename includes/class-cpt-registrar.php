@@ -169,6 +169,7 @@ class Shuffles_SSJ_CPT_Registrar {
 			),
 			'sssj_org' => array(
 				'org_user_id'     => array( 'integer', true, 'int' ),
+				'org_hidden'      => array( 'boolean', true, 'bool' ),
 				'org_abn'         => array( 'string', true, 'abn' ),
 				'org_website'     => array( 'string', true, 'text' ),
 				'org_type'        => array( 'string', true, 'key' ),

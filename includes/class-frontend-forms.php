@@ -173,7 +173,7 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 
 		$visibility = isset( $_POST['visibility'] ) ? sanitize_key( wp_unslash( $_POST['visibility'] ) ) : 'logged_in';
-		if ( ! in_array( $visibility, array( 'public', 'logged_in', 'verified_only' ), true ) ) {
+		if ( ! in_array( $visibility, array( 'public', 'logged_in', 'verified_only', 'hidden' ), true ) ) {
 			$visibility = 'logged_in';
 		}
 
@@ -521,6 +521,7 @@ class Shuffles_SSJ_Frontend_Forms {
 
 		$meta = array(
 			'org_user_id'       => $uid,
+			'org_hidden'        => empty( $_POST['org_hidden'] ) ? '' : '1',
 			'org_abn'           => $abn,
 			'org_website'       => isset( $_POST['org_website'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['org_website'] ) ) ) : '',
 			'org_type'          => isset( $_POST['org_type'] ) ? sanitize_key( wp_unslash( $_POST['org_type'] ) ) : 'employer',

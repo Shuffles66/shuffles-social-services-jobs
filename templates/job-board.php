@@ -31,7 +31,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 	<div class="sssj-panel">
 		<h2><?php echo esc_html( $heading ); ?></h2>
 
-		<form class="sssj-row" method="get" data-sssj-place-group>
+		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
 			<?php
 			// Preserve other query args (e.g. page id) implicitly via current URL.
 			foreach ( array( 'sssj_paged' ) as $drop ) {
@@ -56,7 +56,8 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; //
 				<input type="range" name="sssj_radius" min="0" max="200" step="5" value="<?php echo esc_attr( $cur_rad ); ?>" oninput="this.nextElementSibling.value=(this.value==0?'<?php echo esc_js( __( 'Any', 'shuffles-social-services-jobs' ) ); ?>':this.value+' km')" />
 				<output><?php echo esc_html( $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-services-jobs' ) ); ?></output>
 			</label>
-			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
+			<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
+			<?php Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
 	</div>
 

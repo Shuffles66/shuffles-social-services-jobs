@@ -35,12 +35,19 @@ class Shuffles_SSJ_SEO {
 			$visibility = (string) get_post_meta( get_queried_object_id(), 'visibility', true );
 			if ( 'public' !== $visibility ) {
 				echo "<meta name=\"robots\" content=\"noindex,nofollow\" />\n";
+			} else {
+				$this->keywords_meta();
 			}
 			return;
 		}
 
-		// Organisation profiles: Organization structured data (public, indexable).
+		// Organisation profiles: Organization structured data (public, indexable) — unless hidden.
 		if ( is_singular( 'sssj_org' ) ) {
+			if ( '1' === (string) get_post_meta( get_queried_object_id(), 'org_hidden', true ) ) {
+				echo "<meta name=\"robots\" content=\"noindex,nofollow\" />\n";
+				return;
+			}
+			$this->keywords_meta();
 			if ( '1' === (string) $this->settings->get( 'seo_enabled', '1' ) ) {
 				$this->org_jsonld( get_queried_object() );
 			}
@@ -48,9 +55,24 @@ class Shuffles_SSJ_SEO {
 		}
 
 		// Job ads: JobPosting structured data (Google for Jobs).
-		if ( is_singular( 'sssj_job' ) && '1' === (string) $this->settings->get( 'seo_enabled', '1' ) ) {
-			$this->job_jsonld( get_queried_object() );
+		if ( is_singular( 'sssj_job' ) ) {
+			$this->keywords_meta();
+			if ( '1' === (string) $this->settings->get( 'seo_enabled', '1' ) ) {
+				$this->job_jsonld( get_queried_object() );
+			}
 		}
+	}
+
+	/**
+	 * Emit a keywords meta tag from the configured "Focus programs" (branding/SEO), on indexable
+	 * plugin pages only. Lists NDIS / Aged Care / DVA / Foundational Supports / Thriving Kids etc.
+	 */
+	private function keywords_meta() {
+		$kw = trim( (string) $this->settings->get( 'focus_programs', '' ) );
+		if ( '' === $kw ) {
+			return;
+		}
+		echo '<meta name="keywords" content="' . esc_attr( $kw ) . "\" />\n";
 	}
 
 	/** Place node from suburb/state/postcode (null if all empty). */

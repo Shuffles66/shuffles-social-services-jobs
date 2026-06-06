@@ -32,6 +32,9 @@ final class Shuffles_SSJ_Plugin {
 	/** @var Shuffles_SSJ_Shortcodes */
 	public $shortcodes;
 
+	/** @var Shuffles_SSJ_Display */
+	public $display;
+
 	/** @var Shuffles_SSJ_SEO */
 	public $seo;
 
@@ -60,6 +63,8 @@ final class Shuffles_SSJ_Plugin {
 		// Phase 1 — front-end boards/forms, SEO, lifecycle.
 		$this->shortcodes = new Shuffles_SSJ_Shortcodes( $this->settings );
 		$this->shortcodes->register();
+		$this->display = new Shuffles_SSJ_Display( $this->settings );
+		$this->display->register();
 		$this->seo = new Shuffles_SSJ_SEO( $this->settings );
 		$this->seo->register();
 		$this->forms = new Shuffles_SSJ_Frontend_Forms();
