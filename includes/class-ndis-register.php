@@ -82,6 +82,12 @@ class Shuffles_SSJ_NDIS_Register {
 				'in_force_until' => $res['in_force_until'],
 				'groups'         => array_values( $res['groups'] ),
 				'legal_name'     => $res['legal_name'],
+				'abn'            => $res['abn'],
+				'address'        => $res['address'],
+				'website'        => $res['website'],
+				'outlets'        => array_values( $res['outlets'] ),
+				'phone'          => $res['phone'],
+				'tone'           => self::status_tone( $res['status'] ),
 				'register_url'   => self::public_url( $id ),
 			)
 		);
@@ -140,6 +146,12 @@ class Shuffles_SSJ_NDIS_Register {
 		return preg_replace( '/\D+/', '', (string) $id );
 	}
 
+	/** The entity's OWN stored ABN (org_abn for orgs, worker_abn for sole-trader workers), digits only. */
+	public static function own_abn( $post_id ) {
+		$key = ( 'sssj_worker' === get_post_type( (int) $post_id ) ) ? 'worker_abn' : 'org_abn';
+		return preg_replace( '/\D+/', '', (string) get_post_meta( (int) $post_id, $key, true ) );
+	}
+
 	/** Canonical node URL we fetch (301-redirects to the slug page, which is server-rendered). */
 	public static function fetch_url( $id ) {
 		$base = apply_filters( 'shuffles_ssj_ndis_base_url', 'https://www.ndiscommission.gov.au/node/' );
@@ -194,7 +206,7 @@ class Shuffles_SSJ_NDIS_Register {
 
 	/** Empty parse result. */
 	protected static function empty_parse() {
-		return array( 'parse_ok' => false, 'status' => '', 'status_class' => '', 'in_force_until' => '', 'in_force_iso' => '', 'groups' => array(), 'legal_name' => '' );
+		return array( 'parse_ok' => false, 'status' => '', 'status_class' => '', 'in_force_until' => '', 'in_force_iso' => '', 'groups' => array(), 'legal_name' => '', 'abn' => '', 'address' => '', 'website' => '', 'outlets' => array(), 'phone' => '' );
 	}
 
 	/**
@@ -245,6 +257,52 @@ class Shuffles_SSJ_NDIS_Register {
 		$ln = $xp->query( '//div[contains(@class,"field__label") and contains(normalize-space(.),"Legal name")]/following-sibling::div[contains(@class,"field__item")][1]' );
 		if ( $ln && $ln->length ) {
 			$out['legal_name'] = trim( preg_replace( '/\s+/', ' ', $ln->item( 0 )->textContent ) );
+		}
+
+		// ABN / Head office address / Website — targeted by the listing's own field-name classes
+		// (more robust + language-independent than label text). &nbsp; → space.
+		$item_text = function ( $field_class ) use ( $xp ) {
+			$n = $xp->query( '//div[contains(@class,"' . $field_class . '")]//div[contains(@class,"field__item")][1]' );
+			if ( $n && $n->length ) {
+				return trim( preg_replace( '/\s+/', ' ', str_replace( "\xc2\xa0", ' ', $n->item( 0 )->textContent ) ) );
+			}
+			return '';
+		};
+		$out['abn']     = preg_replace( '/\D+/', '', $item_text( 'field--name-field-abn' ) );
+		$out['address'] = $item_text( 'field--name-field-head-office-address' );
+		// Website: prefer the link href, else the text.
+		$wn = $xp->query( '//div[contains(@class,"field--name-field-website")]//div[contains(@class,"field__item")][1]//a/@href' );
+		if ( $wn && $wn->length ) {
+			$out['website'] = trim( (string) $wn->item( 0 )->nodeValue );
+		} else {
+			$out['website'] = $item_text( 'field--name-field-website' );
+		}
+
+		// Outlets (with phone) — read from the listing's footer "Outlets" section. Authoritative
+		// register data: surfaced read-only, never user-editable.
+		$onodes = $xp->query( '//div[contains(@class,"paragraph--type--outlet")]' );
+		if ( $onodes && $onodes->length ) {
+			foreach ( $onodes as $on ) {
+				$nm = '';
+				$ph = '';
+				$nn = $xp->query( './/div[contains(@class,"field--name-field-title")]', $on );
+				if ( $nn && $nn->length ) {
+					$nm = trim( preg_replace( '/\s+/', ' ', $nn->item( 0 )->textContent ) );
+				}
+				$pn = $xp->query( './/div[contains(@class,"field--name-field-phone")]//div[contains(@class,"field__item")][1]', $on );
+				if ( $pn && $pn->length ) {
+					$ph = trim( preg_replace( '/\s+/', ' ', $pn->item( 0 )->textContent ) );
+				}
+				if ( '' !== $nm || '' !== $ph ) {
+					$out['outlets'][] = array( 'name' => $nm, 'phone' => $ph );
+				}
+			}
+		}
+		foreach ( $out['outlets'] as $o ) {
+			if ( '' !== $o['phone'] ) {
+				$out['phone'] = $o['phone'];
+				break;
+			}
 		}
 
 		// We consider the parse good only if we extracted a status (the critical field).
@@ -304,6 +362,12 @@ class Shuffles_SSJ_NDIS_Register {
 			if ( '' !== $res['legal_name'] ) {
 				update_post_meta( $org_id, 'ndis_legal_name', $res['legal_name'] );
 			}
+			update_post_meta( $org_id, 'ndis_abn', $res['abn'] );
+			update_post_meta( $org_id, 'ndis_address', $res['address'] );
+			update_post_meta( $org_id, 'ndis_website', $res['website'] );
+			// Outlets + phone — read from the register footer; authoritative, never user-editable.
+			update_post_meta( $org_id, 'ndis_outlets', wp_json_encode( array_values( $res['outlets'] ) ) );
+			update_post_meta( $org_id, 'ndis_phone', $res['phone'] );
 		}
 		return $res;
 	}
@@ -488,14 +552,18 @@ class Shuffles_SSJ_NDIS_Register {
 
 	/* --------------------------------------------------------------- Render */
 
-	/** Colour bucket for a status word. */
-	protected static function status_tone( $status ) {
+	/**
+	 * Colour bucket for a status word. Returns 'verified' (green), 'rejected' (red), or ''.
+	 * NEGATIVE words are checked FIRST so "Registration revoked" / "Banned" go red, not green
+	 * (it contains "registration", which would otherwise match the positive set).
+	 */
+	public static function status_tone( $status ) {
 		$s = strtolower( (string) $status );
+		if ( false !== strpos( $s, 'revok' ) || false !== strpos( $s, 'ban' ) || false !== strpos( $s, 'suspend' ) || false !== strpos( $s, 'cancel' ) || false !== strpos( $s, 'expir' ) || false !== strpos( $s, 'surrender' ) || false !== strpos( $s, 'reject' ) ) {
+			return 'rejected';
+		}
 		if ( false !== strpos( $s, 'approv' ) || false !== strpos( $s, 'register' ) || false !== strpos( $s, 'active' ) ) {
 			return 'verified';
-		}
-		if ( false !== strpos( $s, 'suspend' ) || false !== strpos( $s, 'revok' ) || false !== strpos( $s, 'cancel' ) || false !== strpos( $s, 'expir' ) || false !== strpos( $s, 'surrender' ) ) {
-			return 'rejected';
 		}
 		return '';
 	}
@@ -532,6 +600,50 @@ class Shuffles_SSJ_NDIS_Register {
 
 		if ( '' !== $in_force ) {
 			$out .= '<tr><th scope="row">' . esc_html__( 'In force until', 'shuffles-social-services-jobs' ) . '</th><td>' . esc_html( $in_force ) . '</td></tr>';
+		}
+
+		// Details read from the listing: legal name, ABN (with mismatch flag), address, website.
+		$legal = (string) get_post_meta( $org_id, 'ndis_legal_name', true );
+		$nabn  = preg_replace( '/\D+/', '', (string) get_post_meta( $org_id, 'ndis_abn', true ) );
+		$addr  = (string) get_post_meta( $org_id, 'ndis_address', true );
+		$web   = (string) get_post_meta( $org_id, 'ndis_website', true );
+		$own   = self::own_abn( $org_id );
+		if ( '' !== $legal ) {
+			$out .= '<tr><th scope="row">' . esc_html__( 'Legal name (register)', 'shuffles-social-services-jobs' ) . '</th><td>' . esc_html( $legal ) . '</td></tr>';
+		}
+		if ( '' !== $nabn ) {
+			$out .= '<tr><th scope="row">' . esc_html__( 'ABN (register)', 'shuffles-social-services-jobs' ) . '</th><td><code>' . esc_html( $nabn ) . '</code>';
+			if ( '' !== $own && $own !== $nabn ) {
+				$out .= '<div class="sssj-ndis__abnwarn">' . esc_html( sprintf( __( '⚠ This differs from the ABN on file (%s) — please check.', 'shuffles-social-services-jobs' ), $own ) ) . '</div>';
+			}
+			$out .= '</td></tr>';
+		}
+		if ( '' !== $addr ) {
+			$out .= '<tr><th scope="row">' . esc_html__( 'Head office (register)', 'shuffles-social-services-jobs' ) . '</th><td>' . esc_html( $addr ) . '</td></tr>';
+		}
+		if ( '' !== $web ) {
+			$out .= '<tr><th scope="row">' . esc_html__( 'Website (register)', 'shuffles-social-services-jobs' ) . '</th><td><a href="' . esc_url( $web ) . '" target="_blank" rel="noopener nofollow">' . esc_html( preg_replace( '#^https?://#', '', $web ) ) . '</a></td></tr>';
+		}
+		// Phone + outlets — read from the register footer (authoritative, not user-editable).
+		$phone   = (string) get_post_meta( $org_id, 'ndis_phone', true );
+		$outlets = json_decode( (string) get_post_meta( $org_id, 'ndis_outlets', true ), true );
+		$outlets = is_array( $outlets ) ? $outlets : array();
+		if ( '' !== $phone ) {
+			$out .= '<tr><th scope="row">' . esc_html__( 'Phone (register)', 'shuffles-social-services-jobs' ) . '</th><td><a href="tel:' . esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ) . '">' . esc_html( $phone ) . '</a></td></tr>';
+		}
+		if ( $outlets ) {
+			$rows = '';
+			foreach ( $outlets as $o ) {
+				$nm = isset( $o['name'] ) ? (string) $o['name'] : '';
+				$ph = isset( $o['phone'] ) ? (string) $o['phone'] : '';
+				if ( '' === $nm && '' === $ph ) {
+					continue;
+				}
+				$rows .= '<li>' . esc_html( $nm ) . ( $ph ? ' — ' . esc_html( $ph ) : '' ) . '</li>';
+			}
+			if ( '' !== $rows ) {
+				$out .= '<tr><th scope="row">' . esc_html( sprintf( _n( 'Outlet', 'Outlets (%d)', count( $outlets ), 'shuffles-social-services-jobs' ), count( $outlets ) ) ) . '</th><td><ul class="sssj-ndis__outlets">' . $rows . '</ul></td></tr>';
+			}
 		}
 
 		if ( $groups ) {

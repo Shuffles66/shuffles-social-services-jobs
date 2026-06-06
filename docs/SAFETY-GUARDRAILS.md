@@ -39,8 +39,8 @@ Police checks, WWCC, NDIS Worker Screening, certifications and insurance documen
 > **Sales angle:** "Sensitive documents never sit in a public folder — they can't be guessed, scraped, or shared by accident."
 
 ### 4. Live NDIS registration checks
-When a provider gives their **NDIS Registration No**, the platform reads their **public NDIS Commission listing** and shows the live **registration status, approved registration groups and expiry date** — then **re-checks monthly** and alerts our team to any change (status, groups, or expiry).
-> **Sales angle:** "Registration isn't taken on trust — it's read from the NDIS Commission's own register and watched for changes."
+When a provider gives their **NDIS Registration No**, the platform reads their **public NDIS Commission listing** and shows the live **registration status, approved registration groups, expiry date, legal name, ABN, head office, website, and outlets + phone** — then **re-checks monthly** and alerts our team to any change (status, groups, or expiry). These register-sourced details are **read-only — the member can't edit them**, and a **"Revoked"/"Banned" status is shown on a red background** (never green). If the register's ABN differs from the ABN on file, a **red mismatch warning** is shown.
+> **Sales angle:** "Registration isn't taken on trust — it's read from the NDIS Commission's own register, shown read-only, and watched for changes."
 
 ### 5. Expiry tracking that drops a stale badge automatically
 Credentials carry expiry dates. The platform emails **reminders before expiry**, and an expired credential **automatically removes** the verified badge.

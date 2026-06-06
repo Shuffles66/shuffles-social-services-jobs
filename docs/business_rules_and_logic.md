@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.55.0 (2026-06-07)
+- **Last updated:** v0.55.4 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -22,7 +22,7 @@ on every change (it is the "why" companion to the code; the "what/where" lives i
 - **Funding never blocks you.** A participant can name one funding source, several, or none — it helps matching but never hides results.
 - **Participants pay nothing; providers fund the platform.** Participants employing, or seeking workers or providers, are always free. Providers pay to advertise beyond a free limit, to feature, to respond to work, and to appear in the directory. (Charging is off until a site switches it on.)
 - **Badges are earned, not claimed.** A "Verified" or blue-tick badge is only ever granted by a person on the team after checking evidence. Evidence files are private — never on a public link.
-- **NDIS registration is checked against the real register.** When a provider (or sole trader) gives their NDIS Registration No, we read their public NDIS Commission listing, show their status, registration groups and expiry, and re-check it every month — quietly alerting our team (never the provider) if anything changes.
+- **NDIS registration is checked against the real register.** When a provider (or sole trader) gives their NDIS Registration No, we read their public NDIS Commission listing — status, registration groups, expiry, ABN, head office, website, outlets and phone — show it **read-only** (the member can't edit it), and re-check it every month, quietly alerting our team (never the provider) if anything changes. A revoked/banned status shows in red.
 - **Participants are protected above all.** Their requests are anonymous, suburb-level only, visible to logged-in members only, never shown to search engines, approved by an admin before they appear, and all first contact runs through a safe relay — a worker never sees their email or phone.
 - **We don't reveal our tech suppliers.** Behind-the-scenes AI/search tools are never named to members or the public.
 - **Lead with safety; show numbers when they impress.** The home page leads with the safety guardrails, and headline counters can stay hidden until the totals are big enough to be impressive.
@@ -94,7 +94,10 @@ Posting precedence is checked in order: `sssj_post_job` → `sssj_post_worker` �
 
 - Applies to **organisations and sole-trader individuals** (worker profiles registered in their own right).
 - The member enters their **NDIS Registration No** = the number after `?id=` in their NDIS Commission listing URL (it is the Commission's Drupal node id). Stored as `ndis_register_id`; mirrored into the legacy `ndis_provider_number` for back-compat (one user-facing field).
-- On save (and monthly), the plugin reads the **public** Commission listing server-side and stores the live **registration status, approved registration groups, and "in force until" date** (`Shuffles_SSJ_NDIS_Register`). Shown as a table on the profile.
+- On save (and monthly), the plugin reads the **public** Commission listing server-side and stores the live **registration status, approved registration groups, "in force until" date, plus the legal name, ABN, head-office location and website** (`Shuffles_SSJ_NDIS_Register`). Shown as a table on the profile, and previewable on the form via **"Scan now"**.
+- **ABN cross-check:** if the ABN on the NDIS register differs from the ABN on file (the org's ABN, or the sole trader's `worker_abn`), a **red warning note** is shown.
+- **Read-only register data:** the details read from the register (status, groups, ABN, head office, website, outlets + phone) are **not user-editable** — they come straight from the Commission's listing.
+- A **"Revoked" / "Banned" status renders on a red background** (never green); `status_tone()` checks the negative words first so "Registration revoked" doesn't false-match the positive set.
 - **Monthly cron** re-reads every registered org **and** sole trader; on any change (status, groups, expiry) it **alerts staff only** (`ndis_alert_email`, default admin) — **never the provider** — and fires `shuffles_ssj_ndis_changed`.
 - **Safe-by-design:** a fetch/parse failure **never overwrites** stored values; it flags `ndis_scan_state` and alerts staff (a register-page layout change can't silently read as "no change"). Feature toggle: `ndis_scan_enabled` (Settings → Compliance).
 - There is **no official public JSON API** for the Commission register; this reads server-rendered HTML on a gentle cadence with a short per-id cache.

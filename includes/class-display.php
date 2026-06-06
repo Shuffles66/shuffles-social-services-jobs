@@ -183,7 +183,7 @@ class Shuffles_SSJ_Display {
 			array(
 				__( 'Participant privacy is structural — listings are pseudonymous and contact runs through a safe internal relay.', 'shuffles-social-services-jobs' ),
 				__( 'The ✓ Verified badge is granted only after an administrator checks the evidence — never self-claimed.', 'shuffles-social-services-jobs' ),
-				__( 'NDIS provider registration is read live from the NDIS Commission’s public register and re-checked monthly.', 'shuffles-social-services-jobs' ),
+				__( 'NDIS provider registration is read live from the NDIS Commission’s public register (status, groups, ABN, outlets, phone) and re-checked monthly — shown as read-only register data, never self-entered.', 'shuffles-social-services-jobs' ),
 				__( 'Credential documents are stored privately and shown only to you and our team — never on a public page.', 'shuffles-social-services-jobs' ),
 				__( 'Worker screening, WWCC, police checks and insurances are tracked with expiry reminders.', 'shuffles-social-services-jobs' ),
 			)

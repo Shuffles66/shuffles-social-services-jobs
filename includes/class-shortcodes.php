@@ -297,6 +297,13 @@ class Shuffles_SSJ_Shortcodes {
 					'i18n_status'  => __( 'Registration status', 'shuffles-social-services-jobs' ),
 					'i18n_inforce' => __( 'In force until', 'shuffles-social-services-jobs' ),
 					'i18n_groups'  => __( 'Approved registration groups', 'shuffles-social-services-jobs' ),
+					'i18n_abn'     => __( 'ABN (register)', 'shuffles-social-services-jobs' ),
+					'i18n_addr'    => __( 'Head office (register)', 'shuffles-social-services-jobs' ),
+					'i18n_web'     => __( 'Website (register)', 'shuffles-social-services-jobs' ),
+					'i18n_phone'   => __( 'Phone (register)', 'shuffles-social-services-jobs' ),
+					'i18n_outlets' => __( 'Outlets', 'shuffles-social-services-jobs' ),
+					/* translators: %s: the ABN the member typed on the form. */
+					'i18n_abnwarn' => __( '⚠ This differs from the ABN you entered (%s) — please check.', 'shuffles-social-services-jobs' ),
 					'i18n_empty'   => __( 'Enter your NDIS Registration No first.', 'shuffles-social-services-jobs' ),
 					'i18n_loading' => __( 'Checking the NDIS register…', 'shuffles-social-services-jobs' ),
 				)

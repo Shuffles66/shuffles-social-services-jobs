@@ -162,6 +162,11 @@ class Shuffles_SSJ_CPT_Registrar {
 				'ndis_last_scanned'       => array( 'string', true, 'text' ),
 				'ndis_scan_state'         => array( 'string', true, 'key' ),
 				'ndis_legal_name'         => array( 'string', true, 'text' ),
+				'ndis_abn'                => array( 'string', true, 'abn' ),
+				'ndis_address'            => array( 'string', true, 'text' ),
+				'ndis_website'            => array( 'string', true, 'text' ),
+				'ndis_phone'              => array( 'string', true, 'text' ),
+				'ndis_outlets'            => array( 'string', false, 'text' ),
 			),
 			// Participant Need: sensitive — REST off for everything except non-identifying flags.
 			'sssj_need' => array(
@@ -197,6 +202,11 @@ class Shuffles_SSJ_CPT_Registrar {
 				'ndis_last_scanned'    => array( 'string', true, 'text' ),
 				'ndis_scan_state'      => array( 'string', true, 'key' ),
 				'ndis_legal_name'      => array( 'string', true, 'text' ),
+				'ndis_abn'             => array( 'string', true, 'abn' ),
+				'ndis_address'         => array( 'string', true, 'text' ),
+				'ndis_website'         => array( 'string', true, 'text' ),
+				'ndis_phone'           => array( 'string', true, 'text' ),
+				'ndis_outlets'         => array( 'string', false, 'text' ),
 				'org_website'     => array( 'string', true, 'text' ),
 				'org_type'        => array( 'string', true, 'key' ),
 				'org_phone'       => array( 'string', true, 'text' ),

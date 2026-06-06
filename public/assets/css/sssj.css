@@ -340,6 +340,11 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-ndis__note{ margin:var(--sssj-s2,6px) 0 0; font-size:var(--sssj-fs-sm,.85rem); color:#92400e; }
 .sssj .sssj-ndis__admin{ margin:var(--sssj-s3,8px) 0 0; }
 .sssj .sssj-ndis__state{ color:#b91c1c; font-size:var(--sssj-fs-sm,.85rem); }
+.sssj .sssj-ndis__abnwarn{ margin-top:4px; color:#b91c1c; font-weight:var(--sssj-weight-strong,600); font-size:var(--sssj-fs-sm,.85rem); }
+.sssj .sssj-ndis__outlets{ list-style:none; margin:2px 0 0; padding:0; }
+.sssj .sssj-ndis__outlets li{ font-size:var(--sssj-fs-sm,.9rem); padding:1px 0; }
+.sssj .sssj-ndis--preview{ margin-top:0; }
+.sssj .sssj-ndis--preview > div{ margin:2px 0; }
 
 /* Shuffles spinner — branded busy state for lookups/queries (forms + AJAX). Logo pulses when a
    site logo is available (--sssj-spinner-logo set by sssj-spinner.js), else a brand-blue ring. */

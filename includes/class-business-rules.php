@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.55.0 (2026-06-07)';
+		return 'v0.55.4 (2026-06-07)';
 	}
 
 	/**
@@ -85,7 +85,10 @@ class Shuffles_SSJ_Business_Rules {
 					'intro' => __( 'Registration is read from the NDIS Commission’s own public register — not taken on trust.', 'shuffles-social-services-jobs' ),
 					'rules' => array(
 						__( 'An organisation or a sole-trader individual enters their NDIS Registration No (the number after ?id= in their Commission listing URL).', 'shuffles-social-services-jobs' ),
-						__( 'On save, the plugin reads their public listing and shows the live registration status, the approved registration groups, and the expiry date.', 'shuffles-social-services-jobs' ),
+						__( 'On save (or via “Scan now”), the plugin reads their public listing and shows the live registration status, approved registration groups, expiry date, plus the legal name, ABN, head-office location and website.', 'shuffles-social-services-jobs' ),
+						__( 'ABN cross-check: if the ABN on the register differs from the ABN on file, a red warning note is shown so it can be checked.', 'shuffles-social-services-jobs' ),
+					__( 'These register-sourced details (status, registration groups, ABN, head office, website, outlets and phone) are read-only — a member can’t edit them; they come straight from the Commission’s listing.', 'shuffles-social-services-jobs' ),
+					__( 'A “Revoked” or “Banned” status is shown on a red background (never green).', 'shuffles-social-services-jobs' ),
 						__( 'A monthly check re-reads every registered org and sole trader and alerts staff (never the provider) if the status, groups, or expiry change.', 'shuffles-social-services-jobs' ),
 						__( 'Safe-by-design: if a check fails, stored details are kept (never wiped) and staff are alerted — a register-page change can’t silently look like “still approved”.', 'shuffles-social-services-jobs' ),
 					),
@@ -134,6 +137,7 @@ class Shuffles_SSJ_Business_Rules {
 				__( 'Never let funding filter results down to zero — it’s a signal, not a gate.', 'shuffles-social-services-jobs' ),
 				__( 'Never email a provider about an NDIS-registration change — that alert goes to staff only.', 'shuffles-social-services-jobs' ),
 				__( 'Never overwrite stored NDIS details when a check fails — keep them and alert staff.', 'shuffles-social-services-jobs' ),
+				__( 'Never let a member edit the details read from the NDIS register (status, groups, ABN, outlets, phone, …) — they are the Commission’s data, shown read-only.', 'shuffles-social-services-jobs' ),
 				__( 'Never name the third-party AI/search vendor in anything members or the public can see.', 'shuffles-social-services-jobs' ),
 				__( 'Never lock a site by default — monetisation stays off until it’s switched on.', 'shuffles-social-services-jobs' ),
 			)

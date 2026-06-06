@@ -812,6 +812,16 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.55.4 — 2026-06-07 · NDIS outlets & phone · red “Revoked/Banned” status</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The NDIS register check now also captures the listing’s outlets and phone number (from the listing footer) and shows them on the profile + “Scan now” preview. All register-sourced details are read-only — they can’t be edited by the member.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'A “Revoked” or “Banned” registration status now shows on a RED background (never green) — both on the profile and in the “Scan now” preview (which previously always showed green). Negative statuses are matched first so “Registration revoked” can’t be mistaken for active.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.55.3 — 2026-06-07 · fuller NDIS details + ABN mismatch flag</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The NDIS register check now also captures and shows the listing’s legal name, ABN, head-office location and website (alongside status, registration groups and expiry) — on the profile table and in the “Scan now” preview.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'ABN cross-check: if the ABN on the NDIS register differs from the ABN on file (the organisation’s ABN, or the sole trader’s ABN), a red warning note is shown so it can be checked.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.55.2 — 2026-06-07 · NDIS “Scan now” on the forms · mic button width fix</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'NDIS “Scan now”: a button next to the NDIS Registration No field (organisation + sole-trader worker forms) checks the number against the public NDIS Commission register on the spot and shows the live status, registration groups and expiry — before you save. Uses the Shuffles spinner while it checks.', 'shuffles-social-services-jobs' ); ?></li>
