@@ -52,6 +52,49 @@ class Shuffles_SSJ_Org {
 		return '' !== $out ? '<div class="sssj-socials">' . $out . '</div>' : '';
 	}
 
+	/**
+	 * All geocoded points for an org — its primary location plus any additional locations that
+	 * carry coordinates. Each: [ lat, lng, label ].
+	 *
+	 * @return array
+	 */
+	public static function location_points( $org_id ) {
+		$org_id = (int) $org_id;
+		$pts    = array();
+		$plat   = (float) get_post_meta( $org_id, 'location_lat', true );
+		$plng   = (float) get_post_meta( $org_id, 'location_lng', true );
+		if ( $plat && $plng ) {
+			$pts[] = array( 'lat' => $plat, 'lng' => $plng, 'label' => trim( (string) get_post_meta( $org_id, 'location_suburb', true ) . ' ' . (string) get_post_meta( $org_id, 'location_state', true ) ) );
+		}
+		$extra = json_decode( (string) get_post_meta( $org_id, 'locations', true ), true );
+		if ( is_array( $extra ) ) {
+			foreach ( $extra as $l ) {
+				$la = isset( $l['lat'] ) ? (float) $l['lat'] : 0;
+				$lo = isset( $l['lng'] ) ? (float) $l['lng'] : 0;
+				if ( $la && $lo ) {
+					$lbl = trim( ( isset( $l['label'] ) ? $l['label'] . ' ' : '' ) . ( isset( $l['suburb'] ) ? $l['suburb'] : '' ) . ' ' . ( isset( $l['state'] ) ? $l['state'] : '' ) );
+					$pts[] = array( 'lat' => $la, 'lng' => $lo, 'label' => $lbl );
+				}
+			}
+		}
+		return $pts;
+	}
+
+	/** Nearest of an org's locations to a centre, in km (null if the org has no coordinates). */
+	public static function nearest_km( $org_id, $lat, $lng ) {
+		if ( ! class_exists( 'Shuffles_SSJ_Geo' ) ) {
+			return null;
+		}
+		$min = null;
+		foreach ( self::location_points( $org_id ) as $p ) {
+			$d = Shuffles_SSJ_Geo::distance_km( $lat, $lng, $p['lat'], $p['lng'] );
+			if ( null === $min || $d < $min ) {
+				$min = $d;
+			}
+		}
+		return $min;
+	}
+
 	/** Plain list of an org's social URLs (for JSON-LD sameAs). */
 	public static function social_urls( $org_id ) {
 		$urls = array();

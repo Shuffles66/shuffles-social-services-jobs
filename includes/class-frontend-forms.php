@@ -472,13 +472,20 @@ class Shuffles_SSJ_Frontend_Forms {
 			if ( '' === $line ) {
 				continue;
 			}
-			$parts       = array_map( 'trim', explode( '|', $line ) );
-			$locations[] = array(
+			$parts = array_map( 'trim', explode( '|', $line ) );
+			$loc   = array(
 				'label'    => sanitize_text_field( isset( $parts[0] ) ? $parts[0] : '' ),
 				'suburb'   => sanitize_text_field( isset( $parts[1] ) ? $parts[1] : '' ),
 				'state'    => sanitize_text_field( isset( $parts[2] ) ? $parts[2] : '' ),
 				'postcode' => sanitize_text_field( isset( $parts[3] ) ? $parts[3] : '' ),
 			);
+			// Geocode each location (keyless) so the org finder can match by radius across all of them.
+			$g = Shuffles_SSJ_Geo::geocode_parts( $loc['suburb'], $loc['state'], $loc['postcode'] );
+			if ( $g ) {
+				$loc['lat'] = $g['lat'];
+				$loc['lng'] = $g['lng'];
+			}
+			$locations[] = $loc;
 		}
 
 		$meta = array(

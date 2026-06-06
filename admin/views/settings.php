@@ -474,6 +474,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.25.0 — 2026-06-06 · Organisation finder — location + radius + map</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'The Organisations directory gains a location search with a radius slider and a map of org locations. An organisation matches if ANY of its locations is within the radius, ordered by nearest.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Every saved location (primary + additional) is geocoded server-side (keyless), so multi-location orgs are found by distance from all their sites. Map needs a Google key; the radius search itself works with no key.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.24.0 — 2026-06-06 · Organisation branding — logo + social links</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Organisations can upload a logo (shown on their profile, directory cards and search results, and added to the Organization structured data for SEO).', 'shuffles-social-services-jobs' ); ?></li>

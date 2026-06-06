@@ -593,18 +593,66 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function org_directory( $atts ) {
 		wp_enqueue_style( 'sssj' );
-		$atts = shortcode_atts( array( 'per_page' => 12 ), is_array( $atts ) ? $atts : array(), 'sssj_org_directory' );
-		$query = new WP_Query(
-			array(
-				'post_type'      => 'sssj_org',
-				'post_status'    => 'publish',
-				'posts_per_page' => (int) $atts['per_page'],
-				'paged'          => isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-				's'              => ! empty( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : '', // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			)
-		);
+		$atts  = shortcode_atts( array( 'per_page' => 12 ), is_array( $atts ) ? $atts : array(), 'sssj_org_directory' );
+		$per   = max( 1, (int) $atts['per_page'] );
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		$paged = isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1;
+		$q     = ! empty( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : '';
+
+		// Resolve a radius centre (client coords, else keyless server geocode of the typed place).
+		$radius = isset( $_GET['sssj_radius'] ) ? (float) $_GET['sssj_radius'] : 0;
+		$clat   = 0;
+		$clng   = 0;
+		if ( $radius > 0 ) {
+			if ( ! empty( $_GET['sssj_lat'] ) && ! empty( $_GET['sssj_lng'] ) ) {
+				$clat = (float) $_GET['sssj_lat'];
+				$clng = (float) $_GET['sssj_lng'];
+			} elseif ( ! empty( $_GET['sssj_loc'] ) ) {
+				$hit = Shuffles_SSJ_Geo::geocode( sanitize_text_field( wp_unslash( $_GET['sssj_loc'] ) ) );
+				if ( $hit ) {
+					$clat = (float) $hit['lat'];
+					$clng = (float) $hit['lng'];
+				}
+			}
+		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+
+		if ( $radius > 0 && $clat && $clng ) {
+			// Match an org if ANY of its locations is within the radius; order by nearest.
+			$cand = get_posts( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 's' => $q, 'no_found_rows' => true ) );
+			$dist = array();
+			foreach ( $cand as $id ) {
+				$d = Shuffles_SSJ_Org::nearest_km( $id, $clat, $clng );
+				if ( null !== $d && $d <= $radius ) {
+					$dist[ $id ] = $d;
+				}
+			}
+			asort( $dist );
+			$ids      = array_keys( $dist );
+			$total    = count( $ids );
+			$page_ids = array_slice( $ids, ( $paged - 1 ) * $per, $per );
+			if ( empty( $page_ids ) ) {
+				$query = new WP_Query( array( 'post_type' => 'sssj_org', 'post__in' => array( 0 ), 'posts_per_page' => $per ) );
+			} else {
+				$query = new WP_Query( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'post__in' => $page_ids, 'orderby' => 'post__in', 'posts_per_page' => $per, 'no_found_rows' => true ) );
+				$query->found_posts   = $total;
+				$query->max_num_pages = (int) ceil( $total / $per );
+			}
+		} else {
+			$query = new WP_Query( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => $per, 'paged' => $paged, 's' => $q ) );
+		}
+
+		// Map points = every location of the orgs on this page.
+		$points = array();
+		foreach ( $query->posts as $p ) {
+			foreach ( Shuffles_SSJ_Org::location_points( $p->ID ) as $pt ) {
+				$points[] = array( 'id' => (int) $p->ID, 'title' => get_the_title( $p ), 'lat' => $pt['lat'], 'lng' => $pt['lng'], 'url' => get_permalink( $p ) );
+			}
+		}
+		$maps = $this->enqueue_maps( $points );
+
 		ob_start();
-		$this->load_template( 'org-directory.php', array( 'query' => $query ) );
+		$this->load_template( 'org-directory.php', array( 'query' => $query, 'maps' => $maps, 'has_points' => ! empty( $points ) ) );
 		wp_reset_postdata();
 		return ob_get_clean();
 	}
