@@ -18,3 +18,12 @@
 
 .sssj-admin .ul-disc{ list-style:disc; margin-left:20px; }
 .sssj-admin code{ background:#f1f5f9; padding:1px 5px; border-radius:4px; }
+
+/* Appearance "Style Studio" */
+.sssj-studio{ display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap; margin-top:8px; }
+.sssj-studio__controls{ flex:1 1 360px; min-width:300px; max-width:520px; }
+.sssj-studio__controls .form-table th{ padding-top:10px; padding-bottom:10px; }
+.sssj-studio__preview-wrap{ flex:1 1 460px; min-width:300px; position:sticky; top:40px; }
+.sssj-studio__bar{ margin:0 0 8px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.sssj-studio__stage{ background:#eef2f7; border:1px solid #d8dee6; border-radius:10px; padding:16px; overflow:auto; max-height:75vh; }
+.sssj-studio__stage #sssj-studio-preview{ margin:0 auto; transition:max-width .2s ease; }

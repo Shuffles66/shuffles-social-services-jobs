@@ -248,6 +248,22 @@ class Shuffles_SSJ_Shortcodes {
 		if ( '' !== $font ) {
 			$vars['--sssj-font'] = $font;
 		}
+		$fsize = trim( (string) $s->get( 'font_size', '' ) );
+		if ( '' !== $fsize ) {
+			$vars['--sssj-fs'] = preg_replace( '/[^0-9.a-z%]/i', '', $fsize );
+		}
+		$hw = trim( (string) $s->get( 'heading_weight', '' ) );
+		if ( '' !== $hw && ctype_digit( $hw ) ) {
+			$vars['--sssj-weight-heading'] = (int) $hw;
+		}
+		// Density scales the spacing tokens used for padding + gaps.
+		$density = (string) $s->get( 'ui_density', 'normal' );
+		$scale   = array( 'compact' => 0.75, 'comfortable' => 1.3 );
+		if ( isset( $scale[ $density ] ) ) {
+			foreach ( array( '--sssj-s2' => 8, '--sssj-s3' => 12, '--sssj-s4' => 16, '--sssj-s5' => 24 ) as $tk => $px ) {
+				$vars[ $tk ] = (int) round( $px * $scale[ $density ] ) . 'px';
+			}
+		}
 
 		$decl = '';
 		foreach ( $vars as $k => $v ) {

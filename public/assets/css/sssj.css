@@ -26,6 +26,7 @@
 	color:var(--sssj-text); font-size:var(--sssj-fs); line-height:var(--sssj-lh);
 }
 .sssj *{ box-sizing:border-box; }
+.sssj h1,.sssj h2,.sssj h3,.sssj h4{ font-weight:var(--sssj-weight-heading, var(--sssj-weight-strong)); }
 
 /* Buttons */
 .sssj .sssj-btn{

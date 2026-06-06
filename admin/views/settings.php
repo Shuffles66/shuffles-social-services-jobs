@@ -244,8 +244,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			break;
 
 		case 'appearance':
+			echo '<h2>' . esc_html__( 'Style Studio', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Re-skin the public-facing plugin for this install. Adjust the controls and watch the live preview update — nothing is saved until you click Save Changes. Everything is scoped to the plugin (.sssj), so your wider theme is untouched.', 'shuffles-social-services-jobs' ) . '</p>';
 			$open_form( 'appearance' );
-			echo '<p class="description">' . esc_html__( 'Re-skin the public-facing plugin for this install. Colours feed the design-system CSS variables on every .sssj surface; the Custom CSS box overrides anything. Scoped to the plugin — your wider theme is untouched.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<div class="sssj-studio"><div class="sssj-studio__controls">';
 			echo '<table class="form-table" role="presentation">';
 			$this->text_field( 'color_primary', __( 'Primary colour', 'shuffles-social-services-jobs' ), '', 'color' );
 			$this->text_field( 'color_primary_deep', __( 'Primary (hover / active)', 'shuffles-social-services-jobs' ), '', 'color' );
@@ -259,12 +261,37 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->text_field( 'color_need', __( 'Participant-need accent', 'shuffles-social-services-jobs' ), '', 'color' );
 			$this->number_field( 'ui_radius', __( 'Corner radius (px)', 'shuffles-social-services-jobs' ), __( 'Rounding for cards, inputs and buttons.', 'shuffles-social-services-jobs' ), 0, 40 );
 			$this->text_field( 'font_family', __( 'Font family (CSS)', 'shuffles-social-services-jobs' ), __( 'e.g. "Poppins", sans-serif. Leave blank to inherit the theme font.', 'shuffles-social-services-jobs' ) );
+			$this->text_field( 'font_size', __( 'Base font size', 'shuffles-social-services-jobs' ), __( 'e.g. 1rem or 16px. Leave blank to inherit.', 'shuffles-social-services-jobs' ) );
+			$this->select_field( 'heading_weight', __( 'Heading weight', 'shuffles-social-services-jobs' ), array( '' => __( 'Theme default', 'shuffles-social-services-jobs' ), '500' => '500', '600' => '600', '700' => '700', '800' => '800' ), '' );
+			$this->select_field( 'ui_density', __( 'Density', 'shuffles-social-services-jobs' ), array( 'compact' => __( 'Compact', 'shuffles-social-services-jobs' ), 'normal' => __( 'Normal', 'shuffles-social-services-jobs' ), 'comfortable' => __( 'Comfortable', 'shuffles-social-services-jobs' ) ), __( 'Spacing for cards and lists.', 'shuffles-social-services-jobs' ), 'normal' );
 			$css_val = (string) $this->settings->get( 'custom_css', '' );
 			echo '<tr><th scope="row"><label for="sssj-custom_css">' . esc_html__( 'Custom CSS', 'shuffles-social-services-jobs' ) . '</label></th><td>';
 			echo '<textarea id="sssj-custom_css" class="large-text code" rows="8" name="' . esc_attr( $this->field_name( 'custom_css' ) ) . '">' . esc_textarea( $css_val ) . '</textarea>';
 			echo '<p class="description">' . esc_html__( 'Scope rules to ".sssj …" to target plugin surfaces. HTML tags are stripped for safety.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '</td></tr>';
-			echo '</table>';
+			echo '</table></div>'; // /controls
+
+			// Live preview + presets + saved looks + width toggle.
+			echo '<div class="sssj-studio__preview-wrap">';
+			echo '<div class="sssj-studio__bar"><strong>' . esc_html__( 'Presets:', 'shuffles-social-services-jobs' ) . '</strong> ';
+			echo '<button type="button" class="button" data-sssj-preset="soft">' . esc_html__( 'Soft', 'shuffles-social-services-jobs' ) . '</button> ';
+			echo '<button type="button" class="button" data-sssj-preset="bold">' . esc_html__( 'Bold', 'shuffles-social-services-jobs' ) . '</button> ';
+			echo '<button type="button" class="button" data-sssj-preset="calm">' . esc_html__( 'Calm', 'shuffles-social-services-jobs' ) . '</button> ';
+			echo '&nbsp; <strong>' . esc_html__( 'Width:', 'shuffles-social-services-jobs' ) . '</strong> ';
+			echo '<button type="button" class="button" data-sssj-width="0">' . esc_html__( 'Desktop', 'shuffles-social-services-jobs' ) . '</button> ';
+			echo '<button type="button" class="button" data-sssj-width="380">' . esc_html__( 'Mobile', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</div>';
+			echo '<div class="sssj-studio__bar"><strong>' . esc_html__( 'Saved looks:', 'shuffles-social-services-jobs' ) . '</strong> ';
+			echo '<select data-sssj-themes><option value="">' . esc_html__( '— select —', 'shuffles-social-services-jobs' ) . '</option></select> ';
+			echo '<button type="button" class="button" data-sssj-theme-load>' . esc_html__( 'Load', 'shuffles-social-services-jobs' ) . '</button> ';
+			echo '<button type="button" class="button" data-sssj-theme-save>' . esc_html__( 'Save current…', 'shuffles-social-services-jobs' ) . '</button> ';
+			echo '<button type="button" class="button" data-sssj-theme-del>' . esc_html__( 'Delete', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</div>';
+			echo '<input type="hidden" id="sssj-appearance_themes" name="' . esc_attr( $this->field_name( 'appearance_themes' ) ) . '" value="' . esc_attr( (string) $this->settings->get( 'appearance_themes', '' ) ) . '" />';
+			echo '<p class="description">' . esc_html__( 'Live preview — presets and edits apply here instantly but are only stored when you Save Changes.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<div class="sssj-studio__stage"><div id="sssj-studio-preview" class="sssj">' . $this->studio_preview_html() . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '</div></div>'; // /preview-wrap /studio
+
 			submit_button();
 			echo '</form>';
 
@@ -447,6 +474,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.23.0 — 2026-06-06 · Appearance "Style Studio" (live preview)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'The Appearance tab is now a Style Studio: visual controls (colours, corner radius, font, base size, heading weight, density) alongside a live preview of a realistic mock board (nav, search, ABN/TFN/featured/need cards) that updates as you edit — nothing saved until you click Save.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'One-click presets (Soft / Bold / Calm), a desktop/mobile width toggle, and Save / Load named looks. The raw Custom CSS box edits live too, scoped to the preview.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'New tokens wired through to the front end: base font size (--sssj-fs), heading weight (--sssj-weight-heading) and a density control that scales the spacing.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.22.0 — 2026-06-06 · Pages tab + Custom CSS guide</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New Pages tab gathers ALL page mappings in one place, grouped (Browse / Participants / Post-create / Member account), each with lookup + create + edit. The Boards tab now points here.', 'shuffles-social-services-jobs' ); ?></li>

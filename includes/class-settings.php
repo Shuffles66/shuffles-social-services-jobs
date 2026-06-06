@@ -55,6 +55,10 @@ class Shuffles_SSJ_Settings {
 			'color_need'                => '#db2777',
 			'ui_radius'                 => 10,
 			'font_family'               => '',
+			'font_size'                 => '',
+			'heading_weight'            => '',
+			'ui_density'                => 'normal',
+			'appearance_themes'         => '',
 			'custom_css'                => '',
 			'delete_data_on_uninstall'  => '0',
 			'page_job_board'            => 0,
@@ -119,7 +123,7 @@ class Shuffles_SSJ_Settings {
 			return $out;
 		}
 
-		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family' );
+		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family', 'font_size', 'heading_weight' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key' );
 		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall' );
 		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
@@ -168,6 +172,16 @@ class Shuffles_SSJ_Settings {
 		if ( isset( $input['custom_css'] ) ) {
 			// Allow CSS but never let it break out of the <style> tag.
 			$out['custom_css'] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input['custom_css'] ) );
+		}
+
+		// Density — whitelist.
+		if ( isset( $input['ui_density'] ) ) {
+			$d = sanitize_key( wp_unslash( (string) $input['ui_density'] ) );
+			$out['ui_density'] = in_array( $d, array( 'compact', 'normal', 'comfortable' ), true ) ? $d : 'normal';
+		}
+		// Saved style themes — JSON, angle brackets stripped.
+		if ( isset( $input['appearance_themes'] ) ) {
+			$out['appearance_themes'] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input['appearance_themes'] ) );
 		}
 
 		// Gating provider — whitelist.

@@ -138,6 +138,13 @@ class Shuffles_SSJ_Admin {
 		}
 		wp_enqueue_style( 'sssj-admin', SHUFFLES_SSJ_URL . 'admin/assets/css/sssj-admin.css', array(), SHUFFLES_SSJ_VERSION );
 		wp_enqueue_script( 'sssj-admin', SHUFFLES_SSJ_URL . 'admin/assets/js/sssj-admin.js', array(), SHUFFLES_SSJ_VERSION, true );
+
+		// Appearance tab: load the front-end styles (so the preview looks real) + the Style Studio.
+		$tab = isset( $_GET['tab'] ) ? sanitize_key( wp_unslash( $_GET['tab'] ) ) : 'general'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( 'appearance' === $tab ) {
+			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
+			wp_enqueue_script( 'sssj-studio', SHUFFLES_SSJ_URL . 'admin/assets/js/sssj-studio.js', array(), SHUFFLES_SSJ_VERSION, true );
+		}
 		wp_localize_script(
 			'sssj-admin',
 			'SSJ_Admin',
@@ -284,6 +291,49 @@ class Shuffles_SSJ_Admin {
 			echo '<p class="description">' . wp_kses_post( $help ) . '</p>';
 		}
 		echo '</td></tr>';
+	}
+
+	/** Representative mock-board markup for the Style Studio live preview (admin-only sample). */
+	public function studio_preview_html() {
+		ob_start();
+		?>
+		<nav class="sssj sssj-nav"><span class="sssj-nav__brand">Jobs</span>
+			<ul class="sssj-nav__list">
+				<li class="sssj-nav__item"><a href="#" onclick="return false">Jobs</a></li>
+				<li class="sssj-nav__item"><a href="#" onclick="return false" aria-current="page">Find a worker</a></li>
+				<li class="sssj-nav__item"><a href="#" onclick="return false">Organisations</a></li>
+				<li class="sssj-nav__item sssj-nav__item--cta"><a href="#" onclick="return false">Register</a></li>
+			</ul>
+		</nav>
+		<div class="sssj-panel" style="margin:12px 0">
+			<div class="sssj-row">
+				<input class="sssj-input" placeholder="Search jobs…" style="flex:1;min-width:150px" />
+				<select class="sssj-select"><option>All categories</option></select>
+				<button type="button" class="sssj-btn sssj-btn--primary">Filter</button>
+			</div>
+		</div>
+		<div class="sssj-grid">
+			<article class="sssj-card sssj-card--abn">
+				<h3 style="margin-top:0"><a href="#" onclick="return false">Support Worker — Disability</a></h3>
+				<div class="sssj-row"><span class="sssj-badge sssj-badge--abn">ABN (contractor)</span> <span class="sssj-badge">Ongoing</span></div>
+				<p>📍 Parramatta NSW</p><p>💲 45 – 60 / hour</p>
+				<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="#" onclick="return false">View job</a>
+			</article>
+			<article class="sssj-card sssj-card--tfn sssj-card--featured">
+				<h3 style="margin-top:0"><a href="#" onclick="return false">Aged Care Assistant</a></h3>
+				<div class="sssj-row"><span class="sssj-badge sssj-badge--featured">★ Featured</span> <span class="sssj-badge sssj-badge--tfn">TFN (employee)</span></div>
+				<p>📍 Geelong VIC</p><p>💲 32 / hour</p>
+				<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="#" onclick="return false">View job</a>
+			</article>
+			<article class="sssj-card sssj-card--need">
+				<h3 style="margin-top:0">Participant request</h3>
+				<div class="sssj-row"><span class="sssj-badge sssj-badge--need">Support</span> <span class="sssj-badge sssj-badge--verified">✓ Verified preferred</span></div>
+				<p>📍 Armidale NSW</p>
+				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="#" onclick="return false">Respond</a>
+			</article>
+		</div>
+		<?php
+		return ob_get_clean();
 	}
 
 	public function compliance_select() {
