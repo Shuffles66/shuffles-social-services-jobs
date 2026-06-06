@@ -51,6 +51,40 @@ class Shuffles_SSJ_NDIS_Register {
 
 		// Admin "Re-scan now" action (manage_options).
 		add_action( 'admin_post_sssj_ndis_scan_now', array( __CLASS__, 'handle_scan_now' ) );
+
+		// Front-end "Scan now" preview (logged-in members, on the org/worker forms).
+		add_action( 'wp_ajax_sssj_ndis_scan_preview', array( __CLASS__, 'ajax_scan_preview' ) );
+	}
+
+	/**
+	 * AJAX: look up an NDIS Registration No and return the live details for preview (no store).
+	 * Lets a member confirm their number on the form before saving.
+	 */
+	public static function ajax_scan_preview() {
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'msg' => __( 'Please log in first.', 'shuffles-social-services-jobs' ) ) );
+		}
+		check_ajax_referer( 'sssj_ndis_scan', 'nonce' );
+		$id = isset( $_POST['id'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['id'] ) ) : '';
+		if ( '' === $id ) {
+			wp_send_json_error( array( 'msg' => __( 'Enter your NDIS Registration No first.', 'shuffles-social-services-jobs' ) ) );
+		}
+		$res = self::scan( $id, false );
+		if ( 'ok' !== $res['scan_state'] ) {
+			$msg = ( 'fetch_fail' === $res['scan_state'] )
+				? __( 'Could not reach the NDIS register just now — please try again shortly.', 'shuffles-social-services-jobs' )
+				: __( 'That number didn’t return a registration. Please check it and try again.', 'shuffles-social-services-jobs' );
+			wp_send_json_error( array( 'msg' => $msg ) );
+		}
+		wp_send_json_success(
+			array(
+				'status'         => $res['status'],
+				'in_force_until' => $res['in_force_until'],
+				'groups'         => array_values( $res['groups'] ),
+				'legal_name'     => $res['legal_name'],
+				'register_url'   => self::public_url( $id ),
+			)
+		);
 	}
 
 	public static function add_schedule( $schedules ) {

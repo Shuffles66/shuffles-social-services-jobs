@@ -5,8 +5,27 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.54.0 (2026-06-07)
+- **Last updated:** v0.55.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
+- **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
+
+---
+
+## At a glance — the rules in plain English
+
+*(No technical terms. The numbered sections further down add the code/hooks/settings that enforce each rule, for developers.)*
+
+- **One account, many hats.** A member can be a worker, a candidate, a participant, a sole-trader provider, someone representing a provider, an employee, or a supplier — any combination. Telling us your role(s) unlocks what you can post.
+- **A provider isn't always a company.** A provider can be an individual sole trader, not only an organisation — and an "organisation" might instead be a supplier, housing/SDA, real estate, or professional services.
+- **Contractor work and employee work stay separate.** Jobs are either contractor (you invoice) or employee (you're paid wages) — and the two never appear mixed on the same board.
+- **Businesses prove who they are.** An ABN is required for contractor and organisation listings, and it's checked.
+- **Funding never blocks you.** A participant can name one funding source, several, or none — it helps matching but never hides results.
+- **Participants pay nothing; providers fund the platform.** Participants employing, or seeking workers or providers, are always free. Providers pay to advertise beyond a free limit, to feature, to respond to work, and to appear in the directory. (Charging is off until a site switches it on.)
+- **Badges are earned, not claimed.** A "Verified" or blue-tick badge is only ever granted by a person on the team after checking evidence. Evidence files are private — never on a public link.
+- **NDIS registration is checked against the real register.** When a provider (or sole trader) gives their NDIS Registration No, we read their public NDIS Commission listing, show their status, registration groups and expiry, and re-check it every month — quietly alerting our team (never the provider) if anything changes.
+- **Participants are protected above all.** Their requests are anonymous, suburb-level only, visible to logged-in members only, never shown to search engines, approved by an admin before they appear, and all first contact runs through a safe relay — a worker never sees their email or phone.
+- **We don't reveal our tech suppliers.** Behind-the-scenes AI/search tools are never named to members or the public.
+- **Lead with safety; show numbers when they impress.** The home page leads with the safety guardrails, and headline counters can stay hidden until the totals are big enough to be impressive.
 
 ---
 

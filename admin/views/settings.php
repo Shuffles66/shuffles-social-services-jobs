@@ -648,6 +648,40 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</form>';
 			break;
 
+		case 'logic':
+			echo '<h2>' . esc_html__( 'Business Logic', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description">' . esc_html__( 'How this plugin decides things — the rules behind gating, visibility, verification, segregation, privacy and the automated checks. Written in plain English.', 'shuffles-social-services-jobs' );
+			if ( class_exists( 'Shuffles_SSJ_Business_Rules' ) ) {
+				echo ' ' . esc_html( sprintf( __( 'Last updated: %s.', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Business_Rules::last_updated() ) );
+			}
+			echo '</p>';
+			if ( class_exists( 'Shuffles_SSJ_Business_Rules' ) ) {
+				foreach ( Shuffles_SSJ_Business_Rules::sections() as $i => $sec ) {
+					echo '<h3 style="margin:18px 0 4px">' . esc_html( ( $i + 1 ) . '. ' . $sec['title'] ) . '</h3>';
+					if ( ! empty( $sec['intro'] ) ) {
+						echo '<p class="description" style="margin-top:0">' . esc_html( $sec['intro'] ) . '</p>';
+					}
+					if ( ! empty( $sec['rules'] ) ) {
+						echo '<ul class="ul-disc" style="margin-left:18px">';
+						foreach ( $sec['rules'] as $rule ) {
+							echo '<li>' . esc_html( $rule ) . '</li>';
+						}
+						echo '</ul>';
+					}
+				}
+				$inv = Shuffles_SSJ_Business_Rules::invariants();
+				if ( $inv ) {
+					echo '<h3 style="margin:22px 0 4px">' . esc_html__( 'Key invariants — the “never” rules', 'shuffles-social-services-jobs' ) . '</h3>';
+					echo '<ol style="margin-left:18px">';
+					foreach ( $inv as $rule ) {
+						echo '<li>' . esc_html( $rule ) . '</li>';
+					}
+					echo '</ol>';
+				}
+				echo '<p class="description" style="margin-top:16px">' . esc_html__( 'The full technical version (with the functions/hooks that enforce each rule) lives in docs/business_rules_and_logic.md in the plugin repository.', 'shuffles-social-services-jobs' ) . '</p>';
+			}
+			break;
+
 		case 'cron':
 			echo '<h2>' . esc_html__( 'Cron Job List & Status', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p class="description">' . esc_html__( 'The plugin’s scheduled background jobs (WordPress cron). For each: how often it runs, when it last ran, when it is next due, and whether the last run completed. “Run now” triggers a job immediately (useful for testing).', 'shuffles-social-services-jobs' ) . '</p>';
@@ -778,6 +812,20 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.55.2 — 2026-06-07 · NDIS “Scan now” on the forms · mic button width fix</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'NDIS “Scan now”: a button next to the NDIS Registration No field (organisation + sole-trader worker forms) checks the number against the public NDIS Commission register on the spot and shows the live status, registration groups and expiry — before you save. Uses the Shuffles spinner while it checks.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fix: the voice-input microphone button on location fields was stretching full-width inside the profile forms — it’s now constrained to a normal button size.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.55.1 — 2026-06-07 · admin Settings sub-item in the menu</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The [sssj_menu] now supports sub-menus, and shows an admin-only “Settings” item nested under “My dashboard” (links straight to the plugin settings). Only users who can manage options see it; it opens as a dropdown on desktop and indents inline on mobile.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.55.0 — 2026-06-07 · Business Logic tab · “Edit my profile” in the menu</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New “Business Logic” settings tab: a plain-English, in-app record of how the plugin decides things — members & roles, ABN/TFN segregation, who pays vs free, organisation categories & sponsorship, verification & trust, the NDIS register check, participant privacy, matching/alerts/CRM, and a “Key invariants (never rules)” list. Mirrors docs/business_rules_and_logic.md.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The login-aware [sssj_menu] now includes an “Edit my profile” link for logged-in members (opens their worker/candidate profile editor).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.54.0 — 2026-06-06 · Cron Jobs tab · My profile in the dashboard · home-page hero</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Cron Job List & Status tab: a new admin tab listing every scheduled background job (daily maintenance, daily email alerts, monthly NDIS check) with its frequency, last run, next run due, completion status, any reported errors, and a “Run now” button. Last-run/status are recorded automatically (a job that starts but never finishes is flagged “Did not complete”).', 'shuffles-social-services-jobs' ); ?></li>

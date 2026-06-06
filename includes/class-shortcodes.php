@@ -78,7 +78,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_menu',
 				'title'  => __( 'Navigation menu (login-aware)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A ready-made navigation bar that adapts to the visitor. Logged-OUT: Jobs, Find a worker, Organisations, Log in (and Register if open). Logged-IN: Participant requests, Messages, My dashboard, Log out — plus Post a job / My credentials / Request support shown only when the account can use them. Links resolve automatically from your configured pages (Boards tab), or by finding the page that contains each shortcode.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A ready-made navigation bar that adapts to the visitor. Logged-OUT: Jobs, Find a worker, Organisations, Log in (and Register if open). Logged-IN: Participant requests, Edit my profile, Messages, My dashboard, Log out — plus Post a job / My credentials / Request support shown only when the account can use them. Admins also get a “Settings” sub-item nested under “My dashboard”. Links resolve automatically from your configured pages (Boards tab), or by finding the page that contains each shortcode.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'Your site header, a navigation/widget area, or the top of key pages. It maintains itself — no separate menu to edit.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Navigation', 'shuffles-social-services-jobs' ),
@@ -284,6 +284,23 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_script_is( 'sssj-spinner', 'registered' ) ) {
 			wp_register_script( 'sssj-spinner', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-spinner.js', array(), SHUFFLES_SSJ_VERSION, true );
 			wp_localize_script( 'sssj-spinner', 'SSSJ_Spinner', array( 'logo' => self::site_logo_url() ) );
+		}
+		// NDIS "Scan now" preview (org + worker forms).
+		if ( ! wp_script_is( 'sssj-ndis-scan', 'registered' ) ) {
+			wp_register_script( 'sssj-ndis-scan', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-ndis-scan.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
+			wp_localize_script(
+				'sssj-ndis-scan',
+				'SSSJ_NDIS',
+				array(
+					'ajax'         => admin_url( 'admin-ajax.php' ),
+					'nonce'        => wp_create_nonce( 'sssj_ndis_scan' ),
+					'i18n_status'  => __( 'Registration status', 'shuffles-social-services-jobs' ),
+					'i18n_inforce' => __( 'In force until', 'shuffles-social-services-jobs' ),
+					'i18n_groups'  => __( 'Approved registration groups', 'shuffles-social-services-jobs' ),
+					'i18n_empty'   => __( 'Enter your NDIS Registration No first.', 'shuffles-social-services-jobs' ),
+					'i18n_loading' => __( 'Checking the NDIS register…', 'shuffles-social-services-jobs' ),
+				)
+			);
 		}
 		// Auto header menu prints at wp_body_open (too late to enqueue its own CSS) — load it here.
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
@@ -652,6 +669,7 @@ class Shuffles_SSJ_Shortcodes {
 	public function post_worker_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-spinner' );
+		wp_enqueue_script( 'sssj-ndis-scan' );
 		ob_start();
 		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
@@ -1014,6 +1032,7 @@ class Shuffles_SSJ_Shortcodes {
 	public function post_org_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-spinner' );
+		wp_enqueue_script( 'sssj-ndis-scan' );
 		$this->enqueue_maps();
 		wp_enqueue_script( 'sssj-autofill', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-autofill.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
 		wp_localize_script( 'sssj-autofill', 'SSJ_Autofill', array( 'ajax' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'sssj_autofill' ) ) );
@@ -1269,9 +1288,21 @@ class Shuffles_SSJ_Shortcodes {
 			if ( current_user_can( 'sssj_post_need' ) || current_user_can( 'manage_options' ) ) {
 				$this->add_nav_item( $items, __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) );
 			}
+			$this->add_nav_item( $items, __( 'Edit my profile', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) );
 			$this->add_nav_item( $items, __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
 			$dash = $this->resolve_page( 'page_my_listings', '[sssj_dashboard]' );
-			$this->add_nav_item( $items, __( 'My dashboard', 'shuffles-social-services-jobs' ), $dash ? $dash : $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' ) );
+			$dash = $dash ? $dash : $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' );
+			if ( '' !== (string) $dash ) {
+				$dash_item = array( 'label' => __( 'My dashboard', 'shuffles-social-services-jobs' ), 'url' => $dash, 'cta' => false );
+				// Admin-only sub-level: jump to the plugin settings (uses the literal page slug —
+				// the admin class isn't loaded on the front end where this menu renders).
+				if ( current_user_can( 'manage_options' ) ) {
+					$dash_item['children'] = array(
+						array( 'label' => __( 'Settings', 'shuffles-social-services-jobs' ), 'url' => admin_url( 'admin.php?page=shuffles-ssj' ), 'cta' => false ),
+					);
+				}
+				$items[] = $dash_item;
+			}
 			$items[] = array( 'label' => __( 'Log out', 'shuffles-social-services-jobs' ), 'url' => wp_logout_url( home_url( '/' ) ), 'cta' => false );
 		} else {
 			$here    = esc_url_raw( home_url( add_query_arg( array() ) ) );
@@ -1303,9 +1334,19 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		echo '<ul class="sssj-nav__list">';
 		foreach ( $items as $it ) {
-			$is_cur = ( untrailingslashit( (string) $it['url'] ) === $cur );
-			$cls    = 'sssj-nav__item' . ( ! empty( $it['cta'] ) ? ' sssj-nav__item--cta' : '' );
-			echo '<li class="' . esc_attr( $cls ) . '"><a href="' . esc_url( $it['url'] ) . '"' . ( $is_cur ? ' aria-current="page"' : '' ) . '>' . esc_html( $it['label'] ) . '</a></li>';
+			$is_cur   = ( untrailingslashit( (string) $it['url'] ) === $cur );
+			$children = ( ! empty( $it['children'] ) && is_array( $it['children'] ) ) ? $it['children'] : array();
+			$cls      = 'sssj-nav__item' . ( ! empty( $it['cta'] ) ? ' sssj-nav__item--cta' : '' ) . ( $children ? ' sssj-nav__item--has-sub' : '' );
+			echo '<li class="' . esc_attr( $cls ) . '">';
+			echo '<a href="' . esc_url( $it['url'] ) . '"' . ( $is_cur ? ' aria-current="page"' : '' ) . ( $children ? ' aria-haspopup="true"' : '' ) . '>' . esc_html( $it['label'] ) . ( $children ? ' <span class="sssj-nav__caret" aria-hidden="true">▾</span>' : '' ) . '</a>';
+			if ( $children ) {
+				echo '<ul class="sssj-nav__sub">';
+				foreach ( $children as $child ) {
+					echo '<li class="sssj-nav__subitem"><a href="' . esc_url( $child['url'] ) . '">' . esc_html( $child['label'] ) . '</a></li>';
+				}
+				echo '</ul>';
+			}
+			echo '</li>';
 		}
 		echo '</ul></nav>';
 		return ob_get_clean();
