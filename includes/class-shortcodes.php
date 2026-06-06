@@ -35,6 +35,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
 		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
+		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
 	}
@@ -182,6 +183,15 @@ class Shuffles_SSJ_Shortcodes {
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_tests',
+				'title'  => __( 'Testing worksheet', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A tester checklist covering every feature — work through each case and mark Pass/Fail (progress saved in the browser; printable). Same content as Settings → Testing.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A private/internal page for testers (or just use the Settings → Testing tab).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Admin & testing', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ) ),
 			),
 		);
 	}
@@ -708,6 +718,13 @@ class Shuffles_SSJ_Shortcodes {
 		ob_start();
 		$this->load_template( 'credentials-panel.php', array() );
 		return ob_get_clean();
+	}
+
+	/** Testing worksheet (the tester checklist). */
+	public function tests_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-tests', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-tests.js', array(), SHUFFLES_SSJ_VERSION, true );
+		return Shuffles_SSJ_Tests::render( is_array( $atts ) ? $atts : array() );
 	}
 
 	/* --- Navigation menu (login-aware) --- */

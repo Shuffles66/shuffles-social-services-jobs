@@ -123,6 +123,21 @@
 	.sssj .sssj-panel{ padding:var(--sssj-s4); }
 	.sssj-a11y-bar--floating{ max-width:92vw; }
 }
+
+/* Testing worksheet */
+.sssj .sssj-tests__bar{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.sssj .sssj-tests__track{ flex:1 1 160px; height:8px; background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:999px; overflow:hidden; min-width:120px; }
+.sssj .sssj-tests__fill{ display:block; height:100%; width:0; background:var(--sssj-success); transition:width .2s; }
+.sssj .sssj-tests__table{ width:100%; border-collapse:collapse; }
+.sssj .sssj-tests__table tr{ border-bottom:1px solid var(--sssj-line); }
+.sssj .sssj-tests__table tr.is-pass{ background:#f0fdf4; }
+.sssj .sssj-tests__table tr.is-fail{ background:#fef2f2; }
+.sssj .sssj-tests__do{ padding:10px 8px; }
+.sssj .sssj-tests__expect{ color:var(--sssj-muted); font-size:var(--sssj-fs-sm); margin-top:3px; }
+.sssj .sssj-tests__marks{ padding:10px 8px; white-space:nowrap; text-align:right; vertical-align:top; }
+.sssj .sssj-tests__pass.is-on{ background:var(--sssj-success); color:#fff; border-color:var(--sssj-success); }
+.sssj .sssj-tests__fail.is-on{ background:var(--sssj-danger); color:#fff; border-color:var(--sssj-danger); }
+@media print{ .sssj .sssj-tests__marks button{ display:none; } .sssj-a11y-bar,.sssj-a11y-bar--floating{ display:none !important; } }
 /* Navigation menu (login-aware) — responsive, wraps on small screens (no JS needed) */
 .sssj.sssj-nav{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 12px; background:var(--sssj-bg); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); box-shadow:var(--sssj-shadow); }
 .sssj.sssj-nav .sssj-nav__brand{ font-weight:var(--sssj-weight-strong); color:var(--sssj-ink); margin-right:8px; }

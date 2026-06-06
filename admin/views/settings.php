@@ -94,6 +94,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			}
 			break;
 
+		case 'testing':
+			echo '<h2>' . esc_html__( 'Testing worksheet', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Hand this to a tester to confirm the plugin works as it should. Mark each case Pass or Fail — progress is saved in this browser, and Print gives a paper/PDF copy. The same checklist is available on the front end via the [sssj_tests] shortcode, and is kept up to date as the plugin changes.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo Shuffles_SSJ_Tests::render( array( 'title' => __( 'Testing worksheet', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+			break;
+
 		case 'maps':
 			$open_form( 'maps' );
 			echo '<table class="form-table" role="presentation">';
@@ -474,6 +480,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.31.0 — 2026-06-06 · Testing worksheet (shortcode + Settings tab)</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'A tester checklist covering every feature — work through each case and mark Pass/Fail (progress saved per browser; printable). Available as the [sssj_tests] shortcode and the new Settings → Testing tab, from a single source of truth (Shuffles_SSJ_Tests::suites()) kept current as the plugin changes.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.30.0 — 2026-06-06 · Searchable multi-selects + tighter filter banner + org counters + responsive</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Checkbox grids are now searchable multi-selects (type-ahead pills): worker “Services you offer”, and the participant request’s support types + funding sources. Search and add, instead of scanning a long list.', 'shuffles-social-services-jobs' ); ?></li>
