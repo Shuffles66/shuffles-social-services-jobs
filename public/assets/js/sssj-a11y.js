@@ -92,6 +92,12 @@
 			var k = el.getAttribute( 'data-i18n' );
 			el.textContent = ( null != dict[ k ] ) ? dict[ k ] : el.dataset.i18nEn;
 		} );
+		// Translate placeholders too (data-i18n-placeholder).
+		document.querySelectorAll( '[data-i18n-placeholder]' ).forEach( function ( el ) {
+			if ( null == el.dataset.i18nPhEn ) { el.dataset.i18nPhEn = el.getAttribute( 'placeholder' ) || ''; }
+			var pk = el.getAttribute( 'data-i18n-placeholder' );
+			el.setAttribute( 'placeholder', ( null != dict[ pk ] ) ? dict[ pk ] : el.dataset.i18nPhEn );
+		} );
 		// Site-wide: stamp the document language; RTL is applied to plugin surfaces (incl. the
 		// floating toolbar wrapper) so we don't flip a theme that wasn't built for it.
 		document.documentElement.setAttribute( 'lang', code );

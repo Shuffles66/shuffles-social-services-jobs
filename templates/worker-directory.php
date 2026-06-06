@@ -28,9 +28,9 @@ $w_pts   = ! empty( $has_points );
 ?>
 <div class="sssj sssj--workers">
 	<div class="sssj-panel">
-		<h2><?php echo esc_html( $heading ); ?></h2>
+		<h2<?php echo empty( $atts['title'] ) ? ' data-i18n="d_workers"' : ''; ?>><?php echo esc_html( $heading ); ?></h2>
 		<form class="sssj-row" method="get" data-sssj-place-group>
-			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" />
+			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_workers" />
 			<select class="sssj-select" name="sssj_cat">
 				<option value=""><?php esc_html_e( 'All services', 'shuffles-social-services-jobs' ); ?></option>
 				<?php
@@ -41,15 +41,15 @@ $w_pts   = ! empty( $has_points );
 				}
 				?>
 			</select>
-			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" />
+			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
 			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
 			<label class="sssj-radius" style="display:flex;align-items:center;gap:8px">
-				<span><?php esc_html_e( 'Within', 'shuffles-social-services-jobs' ); ?></span>
+				<span data-i18n="within"><?php esc_html_e( 'Within', 'shuffles-social-services-jobs' ); ?></span>
 				<input type="range" name="sssj_radius" min="0" max="200" step="5" value="<?php echo esc_attr( $cur_rad ); ?>" oninput="this.nextElementSibling.value=(this.value==0?'<?php echo esc_js( __( 'Any', 'shuffles-social-services-jobs' ) ); ?>':this.value+' km')" />
 				<output><?php echo esc_html( $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-services-jobs' ) ); ?></output>
 			</label>
-			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></label>
+			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <span data-i18n="avail_now"><?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></span></label>
 			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>

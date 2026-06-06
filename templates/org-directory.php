@@ -27,14 +27,14 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 ?>
 <div class="sssj sssj--orgs">
 	<div class="sssj-panel">
-		<h2><?php esc_html_e( 'Organisations', 'shuffles-social-services-jobs' ); ?></h2>
+		<h2 data-i18n="d_orgs"><?php esc_html_e( 'Organisations', 'shuffles-social-services-jobs' ); ?></h2>
 		<form class="sssj-row" method="get" data-sssj-place-group>
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search by company name…', 'shuffles-social-services-jobs' ); ?>" />
-			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" />
+			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
 			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
 			<label class="sssj-radius" style="display:flex;align-items:center;gap:8px">
-				<span><?php esc_html_e( 'Within', 'shuffles-social-services-jobs' ); ?></span>
+				<span data-i18n="within"><?php esc_html_e( 'Within', 'shuffles-social-services-jobs' ); ?></span>
 				<input type="range" name="sssj_radius" min="0" max="200" step="5" value="<?php echo esc_attr( $cur_rad ); ?>" oninput="this.nextElementSibling.value=(this.value==0?'<?php echo esc_js( __( 'Any', 'shuffles-social-services-jobs' ) ); ?>':this.value+' km')" />
 				<output><?php echo esc_html( $rad_lbl ); ?></output>
 			</label>
@@ -46,7 +46,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<option value=""><?php esc_html_e( 'All funding', 'shuffles-social-services-jobs' ); ?></option>
 					<?php if ( ! is_wp_error( $o_fundings ) ) { foreach ( $o_fundings as $t ) { echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_funding, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
 				</select>
-				<label class="sssj-chip <?php echo $cur_open ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_open" value="1" <?php checked( $cur_open ); ?> /> <?php esc_html_e( 'Only with open placements', 'shuffles-social-services-jobs' ); ?></label>
+				<label class="sssj-chip <?php echo $cur_open ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_open" value="1" <?php checked( $cur_open ); ?> /> <span data-i18n="open_only"><?php esc_html_e( 'Only with open placements', 'shuffles-social-services-jobs' ); ?></span></label>
 			<button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="filter"><?php esc_html_e( 'Filter', 'shuffles-social-services-jobs' ); ?></button>
 		</form>
 	</div>
@@ -94,7 +94,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<?php endif; ?>
 					<?php if ( $sub || $state ) : ?><p>📍 <?php echo esc_html( trim( $sub . ' ' . $state ) ); ?></p><?php endif; ?>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 22 ) ); ?></p>
-					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>"><?php esc_html_e( 'View profile & jobs', 'shuffles-social-services-jobs' ); ?></a>
+					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>" data-i18n="view_profile_jobs"><?php esc_html_e( 'View profile & jobs', 'shuffles-social-services-jobs' ); ?></a>
 				</article>
 			<?php endwhile; ?>
 		</div>

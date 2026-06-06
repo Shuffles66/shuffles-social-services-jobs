@@ -480,6 +480,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.32.0 — 2026-06-06 · Wider language coverage on the directories</h3>
+				<ul class="ul-disc">
+					<li><?php esc_html_e( 'More of each directory now translates: headings, the “Available now / Within” controls, the “Only with open placements” toggle, and the search/location field placeholders (the language switcher now translates placeholders too). New strings added to all six languages.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Note: user-typed content (names, bios, job text) and items inside the new search-pickers are not auto-translated — that needs a paid translation service or the browser’s built-in “Translate page”.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
 				<h3>v0.31.0 — 2026-06-06 · Testing worksheet (shortcode + Settings tab)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'A tester checklist covering every feature — work through each case and mark Pass/Fail (progress saved per browser; printable). Available as the [sssj_tests] shortcode and the new Settings → Testing tab, from a single source of truth (Shuffles_SSJ_Tests::suites()) kept current as the plugin changes.', 'shuffles-social-services-jobs' ); ?></li>
