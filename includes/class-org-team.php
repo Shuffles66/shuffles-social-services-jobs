@@ -249,6 +249,11 @@ class Shuffles_SSJ_Org_Team {
 
 	/** Approve a request → add as a member (default 'member') and clear the request. */
 	public static function approve_request( $org_id, $user_id, $role = 'member' ) {
+		// Consent gate: only a user who actually has an outstanding, self-initiated request can be
+		// approved. Otherwise an org admin could conscript + cap-grant arbitrary accounts via "approve".
+		if ( ! self::has_request( $org_id, $user_id ) ) {
+			return new WP_Error( 'no_request', __( 'That person has not requested to join this organisation.', 'shuffles-social-services-jobs' ) );
+		}
 		$res = self::add_member( $org_id, $user_id, $role ); // add_member also clears the request
 		return $res;
 	}

@@ -1146,6 +1146,18 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.3.0 · 2026-06-08 · security hardening pass</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Private profiles are now fully private. A worker profile set to “members only” or “verified only” can no longer be opened by its direct web link by people who should not see it (previously it was hidden from the directory but still reachable by URL). The owner and site admins can always preview their own page. Guests hitting a members-only profile are sent to log in; everyone else gets a normal “not found” page.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Hidden organisations are now hidden everywhere: a hidden org page is only visible to its own team and site admins, matching how it is already excluded from the directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Non-public worker profiles and hidden organisations are now kept out of the site’s XML sitemap, so search engines are not pointed at them.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “autofill from my website” tool now refuses internal/private web addresses, so it cannot be misused to probe the server’s own network.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The participant-requests board now requires login at the data layer as well as the page layer (defence in depth for the most sensitive board).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Organisation “approve join request” now only works for people who actually requested to join, so an org admin cannot quietly attach and empower arbitrary accounts.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( '“View as” (demo impersonation) can never target an administrator account, even one flagged as a demo user.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The live NDIS register lookup now uses the safe-fetch path with capped redirects and response size. Internal hardening: the activity-log query is fully parameterised, and the asset builder’s “verified checks” now reads the correct “verified” status.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Audit result: no SQL-injection or cross-site-scripting issues were found; the codebase consistently prepares queries and escapes output.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.2.0 · 2026-06-08 · results map markers refresh with AJAX filters</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'On the Jobs board and Worker directory, the results map now updates its markers when you filter: the AJAX filter returns the matching points, old pins clear, new pins plot and the map refits, so the map always matches the visible results.', 'shuffles-social-services-jobs' ); ?></li>

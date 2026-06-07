@@ -190,7 +190,9 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( '' === $url || ! preg_match( '#^https?://#i', $url ) ) {
 			wp_send_json_error( array( 'msg' => __( 'Enter your website URL first (including https://).', 'shuffles-social-services-jobs' ) ) );
 		}
-		$resp = wp_remote_get( $url, array( 'timeout' => 15, 'redirection' => 3, 'user-agent' => 'Mozilla/5.0 (compatible; ShufflesJobs/1.0)' ) );
+		// SSRF guard: the URL is fully user-supplied, so use wp_safe_remote_get (rejects private/internal
+		// hosts), cap redirects and the response size, so this can't be turned into an internal probe.
+		$resp = wp_safe_remote_get( $url, array( 'timeout' => 15, 'redirection' => 2, 'limit_response_size' => 2 * MB_IN_BYTES, 'user-agent' => 'Mozilla/5.0 (compatible; ShufflesJobs/1.0)' ) );
 		if ( is_wp_error( $resp ) || 200 !== (int) wp_remote_retrieve_response_code( $resp ) ) {
 			wp_send_json_error( array( 'msg' => __( 'Could not read that website. Check the address and try again.', 'shuffles-social-services-jobs' ) ) );
 		}

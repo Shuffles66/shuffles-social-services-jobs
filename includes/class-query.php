@@ -51,8 +51,9 @@ class Shuffles_SSJ_Query {
 		$basis = sanitize_key( (string) $basis );
 		if ( in_array( $basis, array( 'abn', 'tfn', 'vol' ), true ) ) {
 			$args['meta_query'][] = array(
-				'key'   => 'engagement_basis',
-				'value' => $basis,
+				'key'     => 'engagement_basis',
+				'value'   => $basis,
+				'compare' => '=',
 			);
 		}
 

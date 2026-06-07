@@ -176,6 +176,10 @@ final class Shuffles_SSJ_Plugin {
 		if ( ! $target || ! get_user_by( 'id', $target ) || ! get_user_meta( $target, '_sssj_demo', true ) ) {
 			wp_die( esc_html__( '“View as” is only available for demo/test accounts.', 'shuffles-social-services-jobs' ) );
 		}
+		// Never impersonate an administrator, even one that has been flagged as a demo account.
+		if ( user_can( $target, 'manage_options' ) ) {
+			wp_die( esc_html__( '“View as” cannot impersonate an administrator account.', 'shuffles-social-services-jobs' ) );
+		}
 		$origin = get_current_user_id();
 		$token  = wp_generate_password( 24, false, false );
 		set_transient( 'sssj_viewas_' . $token, $origin, HOUR_IN_SECONDS );

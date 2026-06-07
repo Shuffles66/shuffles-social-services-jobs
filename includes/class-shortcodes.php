@@ -1487,6 +1487,11 @@ class Shuffles_SSJ_Shortcodes {
 	public function ajax_filter() {
 		$this->last_points = array(); // reset so a board with no map returns no markers
 		$board = isset( $_POST['board'] ) ? sanitize_key( wp_unslash( $_POST['board'] ) ) : 'job'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// Participant needs are never public; require login at the dispatch layer too (defence in depth —
+		// this endpoint is open to nopriv for the public boards, so don't rely solely on need_board()).
+		if ( 'need' === $board && ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'msg' => __( 'Please log in to view participant requests.', 'shuffles-social-services-jobs' ) ) );
+		}
 		// Mirror the submitted filter values into $_GET so the board methods (which read $_GET) work.
 		$keys = array( 'sssj_q', 'sssj_loc', 'sssj_lat', 'sssj_lng', 'sssj_radius', 'sssj_paged', 'sssj_funding', 'sssj_sector', 'sssj_orgcat', 'sssj_size', 'sssj_structure', 'sssj_open', 'sssj_cat' );
 		foreach ( $keys as $k ) {

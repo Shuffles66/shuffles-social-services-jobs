@@ -94,12 +94,10 @@ class Shuffles_SSJ_CRM_Sync {
 			$where[]  = 'action = %s';
 			$params[] = (string) $args['action'];
 		}
-		$limit = isset( $args['limit'] ) ? max( 1, (int) $args['limit'] ) : 100;
-		$sql   = "SELECT * FROM {$t} WHERE " . implode( ' AND ', $where ) . " ORDER BY id DESC LIMIT {$limit}";
-		if ( $params ) {
-			$sql = $wpdb->prepare( $sql, $params ); // phpcs:ignore WordPress.DB
-		}
-		$rows = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB
+		$limit    = isset( $args['limit'] ) ? max( 1, (int) $args['limit'] ) : 100;
+		$where    = implode( ' AND ', $where );
+		$params[] = $limit; // LIMIT is placeheld too, so the query is always prepared.
+		$rows     = $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$t} WHERE {$where} ORDER BY id DESC LIMIT %d", $params ) ); // phpcs:ignore WordPress.DB
 		return is_array( $rows ) ? $rows : array();
 	}
 

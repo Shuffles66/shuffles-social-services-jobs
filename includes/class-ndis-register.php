@@ -183,13 +183,17 @@ class Shuffles_SSJ_NDIS_Register {
 				return $cached;
 			}
 		}
-		$resp = wp_remote_get(
+		// wp_safe_remote_get blocks requests to private/internal hosts (SSRF guard); the target host is
+		// fixed, but a redirect from upstream could otherwise be steered elsewhere, so cap redirects and
+		// the response size too.
+		$resp = wp_safe_remote_get(
 			self::fetch_url( $id ),
 			array(
-				'timeout'     => 25,
-				'redirection' => 5,
-				'user-agent'  => self::user_agent(),
-				'headers'     => array( 'Accept' => 'text/html,application/xhtml+xml' ),
+				'timeout'             => 25,
+				'redirection'         => 2,
+				'limit_response_size' => 2 * MB_IN_BYTES,
+				'user-agent'          => self::user_agent(),
+				'headers'             => array( 'Accept' => 'text/html,application/xhtml+xml' ),
 			)
 		);
 		if ( is_wp_error( $resp ) ) {

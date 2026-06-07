@@ -21,6 +21,92 @@ class Shuffles_SSJ_SEO {
 
 	public function register() {
 		add_action( 'wp_head', array( $this, 'head' ), 1 );
+		// Enforce profile visibility / hidden-org at the page level, not just the directory query + noindex.
+		add_action( 'template_redirect', array( $this, 'guard_private_singles' ) );
+		// Keep non-public worker profiles and hidden orgs out of the core XML sitemap.
+		add_filter( 'wp_sitemaps_posts_query_args', array( $this, 'sitemap_query_args' ), 10, 2 );
+	}
+
+	/**
+	 * Block direct-permalink access to a worker profile whose visibility is not 'public', and to a
+	 * hidden organisation, for anyone who could not see it in the directory. The owner and site admins
+	 * can always preview their own page. Guests hitting a members-only profile are sent to log in;
+	 * everyone else gets a clean 404 (so the page's existence is never confirmed).
+	 */
+	public function guard_private_singles() {
+		if ( is_singular( 'sssj_worker' ) ) {
+			$id  = get_queried_object_id();
+			$vis = (string) get_post_meta( $id, 'visibility', true );
+			if ( '' === $vis || 'public' === $vis ) {
+				return;
+			}
+			if ( self::viewer_owns( (int) get_post_meta( $id, 'worker_user_id', true ) ) ) {
+				return; // owner or site admin can always preview their own profile
+			}
+			if ( 'logged_in' === $vis ) {
+				if ( is_user_logged_in() ) {
+					return; // members-only profile, viewer is a logged-in member
+				}
+				wp_safe_redirect( wp_login_url( get_permalink( $id ) ) );
+				exit;
+			}
+			// 'verified_only' (or any other non-public value): not shown to non-owners yet.
+			self::block_404();
+			return;
+		}
+
+		if ( is_singular( 'sssj_org' ) ) {
+			$id = get_queried_object_id();
+			if ( '1' !== (string) get_post_meta( $id, 'org_hidden', true ) ) {
+				return;
+			}
+			$uid = get_current_user_id();
+			if ( $uid && ( current_user_can( 'manage_options' )
+				|| ( class_exists( 'Shuffles_SSJ_Org_Team' ) && Shuffles_SSJ_Org_Team::is_member( $id, $uid ) ) ) ) {
+				return; // hidden orgs stay visible to their own team and to site admins
+			}
+			self::block_404();
+		}
+	}
+
+	/** True if the current user is the given owner id or a site admin. */
+	private static function viewer_owns( $owner_id ) {
+		$uid = get_current_user_id();
+		return $uid && ( $uid === (int) $owner_id || current_user_can( 'manage_options' ) );
+	}
+
+	/** Turn the current request into a 404 without confirming the resource exists. */
+	private static function block_404() {
+		global $wp_query;
+		if ( $wp_query instanceof WP_Query ) {
+			$wp_query->set_404();
+		}
+		status_header( 404 );
+		nocache_headers();
+	}
+
+	/**
+	 * Exclude non-public worker profiles and hidden organisations from the core wp-sitemap.xml.
+	 * (sssj_need is registered non-public, so core already omits it.)
+	 *
+	 * @param array  $args      WP_Query args for the sitemap provider.
+	 * @param string $post_type Current post type.
+	 * @return array
+	 */
+	public function sitemap_query_args( $args, $post_type ) {
+		$mq = ( isset( $args['meta_query'] ) && is_array( $args['meta_query'] ) ) ? $args['meta_query'] : array();
+		if ( 'sssj_worker' === $post_type ) {
+			$mq[] = array( 'key' => 'visibility', 'value' => 'public', 'compare' => '=' );
+			$args['meta_query'] = $mq;
+		} elseif ( 'sssj_org' === $post_type ) {
+			$mq[] = array(
+				'relation' => 'OR',
+				array( 'key' => 'org_hidden', 'compare' => 'NOT EXISTS' ),
+				array( 'key' => 'org_hidden', 'value' => '1', 'compare' => '!=' ),
+			);
+			$args['meta_query'] = $mq;
+		}
+		return $args;
 	}
 
 	public function head() {
