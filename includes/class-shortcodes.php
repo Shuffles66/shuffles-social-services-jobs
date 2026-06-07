@@ -42,6 +42,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_action( 'wp_ajax_sssj_filter', array( $this, 'ajax_filter' ) );
 		add_action( 'wp_ajax_nopriv_sssj_filter', array( $this, 'ajax_filter' ) );
 		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
+		add_shortcode( 'sssj_resumes', array( $this, 'resumes_panel' ) );
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
@@ -156,6 +157,15 @@ class Shuffles_SSJ_Shortcodes {
 				'title'  => __( 'My credentials (verification)', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'A worker manages their checks here: add NDIS Worker Screening, WWCC, police check, First Aid, qualifications, insurance, with an evidence file. An admin reviews each one; only admin-approved credentials earn the ✓ Verified badge. Documents are stored privately and never shown publicly.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "My credentials" page (best near the worker profile / dashboard).', 'shuffles-social-services-jobs' ),
+				'access' => 'workers',
+				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_resumes',
+				'title'  => __( 'My résumés', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Candidates store one or more named résumé files (PDF / Word / RTF / ODT), set a default, and remove old ones. Files are private — served only to the owner, admins, and (when applying) the employer. Pick which résumé to send when applying for an employee (TFN) job.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "My résumés" page, or the “My résumés” tab in the member dashboard.', 'shuffles-social-services-jobs' ),
 				'access' => 'workers',
 				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
@@ -960,6 +970,7 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		if ( $want_matches ) { $tabs['matches'] = __( 'Matched jobs', 'shuffles-social-services-jobs' ); }
 		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
+		if ( $want_worker ) { $tabs['resumes'] = __( 'My résumés', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
 		$tabs['roles']    = __( 'My roles', 'shuffles-social-services-jobs' );
@@ -1023,6 +1034,9 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		if ( $want_creds ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="credentials">' . do_shortcode( '[sssj_credentials]' ) . '</section>';
+		}
+		if ( $want_worker ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="resumes">' . do_shortcode( '[sssj_resumes]' ) . '</section>';
 		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';
 		echo '<section class="sssj-dash__panel" data-dash-panel="messages">' . do_shortcode( '[sssj_messages]' ) . '</section>';
@@ -1380,6 +1394,14 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		ob_start();
 		$this->load_template( 'credentials-panel.php', array() );
+		return ob_get_clean();
+	}
+
+	public function resumes_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-spinner' );
+		ob_start();
+		$this->load_template( 'resumes-panel.php', array() );
 		return ob_get_clean();
 	}
 

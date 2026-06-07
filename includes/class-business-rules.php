@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.69.0 (2026-06-07)';
+		return 'v0.77.0 (2026-06-07)';
 	}
 
 	/**
@@ -106,6 +106,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'First contact runs through a safe internal relay — a worker never sees a participant’s email or phone.', 'shuffles-social-services-jobs' ),
 						__( 'Worker profiles honour their chosen visibility (public / logged-in / hidden) and never expose personal contact details publicly.', 'shuffles-social-services-jobs' ),
 						__( 'Owners can mask individual sensitive fields (worker pay rate; organisation phone & website) as “members only”. Logged-out visitors then see a “Log in to view” lock instead of the value; signed-in members, the owner and admins still see it, and the profile stays findable. Masking can never reveal register-sourced NDIS data, which stays read-only regardless.', 'shuffles-social-services-jobs' ),
+						__( 'Stored résumés are private: a candidate may keep several named résumé files on their profile, stored securely (bytes in the database) and streamed only through an authenticated link to the owner, an admin, or an employer they have applied to — never via a public URL.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(

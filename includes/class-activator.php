@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 5;
+	const DB_VERSION = 6;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -148,6 +148,21 @@ class Shuffles_SSJ_Activator {
   KEY expires (expires_date),
   KEY status (status),
   KEY verified (verified_at)
+) $charset_collate;";
+
+		// Résumés — a candidate's stored résumé files (bytes in DB; served only via auth handler).
+		$statements[] = "CREATE TABLE {$p}resume (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  label VARCHAR(160) NOT NULL DEFAULT '',
+  resume_data LONGTEXT NULL,
+  resume_mime VARCHAR(100) NULL,
+  original_name VARCHAR(255) NULL,
+  is_default TINYINT(1) NOT NULL DEFAULT 0,
+  created_at DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY  (id),
+  KEY user_default (user_id,is_default),
+  KEY created (created_at)
 ) $charset_collate;";
 
 		// CRM sync log — per-user history of FluentCRM tag/list attach/detach + missing-target events.

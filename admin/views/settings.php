@@ -923,6 +923,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.77.0 — 2026-06-07 · stored résumés (TFN application — phase 1)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Candidates can now store one or more named résumés against their profile (PDF / Word / RTF / ODT, up to 5), set a default, and remove old ones — via the new “My résumés” tab in the member dashboard, or the [sssj_resumes] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Résumés are private: stored securely and served only to the owner, admins, and (next phase) the employer you apply to. Same safe storage approach as credential files.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'This is phase 1 of the TFN employment application flow. Next: the apply form picks a stored résumé and adds availability / start date / right-to-work / employer screening questions, with a per-job application-handling mode.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.76.0 — 2026-06-07 · “Save & alert me” visible to logged-out visitors</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “🔔 Save & alert me” button on the boards is now visible to logged-out visitors too — so they can see the feature exists. It isn’t active for them: clicking it sends them to log in and returns to the exact same search, where they can then save it. Saving alerts still requires being logged in.', 'shuffles-social-services-jobs' ); ?></li>

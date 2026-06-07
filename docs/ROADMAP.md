@@ -61,6 +61,15 @@ Living backlog. Keep current as items ship or priorities change. (Companion to
 - **Phases:** A1 pipeline stages + notifications + withdraw → A2 basis‑aware apply forms → A3 per‑listing
   screening questions.
 
+#### TFN application — workshop decisions (2026-06-07, locked) + build phasing
+- **Apply fields:** standard set (availability, start date, right‑to‑work) **+ employer screening questions** per job.
+- **Stored résumés:** candidates keep **multiple named résumés**, pick one on apply (private; shared with the employer applied to).
+- **Pipeline depth = a per‑job choice the employer makes when creating the job** (Full pipeline w/ stages + notifications **vs** Simple), **changeable later**.
+- **Build phasing:**
+  - ✅ **Phase 1 (v0.77.0): stored résumés** — `Shuffles_SSJ_Resumes` (table `{prefix}sssj_resume`, DB_VERSION 6), `[sssj_resumes]` + dashboard "My résumés" tab, private DB‑stored files served via `sssj_resume_file` (owner/admin/applied‑employer). Multiple named, default, ≤5, PDF/DOC/DOCX/RTF/ODT ≤8 MB.
+  - ⏳ **Phase 2:** TFN apply form picks a résumé + availability/start‑date/right‑to‑work + **employer screening questions** (defined on the job form) + **per‑job application mode** (full/simple). Needs new application columns (resume_id, screening answers JSON) → DB_VERSION bump.
+  - ⏳ **Phase 3:** full pipeline — Hired/Declined + status history + withdraw + email notifications (surfaced in "full" mode).
+
 **Recommended build order:** B1 (foundation — defines the hats that drive everything) → A1 (pipeline) →
 A2/A3 (basis‑aware apply + screening) → B2/B3 (mode fields + legislation). Ships incrementally, one phase
 per version.

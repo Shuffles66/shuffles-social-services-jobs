@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.69.0 (2026-06-07)
+- **Last updated:** v0.77.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -113,6 +113,7 @@ Posting precedence is checked in order: `sssj_post_job` → `sssj_post_worker` �
 - Participant needs: **pseudonymous** (`P-XXXXXXX`), suburb-level location only, **logged-in only**, **always `noindex`**, **no public profile page**, and **pre-moderated** (`pending` until an admin approves).
 - First contact always runs through the **internal relay** (`Shuffles_SSJ_Messaging`) — a worker never sees a participant's email/phone; the participant is shown only as the pseudonym.
 - Worker profiles honour their `visibility` flag (`public` / `logged_in` / `hidden`) **in the query layer**, and never expose PII.
+- **Stored résumés (`Shuffles_SSJ_Resumes`, table `{prefix}sssj_resume`).** Candidates keep one or more named résumé files on their profile. Bytes are stored **in the database** (this host serves `/uploads` directly + ignores `.htaccess`) and streamed only via the authenticated `sssj_resume_file` handler to the owner, an admin, or an employer they applied to (`can_view()` + `shuffles_ssj_resume_can_view` filter, wired in the application phase). MIME validated server-side (PDF/DOC/DOCX/RTF/ODT, ≤8 MB, ≤5 files). Managed via `[sssj_resumes]` / dashboard "My résumés" tab.
 - **Per-field masking (`Shuffles_SSJ_Privacy`, meta `_sssj_mask`).** Beyond the whole-profile visibility flag, an owner can mark *individual* sensitive fields "members only": worker **pay rate**; organisation **phone** and **website** (maskable set defined in `Shuffles_SSJ_Privacy::maskable()`, extensible via the `shuffles_ssj_maskable_fields` filter). A masked field shows a "Log in to view" lock (`lock_html()`) to logged-out guests; `show($post_id,$key)` returns true for signed-in members, the owner (author / `user_id` / `org_user_id`) and admins. The profile itself stays findable — only the field's value is gated. Masking is **additive** and can never reveal register-sourced NDIS data, which is read-only regardless of these toggles.
 - Vendor-naming rule: never name the third-party AI/search vendor to members/public ("our AI"). Showing the NDIS Commission register or Google Business data is fine — that is the source's own public data, attributed.
 
