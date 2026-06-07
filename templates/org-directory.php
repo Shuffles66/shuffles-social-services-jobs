@@ -56,6 +56,16 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 					<?php foreach ( $o_cats as $ck => $cl ) { echo '<option value="' . esc_attr( $ck ) . '" ' . selected( $cur_orgcat, $ck, false ) . '>' . esc_html( $cl ) . '</option>'; } ?>
 				</select>
 				<?php endif; ?>
+				<?php $cur_size = isset( $_GET['sssj_size'] ) ? sanitize_key( wp_unslash( $_GET['sssj_size'] ) ) : ''; ?>
+				<select class="sssj-select" name="sssj_size">
+					<option value=""><?php esc_html_e( 'Any size', 'shuffles-social-services-jobs' ); ?></option>
+					<?php if ( class_exists( 'Shuffles_SSJ_Org' ) ) { foreach ( Shuffles_SSJ_Org::sizes() as $sk => $sl ) { echo '<option value="' . esc_attr( $sk ) . '" ' . selected( $cur_size, $sk, false ) . '>' . esc_html( $sl ) . '</option>'; } } ?>
+				</select>
+				<?php $cur_struct = isset( $_GET['sssj_structure'] ) ? sanitize_key( wp_unslash( $_GET['sssj_structure'] ) ) : ''; ?>
+				<select class="sssj-select" name="sssj_structure">
+					<option value=""><?php esc_html_e( 'Any structure', 'shuffles-social-services-jobs' ); ?></option>
+					<?php if ( class_exists( 'Shuffles_SSJ_Org' ) ) { foreach ( Shuffles_SSJ_Org::structures() as $sk => $sl ) { echo '<option value="' . esc_attr( $sk ) . '" ' . selected( $cur_struct, $sk, false ) . '>' . esc_html( $sl ) . '</option>'; } } ?>
+				</select>
 				<label class="sssj-chip <?php echo $cur_open ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_open" value="1" <?php checked( $cur_open ); ?> /> <span data-i18n="open_only"><?php esc_html_e( 'Only with open placements', 'shuffles-social-services-jobs' ); ?></span></label>
 			<?php Shuffles_SSJ_Field_Registry::render_banner_filters( 'org' ); Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>
@@ -89,6 +99,8 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 						<?php if ( Shuffles_SSJ_Org::is_sponsored( $oid ) ) : ?><span class="sssj-badge sssj-badge--featured" title="<?php esc_attr_e( 'Sponsored listing', 'shuffles-social-services-jobs' ); ?>">★ <?php esc_html_e( 'Sponsored', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<?php $o_cat = Shuffles_SSJ_Org::category_label( get_post_meta( $oid, 'org_category', true ) ); ?>
 						<?php if ( $o_cat ) : ?><span class="sssj-badge"><?php echo esc_html( $o_cat ); ?></span><?php endif; ?>
+						<?php $o_size = Shuffles_SSJ_Org::size_label( get_post_meta( $oid, 'org_size', true ) ); ?>
+						<?php if ( $o_size ) : ?><span class="sssj-badge sssj-badge--abn"><?php echo esc_html( $o_size ); ?></span><?php endif; ?>
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php echo Shuffles_SSJ_Org::ndis_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>

@@ -655,6 +655,8 @@ class Shuffles_SSJ_Frontend_Forms {
 			'org_user_id'       => $uid,
 			'org_hidden'        => empty( $_POST['org_hidden'] ) ? '' : '1',
 			'org_category'      => isset( $_POST['org_category'] ) ? sanitize_key( wp_unslash( $_POST['org_category'] ) ) : 'support',
+			'org_size'          => isset( $_POST['org_size'] ) ? sanitize_key( wp_unslash( $_POST['org_size'] ) ) : ( ( class_exists( 'Shuffles_SSJ_Roles' ) && Shuffles_SSJ_Roles::is_contractor( $uid ) ) ? 'sole_trader' : '' ),
+			'org_structure'     => isset( $_POST['org_structure'] ) ? sanitize_key( wp_unslash( $_POST['org_structure'] ) ) : '',
 			'travel_radius_km'  => isset( $_POST['travel_radius_km'] ) ? absint( $_POST['travel_radius_km'] ) : 0,
 			// One field now: "NDIS Registration No" (the ?id= value). Mirror it into the legacy
 			// ndis_provider_number key so older readers (e.g. the directory badge) keep working.

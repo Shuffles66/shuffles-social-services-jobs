@@ -74,10 +74,10 @@ class Shuffles_SSJ_Roles {
 			),
 			'contractor'     => array(
 				'label'   => __( 'Available for contracting (sole trader / ABN)', 'shuffles-social-services-jobs' ),
-				'desc'    => __( 'I work for myself under an ABN — sub-contracting / fee-for-service, including direct NDIS participant work.', 'shuffles-social-services-jobs' ),
+				'desc'    => __( 'I work for myself under an ABN — sub-contracting / fee-for-service, including direct NDIS participant work. You can also list yourself in the providers directory as a sole trader.', 'shuffles-social-services-jobs' ),
 				'group'   => 'seek',
-				'caps'    => array( 'sssj_post_worker' ),
-				'reveals' => array( 'profile', 'matches', 'credentials' ),
+				'caps'    => array( 'sssj_post_worker', 'sssj_post_org' ),
+				'reveals' => array( 'profile', 'matches', 'credentials', 'org' ),
 			),
 			'candidate'      => array(
 				'label'   => __( 'Looking for employee work (PAYG / TFN)', 'shuffles-social-services-jobs' ),

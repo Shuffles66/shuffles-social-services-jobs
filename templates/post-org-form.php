@@ -103,6 +103,21 @@ if ( $existing ) {
 						</select>
 						<p class="description"><?php esc_html_e( 'What kind of organisation — support provider, supplier/services, SDA/housing, real estate or professional services. Drives where you appear in the directory.', 'shuffles-social-services-jobs' ); ?></p>
 					</div>
+					<div class="sssj-field">
+						<label><?php esc_html_e( 'Organisation size', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" name="org_size">
+							<option value=""><?php esc_html_e( '— select —', 'shuffles-social-services-jobs' ); ?></option>
+							<?php $ex_size = $gm( 'org_size', '' ); foreach ( Shuffles_SSJ_Org::sizes() as $v => $l ) { echo '<option value="' . esc_attr( $v ) . '" ' . selected( $ex_size, $v, false ) . '>' . esc_html( $l ) . '</option>'; } ?>
+						</select>
+						<p class="description"><?php esc_html_e( 'Helps people filter sole traders vs larger providers.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+					<div class="sssj-field">
+						<label><?php esc_html_e( 'Legal structure', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" name="org_structure">
+							<option value=""><?php esc_html_e( '— select —', 'shuffles-social-services-jobs' ); ?></option>
+							<?php $ex_struct = $gm( 'org_structure', '' ); foreach ( Shuffles_SSJ_Org::structures() as $v => $l ) { echo '<option value="' . esc_attr( $v ) . '" ' . selected( $ex_struct, $v, false ) . '>' . esc_html( $l ) . '</option>'; } ?>
+						</select>
+					</div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="url" name="org_website" value="<?php echo esc_attr( $gm( 'org_website' ) ); ?>" placeholder="https://" />
 						<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-sssj-autofill data-loading="<?php esc_attr_e( 'Reading your site…', 'shuffles-social-services-jobs' ); ?>" data-empty="<?php esc_attr_e( 'Enter your website URL first (including https://).', 'shuffles-social-services-jobs' ); ?>" style="margin-top:6px">✨ <?php esc_html_e( 'Fetch details from my website', 'shuffles-social-services-jobs' ); ?></button>
 						<p class="description"><?php esc_html_e( 'Our AI reads your website and suggests a name, description and phone — review before saving. (It only fills empty fields.)', 'shuffles-social-services-jobs' ); ?></p>

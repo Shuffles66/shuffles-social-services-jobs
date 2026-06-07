@@ -106,6 +106,41 @@ C3 **Sole‑trader opt‑in in providers directory** → C4 **Per‑field maskin
 — interleaved with application‑process A1→A3 and legislation B2/B3 as you prioritise. (Syndication push/pull
 = later, see #7.)
 
+## Workstream D — Multi-user organisations (NEW 2026-06-07, to build)
+- Several **users belong to one organisation** (a team), not just a single `org_user_id` owner.
+- An **organisation admin** can **invite / manage / remove** other members of that org and set their role
+  within it (e.g. org‑admin vs member/recruiter).
+- Design sketch: an org↔users membership map (e.g. `_sssj_org_members` on the org, or a small table) with a
+  per‑member org‑role; the org‑admin gets a "Team" section in the dashboard (invite by email, change role,
+  remove); posting/editing the org + its jobs is allowed for any member per their org‑role; ownership
+  transfer supported. Keep the existing single‑owner path working (owner = first org‑admin).
+
+## Workstream E — Shareable marketing assets ("Create an asset" wizard) (NEW 2026-06-07)
+A wizard (layout + colour choices, reusing the design tokens / Style Studio) that turns a member's
+profile/listing into **readable graphic + text assets** to share/print. Build approach: HTML/CSS asset
+templates → **print‑to‑PDF via the browser** (no server PDF lib), a downloadable graphic, plus **copy‑paste
+text**. Per audience:
+- **Sole traders / workers:** a **résumé** (graphic + text) and a **service flyer**. **Always location +
+  services at the top.**
+- **Employers:** the same for a job listing — recruiting context/wording; flyer + shareable link +
+  copy‑paste blurb. Public listings already emit JobPosting/Org SEO.
+- **Participants:** a **shareable link + ready copy‑paste "how to respond/apply"** text. ⚠ **Privacy:**
+  participant needs are pseudonymous + `noindex` — so this is a **private/relay‑safe link**, NOT public SEO.
+  (Public "SEO info" applies to jobs / workers / orgs per their visibility, never to participant needs.)
+
+## Workstream F — Testimonials (NEW 2026-06-07)
+A testimonials section on most user pages (worker / sole trader / organisation). Owner‑curated + optional
+submitted testimonials, **moderated** before they show (never auto‑published, mirrors the credential/verify
+ethos). Decision pending: open submission (moderated) vs owner‑entered only vs both.
+
+## Workstream G — Site self-promotion: social graphics + posts (NEW 2026-06-07)
+Generate **self-promoting graphics + social posts for the platform itself** — **one positive at a time**
+(a drip: a single shareable graphic + caption per go, rotating through positives — e.g. a milestone/stat,
+a safety guardrail, a success/testimonial, a "providers near you" prompt). Build approach: brand-token
+HTML/CSS graphic templates + caption text → copy/download to post manually now; optional auto-post to
+social later (ties to the syndication/destinations idea, #7). Admin-driven; pulls from real data
+(counts/guardrails/testimonials) so claims stay true.
+
 ## Later / optional
 - shuffles‑growth AI bridge (the 4 filters); real‑time matching panels; FluentCart Pro product for live
   licensing/billing; full i18n native review; keyless Leaflet/OSM map tiles; richer AU suburb dataset.

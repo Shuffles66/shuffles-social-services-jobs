@@ -909,6 +909,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.61.0 — 2026-06-07 · onboarding wizard · provider size/structure · sole-trader listings</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'C1 — Get started: a new [sssj_onboard] guided wizard. New members tick the hats that apply, then get tailored next-step buttons (set up profile, create organisation/provider listing, post a job, request support, go to dashboard).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'C2 — Provider size & structure: organisations can record a size (Sole trader / Small / Medium / Large) and a legal structure (Sole trader / Partnership / Company / Not-for-profit / Government). Both are shown as badges and are new filters on the Organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'C3 — Sole traders in the providers directory: a member with the “Available for contracting (sole trader / ABN)” hat can also create a provider listing (defaulted to size = Sole trader) so they appear in the Organisations/Providers directory as well as the worker directory.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.60.0 — 2026-06-07 · “hats” onboarding + dashboard reveal (employer vs contractor, one account)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'My roles is now a clear “hat picker”: one account can tick the hats that apply — Employer / company, NDIS / service provider, Supplier, Available for contracting (sole trader / ABN), Looking for employee work (PAYG / TFN), Participant, or Participant representative / nominee — grouped under “I offer work”, “I’m looking for work”, “I need support”, each with a plain-English description.', 'shuffles-social-services-jobs' ); ?></li>

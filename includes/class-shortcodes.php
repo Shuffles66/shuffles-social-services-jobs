@@ -32,6 +32,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
 		add_shortcode( 'sssj_dashboard', array( $this, 'dashboard' ) );
 		add_shortcode( 'sssj_roles', array( $this, 'roles_panel' ) );
+		add_shortcode( 'sssj_onboard', array( $this, 'onboard' ) );
 		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
 		add_shortcode( 'sssj_swipe', array( $this, 'provider_swipe' ) );
@@ -202,6 +203,15 @@ class Shuffles_SSJ_Shortcodes {
 				'where'  => __( 'A "Create your organisation profile" page.', 'shuffles-social-services-jobs' ),
 				'access' => 'advertisers',
 				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_onboard',
+				'title'  => __( 'Get started (onboarding)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A guided first-run page: the member ticks the “hats” that apply (employer, provider, sole-trader contractor, employee, participant, …), then sees tailored next-step buttons (set up profile, create organisation/provider listing, post a job, request support, go to dashboard).', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Get started" page to send new members to after they register.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
 			),
 			array(
@@ -825,6 +835,66 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+	/** [sssj_onboard] — a guided first-run: pick your hats, then see tailored next steps. */
+	public function onboard( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to get started.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+		$uid     = get_current_user_id();
+		$current = Shuffles_SSJ_Roles::member_roles( $uid );
+		$saved   = isset( $_GET['sssj_roles'] ) && '1' === sanitize_key( wp_unslash( $_GET['sssj_roles'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$hats    = Shuffles_SSJ_Roles::hats();
+		$groups  = Shuffles_SSJ_Roles::hat_groups();
+
+		ob_start();
+		echo '<div class="sssj sssj--onboard"><div class="sssj-panel">';
+		echo '<h2 style="margin-top:0">' . esc_html__( 'Welcome — let’s set you up', 'shuffles-social-services-jobs' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Tell us how you’ll use the marketplace — tick everything that applies (one account can wear several hats). We’ll tailor your dashboard and show the right next steps. You can change this any time.', 'shuffles-social-services-jobs' ) . '</p>';
+		if ( $saved ) {
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Saved — your next steps are below.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-stack">';
+		echo '<input type="hidden" name="action" value="sssj_save_roles" />';
+		wp_nonce_field( 'sssj_save_roles', 'sssj_roles_nonce' );
+		foreach ( $groups as $gkey => $glabel ) {
+			echo '<h3 class="sssj-hats__group">' . esc_html( $glabel ) . '</h3><div class="sssj-hats">';
+			foreach ( $hats as $key => $h ) {
+				if ( $h['group'] !== $gkey ) { continue; }
+				$on = in_array( $key, $current, true );
+				echo '<label class="sssj-hat' . ( $on ? ' is-on' : '' ) . '"><input type="checkbox" name="sssj_roles[]" value="' . esc_attr( $key ) . '" ' . checked( $on, true, false ) . ' /><span class="sssj-hat__body"><span class="sssj-hat__label">' . esc_html( $h['label'] ) . '</span><span class="sssj-hat__desc">' . esc_html( $h['desc'] ) . '</span></span></label>';
+			}
+			echo '</div>';
+		}
+		echo '<div style="margin-top:14px"><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html( $current ? __( 'Update & see next steps', 'shuffles-social-services-jobs' ) : __( 'Continue', 'shuffles-social-services-jobs' ) ) . '</button></div>';
+		echo '</form>';
+
+		if ( $current ) {
+			$rev = Shuffles_SSJ_Roles::reveals_for( $uid );
+			echo '<hr /><h3>' . esc_html__( 'Your next steps', 'shuffles-social-services-jobs' ) . '</h3><div class="sssj-row" style="flex-wrap:wrap;gap:8px">';
+			if ( in_array( 'profile', $rev, true ) ) {
+				echo '<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) ) . '">' . esc_html__( 'Set up my profile', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+			if ( in_array( 'org', $rev, true ) ) {
+				echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html__( 'Create my organisation / provider listing', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+			if ( in_array( 'listings', $rev, true ) ) {
+				echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) ) . '">' . esc_html__( 'Post a job', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+			if ( in_array( 'needs', $rev, true ) ) {
+				echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+			$dash = $this->resolve_page( 'page_my_listings', '[sssj_dashboard]' );
+			if ( $dash ) {
+				echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $dash ) . '">' . esc_html__( 'Go to my dashboard', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+			echo '</div>';
+		}
+		echo '</div></div>';
+		return ob_get_clean();
+	}
+
 
 	/**
 	 * [sssj_dashboard] — a single, tabbed member hub that pulls the member-facing pieces together.
@@ -1014,6 +1084,12 @@ class Shuffles_SSJ_Shortcodes {
 		$extra_clauses = array();
 		if ( ! empty( $_GET['sssj_orgcat'] ) ) {
 			$extra_clauses[] = array( 'key' => 'org_category', 'value' => sanitize_key( wp_unslash( $_GET['sssj_orgcat'] ) ) );
+		}
+		if ( ! empty( $_GET['sssj_size'] ) ) {
+			$extra_clauses[] = array( 'key' => 'org_size', 'value' => sanitize_key( wp_unslash( $_GET['sssj_size'] ) ) );
+		}
+		if ( ! empty( $_GET['sssj_structure'] ) ) {
+			$extra_clauses[] = array( 'key' => 'org_structure', 'value' => sanitize_key( wp_unslash( $_GET['sssj_structure'] ) ) );
 		}
 		// Providers pay to be listed — when monetisation is on, only org_listed orgs appear.
 		if ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::enabled() ) {

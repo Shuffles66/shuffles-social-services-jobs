@@ -148,6 +148,37 @@ class Shuffles_SSJ_Org {
 		return isset( $c[ (string) $key ] ) ? $c[ (string) $key ] : '';
 	}
 
+	/** Organisation size bands → label (for filtering: sole traders vs larger providers). */
+	public static function sizes() {
+		return array(
+			'sole_trader' => __( 'Sole trader', 'shuffles-social-services-jobs' ),
+			'small'       => __( 'Small (2–10)', 'shuffles-social-services-jobs' ),
+			'medium'      => __( 'Medium (11–50)', 'shuffles-social-services-jobs' ),
+			'large'       => __( 'Large (50+)', 'shuffles-social-services-jobs' ),
+		);
+	}
+
+	public static function size_label( $key ) {
+		$s = self::sizes();
+		return isset( $s[ (string) $key ] ) ? $s[ (string) $key ] : '';
+	}
+
+	/** Organisation legal structure → label. */
+	public static function structures() {
+		return array(
+			'sole_trader' => __( 'Sole trader', 'shuffles-social-services-jobs' ),
+			'partnership' => __( 'Partnership', 'shuffles-social-services-jobs' ),
+			'company'     => __( 'Company', 'shuffles-social-services-jobs' ),
+			'nfp'         => __( 'Not-for-profit', 'shuffles-social-services-jobs' ),
+			'government'  => __( 'Government', 'shuffles-social-services-jobs' ),
+		);
+	}
+
+	public static function structure_label( $key ) {
+		$s = self::structures();
+		return isset( $s[ (string) $key ] ) ? $s[ (string) $key ] : '';
+	}
+
 	/** Is this org flagged as a sponsor (admin-granted placement)? */
 	public static function is_sponsored( $org_id ) {
 		return '1' === (string) get_post_meta( (int) $org_id, 'org_sponsored', true );

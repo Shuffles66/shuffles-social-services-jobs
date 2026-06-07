@@ -31,6 +31,10 @@ $extra   = is_array( $extra ) ? $extra : array();
 			<?php if ( Shuffles_SSJ_Org::is_sponsored( $org_id ) ) : ?><span class="sssj-badge sssj-badge--featured" title="<?php esc_attr_e( 'Sponsored listing', 'shuffles-social-services-jobs' ); ?>">★ <?php esc_html_e( 'Sponsored', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 			<?php $o_cat = Shuffles_SSJ_Org::category_label( get_post_meta( $org_id, 'org_category', true ) ); ?>
 			<?php if ( $o_cat ) : ?><span class="sssj-badge"><?php echo esc_html( $o_cat ); ?></span><?php endif; ?>
+			<?php $o_size = Shuffles_SSJ_Org::size_label( get_post_meta( $org_id, 'org_size', true ) ); ?>
+			<?php if ( $o_size ) : ?><span class="sssj-badge sssj-badge--abn"><?php echo esc_html( $o_size ); ?></span><?php endif; ?>
+			<?php $o_struct = Shuffles_SSJ_Org::structure_label( get_post_meta( $org_id, 'org_structure', true ) ); ?>
+			<?php if ( $o_struct ) : ?><span class="sssj-badge"><?php echo esc_html( $o_struct ); ?></span><?php endif; ?>
 			<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 			<?php echo Shuffles_SSJ_ABN::abr_badge_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php echo Shuffles_SSJ_Org::ndis_badge_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
