@@ -25,12 +25,15 @@ $action   = admin_url( 'admin-post.php' );
 // Notice from a just-completed action.
 $notice = isset( $_GET['sssj_team'] ) ? sanitize_key( wp_unslash( $_GET['sssj_team'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $notices = array(
-	'added'   => __( 'Team member added.', 'shuffles-social-services-jobs' ),
-	'updated' => __( 'Role updated.', 'shuffles-social-services-jobs' ),
-	'removed' => __( 'Team member removed.', 'shuffles-social-services-jobs' ),
-	'nouser'  => __( 'No account was found for that email or username. Ask them to sign up first, then add them.', 'shuffles-social-services-jobs' ),
-	'err'     => __( 'That change could not be applied.', 'shuffles-social-services-jobs' ),
+	'added'    => __( 'Team member added.', 'shuffles-social-services-jobs' ),
+	'updated'  => __( 'Role updated.', 'shuffles-social-services-jobs' ),
+	'removed'  => __( 'Team member removed.', 'shuffles-social-services-jobs' ),
+	'approved' => __( 'Request approved — they’re now on the team.', 'shuffles-social-services-jobs' ),
+	'declined' => __( 'Request declined.', 'shuffles-social-services-jobs' ),
+	'nouser'   => __( 'No account was found for that email or username. Ask them to sign up first, then add them.', 'shuffles-social-services-jobs' ),
+	'err'      => __( 'That change could not be applied.', 'shuffles-social-services-jobs' ),
 );
+$requests = $is_admin ? Shuffles_SSJ_Org_Team::join_requests( $org_id ) : array();
 ?>
 <div class="sssj sssj--team">
 	<div class="sssj-panel">
@@ -103,6 +106,45 @@ $notices = array(
 				<?php endforeach; ?>
 			</tbody>
 		</table>
+
+		<?php if ( $is_admin && $requests ) : ?>
+			<h4><?php echo esc_html( sprintf( __( 'Requests to join (%d)', 'shuffles-social-services-jobs' ), count( $requests ) ) ); ?></h4>
+			<table class="sssj-team-table">
+				<tbody>
+					<?php foreach ( $requests as $rq ) : ?>
+						<tr>
+							<td>
+								<strong><?php echo esc_html( $rq['name'] ); ?></strong><br />
+								<span class="description"><?php echo esc_html( $rq['email'] ); ?></span>
+								<?php if ( ! empty( $rq['msg'] ) ) : ?><br /><span class="description">“<?php echo esc_html( $rq['msg'] ); ?>”</span><?php endif; ?>
+							</td>
+							<td style="white-space:nowrap">
+								<form method="post" action="<?php echo esc_url( $action ); ?>" class="sssj-inline-form">
+									<?php wp_nonce_field( 'sssj_org_team', 'sssj_team_nonce' ); ?>
+									<input type="hidden" name="action" value="sssj_org_team" />
+									<input type="hidden" name="op" value="approve" />
+									<input type="hidden" name="org_id" value="<?php echo esc_attr( $org_id ); ?>" />
+									<input type="hidden" name="user_id" value="<?php echo esc_attr( $rq['user_id'] ); ?>" />
+									<select class="sssj-select sssj-select--sm" name="role">
+										<option value="member"><?php esc_html_e( 'as Member', 'shuffles-social-services-jobs' ); ?></option>
+										<option value="admin"><?php esc_html_e( 'as Admin', 'shuffles-social-services-jobs' ); ?></option>
+									</select>
+									<button type="submit" class="sssj-btn sssj-btn--primary sssj-btn--sm"><?php esc_html_e( 'Approve', 'shuffles-social-services-jobs' ); ?></button>
+								</form>
+								<form method="post" action="<?php echo esc_url( $action ); ?>" class="sssj-inline-form" onsubmit="return confirm('<?php echo esc_js( __( 'Decline this request?', 'shuffles-social-services-jobs' ) ); ?>');">
+									<?php wp_nonce_field( 'sssj_org_team', 'sssj_team_nonce' ); ?>
+									<input type="hidden" name="action" value="sssj_org_team" />
+									<input type="hidden" name="op" value="decline" />
+									<input type="hidden" name="org_id" value="<?php echo esc_attr( $org_id ); ?>" />
+									<input type="hidden" name="user_id" value="<?php echo esc_attr( $rq['user_id'] ); ?>" />
+									<button type="submit" class="sssj-btn sssj-btn--ghost sssj-btn--sm"><?php esc_html_e( 'Decline', 'shuffles-social-services-jobs' ); ?></button>
+								</form>
+							</td>
+						</tr>
+					<?php endforeach; ?>
+				</tbody>
+			</table>
+		<?php endif; ?>
 
 		<?php if ( $is_admin ) : ?>
 			<h4><?php esc_html_e( 'Add a team member', 'shuffles-social-services-jobs' ); ?></h4>

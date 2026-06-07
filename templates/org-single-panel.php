@@ -52,6 +52,49 @@ $extra   = is_array( $extra ) ? $extra : array();
 			<?php endif; ?>
 		</div>
 		<?php echo Shuffles_SSJ_Org::social_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+
+		<?php
+		// Request to join this organisation (member-initiated; an org admin approves).
+		if ( class_exists( 'Shuffles_SSJ_Org_Team' ) ) :
+			$j_uid    = get_current_user_id();
+			$j_action = admin_url( 'admin-post.php' );
+			$j_note   = isset( $_GET['sssj_join'] ) ? sanitize_key( wp_unslash( $_GET['sssj_join'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( 'requested' === $j_note ) {
+				echo '<div class="sssj-note sssj-note--ok">' . esc_html__( 'Your request to join has been sent. The organisation’s admin will review it.', 'shuffles-social-services-jobs' ) . '</div>';
+			} elseif ( 'cancelled' === $j_note ) {
+				echo '<div class="sssj-note">' . esc_html__( 'Your join request was cancelled.', 'shuffles-social-services-jobs' ) . '</div>';
+			} elseif ( 'err' === $j_note ) {
+				echo '<div class="sssj-note sssj-note--warn">' . esc_html__( 'That request could not be completed.', 'shuffles-social-services-jobs' ) . '</div>';
+			}
+			if ( ! $j_uid ) {
+				echo '<p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink( $org_id ) ) ) . '">' . esc_html__( 'Log in to request to join', 'shuffles-social-services-jobs' ) . '</a></p>';
+			} elseif ( Shuffles_SSJ_Org_Team::is_member( $org_id, $j_uid ) ) {
+				echo '<p class="sssj-badge sssj-badge--verified">✓ ' . esc_html__( 'You’re part of this organisation', 'shuffles-social-services-jobs' ) . '</p>';
+			} elseif ( Shuffles_SSJ_Org_Team::has_request( $org_id, $j_uid ) ) {
+				?>
+				<form method="post" action="<?php echo esc_url( $j_action ); ?>" class="sssj-row" style="align-items:center;gap:8px;margin:8px 0">
+					<?php wp_nonce_field( 'sssj_org_join', 'sssj_join_nonce' ); ?>
+					<input type="hidden" name="action" value="sssj_org_join" />
+					<input type="hidden" name="op" value="cancel" />
+					<input type="hidden" name="org_id" value="<?php echo esc_attr( $org_id ); ?>" />
+					<span class="sssj-badge">⏳ <?php esc_html_e( 'Request to join pending', 'shuffles-social-services-jobs' ); ?></span>
+					<button type="submit" class="sssj-btn sssj-btn--ghost sssj-btn--sm"><?php esc_html_e( 'Cancel request', 'shuffles-social-services-jobs' ); ?></button>
+				</form>
+				<?php
+			} else {
+				?>
+				<form method="post" action="<?php echo esc_url( $j_action ); ?>" class="sssj-stack" style="margin:8px 0;gap:6px">
+					<?php wp_nonce_field( 'sssj_org_join', 'sssj_join_nonce' ); ?>
+					<input type="hidden" name="action" value="sssj_org_join" />
+					<input type="hidden" name="op" value="request" />
+					<input type="hidden" name="org_id" value="<?php echo esc_attr( $org_id ); ?>" />
+					<input class="sssj-input" type="text" name="msg" maxlength="300" placeholder="<?php esc_attr_e( 'Optional message to the admin…', 'shuffles-social-services-jobs' ); ?>" />
+					<div><button type="submit" class="sssj-btn sssj-btn--secondary sssj-btn--sm"><?php esc_html_e( 'Request to join this organisation', 'shuffles-social-services-jobs' ); ?></button></div>
+				</form>
+				<?php
+			}
+		endif;
+		?>
 		<?php if ( class_exists( 'Shuffles_SSJ_NDIS_Register' ) ) { echo Shuffles_SSJ_NDIS_Register::status_table_html( $org_id ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
 		<?php if ( class_exists( 'Shuffles_SSJ_ABN' ) ) { echo Shuffles_SSJ_ABN::abr_details_html( $org_id ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
 		<?php $org_travel = (int) get_post_meta( $org_id, 'travel_radius_km', true ); if ( $org_travel > 0 ) : ?>

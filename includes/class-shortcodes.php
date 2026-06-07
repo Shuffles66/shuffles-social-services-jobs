@@ -953,7 +953,11 @@ class Shuffles_SSJ_Shortcodes {
 		$tabs = array( 'overview' => __( 'Overview', 'shuffles-social-services-jobs' ) );
 		if ( $want_worker ) { $tabs['profile'] = __( 'My profile', 'shuffles-social-services-jobs' ); }
 		if ( $want_listings ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
-		if ( $want_team ) { $tabs['team'] = __( 'Team', 'shuffles-social-services-jobs' ); }
+		if ( $want_team ) {
+			$team_reqs = 0;
+			foreach ( $admin_orgs as $aoid ) { $team_reqs += (int) Shuffles_SSJ_Org_Team::request_count( $aoid ); }
+			$tabs['team'] = $team_reqs ? sprintf( __( 'Team (%d)', 'shuffles-social-services-jobs' ), $team_reqs ) : __( 'Team', 'shuffles-social-services-jobs' );
+		}
 		if ( $want_matches ) { $tabs['matches'] = __( 'Matched jobs', 'shuffles-social-services-jobs' ); }
 		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );

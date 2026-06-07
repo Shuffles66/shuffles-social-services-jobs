@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.68.0 (2026-06-07)
+- **Last updated:** v0.69.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -153,6 +153,7 @@ Last-run/next-run/status are recorded by `Shuffles_SSJ_Cron_Monitor` and shown o
 - `Shuffles_SSJ_Org_Team`. An organisation (`sssj_org`) has **one owner** (its creator, `org_user_id`) plus any number of team members in `_sssj_org_members` (`[ user_id => 'admin'|'member' ]`). The owner is an implicit admin.
 - **Org admins** (owner, `admin` members, or site admins) can **add** an existing member, **change a role**, or **remove** a member — via `[sssj_org_team]` and the dashboard **Team** tab (`admin_post_sssj_org_team`, nonce `sssj_org_team`, gated by `Org_Team::is_admin($org_id, $uid)`).
 - **Hard limits:** the owner can never be removed or demoted. Adding a member **never creates an account** (`find_user()` only links an existing email/username; missing → "ask them to sign up first"). Removing a member only **unlinks** them — their WP account and site-wide roles are untouched.
+- **Request to join (member-initiated, v0.69).** A logged-in member can **"Request to join"** an org from its profile (`[sssj_org_join]` op `request`, optional message → `_sssj_org_join_requests` meta). It stays **pending** until an org admin **Approves** (`approve_request` → `add_member`) or **Declines** (`decline_request`) it in the Team manager — no one joins without admin approval. The member can **cancel** their pending request; org admins are emailed on a new request (`shuffles_ssj_send_join_request_email` filter to suppress). The dashboard **Team** tab shows a pending-count badge.
 - Adding a member additively grants `sssj_post_job` so they can act for the org (never revoked here). `orgs_administered_by()` / `orgs_for_user()` resolve a user's orgs (membership matched via the serialized `i:<uid>;` needle).
 
 ---

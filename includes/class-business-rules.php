@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.68.0 (2026-06-07)';
+		return 'v0.69.0 (2026-06-07)';
 	}
 
 	/**
@@ -70,6 +70,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'Categories: support provider, supplier/services to the sector, SDA/housing, real estate, professional services, or other — shown as a badge and a directory filter.', 'shuffles-social-services-jobs' ),
 						__( 'A “Sponsored” organisation sorts to the top of the directory and shows a ★ badge. Only an administrator can grant it — members cannot self-promote.', 'shuffles-social-services-jobs' ),
 						__( 'Teams: an organisation has one owner (its creator) plus any number of team members, each a “member” or an “admin”. An org admin can add an existing person (by email/username), change a member’s role, or remove someone — the owner can never be removed or demoted. Adding a member never creates an account, and removing one only unlinks them (their account is untouched).', 'shuffles-social-services-jobs' ),
+						__( 'Joining: a logged-in member can “Request to join” an organisation from its profile (optional message). The request stays pending until an org admin Approves it (which adds them to the team) or Declines it — no one joins without admin approval. The member can cancel a pending request; admins are emailed about new requests.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(

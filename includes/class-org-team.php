@@ -21,8 +21,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Shuffles_SSJ_Org_Team {
 
-	const OWNER_META   = 'org_user_id';
-	const MEMBERS_META = '_sssj_org_members';
+	const OWNER_META    = 'org_user_id';
+	const MEMBERS_META  = '_sssj_org_members';
+	const REQUESTS_META = '_sssj_org_join_requests';
 
 	/** The owner (creator) user id of an org. */
 	public static function owner_id( $org_id ) {
@@ -178,7 +179,82 @@ class Shuffles_SSJ_Org_Team {
 		if ( $u && ! $u->has_cap( 'sssj_post_job' ) ) {
 			$u->add_cap( 'sssj_post_job' );
 		}
+		self::cancel_request( $org_id, $user_id ); // clear any pending join request
 		return true;
+	}
+
+	/* ----------------------------------------------------- Join requests (member-initiated) */
+
+	/** Raw pending requests: [ user_id => [ 'at' => mysql, 'msg' => '' ] ]. */
+	public static function requests_raw( $org_id ) {
+		$r = get_post_meta( (int) $org_id, self::REQUESTS_META, true );
+		return is_array( $r ) ? $r : array();
+	}
+
+	public static function has_request( $org_id, $user_id ) {
+		return array_key_exists( (int) $user_id, self::requests_raw( $org_id ) );
+	}
+
+	public static function request_count( $org_id ) {
+		return count( self::requests_raw( $org_id ) );
+	}
+
+	/** Normalised pending requests with user details (skips deleted users). */
+	public static function join_requests( $org_id ) {
+		$rows = array();
+		foreach ( self::requests_raw( $org_id ) as $uid => $meta ) {
+			$u = get_user_by( 'id', (int) $uid );
+			if ( ! $u ) {
+				continue;
+			}
+			$rows[] = array(
+				'user_id' => (int) $uid,
+				'name'    => $u->display_name ? $u->display_name : $u->user_login,
+				'email'   => $u->user_email,
+				'at'      => is_array( $meta ) && isset( $meta['at'] ) ? (string) $meta['at'] : '',
+				'msg'     => is_array( $meta ) && isset( $meta['msg'] ) ? (string) $meta['msg'] : '',
+			);
+		}
+		return $rows;
+	}
+
+	/**
+	 * Record a member's request to join an org. Never for an existing member/owner.
+	 *
+	 * @return true|WP_Error
+	 */
+	public static function add_request( $org_id, $user_id, $msg = '' ) {
+		$org_id  = (int) $org_id;
+		$user_id = (int) $user_id;
+		if ( ! get_user_by( 'id', $user_id ) ) {
+			return new WP_Error( 'no_user', __( 'Please log in first.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( self::is_member( $org_id, $user_id ) ) {
+			return new WP_Error( 'already', __( 'You are already part of this organisation.', 'shuffles-social-services-jobs' ) );
+		}
+		$r              = self::requests_raw( $org_id );
+		$r[ $user_id ]  = array( 'at' => current_time( 'mysql' ), 'msg' => sanitize_textarea_field( (string) $msg ) );
+		update_post_meta( $org_id, self::REQUESTS_META, $r );
+		return true;
+	}
+
+	public static function cancel_request( $org_id, $user_id ) {
+		$r = self::requests_raw( $org_id );
+		if ( isset( $r[ (int) $user_id ] ) ) {
+			unset( $r[ (int) $user_id ] );
+			update_post_meta( (int) $org_id, self::REQUESTS_META, $r );
+		}
+		return true;
+	}
+
+	/** Approve a request → add as a member (default 'member') and clear the request. */
+	public static function approve_request( $org_id, $user_id, $role = 'member' ) {
+		$res = self::add_member( $org_id, $user_id, $role ); // add_member also clears the request
+		return $res;
+	}
+
+	public static function decline_request( $org_id, $user_id ) {
+		return self::cancel_request( $org_id, $user_id );
 	}
 
 	/** Look up an existing user by email or login. Returns user id or 0. */

@@ -28,6 +28,75 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_sssj_save_roles', array( $this, 'handle_save_roles' ) );
 		add_action( 'admin_post_sssj_org_team', array( $this, 'handle_org_team' ) );
 		add_action( 'admin_post_nopriv_sssj_org_team', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_org_join', array( $this, 'handle_org_join' ) );
+		add_action( 'admin_post_nopriv_sssj_org_join', array( $this, 'deny' ) );
+	}
+
+	/**
+	 * Member-initiated request to join an organisation (admin approves later). Any logged-in member
+	 * may request; the org chooses whether to accept. Never creates a membership directly.
+	 */
+	public function handle_org_join() {
+		$nonce = isset( $_POST['sssj_join_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_join_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_org_join' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$org_id   = isset( $_POST['org_id'] ) ? (int) $_POST['org_id'] : 0;
+		$op       = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		if ( ! $org_id || 'sssj_org' !== get_post_type( $org_id ) ) {
+			wp_die( esc_html__( 'That organisation could not be found.', 'shuffles-social-services-jobs' ) );
+		}
+		$uid    = get_current_user_id();
+		$notice = 'ok';
+		if ( 'request' === $op ) {
+			$msg = isset( $_POST['msg'] ) ? wp_unslash( $_POST['msg'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+			$res = Shuffles_SSJ_Org_Team::add_request( $org_id, $uid, $msg );
+			if ( is_wp_error( $res ) ) {
+				$notice = 'err';
+			} else {
+				$notice = 'requested';
+				$this->notify_join_request( $org_id, $uid );
+			}
+		} elseif ( 'cancel' === $op ) {
+			Shuffles_SSJ_Org_Team::cancel_request( $org_id, $uid );
+			$notice = 'cancelled';
+		}
+		wp_safe_redirect( add_query_arg( 'sssj_join', $notice, remove_query_arg( 'sssj_join', $redirect ) ) );
+		exit;
+	}
+
+	/** Best-effort email to the org's admins that someone asked to join (suppress via filter). */
+	private function notify_join_request( $org_id, $applicant_id ) {
+		if ( ! apply_filters( 'shuffles_ssj_send_join_request_email', true, $org_id, $applicant_id ) ) {
+			return;
+		}
+		$applicant = get_user_by( 'id', (int) $applicant_id );
+		if ( ! $applicant ) {
+			return;
+		}
+		$admins = array();
+		foreach ( Shuffles_SSJ_Org_Team::roster( $org_id ) as $row ) {
+			if ( in_array( $row['role'], array( 'owner', 'admin' ), true ) && ! empty( $row['email'] ) ) {
+				$admins[] = $row['email'];
+			}
+		}
+		$admins = array_values( array_unique( array_filter( $admins ) ) );
+		if ( ! $admins ) {
+			return;
+		}
+		$org_name = get_the_title( $org_id );
+		$subject  = sprintf( __( 'New request to join %s', 'shuffles-social-services-jobs' ), $org_name );
+		$body     = sprintf(
+			/* translators: 1: applicant name, 2: org name */
+			__( "%1\$s has asked to join %2\$s.\n\nReview and approve or decline this request from the Team tab on your dashboard.", 'shuffles-social-services-jobs' ),
+			$applicant->display_name ? $applicant->display_name : $applicant->user_login,
+			$org_name
+		);
+		wp_mail( $admins, $subject, $body );
 	}
 
 	/**
@@ -70,6 +139,15 @@ class Shuffles_SSJ_Frontend_Forms {
 			$uid    = isset( $_POST['user_id'] ) ? (int) $_POST['user_id'] : 0;
 			$res    = Shuffles_SSJ_Org_Team::remove_member( $org_id, $uid );
 			$notice = is_wp_error( $res ) ? 'err' : 'removed';
+		} elseif ( 'approve' === $op ) {
+			$uid    = isset( $_POST['user_id'] ) ? (int) $_POST['user_id'] : 0;
+			$role   = ( isset( $_POST['role'] ) && 'admin' === $_POST['role'] ) ? 'admin' : 'member';
+			$res    = Shuffles_SSJ_Org_Team::approve_request( $org_id, $uid, $role );
+			$notice = is_wp_error( $res ) ? 'err' : 'approved';
+		} elseif ( 'decline' === $op ) {
+			$uid    = isset( $_POST['user_id'] ) ? (int) $_POST['user_id'] : 0;
+			Shuffles_SSJ_Org_Team::decline_request( $org_id, $uid );
+			$notice = 'declined';
 		}
 
 		wp_safe_redirect( add_query_arg( 'sssj_team', $notice, remove_query_arg( 'sssj_team', $redirect ) ) );

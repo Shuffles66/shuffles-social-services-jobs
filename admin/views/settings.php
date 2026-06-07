@@ -913,6 +913,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.69.0 — 2026-06-07 · request to join an organisation (admin approves)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Members can now ask to join an organisation. On any organisation’s profile, a logged-in member sees a “Request to join this organisation” button (with an optional message). They can cancel a pending request.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Org admins review requests in My dashboard → Team: a “Requests to join” list with Approve (as Member or Admin) and Decline. Approving adds them to the team; no one joins without admin approval. The Team tab shows a count of pending requests.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Org admins are emailed when a new request comes in (can be turned off with the shuffles_ssj_send_join_request_email filter).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.68.0 — 2026-06-07 · full ABR record (trading names) · menu repoint · best-practice guide</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'ABN / ABR: when an ABN is saved (and an ABR GUID is set in Settings → Compliance), the FULL Australian Business Register response is now recorded — entity name, trading / business names, ABN status & date, entity type, ACN, GST registration and main business location — in one read-only “recorded details” field on the worker and organisation forms, and shown on the organisation’s public profile. (The ABR key field and the on-save check already existed in Settings → Compliance.)', 'shuffles-social-services-jobs' ); ?></li>
