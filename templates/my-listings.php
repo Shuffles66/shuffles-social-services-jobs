@@ -16,17 +16,20 @@ if ( ! is_user_logged_in() ) {
 	return;
 }
 
-$uid    = get_current_user_id();
-$nonce  = wp_create_nonce( 'sssj_app_status' );
-$action = esc_url( admin_url( 'admin-post.php' ) );
+$uid       = get_current_user_id();
+$nonce     = wp_create_nonce( 'sssj_app_status' );
+$wd_nonce  = wp_create_nonce( 'sssj_app_withdraw' );
+$action    = esc_url( admin_url( 'admin-post.php' ) );
 
 $badge = function ( $status ) {
-	$cls = in_array( $status, array( 'offer', 'shortlisted', 'interview' ), true ) ? ' sssj-badge--verified' : '';
-	return '<span class="sssj-badge' . $cls . '">' . esc_html( ucfirst( $status ) ) . '</span>';
+	$cls = in_array( $status, array( 'offer', 'shortlisted', 'interview', 'hired' ), true ) ? ' sssj-badge--verified' : '';
+	return '<span class="sssj-badge' . $cls . '">' . esc_html( Shuffles_SSJ_Applications::status_label( $status ) ) . '</span>';
 };
 
 /** Render the applicant rows + status control for an entity owned by the current user. */
 $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
+	// Per-job application-handling mode (jobs only): full pipeline vs simple.
+	$mode = ( 'job' === $type ) ? ( get_post_meta( $entity_id, 'application_mode', true ) ? get_post_meta( $entity_id, 'application_mode', true ) : 'full' ) : 'full';
 	$apps = Shuffles_SSJ_Applications::for_entity( $type, $entity_id );
 	if ( empty( $apps ) ) {
 		echo '<p class="description">' . esc_html__( 'No applications yet.', 'shuffles-social-services-jobs' ) . '</p>';
@@ -66,11 +69,28 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 		echo '<input type="hidden" name="app_id" value="' . esc_attr( $a->id ) . '" />';
 		echo '<input type="hidden" name="sssj_status_nonce" value="' . esc_attr( $nonce ) . '" />';
 		echo '<select class="sssj-select" name="status">';
-		foreach ( Shuffles_SSJ_Applications::statuses() as $s ) {
-			echo '<option value="' . esc_attr( $s ) . '" ' . selected( (string) $a->status, $s, false ) . '>' . esc_html( ucfirst( $s ) ) . '</option>';
+		$status_opts = Shuffles_SSJ_Applications::statuses_for_mode( $mode );
+		// Always keep the current status visible even if it's outside the mode's offered set.
+		if ( ! in_array( (string) $a->status, $status_opts, true ) ) {
+			array_unshift( $status_opts, (string) $a->status );
+		}
+		foreach ( $status_opts as $s ) {
+			echo '<option value="' . esc_attr( $s ) . '" ' . selected( (string) $a->status, $s, false ) . '>' . esc_html( Shuffles_SSJ_Applications::status_label( $s ) ) . '</option>';
 		}
 		echo '</select> <button class="sssj-btn sssj-btn--secondary sssj-btn--sm" type="submit">' . esc_html__( 'Update', 'shuffles-social-services-jobs' ) . '</button>';
 		echo '</form>';
+		// Status history (full pipeline mode only).
+		if ( 'full' === $mode ) {
+			$hist = Shuffles_SSJ_Applications::history( $a );
+			if ( $hist ) {
+				echo '<details class="sssj-apphist"><summary>' . esc_html__( 'Status history', 'shuffles-social-services-jobs' ) . '</summary><ul class="ul-disc" style="margin:6px 0 0 18px">';
+				foreach ( $hist as $h ) {
+					$when = isset( $h['at'] ) ? (string) $h['at'] : '';
+					echo '<li>' . esc_html( Shuffles_SSJ_Applications::status_label( isset( $h['s'] ) ? $h['s'] : '' ) . ( $when ? ' — ' . $when : '' ) ) . '</li>';
+				}
+				echo '</ul></details>';
+			}
+		}
 		echo '</div>';
 	}
 };
@@ -87,8 +107,18 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 			foreach ( $mine as $a ) {
 				$eid   = $a->job_id ? (int) $a->job_id : (int) $a->need_id;
 				$title = get_the_title( $eid );
-				echo '<div class="sssj-row" style="justify-content:space-between;border-bottom:1px solid #e2e8f0;padding:6px 0">';
-				echo '<span>' . esc_html( $title ? $title : '#' . $eid ) . '</span> ' . $badge( (string) $a->status ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<div class="sssj-row" style="justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding:6px 0">';
+				echo '<span><a href="' . esc_url( (string) get_permalink( $eid ) ) . '">' . esc_html( $title ? $title : '#' . $eid ) . '</a></span>';
+				echo '<span class="sssj-row" style="gap:8px;align-items:center">' . $badge( (string) $a->status ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				if ( ! in_array( (string) $a->status, array( 'withdrawn', 'hired', 'declined', 'rejected' ), true ) ) {
+					echo '<form method="post" action="' . $action . '" onsubmit="return confirm(\'' . esc_js( __( 'Withdraw this application?', 'shuffles-social-services-jobs' ) ) . '\');" style="margin:0">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					echo '<input type="hidden" name="action" value="sssj_app_withdraw" />';
+					echo '<input type="hidden" name="app_id" value="' . esc_attr( $a->id ) . '" />';
+					echo '<input type="hidden" name="sssj_withdraw_nonce" value="' . esc_attr( $wd_nonce ) . '" />';
+					echo '<button type="submit" class="sssj-btn sssj-btn--ghost sssj-btn--sm">' . esc_html__( 'Withdraw', 'shuffles-social-services-jobs' ) . '</button>';
+					echo '</form>';
+				}
+				echo '</span>';
 				echo '</div>';
 			}
 		}

@@ -190,13 +190,44 @@ class Shuffles_SSJ_Applications {
 		return array();
 	}
 
-	/** Allowed application statuses. */
+	/** Allowed application statuses (full pipeline). */
 	public static function statuses() {
-		return array( 'new', 'viewed', 'shortlisted', 'interview', 'offer', 'rejected', 'withdrawn' );
+		return array( 'new', 'viewed', 'shortlisted', 'interview', 'offer', 'hired', 'declined', 'withdrawn' );
+	}
+
+	/** Statuses an employer can set, given the job's chosen application-handling mode. */
+	public static function statuses_for_mode( $mode ) {
+		if ( 'simple' === $mode ) {
+			return array( 'new', 'viewed', 'declined' );
+		}
+		return self::statuses();
+	}
+
+	/** Human label for a status (handles the legacy 'rejected'). */
+	public static function status_label( $status ) {
+		$map = array(
+			'new'         => __( 'New', 'shuffles-social-services-jobs' ),
+			'viewed'      => __( 'Viewed', 'shuffles-social-services-jobs' ),
+			'shortlisted' => __( 'Shortlisted', 'shuffles-social-services-jobs' ),
+			'interview'   => __( 'Interview', 'shuffles-social-services-jobs' ),
+			'offer'       => __( 'Offer', 'shuffles-social-services-jobs' ),
+			'hired'       => __( 'Hired', 'shuffles-social-services-jobs' ),
+			'declined'    => __( 'Declined', 'shuffles-social-services-jobs' ),
+			'rejected'    => __( 'Declined', 'shuffles-social-services-jobs' ), // legacy alias
+			'withdrawn'   => __( 'Withdrawn', 'shuffles-social-services-jobs' ),
+		);
+		return isset( $map[ $status ] ) ? $map[ $status ] : ucfirst( (string) $status );
+	}
+
+	/** Status-change history for an application (oldest first): [ s, at, by ]. */
+	public static function history( $row ) {
+		$ex = self::extra( $row );
+		return ( ! empty( $ex['history'] ) && is_array( $ex['history'] ) ) ? $ex['history'] : array();
 	}
 
 	/**
-	 * Update an application's status, but only if $uid owns the linked job/need.
+	 * Update an application's status, but only if $uid owns the linked job/need. Records a
+	 * history entry and emails the applicant.
 	 *
 	 * @return bool
 	 */
@@ -205,9 +236,8 @@ class Shuffles_SSJ_Applications {
 		if ( ! in_array( $status, self::statuses(), true ) ) {
 			return false;
 		}
-		$t = self::table();
-		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$row = $wpdb->get_row( $wpdb->prepare( "SELECT job_id, need_id FROM {$t} WHERE id = %d", (int) $app_id ) );
+		$t   = self::table();
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$t} WHERE id = %d", (int) $app_id ) ); // phpcs:ignore WordPress.DB
 		if ( ! $row ) {
 			return false;
 		}
@@ -216,12 +246,64 @@ class Shuffles_SSJ_Applications {
 		if ( $owner !== (int) $uid && ! user_can( $uid, 'manage_options' ) ) {
 			return false;
 		}
-		return (bool) $wpdb->update(
+		if ( (string) $row->status === $status ) {
+			return true; // no change
+		}
+		$extra              = self::extra( $row );
+		$extra['history'][] = array( 's' => $status, 'at' => current_time( 'mysql' ), 'by' => (int) $uid );
+		$ok = (bool) $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$t,
-			array( 'status' => $status, 'updated_at' => current_time( 'mysql' ) ),
+			array( 'status' => $status, 'extra' => wp_json_encode( $extra ), 'updated_at' => current_time( 'mysql' ) ),
 			array( 'id' => (int) $app_id ),
-			array( '%s', '%s' ),
+			array( '%s', '%s', '%s' ),
 			array( '%d' )
 		);
+		if ( $ok ) {
+			self::notify_applicant( $row, $status );
+		}
+		return $ok;
+	}
+
+	/** The applicant withdraws their own application. */
+	public static function withdraw( $app_id, $uid ) {
+		global $wpdb;
+		$t   = self::table();
+		$row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM {$t} WHERE id = %d", (int) $app_id ) ); // phpcs:ignore WordPress.DB
+		if ( ! $row || (int) $row->applicant_user_id !== (int) $uid ) {
+			return false;
+		}
+		if ( in_array( (string) $row->status, array( 'withdrawn', 'hired' ), true ) ) {
+			return true;
+		}
+		$extra              = self::extra( $row );
+		$extra['history'][] = array( 's' => 'withdrawn', 'at' => current_time( 'mysql' ), 'by' => (int) $uid );
+		return (bool) $wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$t,
+			array( 'status' => 'withdrawn', 'extra' => wp_json_encode( $extra ), 'updated_at' => current_time( 'mysql' ) ),
+			array( 'id' => (int) $app_id ),
+			array( '%s', '%s', '%s' ),
+			array( '%d' )
+		);
+	}
+
+	/** Email the applicant when an advertiser changes their application status (suppress via filter). */
+	private static function notify_applicant( $row, $status ) {
+		if ( ! apply_filters( 'shuffles_ssj_send_application_email', true, $row, $status ) ) {
+			return;
+		}
+		$u = (int) $row->applicant_user_id ? get_user_by( 'id', (int) $row->applicant_user_id ) : null;
+		if ( ! $u || ! $u->user_email ) {
+			return;
+		}
+		$entity_id = $row->job_id ? (int) $row->job_id : (int) $row->need_id;
+		$title     = get_the_title( $entity_id );
+		$subject   = sprintf( __( 'Update on your application: %s', 'shuffles-social-services-jobs' ), $title );
+		$body      = sprintf(
+			/* translators: 1: listing title, 2: new status label */
+			__( "Your application for \"%1\$s\" is now: %2\$s.\n\nLog in to your dashboard to see the details.", 'shuffles-social-services-jobs' ),
+			$title,
+			self::status_label( $status )
+		);
+		wp_mail( $u->user_email, $subject, $body );
 	}
 }

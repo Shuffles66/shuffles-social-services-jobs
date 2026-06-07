@@ -21,6 +21,7 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_sssj_apply', array( $this, 'handle_apply' ) );
 		add_action( 'admin_post_nopriv_sssj_apply', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_app_status', array( $this, 'handle_app_status' ) );
+		add_action( 'admin_post_sssj_app_withdraw', array( $this, 'handle_app_withdraw' ) );
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
@@ -719,6 +720,22 @@ class Shuffles_SSJ_Frontend_Forms {
 		Shuffles_SSJ_Applications::set_status( $app_id, $status, get_current_user_id() );
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 		wp_safe_redirect( add_query_arg( 'sssj_status', '1', $redirect ) );
+		exit;
+	}
+
+	/** The applicant withdraws their own application. */
+	public function handle_app_withdraw() {
+		$nonce = isset( $_POST['sssj_withdraw_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_withdraw_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_app_withdraw' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$app_id = isset( $_POST['app_id'] ) ? absint( $_POST['app_id'] ) : 0;
+		Shuffles_SSJ_Applications::withdraw( $app_id, get_current_user_id() );
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		wp_safe_redirect( add_query_arg( 'sssj_app', 'withdrawn', remove_query_arg( 'sssj_app', $redirect ) ) );
 		exit;
 	}
 

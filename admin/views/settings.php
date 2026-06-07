@@ -964,6 +964,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.85.0 — 2026-06-07 · application pipeline phase 3 (Hired/Declined · history · withdraw · notifications)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Application stages now include Hired and Declined. Employers move applicants through the pipeline in My listings; jobs set to “Full pipeline” show all stages plus a Status history, while “Simple” jobs show a minimal set.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Candidates can Withdraw their own application from My dashboard → (My applications).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Applicants are emailed automatically when an advertiser changes their status (e.g. shortlisted, offer, hired). Turn off with the shuffles_ssj_send_application_email filter.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.84.0 — 2026-06-07 · testing worksheet — per-area objectives</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The Testing worksheet (Settings → Testing and [sssj_tests]) now states an overall Objective for each area of checks, and shows the number of checks per group — so testers know what each group is proving, not just the steps.', 'shuffles-social-services-jobs' ); ?></li>
