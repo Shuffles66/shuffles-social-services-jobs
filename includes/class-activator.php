@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 7;
+	const DB_VERSION = 8;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -182,6 +182,29 @@ class Shuffles_SSJ_Activator {
   PRIMARY KEY  (id),
   KEY user_time (user_id,created_at),
   KEY action (action),
+  KEY created (created_at)
+) $charset_collate;";
+
+		// Reviews & ratings — one (editable) review per reviewer per subject; moderation + averages.
+		$statements[] = "CREATE TABLE {$p}review (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  reviewer_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  subject_type VARCHAR(10) NOT NULL DEFAULT '',
+  subject_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  rating TINYINT UNSIGNED NOT NULL DEFAULT 0,
+  title VARCHAR(160) NULL,
+  body LONGTEXT NULL,
+  response LONGTEXT NULL,
+  response_at DATETIME NULL DEFAULT NULL,
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  moderated_by BIGINT UNSIGNED NULL,
+  moderated_at DATETIME NULL DEFAULT NULL,
+  created_at DATETIME NULL DEFAULT NULL,
+  updated_at DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY uniq_review (reviewer_user_id,subject_type,subject_id),
+  KEY subject_status (subject_type,subject_id,status),
+  KEY status (status),
   KEY created (created_at)
 ) $charset_collate;";
 

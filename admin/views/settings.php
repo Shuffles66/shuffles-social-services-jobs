@@ -504,6 +504,81 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<p class="description">' . esc_html__( 'Premium features (monetisation, white-label, AI bridge) require an active licence. Your own primary site can bypass by defining SHUFFLES_SSJ_PRO = true in wp-config.php. Core boards always work. A grace window keeps a valid licence working if the vendor store is briefly unreachable.', 'shuffles-social-services-jobs' ) . '</p>';
 			break;
 
+		case 'reviews':
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #d97706;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'Reviews & Ratings', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php esc_html_e( 'Members can leave a 1–5 star rating and a written review on a contractor (worker profile) or a provider (organisation). Three protections keep reviews trustworthy:', 'shuffles-social-services-jobs' ); ?></p>
+				<ol>
+					<li><strong><?php esc_html_e( 'Engagement-gated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'only a member who has actually engaged through the platform (a relay message exists between them — applying starts one) can review. You cannot review yourself.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Pre-moderated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'every review is held as Pending and only appears once you Approve it below.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Right of reply', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'the reviewed party may post one public response, and the approved average feeds the matching “trust” signal.', 'shuffles-social-services-jobs' ); ?></li>
+				</ol>
+				<p class="description"><?php esc_html_e( 'Reviews show automatically on the contractor’s and provider’s profile pages. One (editable) review per member per subject.', 'shuffles-social-services-jobs' ); ?></p>
+			</div>
+			<?php
+			$open_form( 'reviews' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'reviews_enabled', __( 'Enable reviews & ratings', 'shuffles-social-services-jobs' ), __( 'Master switch. Off = the reviews section disappears from all profiles and no new reviews can be left (existing ones are kept).', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+
+			if ( class_exists( 'Shuffles_SSJ_Reviews' ) ) {
+				$mod_nonce = wp_create_nonce( 'sssj_review_moderate' );
+				$ap        = esc_url( admin_url( 'admin-post.php' ) );
+				$render_rows = function ( $rows ) use ( $ap, $mod_nonce ) {
+					if ( empty( $rows ) ) {
+						echo '<p class="description">' . esc_html__( 'Nothing here.', 'shuffles-social-services-jobs' ) . '</p>';
+						return;
+					}
+					echo '<table class="widefat striped"><thead><tr>'
+						. '<th>' . esc_html__( 'Rating', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Review', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Reviewer', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Subject', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Status', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Actions', 'shuffles-social-services-jobs' ) . '</th>'
+						. '</tr></thead><tbody>';
+					foreach ( $rows as $r ) {
+						$ru   = get_userdata( (int) $r->reviewer_user_id );
+						$name = $ru ? $ru->display_name : ( '#' . (int) $r->reviewer_user_id );
+						$slbl = Shuffles_SSJ_Reviews::type_label( $r->subject_type );
+						$stit = get_the_title( (int) $r->subject_id );
+						$surl = get_permalink( (int) $r->subject_id );
+						echo '<tr>';
+						echo '<td>' . Shuffles_SSJ_Reviews::stars_html( (int) $r->rating ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '<td>' . ( $r->title ? '<strong>' . esc_html( $r->title ) . '</strong><br/>' : '' ) . esc_html( wp_trim_words( wp_strip_all_tags( (string) $r->body ), 40 ) ) . '</td>';
+						echo '<td>' . esc_html( $name ) . '</td>';
+						echo '<td>' . esc_html( $slbl ) . ': ' . ( $surl ? '<a href="' . esc_url( $surl ) . '" target="_blank" rel="noopener">' . esc_html( $stit ) . '</a>' : esc_html( $stit ) ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '<td><span class="sssj-badge">' . esc_html( ucfirst( (string) $r->status ) ) . '</span></td>';
+						echo '<td>';
+						$btn = function ( $op, $label ) use ( $ap, $mod_nonce, $r ) {
+							echo '<form method="post" action="' . $ap . '" style="display:inline-block;margin:0 4px 4px 0">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo '<input type="hidden" name="action" value="sssj_review_moderate" />';
+							echo '<input type="hidden" name="_wpnonce" value="' . esc_attr( $mod_nonce ) . '" />';
+							echo '<input type="hidden" name="review_id" value="' . esc_attr( $r->id ) . '" />';
+							echo '<input type="hidden" name="op" value="' . esc_attr( $op ) . '" />';
+							echo '<button class="button button-small">' . esc_html( $label ) . '</button>';
+							echo '</form>';
+						};
+						if ( 'approved' !== $r->status ) {
+							$btn( 'approve', __( 'Approve', 'shuffles-social-services-jobs' ) );
+						}
+						if ( 'rejected' !== $r->status ) {
+							$btn( 'reject', __( 'Reject', 'shuffles-social-services-jobs' ) );
+						}
+						echo '</td></tr>';
+					}
+					echo '</tbody></table>';
+				};
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Awaiting moderation', 'shuffles-social-services-jobs' ) . '</h2>';
+				$render_rows( Shuffles_SSJ_Reviews::pending( 100 ) );
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Recent reviews', 'shuffles-social-services-jobs' ) . '</h2>';
+				$render_rows( Shuffles_SSJ_Reviews::recent( 50 ) );
+			}
+			break;
+
 		case 'privacy':
 			$open_form( 'privacy' );
 			echo '<p>' . esc_html__( 'Participant needs are pseudonymous, suburb-only, contact-gated, noindex, and require admin approval before publish. These protections are structural and cannot be switched off.', 'shuffles-social-services-jobs' ) . '</p>';
@@ -973,6 +1048,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.87.0 — 2026-06-07 · member reviews & ratings (contractors + providers)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New star-rating + written-review system for contractors (worker profiles) and providers (organisations). Reviews show automatically on the profile page with an average summary, individual reviews and the owner’s public response.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Trust by design: you can only review someone you have genuinely engaged with (a relay message exists between you — applying starts one); you cannot review yourself; one editable review per member per subject.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Every review is pre-moderated — held as Pending until an admin approves it in the new Settings → Reviews & Ratings tab (Approve / Reject, with a master on/off switch).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The approved average is cached on the profile and feeds the matching “trust” signal (well-rated workers rank a little higher with a “Rated X★” reason). New sssj_review table (DB v8) — load wp-admin once after updating so the table is created.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testing: new “Reviews & ratings” suite (engagement gate, pre-moderation, approve/reject, response, trust signal, master switch). Business Logic updated.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.86.0 — 2026-06-07 · explainer workflows for end users (“How it works”)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New [sssj_workflows] shortcode and Settings → How-to Workflows tab: eleven plain-English, step-by-step walkthroughs that show end users the exact path through the app — set up your account, advertise a role, apply for an employee (TFN) job, quote for contractor (ABN) work, review applicants, request support privately, store a résumé, join an organisation, save alerts, volunteer, and stay safe.', 'shuffles-social-services-jobs' ); ?></li>

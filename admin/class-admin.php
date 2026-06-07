@@ -36,6 +36,28 @@ class Shuffles_SSJ_Admin {
 		add_action( 'wp_ajax_sssj_create_page', array( $this, 'ajax_create_page' ) );
 		add_action( 'admin_post_sssj_license_activate', array( $this, 'handle_license' ) );
 		add_action( 'admin_post_sssj_license_deactivate', array( $this, 'handle_license' ) );
+		add_action( 'admin_post_sssj_review_moderate', array( $this, 'handle_review_moderate' ) );
+	}
+
+	/**
+	 * Approve / reject / delete a review from the moderation queue (admin only).
+	 */
+	public function handle_review_moderate() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_review_moderate' );
+		$id = isset( $_POST['review_id'] ) ? absint( $_POST['review_id'] ) : 0;
+		$op = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
+		if ( $id && class_exists( 'Shuffles_SSJ_Reviews' ) ) {
+			$map = array( 'approve' => 'approved', 'reject' => 'rejected', 'pending' => 'pending' );
+			if ( isset( $map[ $op ] ) ) {
+				Shuffles_SSJ_Reviews::set_status( $id, $map[ $op ], get_current_user_id() );
+			}
+		}
+		$back = wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=shuffles-ssj&tab=reviews' );
+		wp_safe_redirect( $back );
+		exit;
 	}
 
 	/**
@@ -153,6 +175,9 @@ class Shuffles_SSJ_Admin {
 			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 			wp_enqueue_script( 'sssj-guides', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-guides.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
+		if ( 'reviews' === $tab ) {
+			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
+		}
 		if ( 'crm' === $tab || 'fields' === $tab ) {
 			// Searchable pill pickers for the tag/list + field-option selects (design directive).
 			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
@@ -201,6 +226,7 @@ class Shuffles_SSJ_Admin {
 			'crm'          => array( 'T22', __( 'CRM Sync', 'shuffles-social-services-jobs' ), 'blue' ),
 			'alerts'       => array( 'T23', __( 'Email Alerts', 'shuffles-social-services-jobs' ), 'orange' ),
 			'privacy'      => array( 'T13', __( 'Privacy & Moderation', 'shuffles-social-services-jobs' ), 'amber' ),
+			'reviews'      => array( 'T29', __( 'Reviews & Ratings', 'shuffles-social-services-jobs' ), 'amber' ),
 			'guides'       => array( 'T20', __( 'Guides', 'shuffles-social-services-jobs' ), 'orange' ),
 			'workflows'    => array( 'T28', __( 'How-to Workflows', 'shuffles-social-services-jobs' ), 'orange' ),
 			'logic'        => array( 'T25', __( 'Business Logic', 'shuffles-social-services-jobs' ), 'slate' ),

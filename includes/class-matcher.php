@@ -101,6 +101,13 @@ class Shuffles_SSJ_Matcher {
 		}
 		if ( get_post_meta( $wid, 'verified_at', true ) ) { $score += 6; }
 		if ( '1' === (string) get_post_meta( $wid, 'sssj_blue_tick', true ) ) { $score += 6; }
+		// Trust: approved member rating (up to +8, scaled 1–5 stars; needs at least one review).
+		$ravg = (float) get_post_meta( $wid, '_sssj_rating_avg', true );
+		$rcnt = (int) get_post_meta( $wid, '_sssj_rating_count', true );
+		if ( $rcnt > 0 && $ravg > 0 ) {
+			$score += (int) round( ( $ravg / 5 ) * 8 );
+			$reasons[] = sprintf( __( 'Rated %s★', 'shuffles-social-services-jobs' ), number_format( $ravg, 1 ) );
+		}
 
 		return array( 'id' => (int) $wid, 'score' => $score, 'reasons' => array_slice( $reasons, 0, 3 ) );
 	}

@@ -179,6 +179,31 @@
 .sssj .sssj-flow__done{ margin:var(--sssj-s4) 0 0; padding:var(--sssj-s3) var(--sssj-s4); background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); color:var(--sssj-text); }
 .sssj .sssj-flow__cta{ margin:var(--sssj-s4) 0 0; }
 
+/* Reviews & ratings ([sssj_reviews] / profile pages). */
+.sssj .sssj-stars{ white-space:nowrap; letter-spacing:1px; }
+.sssj .sssj-stars .sssj-star{ color:var(--sssj-line); }
+.sssj .sssj-stars .sssj-star.is-on{ color:var(--sssj-warning); }
+.sssj .sssj-reviews__avg{ display:flex; align-items:center; gap:var(--sssj-s2); margin:0; font-size:var(--sssj-fs-md); }
+.sssj .sssj-reviews__avg strong{ font-size:1.2em; color:var(--sssj-ink); }
+.sssj .sssj-review{ border-left:4px solid var(--sssj-warning); }
+.sssj .sssj-review__head{ display:flex; align-items:center; gap:var(--sssj-s2); flex-wrap:wrap; }
+.sssj .sssj-review__title{ color:var(--sssj-ink); }
+.sssj .sssj-review__body{ margin:var(--sssj-s2) 0; color:var(--sssj-text); }
+.sssj .sssj-review__meta{ margin:0; }
+.sssj .sssj-review__response{ margin-top:var(--sssj-s3); padding:var(--sssj-s3) var(--sssj-s4); background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); }
+.sssj .sssj-review__response strong{ display:block; color:var(--sssj-ink); margin-bottom:2px; }
+.sssj .sssj-review__respondform > summary{ cursor:pointer; color:var(--sssj-blue-deep); font-weight:600; }
+.sssj .sssj-review__respondform textarea{ margin:var(--sssj-s2) 0; }
+/* Star-rating input: render radios right-to-left so :hover/:checked fill leftwards. */
+.sssj .sssj-rate{ border:0; padding:0; margin:0 0 var(--sssj-s3); display:inline-flex; flex-direction:row-reverse; justify-content:flex-end; }
+.sssj .sssj-rate legend{ float:left; width:100%; font-weight:600; color:var(--sssj-ink); margin-bottom:var(--sssj-s1); }
+.sssj .sssj-rate input[type="radio"]{ position:absolute; opacity:0; width:1px; height:1px; }
+.sssj .sssj-rate label{ cursor:pointer; font-size:28px; line-height:1; color:var(--sssj-line); padding:0 2px; }
+.sssj .sssj-rate label:hover,
+.sssj .sssj-rate label:hover ~ label,
+.sssj .sssj-rate input[type="radio"]:checked ~ label{ color:var(--sssj-warning); }
+.sssj .sssj-rate input[type="radio"]:focus-visible + label{ outline:2px solid var(--sssj-blue); outline-offset:2px; border-radius:3px; }
+
 /* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }

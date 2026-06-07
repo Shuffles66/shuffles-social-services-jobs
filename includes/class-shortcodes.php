@@ -55,6 +55,8 @@ class Shuffles_SSJ_Shortcodes {
 		add_filter( 'the_content', array( $this, 'maybe_worker_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_matches' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_matches' ) );
+		add_filter( 'the_content', array( $this, 'maybe_worker_reviews' ) );
+		add_filter( 'the_content', array( $this, 'maybe_org_reviews' ) );
 
 		// Optional: auto-output the navigation menu at the top of every page (testing aid).
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
@@ -1943,6 +1945,30 @@ class Shuffles_SSJ_Shortcodes {
 			ob_start();
 			$this->load_template( 'worker-single-panel.php', array( 'worker_id' => get_the_ID() ) );
 			return $content . ob_get_clean();
+		}
+		return $content;
+	}
+
+	/** Append ratings & reviews to a single worker (contractor) profile. */
+	public function maybe_worker_reviews( $content ) {
+		if ( is_singular( 'sssj_worker' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Reviews' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Reviews::render_for( 'worker', get_the_ID() );
+			if ( $html ) {
+				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Append ratings & reviews to a single organisation (provider) profile. */
+	public function maybe_org_reviews( $content ) {
+		if ( is_singular( 'sssj_org' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Reviews' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Reviews::render_for( 'org', get_the_ID() );
+			if ( $html ) {
+				return $content . $html;
+			}
 		}
 		return $content;
 	}

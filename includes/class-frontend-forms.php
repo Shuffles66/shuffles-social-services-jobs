@@ -22,6 +22,10 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_apply', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_app_status', array( $this, 'handle_app_status' ) );
 		add_action( 'admin_post_sssj_app_withdraw', array( $this, 'handle_app_withdraw' ) );
+		add_action( 'admin_post_sssj_review_submit', array( $this, 'handle_review_submit' ) );
+		add_action( 'admin_post_nopriv_sssj_review_submit', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_review_respond', array( $this, 'handle_review_respond' ) );
+		add_action( 'admin_post_nopriv_sssj_review_respond', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
@@ -736,6 +740,45 @@ class Shuffles_SSJ_Frontend_Forms {
 		Shuffles_SSJ_Applications::withdraw( $app_id, get_current_user_id() );
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 		wp_safe_redirect( add_query_arg( 'sssj_app', 'withdrawn', remove_query_arg( 'sssj_app', $redirect ) ) );
+		exit;
+	}
+
+	/** Submit (or edit) a star review of a contractor (worker) or provider (org). Engagement-gated. */
+	public function handle_review_submit() {
+		$nonce = isset( $_POST['sssj_review_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_review_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_review_submit' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$type   = isset( $_POST['subject_type'] ) ? sanitize_key( wp_unslash( $_POST['subject_type'] ) ) : '';
+		$sid    = isset( $_POST['subject_id'] ) ? absint( $_POST['subject_id'] ) : 0;
+		$rating = isset( $_POST['rating'] ) ? absint( $_POST['rating'] ) : 0;
+		$title  = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
+		$body   = isset( $_POST['body'] ) ? wp_kses_post( wp_unslash( $_POST['body'] ) ) : '';
+
+		$ok       = Shuffles_SSJ_Reviews::add_or_update( get_current_user_id(), $type, $sid, $rating, $title, $body );
+		$redirect = $sid ? get_permalink( $sid ) : ( wp_get_referer() ? wp_get_referer() : home_url( '/' ) );
+		$redirect = remove_query_arg( 'sssj_review', (string) $redirect );
+		wp_safe_redirect( add_query_arg( 'sssj_review', $ok ? 'pending' : 'error', $redirect ) . '#sssj-reviews' );
+		exit;
+	}
+
+	/** The reviewed party posts a public response to a review of them. */
+	public function handle_review_respond() {
+		$nonce = isset( $_POST['sssj_review_resp_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_review_resp_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_review_respond' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$review_id = isset( $_POST['review_id'] ) ? absint( $_POST['review_id'] ) : 0;
+		$text      = isset( $_POST['response'] ) ? wp_kses_post( wp_unslash( $_POST['response'] ) ) : '';
+		Shuffles_SSJ_Reviews::add_response( $review_id, get_current_user_id(), $text );
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		wp_safe_redirect( remove_query_arg( 'sssj_review', (string) $redirect ) . '#sssj-reviews' );
 		exit;
 	}
 

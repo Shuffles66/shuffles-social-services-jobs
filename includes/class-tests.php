@@ -236,6 +236,18 @@ class Shuffles_SSJ_Tests {
 				),
 			),
 			array(
+				'title' => __( 'Reviews & ratings', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove members can rate and review contractors (workers) and providers (orgs), that only genuinely-engaged members can review, that nothing shows until an admin approves, and that the average feeds trust. Goal: ratings are real, moderated and fair — never gameable.', 'shuffles-social-services-jobs' ),
+				'cases' => array(
+					array( 'id' => 'review-gate', 'do' => __( 'As a member who has NOT messaged or applied to a given worker/org, open that profile and look for the review form. Then start a message thread (or apply) and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Before any engagement there is no review form (just a note that only engaged members can review); after a relay message/application exists between you, the “Leave a review” form appears. You can never review your own profile/org.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'review-submit', 'do' => __( 'Leave a 1–5 star rating + title + review and submit; reload the profile while logged in as someone else (or logged out).', 'shuffles-social-services-jobs' ), 'expect' => __( 'You see “Awaiting moderation”; the review does NOT yet appear publicly. The star widget records your rating; one (editable) review per member per subject.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'review-moderate', 'do' => __( 'In Settings → Reviews & Ratings, Approve the pending review (then try Reject on another).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Approved reviews appear on the profile and count toward the average + count; rejected ones never show. The average/count update immediately.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'review-respond', 'do' => __( 'As the reviewed worker (or an org admin), open your profile and use “Respond to this review”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Your single public response shows under that review; non-owners do not see the respond form.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'review-trust', 'do' => __( 'Approve some reviews for a worker, then view “Jobs matched to you” / the worker matches on a job.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A well-rated worker scores a little higher and shows a “Rated X★” reason — the approved average feeds the matching trust signal.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'review-off', 'do' => __( 'Turn off “Enable reviews & ratings” in Settings → Reviews & Ratings and reload a profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The reviews section disappears everywhere and no new reviews can be left; existing reviews are retained for when it is re-enabled.', 'shuffles-social-services-jobs' ) ),
+				),
+			),
+			array(
 				'title' => __( 'Dashboard & operations', 'shuffles-social-services-jobs' ),
 				'objective' => __( 'Prove the all-in-one dashboard hub, scheduled (cron) jobs, demo users + “View as”, and admin operations. Goal: members and admins can run everything from one place, and background jobs report their status.', 'shuffles-social-services-jobs' ),
 				'cases' => array(

@@ -108,7 +108,9 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Benefit:** members promote themselves professionally in minutes; the platform's brand travels with every share.
 - **Sales angle:** *Turn any profile into a polished résumé, flyer and shareable post — in one click, on-brand, with sector best-practice built in.*
 
-## N. Member reviews & ratings ⬜ (planned, Workstream H)
-- **Star ratings + reviews for contractors and providers**, moderated before they show and gated to people who actually engaged — feeds the matching "trust" signal.
+## N. Member reviews & ratings ✅
+- **Star ratings + written reviews for contractors (worker profiles) and providers (organisations)**, shown on the profile with an average summary and the owner's public right-of-reply.
+- **Gated to people who actually engaged** (a relay message exists between them — applying starts one) and **pre-moderated** (admin approves before anything shows) — so reviews are real, not gameable.
+- **Feeds the matching "trust" signal:** the approved average lifts a well-rated worker's ranking with a "Rated X★" reason.
 - **Benefit:** trust you can see at a glance; quality rises to the top.
-- **Sales angle:** *Real, verified reviews — so participants and employers choose with confidence.*
+- **Sales angle:** *Real, moderated reviews from people who actually worked together — so participants and employers choose with confidence.*
