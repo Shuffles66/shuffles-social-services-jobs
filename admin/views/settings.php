@@ -1146,6 +1146,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.0.0 · 2026-06-08 · spotlight detail, résumé builder Phase 1b, instant cache busting</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Feature spotlight: “Learn more” now expands an inline “how it works” explanation right on the tile, instead of linking out to the marketing document. Each highlighted feature has its own plain-English detail.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Résumé builder Phase 1b: the “Create an asset” wizard now also makes a Service flyer and a square Social post (alongside the résumé), all from your profile in the locked, readable style, with a type selector and the same Download PDF / Save image / Copy caption actions. The employer job flyer is the next piece.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Instant updates: creating or updating a job, worker, organisation or participant request now clears the page caches automatically (WP Rocket, W3TC, WP Super Cache, LiteSpeed, Cloudways Breeze/Varnish, WP Fastest Cache, SG Optimizer, plus a hook for any other), so changes are visible straight away without a manual purge.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.99.0 · 2026-06-08 · mobile NDIS layout, outlet prompt, participant fields, private marketing</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Mobile: the NDIS provider registration details now stack (each value under its heading) and long values wrap, so nothing runs off the right of the screen.', 'shuffles-social-services-jobs' ); ?></li>

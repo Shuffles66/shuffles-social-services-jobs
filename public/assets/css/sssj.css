@@ -277,6 +277,8 @@
 .sssj .sssj-spotlight__text{ margin:0 auto var(--sssj-s4); max-width:60ch; color:var(--sssj-text); }
 .sssj .sssj-spotlight__cta{ margin:0 0 var(--sssj-s3); }
 .sssj .sssj-spotlight__more{ margin:0; font-size:var(--sssj-fs-sm); color:var(--sssj-muted); }
+.sssj .sssj-spotlight__detail{ margin:0 auto var(--sssj-s4); max-width:60ch; text-align:left; background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); padding:var(--sssj-s3) var(--sssj-s4); }
+.sssj .sssj-spotlight__detail p{ margin:0; color:var(--sssj-text); }
 @media (prefers-reduced-motion: reduce){ .sssj .sssj-spotlight::before{ animation:none; opacity:0; } .sssj .sssj-spotlight__ctrl{ display:none; } }
 
 /* Image guidance under upload fields. */

@@ -29,6 +29,25 @@
 .sssj .sssj-asset__checks li::before{ content:"\2713"; color:#15803d; font-weight:800; margin-right:7px; }
 .sssj .sssj-asset__cta{ margin:24px 32px 30px; padding:16px; background:#0e6e8c; color:#fff; border-radius:12px; text-align:center; font-weight:800; font-size:17px; }
 
+/* ---- Service flyer extras ---- */
+.sssj .sssj-asset__ribbon{ margin:18px 32px 0; padding:10px 16px; background:#0e6e8c; color:#fff; border-radius:10px; font-weight:800; text-align:center; }
+.sssj .sssj-asset__chips--lg li{ font-size:15px; padding:8px 16px; }
+
+/* ---- Social graphic (square) ---- */
+.sssj .sssj-asset--social{ max-width:520px; aspect-ratio:1/1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:14px; padding:34px; background:linear-gradient(160deg,#e7f3f6,#ffffff 55%); }
+.sssj .sssj-asset--social .sssj-asset__avatar{ width:96px; height:96px; }
+.sssj .sssj-asset--social .sssj-asset__name{ font-size:28px; }
+.sssj .sssj-asset--social .sssj-asset__role{ margin:0; }
+.sssj .sssj-asset--social .sssj-asset__where{ margin:0; font-size:18px; }
+.sssj .sssj-asset--social .sssj-asset__chips{ justify-content:center; margin:0; }
+.sssj .sssj-asset__social-top{ display:flex; flex-direction:column; align-items:center; gap:6px; }
+.sssj .sssj-asset__social-foot{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-weight:700; color:#0b566f; }
+.sssj .sssj-asset__avail{ background:#dff0e6; color:#15803d; border-radius:999px; padding:5px 14px; }
+.sssj .sssj-asset--social .sssj-asset__cta{ margin:6px 0 0; }
+
+/* ---- Asset type selector ---- */
+.sssj .sssj-asset-types{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+
 /* ---- Wizard layout ---- */
 .sssj .sssj-asset-wizard{ display:grid; grid-template-columns:340px 1fr; gap:20px; align-items:start; }
 @media (max-width:860px){ .sssj .sssj-asset-wizard{ grid-template-columns:1fr; } }

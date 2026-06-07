@@ -30,77 +30,90 @@ class Shuffles_SSJ_Spotlight {
 			array(
 				'title' => __( 'Employee, contractor and volunteer work, kept separate', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Wage jobs, ABN contracting and volunteer roles each live on their own board, so you only ever see the kind of work you are actually after.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: every role is tagged when it is posted as employee (TFN), contractor (ABN) or volunteer, and the boards filter strictly on that tag. The employee board never shows contractor work, the contractor board never shows wage jobs, and volunteer roles sit on their own board. You pick the board that matches what you are after, so the results are always relevant.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_job_board]',
 				'key'   => 'page_job_board',
 			),
 			array(
 				'title' => __( 'Participant privacy, built in', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Participant requests are pseudonymous and suburb level only, and first contact runs through a safe internal relay. Names and contact details are never on show.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: a participant never enters their name. The system creates a private code and shows only the suburb. When a worker responds, the message travels through an internal relay, so the worker never sees an email or phone number. Participant pages are also kept out of search engines, so the most vulnerable people are protected by design.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_policies]',
 				'key'   => 'page_policies',
 			),
 			array(
 				'title' => __( 'The verified badge you can trust', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'A green Verified badge appears only after our team checks the evidence. It is never self claimed, so it means something.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: a worker uploads evidence of a check, for example NDIS Worker Screening or a Working With Children Check. It sits as pending until a member of our team reviews it. Only then does the green Verified badge appear, and only while the check is in date. Nothing is ever self-marked as verified, so the badge always means a real human checked it.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_policies]',
 				'key'   => 'page_policies',
 			),
 			array(
 				'title' => __( 'Store a resume, apply in seconds', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Keep one or more resumes on file and pick the right one when you apply. They stay private and are shown only to an employer you apply to.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: you upload one or more resume files to your profile and name them. They are stored privately, never behind a public link. When you apply for a job you choose which resume to send, and only that employer can open it. You can also build a clean, readable resume from your profile in one click.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_workflows]',
 				'key'   => 'page_workflows',
 			),
 			array(
 				'title' => __( 'Smart matching that finds the fit', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'We rank people and roles on shared services, location, availability, engagement basis, rate and trust, so the best fits surface first.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: for each person and role the system scores how well they fit on shared services, distance, availability, engagement basis, rate and trust signals like verification and reviews. Higher scores appear first, so the most relevant matches are at the top instead of a random list.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_why_us]',
 				'key'   => 'page_why_us',
 			),
 			array(
 				'title' => __( 'Real, moderated reviews', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Ratings and reviews come only from people who genuinely engaged, and every one is checked before it shows. Quality rises to the top.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: only someone who has genuinely engaged with you through the platform can leave a review, and every review is held for moderation before it appears. The reviewed person can post one public reply. Approved ratings feed back into matching, so consistently good people rise.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_why_us]',
 				'key'   => 'page_why_us',
 			),
 			array(
 				'title' => __( 'Accessible to everyone', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Read aloud, larger text, high contrast and multiple languages are built in, so the marketplace works for the widest possible audience.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: built-in tools let anyone read pages aloud, increase the text size, switch to high contrast and use the site in several languages. Your preferences are remembered. It costs nothing to run and works on every board, profile and form.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_why_us]',
 				'key'   => 'page_why_us',
 			),
 			array(
 				'title' => __( 'Save a search, let matches come to you', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Set your filters once, save the search, and get a daily email when new listings match. No need to keep checking back.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: set your keywords, filters, location and radius, then save the search. Each day the system checks for new listings that match and emails you only when something new turns up, so you can stop refreshing the board.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_job_board]',
 				'key'   => 'page_job_board',
 			),
 			array(
 				'title' => __( 'Earn by referring others', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Invite people to join and earn a referral reward. A flexible way to make a little income, open to everyone.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: you get a personal referral link. When someone joins through it, you earn a referral reward. You will need a PayPal account to be paid, and you can set that up later. It is open to everyone, including participants looking for a little extra income.', 'shuffles-social-services-jobs' ),
 				'special' => 'affiliate',
 			),
 			array(
 				'title' => __( 'Find or offer volunteer work', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'A dedicated volunteer board keeps unpaid roles separate from paid work, so giving your time is easy to find and offer.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: volunteer roles are posted with an unpaid basis, so they sit on their own board, separate from paid work. Any logged-in member can offer their time without needing an ABN, and organisations can recruit volunteers there too.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_volunteer_board]',
 				'key'   => 'page_volunteer_board',
 			),
 			array(
 				'title' => __( 'Step by step, every task explained', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Plain English walkthroughs show you the exact path through the site for whatever you want to do, from posting to applying.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: short, plain-English walkthroughs lay out the exact steps for each task, from setting up an account to posting a job or applying. Each step says what to do and where to click, with a start button, so nobody gets stuck.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_workflows]',
 				'key'   => 'page_workflows',
 			),
 			array(
 				'title' => __( 'Browse trusted organisations', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'A searchable directory of providers and organisations, with sizes, structures and verified details, so you can choose with confidence.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: every organisation has a searchable profile showing its size, structure, sectors, locations and verified details, including live NDIS registration where it applies. You can filter and compare, so you choose a provider with the full picture in front of you.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_org_directory]',
 				'key'   => 'page_org_directory',
 			),
 			array(
 				'title' => __( 'Advertise without showing your name', 'shuffles-social-services-jobs' ),
 				'text'  => __( 'Post anonymously when you need to. The listing shows as Anonymous, and your name is kept out of search engines.', 'shuffles-social-services-jobs' ),
+				'detail' => __( 'How it works: tick anonymous when posting, and the listing shows as Anonymous with no name or logo, the role is hidden from your organisation’s public page, and your name is kept out of the listing’s search-engine data. Participant requests are anonymous by default.', 'shuffles-social-services-jobs' ),
 				'sc'    => '[sssj_policies]',
 				'key'   => 'page_policies',
 			),
@@ -193,15 +206,19 @@ class Shuffles_SSJ_Spotlight {
 	 *
 	 * @return string
 	 */
-	public static function feature_content_html( $feature, $url ) {
+	public static function feature_content_html( $feature, $url = '' ) {
+		$detail = isset( $feature['detail'] ) ? (string) $feature['detail'] : '';
 		ob_start();
 		?>
 		<h3 class="sssj-spotlight__title"><?php echo esc_html( $feature['title'] ); ?></h3>
 		<p class="sssj-spotlight__text"><?php echo esc_html( $feature['text'] ); ?></p>
-		<?php if ( '' !== $url ) : ?>
+		<?php if ( '' !== $detail ) : ?>
 			<p class="sssj-spotlight__cta">
-				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Learn more about this feature', 'shuffles-social-services-jobs' ); ?> →</a>
+				<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-spot-more aria-expanded="false"><?php esc_html_e( 'Learn more about this feature', 'shuffles-social-services-jobs' ); ?></button>
 			</p>
+			<div class="sssj-spotlight__detail" data-spot-detail hidden>
+				<p><?php echo esc_html( $detail ); ?></p>
+			</div>
 		<?php endif; ?>
 		<p class="sssj-spotlight__more"><?php esc_html_e( 'If you want another feature to investigate, come back tomorrow.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php

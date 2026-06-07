@@ -1,8 +1,8 @@
 <?php
 /**
- * "Create an asset" wizard, Phase 1: the worker / sole-trader résumé.
- * Renders a live preview of the locked template from the member's profile, a small wording panel,
- * a readability check, and the download / copy actions ($0 browser path).
+ * "Create an asset" wizard (Phase 1 + 1b): worker / sole-trader résumé, service flyer and social
+ * graphic. Renders a live preview of the chosen locked template from the member's profile, a small
+ * wording panel, a readability check, and the download / copy actions ($0 browser path).
  *
  * @package Shuffles_SSJ
  */
@@ -12,9 +12,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! is_user_logged_in() ) {
-	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to create your résumé.', 'shuffles-social-services-jobs' )
+	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to create your asset.', 'shuffles-social-services-jobs' )
 		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 	return;
+}
+
+$atts  = isset( $atts ) && is_array( $atts ) ? $atts : array();
+$types = array(
+	'resume' => array( 'assets/resume.php', __( 'Résumé', 'shuffles-social-services-jobs' ), __( 'A clean one-page résumé.', 'shuffles-social-services-jobs' ) ),
+	'flyer'  => array( 'assets/service-flyer.php', __( 'Service flyer', 'shuffles-social-services-jobs' ), __( 'A promotional flyer of what you offer.', 'shuffles-social-services-jobs' ) ),
+	'social' => array( 'assets/social.php', __( 'Social post', 'shuffles-social-services-jobs' ), __( 'A square image for social media.', 'shuffles-social-services-jobs' ) ),
+);
+
+$type = isset( $_GET['sssj_asset'] ) ? sanitize_key( wp_unslash( $_GET['sssj_asset'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+if ( '' === $type && ! empty( $atts['asset'] ) ) {
+	$type = sanitize_key( (string) $atts['asset'] );
+}
+if ( ! isset( $types[ $type ] ) ) {
+	$type = 'resume';
 }
 
 $uid  = get_current_user_id();
@@ -22,8 +37,8 @@ $data = Shuffles_SSJ_Assets::resume_data( $uid );
 
 if ( null === $data ) {
 	$profile_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' ) : '';
-	echo '<div class="sssj"><div class="sssj-panel"><h2 style="margin-top:0">' . esc_html__( 'Create your résumé', 'shuffles-social-services-jobs' ) . '</h2>'
-		. '<p>' . esc_html__( 'First create your worker profile. Your résumé is built from it automatically, so you never start from a blank page.', 'shuffles-social-services-jobs' ) . '</p>';
+	echo '<div class="sssj"><div class="sssj-panel"><h2 style="margin-top:0">' . esc_html__( 'Create an asset', 'shuffles-social-services-jobs' ) . '</h2>'
+		. '<p>' . esc_html__( 'First create your worker profile. Your résumé, flyer and social post are all built from it automatically, so you never start from a blank page.', 'shuffles-social-services-jobs' ) . '</p>';
 	if ( $profile_url ) {
 		echo '<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $profile_url ) . '">' . esc_html__( 'Create my profile', 'shuffles-social-services-jobs' ) . '</a>';
 	}
@@ -34,11 +49,17 @@ if ( null === $data ) {
 $check       = Shuffles_SSJ_Assets::readability( $data );
 $caption     = Shuffles_SSJ_Assets::caption( $data );
 $profile_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' ) : '';
+$show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 ?>
 <div class="sssj sssj--create-asset" data-sssj-asset-wizard data-caption="<?php echo esc_attr( $caption ); ?>">
 	<div class="sssj-panel">
-		<h2 style="margin-top:0"><?php esc_html_e( 'Create your résumé', 'shuffles-social-services-jobs' ); ?></h2>
-		<p class="description"><?php esc_html_e( 'Built from your profile, in a clean, easy-to-read layout. Polish the wording on the left, then download a PDF, save the image, or copy a caption for social media. Your location leads, so people see where you work at a glance.', 'shuffles-social-services-jobs' ); ?></p>
+		<h2 style="margin-top:0"><?php esc_html_e( 'Create an asset', 'shuffles-social-services-jobs' ); ?></h2>
+		<p class="description"><?php esc_html_e( 'Built from your profile in a clean, easy-to-read layout, with your location leading so people see where you work at a glance. Pick what to make, polish the wording, then download or copy a caption.', 'shuffles-social-services-jobs' ); ?></p>
+		<div class="sssj-asset-types">
+			<?php foreach ( $types as $key => $meta ) : ?>
+				<a class="sssj-btn sssj-btn--sm <?php echo $key === $type ? 'sssj-btn--primary' : 'sssj-btn--ghost'; ?>" href="<?php echo esc_url( add_query_arg( 'sssj_asset', $key ) ); ?>"><?php echo esc_html( $meta[1] ); ?></a>
+			<?php endforeach; ?>
+		</div>
 	</div>
 
 	<div class="sssj-asset-wizard">
@@ -49,16 +70,16 @@ $profile_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcod
 					<span><?php esc_html_e( 'Headline (your role)', 'shuffles-social-services-jobs' ); ?></span>
 					<input type="text" class="sssj-input" data-edit="tagline" maxlength="60" value="<?php echo esc_attr( $data['tagline'] ); ?>" />
 				</label>
+				<?php if ( $show_blurb ) : ?>
 				<label class="sssj-field">
 					<span><?php esc_html_e( 'Short introduction', 'shuffles-social-services-jobs' ); ?></span>
 					<textarea class="sssj-input" data-edit="blurb" rows="4" maxlength="500"><?php echo esc_textarea( $data['blurb'] ); ?></textarea>
 					<span class="description" data-blurb-count></span>
 				</label>
+				<?php endif; ?>
 				<p class="description">
 					<?php esc_html_e( 'Your photo, location, services, languages and verified checks come from your profile.', 'shuffles-social-services-jobs' ); ?>
-					<?php if ( $profile_url ) : ?>
-						<a href="<?php echo esc_url( $profile_url ); ?>"><?php esc_html_e( 'Edit my profile', 'shuffles-social-services-jobs' ); ?></a>
-					<?php endif; ?>
+					<?php if ( $profile_url ) : ?><a href="<?php echo esc_url( $profile_url ); ?>"><?php esc_html_e( 'Edit my profile', 'shuffles-social-services-jobs' ); ?></a><?php endif; ?>
 				</p>
 			</div>
 
@@ -82,13 +103,13 @@ $profile_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcod
 					<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="caption"><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
 				</div>
 				<p class="description" data-asset-msg style="margin-top:8px"></p>
-				<p class="description"><?php esc_html_e( 'PDF uses your browser print dialog (choose “Save as PDF”). The image is sized for a social post.', 'shuffles-social-services-jobs' ); ?></p>
+				<p class="description"><?php esc_html_e( 'PDF uses your browser print dialog (choose “Save as PDF”). Save image downloads a picture, ideal for the social post.', 'shuffles-social-services-jobs' ); ?></p>
 			</div>
 		</div>
 
 		<div class="sssj-asset-wizard__preview">
 			<div class="sssj-asset-print">
-				<?php Shuffles_SSJ_Plugin::instance()->shortcodes->load_template( 'assets/resume.php', array( 'data' => $data ) ); ?>
+				<?php Shuffles_SSJ_Plugin::instance()->shortcodes->load_template( $types[ $type ][0], array( 'data' => $data ) ); ?>
 			</div>
 		</div>
 	</div>

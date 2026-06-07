@@ -1752,8 +1752,9 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_style( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/css/sssj-assets.css', array( 'sssj' ), SHUFFLES_SSJ_VERSION );
 		wp_enqueue_script( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-assets.js', array(), SHUFFLES_SSJ_VERSION, true );
+		$a = shortcode_atts( array( 'asset' => '' ), is_array( $atts ) ? $atts : array(), 'sssj_create_asset' );
 		ob_start();
-		$this->load_template( 'create-asset.php' );
+		$this->load_template( 'create-asset.php', array( 'atts' => $a ) );
 		return ob_get_clean();
 	}
 

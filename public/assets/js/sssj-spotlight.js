@@ -50,7 +50,20 @@
 
 		// Tap anywhere on the tile, but never hijack the "Learn more" link or the control button itself.
 		tile.addEventListener( 'click', function ( e ) {
-			if ( e.target.closest( 'a, [data-spot-ctrl]' ) ) { return; }
+			// "Learn more" expands an inline detail panel (it does not link anywhere).
+			var more = e.target.closest ? e.target.closest( '[data-spot-more]' ) : null;
+			if ( more ) {
+				e.preventDefault();
+				var box = tile.querySelector( '[data-spot-detail]' );
+				if ( box ) {
+					var willOpen = box.hasAttribute( 'hidden' );
+					if ( willOpen ) { box.removeAttribute( 'hidden' ); } else { box.setAttribute( 'hidden', '' ); }
+					more.setAttribute( 'aria-expanded', willOpen ? 'true' : 'false' );
+					more.textContent = willOpen ? 'Show less' : 'Learn more about this feature';
+				}
+				return;
+			}
+			if ( e.target.closest( 'a, [data-spot-ctrl], [data-spot-detail]' ) ) { return; }
 			tap();
 		} );
 
