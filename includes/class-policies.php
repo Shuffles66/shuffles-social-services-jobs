@@ -147,6 +147,19 @@ class Shuffles_SSJ_Policies {
 			),
 
 			array(
+				'id'      => 'advertising',
+				'title'   => __( 'Advertising & media production', 'shuffles-social-services-jobs' ),
+				'doc'     => 'ADVERTISING-POLICY.md',
+				'summary' => __( 'How advertising, marketing and any media made with our brand is done respectfully, honestly and safely, with people’s dignity and consent at the centre.', 'shuffles-social-services-jobs' ),
+				'points'  => array(
+					__( 'We prefer not to use children in advertising or commercial media. If a child must appear, strict safeguards and a parent or guardian’s written consent apply.', 'shuffles-social-services-jobs' ),
+					__( 'Anyone who appears in media made for commercial purposes is paid fairly for their time. No one is asked to work for free or “for exposure”.', 'shuffles-social-services-jobs' ),
+					__( 'Written, informed consent is obtained from everyone shown (or their guardian) before publishing, covering how the content is used and any payment agreed.', 'shuffles-social-services-jobs' ),
+					__( 'Advertising is truthful, inclusive and accessible, and never identifies a participant.', 'shuffles-social-services-jobs' ),
+				),
+			),
+
+			array(
 				'id'      => 'inclusion',
 				'title'   => __( 'Anti-discrimination & inclusion', 'shuffles-social-services-jobs' ),
 				'doc'     => 'ANTI-DISCRIMINATION-INCLUSION-POLICY.md',

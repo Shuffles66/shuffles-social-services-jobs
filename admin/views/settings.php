@@ -114,6 +114,31 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo Shuffles_SSJ_Policies::render( array( 'title' => __( 'Our policies', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
+		case 'marketing':
+			echo '<h2>' . esc_html__( 'Marketing master', 'shuffles-social-services-jobs' ) . '</h2>';
+			$mk_has = class_exists( 'Shuffles_SSJ_Marketing' ) && '' !== trim( Shuffles_SSJ_Marketing::markdown() );
+			echo '<p class="description" style="max-width:860px">' . wp_kses_post( __( 'This is the living <strong>marketing and product master</strong>: the positioning, the business logic, the full functional spec, and the out-of-the-box audience analysis. The single source is the document <code>docs/MARKETING-MASTER.md</code> in the plugin folder. Publish it as a readable page with <code>[sssj_marketing]</code> (use the button below to create that page in one click), and link it where partners or your team can read it. It deliberately names no third-party tools, describing everything as our internally curated and constructed tech stack and customised workflows.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			if ( ! $mk_has ) {
+				echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'The document file was not found on this site. Re-deploy so docs/MARKETING-MASTER.md is present, then the page and this preview will fill in.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+			// One-click create / link the public page.
+			$mk_pid = (int) $this->settings()->get( 'page_marketing', 0 );
+			echo '<p>';
+			if ( $mk_pid && 'publish' === get_post_status( $mk_pid ) ) {
+				echo '<a class="button" target="_blank" rel="noopener" href="' . esc_url( (string) get_permalink( $mk_pid ) ) . '">' . esc_html__( 'View the Marketing page', 'shuffles-social-services-jobs' ) . '</a> ';
+				echo '<a class="button" href="' . esc_url( get_edit_post_link( $mk_pid ) ) . '">' . esc_html__( 'Edit the page', 'shuffles-social-services-jobs' ) . '</a>';
+			} else {
+				echo '<span class="sssj-page-picker" data-key="page_marketing" data-shortcode="[sssj_marketing]">';
+				echo '<button type="button" class="button button-primary sssj-create-page" data-title="' . esc_attr__( 'Marketing', 'shuffles-social-services-jobs' ) . '">' . esc_html__( 'Create the Marketing page', 'shuffles-social-services-jobs' ) . '</button>';
+				echo '</span>';
+			}
+			echo '</p>';
+			echo '<hr /><h3>' . esc_html__( 'Preview', 'shuffles-social-services-jobs' ) . '</h3>';
+			if ( $mk_has ) {
+				echo Shuffles_SSJ_Marketing::render(); // phpcs:ignore WordPress.Security.EscapeOutput
+			}
+			break;
+
 		case 'fields':
 			$fstatus  = isset( $_GET['sssj_field'] ) ? sanitize_key( wp_unslash( $_GET['sssj_field'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$edit_key = isset( $_GET['edit'] ) ? sanitize_key( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -849,7 +874,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Help & content', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_workflows', __( 'How it works (step-by-step)', 'shuffles-social-services-jobs' ), '[sssj_workflows]', __( 'Plain-English explainer workflows for end users — set up, advertise, apply, quote, manage applicants, request support, store a résumé, join an org, alerts, volunteer, stay safe. Also at Settings → How-to Workflows; the “Guides” advice content lives at Settings → Guides ([sssj_guides]).', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_policies', __( 'Policies (safety & privacy)', 'shuffles-social-services-jobs' ), '[sssj_policies]', __( 'Plain-English summaries of all platform policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion. Also at Settings → Policies. Link it in your footer.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_policies', __( 'Policies (safety & privacy)', 'shuffles-social-services-jobs' ), '[sssj_policies]', __( 'Plain-English summaries of all platform policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion, Advertising. Also at Settings → Policies. Link it in your footer.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_marketing', __( 'Marketing master', 'shuffles-social-services-jobs' ), '[sssj_marketing]', __( 'The living marketing + product master (business logic, functional spec, audience analysis) as a readable page. Often partner-facing or internal. Also at Settings → Marketing.', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
 			submit_button();
@@ -1117,6 +1143,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.93.0 · 2026-06-07 · marketing page, image guidance + video, advertising policy</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The marketing master is now a readable page: new [sssj_marketing] shortcode renders docs/MARKETING-MASTER.md, with a new Settings → Marketing tab to preview it and create the page in one click. The document file is the single source (location: docs/MARKETING-MASTER.md in the plugin folder).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Every photo and logo upload (worker profile, organisation, post a job) now shows an “Image guide” with preferred dimensions and what makes good, valuable, consented content.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New promotional video field on worker, organisation and job forms: paste a YouTube or Vimeo link to super-sell your brand or service. It embeds responsively and privacy-friendly on the single page; only trusted video hosts are accepted.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Advertising and Media Production policy (the 11th): prefer not to use children, fair pay for commercial media, and written informed consent including any agreed remuneration. Published in [sssj_policies] and as a /docs template.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testing, Business Logic and the Shortcodes reference updated. No em dashes in new content.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.92.0 · 2026-06-07 · editable hero blurb + daily feature spotlight</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Hero headline and main blurb are now editable in Settings → Pages → “Home page hero”. [sssj_hero] uses them whenever its title/subtitle attributes are blank, so you can change the wording without touching the shortcode.', 'shuffles-social-services-jobs' ); ?></li>

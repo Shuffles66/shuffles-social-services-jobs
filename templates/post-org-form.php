@@ -83,8 +83,10 @@ if ( $existing ) {
 						<div style="margin-bottom:6px"><?php echo get_the_post_thumbnail( $existing->ID, 'thumbnail', array( 'class' => 'sssj-org-logo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
 					<?php endif; ?>
 					<input id="sssj-ologo" type="file" name="org_logo" accept="image/png,image/jpeg,image/webp,image/svg+xml,.png,.jpg,.jpeg,.webp,.svg" />
-					<p class="description"><?php esc_html_e( 'PNG, JPG, WebP or SVG. Shown on your profile, cards and search results.', 'shuffles-social-services-jobs' ); ?></p>
+					<?php echo Shuffles_SSJ_Media::image_guidance( 'logo' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
+
+				<?php echo Shuffles_SSJ_Media::video_field( $gm( 'video_url', '' ), 'org' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<div class="sssj-row">
 					<div class="sssj-field">
 						<label><?php esc_html_e( 'Type', 'shuffles-social-services-jobs' ); ?></label>

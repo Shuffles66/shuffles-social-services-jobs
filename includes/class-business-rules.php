@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.91.0 (2026-06-07)';
+		return 'v0.93.0 (2026-06-07)';
 	}
 
 	/**
@@ -87,6 +87,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'ABN verification: if an ABR Web Services GUID is set (Settings → Compliance), any ABN saved on a job, worker or organisation is checked against the Australian Business Register on save. The FULL register response — entity name, trading/business names, status, type, ACN, GST, location — is recorded read-only and shown (organisation profile + owner forms). It is the Register’s own data, never edited here.', 'shuffles-social-services-jobs' ),
 						__( 'Reviews & ratings: members rate contractors (worker profiles) and providers (organisations) 1–5 stars. You may only review someone you have genuinely engaged with (a relay message exists between you — applying starts one), and never yourself; one editable review per member per subject.', 'shuffles-social-services-jobs' ),
 						__( 'Every review is held as Pending and only appears once an admin approves it; the reviewed party may post one public response. The approved average is cached on the profile and feeds the matching “trust” signal. Reviews can be switched off globally (Settings → Reviews & Ratings) without losing existing ones.', 'shuffles-social-services-jobs' ),
+						__( 'Advertising and media: we prefer not to use children in advertising or commercial media (strict safeguards and guardian consent if one must appear); anyone in commercially-intended media is paid fairly; written informed consent (including any agreed remuneration) is obtained from everyone shown; advertising is truthful and inclusive and never identifies a participant. Promotional video links are accepted from trusted video hosts only.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(

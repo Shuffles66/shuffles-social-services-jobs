@@ -257,6 +257,14 @@
 .sssj .sssj-spotlight__more{ margin:0; font-size:var(--sssj-fs-sm); color:var(--sssj-muted); }
 @media (prefers-reduced-motion: reduce){ .sssj .sssj-spotlight{ animation:none; } }
 
+/* Image guidance under upload fields. */
+.sssj .sssj-media-guide{ background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); padding:var(--sssj-s2) var(--sssj-s3); }
+
+/* Responsive YouTube / Vimeo embed (16:9). */
+.sssj .sssj-video{ position:relative; width:100%; aspect-ratio:16/9; border-radius:var(--sssj-radius); overflow:hidden; background:#000; }
+.sssj .sssj-video iframe{ position:absolute; inset:0; width:100%; height:100%; border:0; }
+@supports not (aspect-ratio: 16 / 9){ .sssj .sssj-video{ height:0; padding-bottom:56.25%; } }
+
 /* Auto header menu (testing aid) printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }

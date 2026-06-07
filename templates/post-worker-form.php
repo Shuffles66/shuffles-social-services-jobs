@@ -74,14 +74,16 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<?php $cur_photo = $existing ? get_the_post_thumbnail_url( $existing->ID, 'thumbnail' ) : ''; ?>
 					<?php if ( $cur_photo ) : ?><img src="<?php echo esc_url( $cur_photo ); ?>" alt="" class="sssj-worker-photo" style="width:72px;height:72px;margin-bottom:6px" /><?php endif; ?>
 					<input id="sssj-wphoto" type="file" name="worker_photo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" />
-					<p class="description"><?php esc_html_e( 'A friendly headshot helps employers and participants trust your profile. JPG, PNG or WebP.', 'shuffles-social-services-jobs' ); ?></p>
+					<?php echo Shuffles_SSJ_Media::image_guidance( 'photo' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
 
 				<div class="sssj-field">
 					<label for="sssj-wgallery"><?php esc_html_e( 'More photos (optional gallery)', 'shuffles-social-services-jobs' ); ?></label>
 					<input id="sssj-wgallery" type="file" name="worker_gallery[]" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple />
-					<p class="description"><?php esc_html_e( 'Show your work — e.g. gardening, support activities. Up to 6 images; new uploads are added to any existing gallery.', 'shuffles-social-services-jobs' ); ?></p>
+					<?php echo Shuffles_SSJ_Media::image_guidance( 'gallery' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
+
+				<?php echo Shuffles_SSJ_Media::video_field( (string) $gm( 'video_url', '' ), 'worker' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 
 				<div class="sssj-field">
 					<label><input type="checkbox" name="is_available" value="1" <?php checked( '1', (string) $gm( 'is_available', '1' ) ); ?> /> <?php esc_html_e( 'I am available for work now', 'shuffles-social-services-jobs' ); ?></label>

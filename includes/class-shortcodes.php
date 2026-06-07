@@ -52,6 +52,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_ad', array( 'Shuffles_SSJ_Ads', 'shortcode' ) );
 		add_shortcode( 'sssj_affiliate', array( 'Shuffles_SSJ_Affiliate', 'shortcode' ) );
 		add_shortcode( 'sssj_feature_today', array( 'Shuffles_SSJ_Spotlight', 'shortcode' ) );
+		add_shortcode( 'sssj_marketing', array( 'Shuffles_SSJ_Marketing', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -61,6 +62,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_filter( 'the_content', array( $this, 'maybe_worker_matches' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_reviews' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_reviews' ) );
+		add_filter( 'the_content', array( $this, 'maybe_listing_video' ) );
 		add_filter( 'the_content', array( $this, 'maybe_listing_ad' ) );
 
 		// Optional: auto-output the navigation menu at the top of every page (testing aid).
@@ -326,6 +328,15 @@ class Shuffles_SSJ_Shortcodes {
 					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
 					'only="…"'  => __( 'Optional comma-separated policy ids (complaints, privacy, code-of-conduct, incident, safeguarding, terms, screening, retention, cookies, inclusion).', 'shuffles-social-services-jobs' ),
 				),
+			),
+			array(
+				'tag'    => 'sssj_marketing',
+				'title'  => __( 'Marketing master (readable page)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Publishes the living marketing and product master document as a readable page: the positioning, the business logic, the full functional spec, and the out-of-the-box audience analysis. Content is kept in the document and rendered here, so the page stays in step. Same content previews in Settings to Marketing.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A “Marketing” / “About the platform” page (often partner-facing or internal).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
 			),
 			array(
 				'tag'    => 'sssj_ad',
@@ -2036,6 +2047,19 @@ class Shuffles_SSJ_Shortcodes {
 			$html = Shuffles_SSJ_Reviews::render_for( 'org', get_the_ID() );
 			if ( $html ) {
 				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Append a promotional video (YouTube / Vimeo) to a single worker, org or job when one is set. */
+	public function maybe_listing_video( $content ) {
+		if ( is_singular( array( 'sssj_worker', 'sssj_org', 'sssj_job' ) ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Media' ) ) {
+			$embed = Shuffles_SSJ_Media::video_embed( (string) get_post_meta( get_the_ID(), 'video_url', true ) );
+			if ( $embed ) {
+				wp_enqueue_style( 'sssj' );
+				$label = is_singular( 'sssj_org' ) ? __( 'Watch: about us', 'shuffles-social-services-jobs' ) : __( 'Watch', 'shuffles-social-services-jobs' );
+				return $content . '<div class="sssj sssj--videoblock"><div class="sssj-panel"><h3 style="margin-top:0">🎬 ' . esc_html( $label ) . '</h3>' . $embed . '</div></div>';
 			}
 		}
 		return $content;

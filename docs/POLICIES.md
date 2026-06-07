@@ -22,8 +22,9 @@ the `[sssj_policies]` shortcode / Settings → Policies (single source: `include
 | **Data Retention & Destruction** | ✅ `docs/DATA-RETENTION-POLICY.md` | ✅ | Privacy Act/APP 11 + ATO; credential ≤7 years; retention table; purge + grace. |
 | **Cookie / Consent** | ✅ `docs/COOKIE-CONSENT-POLICY.md` | ✅ | Privacy-preserving defaults; category table; no ad targeting on participant pages. |
 | **Anti-Discrimination / Inclusion (CALD, disability, LGBTQIA+)** | ✅ `docs/ANTI-DISCRIMINATION-INCLUSION-POLICY.md` | ✅ | Protected attributes; lawful participant preferences; AHRC escalation. |
+| **Advertising & Media Production** | ✅ `docs/ADVERTISING-POLICY.md` | ✅ | Prefer-not-to-use-children default; fair pay for commercial media; informed consent incl. agreed remuneration; truthful, inclusive, no participant identification. |
 
-> **Status:** all ten drafted as formal templates **and** published as plain-English summaries in-product.
+> **Status:** all eleven drafted as formal templates **and** published as plain-English summaries in-product.
 > **Next action (yours):** review each template, fill the `{{bracketed}}` details (owner, dates, contacts,
 > governing law, liability), have them formally adopted, and publish the public **Policies** page
 > (Settings → Pages → “Policies (safety & privacy)” → Create). Get the Terms of Use liability/disclaimer

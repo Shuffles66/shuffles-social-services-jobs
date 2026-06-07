@@ -52,7 +52,7 @@ class Shuffles_SSJ_Display {
 				'sssj_hero', 'sssj_stats', 'sssj_featured', 'sssj_recent', 'sssj_why_us',
 				'sssj_menu', 'sssj_job_board', 'sssj_tfn_board', 'sssj_abn_board',
 				'sssj_worker_directory', 'sssj_org_directory', 'sssj_need_board', 'sssj_guides',
-				'sssj_workflows', 'sssj_policies', 'sssj_feature_today',
+				'sssj_workflows', 'sssj_policies', 'sssj_feature_today', 'sssj_marketing',
 			)
 		);
 	}

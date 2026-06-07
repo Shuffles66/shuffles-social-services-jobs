@@ -321,6 +321,9 @@ class Shuffles_SSJ_Frontend_Forms {
 			update_post_meta( $post_id, $k, $v );
 		}
 
+		// Optional promotional video (YouTube / Vimeo only).
+		update_post_meta( $post_id, 'video_url', Shuffles_SSJ_Media::clean_video_url( isset( $_POST['video_url'] ) ? wp_unslash( $_POST['video_url'] ) : '' ) );
+
 		// Optional per-job logo → featured image (otherwise the job inherits its organisation's logo).
 		if ( ! empty( $_FILES['job_logo']['name'] ) ) {
 			require_once ABSPATH . 'wp-admin/includes/image.php';
@@ -473,6 +476,9 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
 			Shuffles_SSJ_Privacy::save( $post_id, 'worker', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
+
+		// Optional promotional / introduction video (YouTube / Vimeo only).
+		update_post_meta( $post_id, 'video_url', Shuffles_SSJ_Media::clean_video_url( isset( $_POST['video_url'] ) ? wp_unslash( $_POST['video_url'] ) : '' ) );
 
 		// Profile photo → featured image; extra photos → gallery (attachment IDs in _sssj_gallery).
 		if ( ! empty( $_FILES['worker_photo']['name'] ) || ! empty( $_FILES['worker_gallery']['name'][0] ) ) {
@@ -976,6 +982,9 @@ class Shuffles_SSJ_Frontend_Forms {
 		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
 			Shuffles_SSJ_Privacy::save( $post_id, 'org', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
+
+		// Optional promotional video (YouTube / Vimeo only).
+		update_post_meta( $post_id, 'video_url', Shuffles_SSJ_Media::clean_video_url( isset( $_POST['video_url'] ) ? wp_unslash( $_POST['video_url'] ) : '' ) );
 
 		// Logo → the org post's featured image (also used by Organization JSON-LD).
 		if ( ! empty( $_FILES['org_logo']['name'] ) ) {
