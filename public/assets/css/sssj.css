@@ -547,3 +547,27 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 
 /* Featured/job card short description teaser */
 .sssj .sssj-card__desc{ margin:4px 0 8px; color:var(--sssj-muted); font-size:var(--sssj-fs-sm); line-height:1.4; }
+
+/* ── Why us (benefits) ────────────────────────────────────────────────────── */
+.sssj .sssj-whyus__intro{ max-width:760px; color:var(--sssj-muted); margin:0 0 var(--sssj-s4); }
+.sssj .sssj-whyus{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:var(--sssj-s4); }
+.sssj .sssj-whyus__item{
+	display:flex; gap:var(--sssj-s3); align-items:flex-start;
+	background:var(--sssj-bg); border:1px solid var(--sssj-line);
+	border-left:4px solid var(--sssj-blue); border-radius:var(--sssj-radius);
+	box-shadow:var(--sssj-shadow); padding:var(--sssj-s4);
+}
+.sssj .sssj-whyus__icon{ font-size:1.6rem; line-height:1; flex:0 0 auto; }
+.sssj .sssj-whyus__h{ margin:0 0 4px; font-size:var(--sssj-fs-lg); }
+.sssj .sssj-whyus__p{ margin:0; color:var(--sssj-text); line-height:var(--sssj-lh); }
+
+/* ── Join landing page ────────────────────────────────────────────────────── */
+.sssj .sssj-join{ max-width:760px; }
+.sssj .sssj-join__intro{ color:var(--sssj-muted); font-size:var(--sssj-fs-lg); margin:0 0 var(--sssj-s4); }
+.sssj .sssj-join__primary{ display:flex; flex-wrap:wrap; gap:var(--sssj-s3); margin:0 0 var(--sssj-s3); }
+.sssj .sssj-join__steps{ color:var(--sssj-muted); margin:0 0 var(--sssj-s4); }
+.sssj .sssj-join__links{ display:flex; flex-wrap:wrap; align-items:center; gap:var(--sssj-s2); }
+.sssj .sssj-join__or{ color:var(--sssj-muted); font-weight:var(--sssj-weight-strong); }
+
+/* Force a filter row to break onto its own line (location group below the search inputs). */
+.sssj .sssj-row > .sssj-break{ flex-basis:100%; height:0; margin:0; border:0; padding:0; }

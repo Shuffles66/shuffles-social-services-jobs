@@ -646,6 +646,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_my_listings', __( 'My listings (legacy)', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Just applications + listings (the dashboard above includes this).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox)', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tests', __( 'Plugin tests (admin/testing)', 'shuffles-social-services-jobs' ), '[sssj_tests]', __( 'The interactive Pass/Fail test worksheet (also at Settings → Testing).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_why_us', __( 'Why us (benefits)', 'shuffles-social-services-jobs' ), '[sssj_why_us]', __( 'A point-form “why choose us” page — interconnectivity, community, purpose-built, privacy, fair pricing, etc.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_join', __( 'Join (welcome / get started)', 'shuffles-social-services-jobs' ), '[sssj_join]', __( 'A friendly “Join” landing page that funnels people into onboarding, with sign-up / log-in.', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
 			submit_button();
@@ -913,6 +915,17 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.72.0 — 2026-06-07 · Join page · hero buttons fix · location layout</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New [sssj_join] custom “Join” page — a friendly welcome that funnels people into onboarding, with Create-account / Log-in and quick links (browse jobs, find a worker, browse organisations). Add it via Settings → Pages → “Join (welcome / get started)”.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fixed: the hero banner (and other shortcodes) only showing the first button when several were set. The editor’s “smart quotes” were corrupting the later attributes; the plugin now keeps straight quotes inside its shortcodes so all buttons (up to four) appear. Tip: if a button still misbehaves, avoid apostrophes/curly quotes in the label.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Board layout: the location / radius / “use my location” controls now sit on their own row, directly below the search and filter inputs, on the Jobs, Worker, Organisations and Participant-request boards.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.71.0 — 2026-06-07 · “Why us” benefits page</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New [sssj_why_us] shortcode — a point-form “Why us” / benefits page, each point with a short blurb: everything connected in one place, plugged into the community Facebook groups, purpose-built for social services, employment + contracting side by side, résumé/flyer creation, you control your privacy (hide your profile), high visibility, and giving back with fair pricing (participants free).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Add it via Settings → Pages → “Why us (benefits)” (Create page inserts the shortcode), or place [sssj_why_us] on any page. Edit the list from one place with the shuffles_ssj_why_us filter.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.70.0 — 2026-06-07 · more hero buttons · featured-role teaser</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Hero banner [sssj_hero] now supports up to FOUR call-to-action buttons (button_text/url, button2_*, button3_*, button4_*). The first is the primary button; the rest are outline buttons.', 'shuffles-social-services-jobs' ); ?></li>

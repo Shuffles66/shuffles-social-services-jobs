@@ -33,6 +33,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 			<?php Shuffles_SSJ_Shortcodes::render_readme( 'orgs' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="org">
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search by company name…', 'shuffles-social-services-jobs' ); ?>" />
+			<div class="sssj-break" aria-hidden="true"></div>
 			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
 			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />

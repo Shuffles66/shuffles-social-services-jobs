@@ -476,6 +476,8 @@ class Shuffles_SSJ_Admin {
 			'page_dashboard'   => '[sssj_dashboard]',
 			'page_swipe'       => '[sssj_swipe]',
 			'page_tests'       => '[sssj_tests]',
+			'page_why_us'      => '[sssj_why_us]',
+			'page_join'        => '[sssj_join]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );

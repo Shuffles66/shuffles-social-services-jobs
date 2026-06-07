@@ -34,6 +34,78 @@ class Shuffles_SSJ_Display {
 		add_shortcode( 'sssj_stats', array( $this, 'stats' ) );
 		add_shortcode( 'sssj_featured', array( $this, 'featured' ) );
 		add_shortcode( 'sssj_recent', array( $this, 'recent' ) );
+		add_shortcode( 'sssj_why_us', array( $this, 'why_us' ) );
+		add_shortcode( 'sssj_join', array( $this, 'join' ) );
+		// Stop the editor's "smart quotes" (wptexturize) from mangling attribute quotes inside our
+		// shortcodes — otherwise multi-attribute tags like [sssj_hero button2_text="…"] lose all but
+		// the first button. This keeps straight quotes intact so every attribute parses.
+		add_filter( 'no_texturize_shortcodes', array( $this, 'no_texturize_shortcodes' ) );
+	}
+
+	/** Exempt the plugin's attribute-bearing shortcodes from wptexturize quote-curling. */
+	public function no_texturize_shortcodes( $list ) {
+		return array_merge(
+			(array) $list,
+			array(
+				'sssj_hero', 'sssj_stats', 'sssj_featured', 'sssj_recent', 'sssj_why_us',
+				'sssj_menu', 'sssj_job_board', 'sssj_tfn_board', 'sssj_abn_board',
+				'sssj_worker_directory', 'sssj_org_directory', 'sssj_need_board', 'sssj_guides',
+			)
+		);
+	}
+
+	/**
+	 * Single source of truth for the "Why us" benefits (icon + heading + plain-English blurb).
+	 * Filterable so the list can be tuned in one place.
+	 *
+	 * @return array[]
+	 */
+	public static function why_us_benefits() {
+		return apply_filters(
+			'shuffles_ssj_why_us',
+			array(
+				array(
+					'icon' => '🔗',
+					'h'    => __( 'Everything connected in one place', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Jobs, workers, providers, participants and suppliers all live in one connected marketplace — so the right people actually find each other, instead of being scattered across a dozen sites and inboxes.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '👥',
+					'h'    => __( 'Plugged into the community groups', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'We connect with the established Shuffles Facebook groups where the sector already gathers, so your listing reaches real, engaged people in the community — not a cold, anonymous job board.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '🎯',
+					'h'    => __( 'Purpose-built for social services', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Made specifically for NDIS, aged care and social services — contractor (ABN) and employee (TFN) work kept properly apart, funding-aware matching, and participant safety built in. Not a generic board bent to fit.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '💼',
+					'h'    => __( 'Employment and contracting, side by side', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Looking for a PAYG job or wanting to contract under your ABN? Both are first-class here — clearly separated boards, the right rules for each, all from one account.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '📄',
+					'h'    => __( 'Résumé & flyer creation', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Turn your profile into a polished résumé, a service flyer and a shareable post in a few clicks — on-brand, accessible, and with sector best-practice built in. No design skills needed.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '🔒',
+					'h'    => __( 'You control your privacy — hide your profile', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Show your profile to everyone, to members only, or hide it entirely. Mask individual details like your rate or phone, and rest easy that participants stay private and first contact runs through a safe relay.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '📣',
+					'h'    => __( 'High visibility', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Strong SEO (your jobs can appear in Google for Jobs), smart synonym search, map and radius matching, and featured placement mean your roles and profile get seen by the right people.', 'shuffles-social-services-jobs' ),
+				),
+				array(
+					'icon' => '🤝',
+					'h'    => __( 'Giving back, fair pricing', 'shuffles-social-services-jobs' ),
+					'p'    => __( 'Built for the community we all belong to. We keep it affordable and never charge unnecessary amounts — participants post for free — because we want to set an example for how this sector should be served.', 'shuffles-social-services-jobs' ),
+				),
+			)
+		);
 	}
 
 	/** Single source of truth for the display shortcodes — drives the Settings → Shortcodes tab. */
@@ -86,7 +158,31 @@ class Shuffles_SSJ_Display {
 				),
 			),
 			array(
-				'tag'    => 'sssj_recent',
+				'tag'    => 'sssj_why_us',
+					'title'  => __( 'Why us (benefits)', 'shuffles-social-services-jobs' ),
+					'what'   => __( 'A point-form list of the platform’s benefits, each with a short blurb — interconnectivity, the community/Facebook-group connection, purpose-built for the sector, employment + contracting, résumé/flyer creation, privacy (hide your profile), high visibility, and giving back with fair pricing. Edit the list in one place via the shuffles_ssj_why_us filter.', 'shuffles-social-services-jobs' ),
+					'where'  => __( 'A "Why us" / "About" page, or a section on the home page.', 'shuffles-social-services-jobs' ),
+					'access' => 'public',
+					'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
+					'atts'   => array(
+						'title="…"' => __( 'Heading (default “Why Shuffles”).', 'shuffles-social-services-jobs' ),
+						'intro="…"' => __( 'Optional sub-text under the heading.', 'shuffles-social-services-jobs' ),
+					),
+				),
+				array(
+					'tag'    => 'sssj_join',
+					'title'  => __( 'Join page', 'shuffles-social-services-jobs' ),
+					'what'   => __( 'A friendly “Join” landing page that welcomes new people and funnels them into onboarding, with Create-account / Log-in and quick links to browse jobs, find a worker or browse organisations.', 'shuffles-social-services-jobs' ),
+					'where'  => __( 'A public "Join" page; link to it from your menu and calls to action.', 'shuffles-social-services-jobs' ),
+					'access' => 'public',
+					'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+					'atts'   => array(
+						'title="…"' => __( 'Heading (default “Join Shuffles”).', 'shuffles-social-services-jobs' ),
+						'intro="…"' => __( 'Optional sub-text under the heading.', 'shuffles-social-services-jobs' ),
+					),
+				),
+				array(
+					'tag'    => 'sssj_recent',
 				'title'  => __( 'Recent items', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'The latest jobs, worker profiles, organisations or participant requests, revealed with a staggered fade-in. Use layout="list" for a compact sidebar widget.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'Home page sections or a sidebar.', 'shuffles-social-services-jobs' ),
@@ -416,6 +512,100 @@ class Shuffles_SSJ_Display {
 			echo '<div class="sssj-panel"><p>' . esc_html__( 'Nothing to show yet.', 'shuffles-social-services-jobs' ) . '</p></div>';
 		}
 		echo '</div>';
+		return ob_get_clean();
+	}
+
+	/**
+	 * "Why us" benefits block — point-form benefits, each with a short blurb.
+	 * Atts: title (heading), intro (sub-text under the heading).
+	 */
+	public function why_us( $atts ) {
+		$a = shortcode_atts(
+			array(
+				'title' => __( 'Why Shuffles', 'shuffles-social-services-jobs' ),
+				'intro' => '',
+			),
+			is_array( $atts ) ? $atts : array(),
+			'sssj_why_us'
+		);
+		$this->enqueue();
+		ob_start();
+		echo '<div class="sssj sssj--display">';
+		if ( '' !== $a['title'] ) {
+			echo '<h2 class="sssj-display__title">' . esc_html( $a['title'] ) . '</h2>';
+		}
+		if ( '' !== $a['intro'] ) {
+			echo '<p class="sssj-whyus__intro">' . esc_html( $a['intro'] ) . '</p>';
+		}
+		echo '<div class="sssj-whyus" data-sssj-reveal>';
+		$i = 0;
+		foreach ( self::why_us_benefits() as $b ) {
+			echo '<article class="sssj-whyus__item sssj-reveal" ' . $this->delay( $i ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<div class="sssj-whyus__icon" aria-hidden="true">' . esc_html( isset( $b['icon'] ) ? $b['icon'] : '✔' ) . '</div>';
+			echo '<div class="sssj-whyus__body"><h3 class="sssj-whyus__h">' . esc_html( $b['h'] ) . '</h3>';
+			echo '<p class="sssj-whyus__p">' . esc_html( $b['p'] ) . '</p></div>';
+			echo '</article>';
+			$i++;
+		}
+		echo '</div></div>';
+		return ob_get_clean();
+	}
+
+	/**
+	 * Custom "Join" landing page — a friendly welcome that funnels people into onboarding,
+	 * with sign-up / log-in and the main entry points. Atts: title, intro.
+	 */
+	public function join( $atts ) {
+		$a = shortcode_atts(
+			array(
+				'title' => __( 'Join Shuffles', 'shuffles-social-services-jobs' ),
+				'intro' => __( 'Whether you’re looking for work, hiring, providing services, or seeking support — you’re in the right place. It takes a minute to get set up.', 'shuffles-social-services-jobs' ),
+			),
+			is_array( $atts ) ? $atts : array(),
+			'sssj_join'
+		);
+		$this->enqueue();
+
+		$pl        = array( 'Shuffles_SSJ_Shortcodes', 'page_link' );
+		$onboard   = is_callable( $pl ) ? call_user_func( $pl, 'page_onboard', '[sssj_onboard]' ) : '';
+		$jobs      = is_callable( $pl ) ? call_user_func( $pl, 'page_job_board', '[sssj_job_board]' ) : '';
+		$workers   = is_callable( $pl ) ? call_user_func( $pl, 'page_worker_directory', '[sssj_worker_directory]' ) : '';
+		$orgs      = is_callable( $pl ) ? call_user_func( $pl, 'page_org_directory', '[sssj_org_directory]' ) : '';
+		$logged_in = is_user_logged_in();
+		$can_reg   = (bool) get_option( 'users_can_register' );
+
+		ob_start();
+		echo '<div class="sssj sssj--display"><div class="sssj-join sssj-reveal" data-sssj-reveal>';
+		if ( '' !== $a['title'] ) { echo '<h2 class="sssj-display__title">' . esc_html( $a['title'] ) . '</h2>'; }
+		if ( '' !== $a['intro'] ) { echo '<p class="sssj-join__intro">' . esc_html( $a['intro'] ) . '</p>'; }
+
+		echo '<div class="sssj-join__primary">';
+		if ( $onboard ) {
+			echo '<a class="sssj-btn sssj-btn--primary sssj-btn--lg" href="' . esc_url( $onboard ) . '">' . esc_html__( 'Let’s get you onboarded', 'shuffles-social-services-jobs' ) . '</a>';
+		}
+		if ( ! $logged_in ) {
+			if ( $can_reg ) {
+				echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--lg" href="' . esc_url( wp_registration_url() ) . '">' . esc_html__( 'Create an account', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+			echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--lg" href="' . esc_url( wp_login_url( $onboard ? $onboard : home_url( '/' ) ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a>';
+		}
+		echo '</div>';
+
+		echo '<p class="sssj-join__steps">' . esc_html__( 'New here? Create your account, then “Get started” walks you through choosing what you’re here to do — and sets up the right profile for you.', 'shuffles-social-services-jobs' ) . '</p>';
+
+		// Quick entry points.
+		$links = array();
+		if ( $jobs ) { $links[] = array( $jobs, __( 'Browse jobs', 'shuffles-social-services-jobs' ) ); }
+		if ( $workers ) { $links[] = array( $workers, __( 'Find a worker', 'shuffles-social-services-jobs' ) ); }
+		if ( $orgs ) { $links[] = array( $orgs, __( 'Browse organisations', 'shuffles-social-services-jobs' ) ); }
+		if ( $links ) {
+			echo '<div class="sssj-join__links"><span class="sssj-join__or">' . esc_html__( 'Or jump straight in:', 'shuffles-social-services-jobs' ) . '</span> ';
+			foreach ( $links as $l ) {
+				echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $l[0] ) . '">' . esc_html( $l[1] ) . '</a> ';
+			}
+			echo '</div>';
+		}
+		echo '</div></div>';
 		return ob_get_clean();
 	}
 
