@@ -220,6 +220,7 @@ class Shuffles_SSJ_Admin {
 			'maps'         => array( 'T8', __( 'Maps & Location', 'shuffles-social-services-jobs' ), 'slate' ),
 			'matching'     => array( 'T9', __( 'Matching', 'shuffles-social-services-jobs' ), 'blue' ),
 			'monetisation' => array( 'T10', __( 'Monetisation', 'shuffles-social-services-jobs' ), 'orange' ),
+			'ads'          => array( 'T31', __( 'Ads (Advanced Ads)', 'shuffles-social-services-jobs' ), 'orange' ),
 			'licensing'    => array( 'T11', __( 'Licensing', 'shuffles-social-services-jobs' ), 'orange' ),
 			'integrations' => array( 'T12', __( 'Integrations', 'shuffles-social-services-jobs' ), 'blue' ),
 			'fields'       => array( 'T21', __( 'Profile Fields', 'shuffles-social-services-jobs' ), 'indigo' ),

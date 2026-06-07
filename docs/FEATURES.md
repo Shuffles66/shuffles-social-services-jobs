@@ -77,8 +77,9 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Employer advertising subscription** — post volume + featured/promoted placement (PMPro / FluentCart).
 - **Provider application-fee subscription** — gates responding to participant needs / ABN tasks.
 - **Resell licence** — FluentCart key + GitHub updater; white-label per sector.
-- **Benefit:** three independent revenue lines from one platform.
-- **Sales angle:** *Three ways to earn — advertisers, providers, and resellers.*
+- **Banner ads (Advanced Ads)** — optional, standalone-safe integration: `[sssj_ad]` plus mapped slots (board top/bottom, single listing) show Advanced Ads banners in the marketplace; never bundled or required.
+- **Benefit:** three independent revenue lines from one platform, plus banner inventory.
+- **Sales angle:** *Three ways to earn — advertisers, providers, and resellers — with banner ad slots on top.*
 
 ## K. Posting, applications & messaging ⬜
 - **Posting forms** for jobs / workers / participant needs (Fluent Forms where simple; custom flow for the privacy-sensitive participant form).

@@ -211,6 +211,11 @@
 .sssj .sssj-policy__help{ background:var(--sssj-bg-soft); }
 .sssj .sssj-policy__help .description{ margin:0; line-height:1.8; }
 
+/* Advanced Ads slots ([sssj_ad] / board + single placements). */
+.sssj--ad-slot{ margin:var(--sssj-s4) 0; }
+.sssj .sssj-ad{ margin:var(--sssj-s3) 0; text-align:center; }
+.sssj .sssj-ad__label{ display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--sssj-muted); margin-bottom:2px; }
+
 /* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }

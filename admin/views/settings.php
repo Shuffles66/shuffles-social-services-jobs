@@ -510,6 +510,41 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<p class="description">' . esc_html__( 'Premium features (monetisation, white-label, AI bridge) require an active licence. Your own primary site can bypass by defining SHUFFLES_SSJ_PRO = true in wp-config.php. Core boards always work. A grace window keeps a valid licence working if the vendor store is briefly unreachable.', 'shuffles-social-services-jobs' ) . '</p>';
 			break;
 
+		case 'ads':
+			$ads_active = class_exists( 'Shuffles_SSJ_Ads' ) && Shuffles_SSJ_Ads::is_active();
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #ea580c;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'Ads (Advanced Ads)', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php echo wp_kses_post( __( 'Show banner ads from the <strong>Advanced Ads</strong> plugin inside the marketplace. This is a light, optional integration — we never bundle or require Advanced Ads. If it is not active, everything here simply renders nothing.', 'shuffles-social-services-jobs' ) ); ?></p>
+				<p>
+					<?php if ( $ads_active ) : ?>
+						<span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Advanced Ads detected — active', 'shuffles-social-services-jobs' ); ?></span>
+					<?php else : ?>
+						<span class="sssj-badge"><?php esc_html_e( 'Advanced Ads not detected', 'shuffles-social-services-jobs' ); ?></span>
+						<span class="description"><?php esc_html_e( 'Install & activate the Advanced Ads plugin, then create your ads/placements.', 'shuffles-social-services-jobs' ); ?></span>
+					<?php endif; ?>
+				</p>
+				<p class="description"><?php echo wp_kses_post( __( 'Place an ad anywhere with <code>[sssj_ad placement="your-placement-slug"]</code>, <code>[sssj_ad id="123"]</code> or <code>[sssj_ad group="4"]</code>. Or map a placement to a slot below and the boards / single-listing pages show it automatically. A slot value can be a placement slug, or <code>id:123</code> to target a single ad.', 'shuffles-social-services-jobs' ) ); ?></p>
+			</div>
+			<?php
+			$open_form( 'ads' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'ads_enabled', __( 'Show Advanced Ads in the marketplace', 'shuffles-social-services-jobs' ), __( 'Master switch. Off = no plugin-managed ad slots render and [sssj_ad] outputs nothing (your other Advanced Ads placements elsewhere on the site are unaffected).', 'shuffles-social-services-jobs' ) );
+			if ( class_exists( 'Shuffles_SSJ_Ads' ) ) {
+				foreach ( Shuffles_SSJ_Ads::slots() as $skey => $slabel ) {
+					$okey = 'ad_slot_' . $skey;
+					$val  = (string) $this->settings()->get( $okey, '' );
+					echo '<tr><th scope="row">' . esc_html( $slabel ) . '</th><td>';
+					echo '<input type="text" class="regular-text" name="' . esc_attr( Shuffles_SSJ_Settings::OPTION_KEY . '[' . $okey . ']' ) . '" value="' . esc_attr( $val ) . '" placeholder="' . esc_attr__( 'placement-slug or id:123', 'shuffles-social-services-jobs' ) . '" />';
+					echo '<p class="description">' . esc_html__( 'Advanced Ads placement slug to show in this slot (leave blank for none).', 'shuffles-social-services-jobs' ) . '</p>';
+					echo '</td></tr>';
+				}
+			}
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+			break;
+
 		case 'reviews':
 			?>
 			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #d97706;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
@@ -1055,6 +1090,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.89.0 — 2026-06-07 · Advanced Ads integration (banners in the marketplace)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Optional, standalone-safe integration with the Advanced Ads plugin (never bundled or required). New [sssj_ad] shortcode places a banner anywhere by placement slug, ad id or group id.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Named ad slots — Board top, Board bottom and Single listing (below content) — map an Advanced Ads placement to each in the new Settings → Ads tab; the boards and listing pages then show them automatically (a slot value can be a placement slug or id:123).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Detection + master on/off switch: shows whether Advanced Ads is active; if it is inactive or ads are switched off, nothing renders and nothing breaks. Ads are labelled “Advertisement”.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testing + Shortcodes reference updated. (Migrating existing banners from another site is a separate WordPress/Advanced Ads export-import — see the migration runbook.)', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.88.0 — 2026-06-07 · policies completed & published</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'All ten platform policies drafted as formal /docs templates: Privacy, NDIS Code of Conduct, Incident Management & Reportable Incidents, Safeguarding & Risk, Terms of Use / Acceptable Use, Worker Screening & Verification, Data Retention & Destruction, Cookie & Consent, and Anti-Discrimination & Inclusion (Complaints was already drafted).', 'shuffles-social-services-jobs' ); ?></li>

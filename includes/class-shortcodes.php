@@ -49,6 +49,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
 		add_shortcode( 'sssj_workflows', array( $this, 'workflows_panel' ) );
 		add_shortcode( 'sssj_policies', array( $this, 'policies_panel' ) );
+		add_shortcode( 'sssj_ad', array( 'Shuffles_SSJ_Ads', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -58,6 +59,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_filter( 'the_content', array( $this, 'maybe_worker_matches' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_reviews' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_reviews' ) );
+		add_filter( 'the_content', array( $this, 'maybe_listing_ad' ) );
 
 		// Optional: auto-output the navigation menu at the top of every page (testing aid).
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
@@ -324,6 +326,19 @@ class Shuffles_SSJ_Shortcodes {
 				),
 			),
 			array(
+				'tag'    => 'sssj_ad',
+				'title'  => __( 'Advertisement (Advanced Ads)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Displays an Advanced Ads banner anywhere you place it — by placement slug ([sssj_ad placement="sidebar"]), by ad id ([sssj_ad id="123"]) or by group ([sssj_ad group="4"]). Requires the Advanced Ads plugin to be active; renders nothing if it is not, or if marketplace ads are switched off (Settings → Ads). The boards and single-listing pages can also show ads automatically via mapped slots — no shortcode needed.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'Anywhere — a sidebar widget/block, inside content, or on a board/landing page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Monetisation', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'placement="…"' => __( 'An Advanced Ads placement slug.', 'shuffles-social-services-jobs' ),
+					'id="…"'        => __( 'A specific Advanced Ads ad id.', 'shuffles-social-services-jobs' ),
+					'group="…"'     => __( 'An Advanced Ads group id.', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
 				'tag'    => 'sssj_saved_searches',
 				'title'  => __( 'Saved searches', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'Lets a logged-in member manage the searches they saved (via the “Save & alert me” button on the directories) and get a daily email when new listings match. Remove searches here.', 'shuffles-social-services-jobs' ),
@@ -587,7 +602,12 @@ class Shuffles_SSJ_Shortcodes {
 			)
 		);
 		wp_reset_postdata();
-		return ob_get_clean();
+		$out = ob_get_clean();
+		// Optional Advanced Ads slots above/below the board (empty unless Advanced Ads is active + mapped).
+		if ( class_exists( 'Shuffles_SSJ_Ads' ) ) {
+			$out = Shuffles_SSJ_Ads::slot( 'board_top' ) . $out . Shuffles_SSJ_Ads::slot( 'board_bottom' );
+		}
+		return $out;
 	}
 
 	/* --- Maps helpers --- */
@@ -1989,6 +2009,17 @@ class Shuffles_SSJ_Shortcodes {
 			$html = Shuffles_SSJ_Reviews::render_for( 'org', get_the_ID() );
 			if ( $html ) {
 				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Optional Advanced Ads slot below a single job/worker/org listing (empty unless active + mapped). */
+	public function maybe_listing_ad( $content ) {
+		if ( is_singular( array( 'sssj_job', 'sssj_worker', 'sssj_org' ) ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Ads' ) ) {
+			$ad = Shuffles_SSJ_Ads::slot( 'single' );
+			if ( $ad ) {
+				return $content . '<div class="sssj sssj--ad-slot">' . $ad . '</div>';
 			}
 		}
 		return $content;
