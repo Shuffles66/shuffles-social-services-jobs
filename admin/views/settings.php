@@ -1145,6 +1145,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.95.0 · 2026-06-07 · feature spotlight: a real ball of light tracing the border</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “Today’s Highlighted Site Feature” tile now shows a bright ball of light that continuously traces around the outside of the border (a soft glowing comet over a static rainbow edge), instead of the previous brief, hard-to-see effect. It still respects reduce-motion.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.94.0 · 2026-06-07 · Home menu item + feature spotlight link fix</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Added a “Home” item to the navigation (both the [sssj_menu] bar and the synced “Jobs & Engagements” menu), shown first.', 'shuffles-social-services-jobs' ); ?></li>
