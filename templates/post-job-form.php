@@ -63,6 +63,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					<label><?php esc_html_e( 'Engagement basis', 'shuffles-social-services-jobs' ); ?> *</label>
 					<label><input type="radio" name="engagement_basis" value="tfn" checked /> <?php esc_html_e( 'TFN — employee position (no ABN)', 'shuffles-social-services-jobs' ); ?></label>
 					<label><input type="radio" name="engagement_basis" value="abn" /> <?php esc_html_e( 'ABN — contractor / sole-trader (ABN required)', 'shuffles-social-services-jobs' ); ?></label>
+					<label><input type="radio" name="engagement_basis" value="vol" /> <?php esc_html_e( 'Volunteer — unpaid role (no ABN, no pay)', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
 				<div class="sssj-field">

@@ -24,6 +24,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_job_board', array( $this, 'board' ) );
 		add_shortcode( 'sssj_tfn_board', array( $this, 'tfn_board' ) );
 		add_shortcode( 'sssj_abn_board', array( $this, 'abn_board' ) );
+		add_shortcode( 'sssj_volunteer_board', array( $this, 'volunteer_board' ) );
 		add_shortcode( 'sssj_post_job', array( $this, 'post_job_form' ) );
 		add_shortcode( 'sssj_worker_directory', array( $this, 'worker_directory' ) );
 		add_shortcode( 'sssj_post_worker', array( $this, 'post_worker_form' ) );
@@ -121,6 +122,15 @@ class Shuffles_SSJ_Shortcodes {
 				'title'  => __( 'Contractor jobs board (ABN only)', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'Shows ONLY ABN contractor / sole-trader engagements (worker invoices via an ABN). Never shows TFN listings.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A public "Contractor & ABN engagements" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+			),
+			array(
+				'tag'    => 'sssj_volunteer_board',
+				'title'  => __( 'Volunteer opportunities board', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows ONLY volunteer (unpaid) roles. Never shows paid TFN/ABN listings — segregation is enforced in the query layer, just like the other boards.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public "Volunteer opportunities" page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
 				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
@@ -490,6 +500,15 @@ class Shuffles_SSJ_Shortcodes {
 	public function abn_board( $atts ) {
 		$atts = is_array( $atts ) ? $atts : array();
 		$atts['basis'] = 'abn';
+		return $this->board( $atts );
+	}
+
+	public function volunteer_board( $atts ) {
+		$atts = is_array( $atts ) ? $atts : array();
+		$atts['basis'] = 'vol';
+		if ( empty( $atts['title'] ) ) {
+			$atts['title'] = __( 'Volunteer opportunities', 'shuffles-social-services-jobs' );
+		}
 		return $this->board( $atts );
 	}
 
@@ -1351,6 +1370,7 @@ class Shuffles_SSJ_Shortcodes {
 		switch ( $board ) {
 			case 'tfn':    $html = $this->tfn_board( array() ); break;
 			case 'abn':    $html = $this->abn_board( array() ); break;
+			case 'vol':    $html = $this->volunteer_board( array() ); break;
 			case 'worker': $html = $this->worker_directory( array() ); break;
 			case 'org':    $html = $this->org_directory( array() ); break;
 			case 'need':   $html = $this->need_board( array() ); break;

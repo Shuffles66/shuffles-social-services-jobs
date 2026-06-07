@@ -21,6 +21,22 @@ class Shuffles_SSJ_Query {
 	 * @param array  $extra paged, posts_per_page, category (slug), s (search).
 	 * @return array
 	 */
+	/** Human label for an engagement basis. $short = compact form for badges. */
+	public static function basis_label( $basis, $short = false ) {
+		if ( 'tfn' === $basis ) {
+			return $short ? __( 'TFN', 'shuffles-social-services-jobs' ) : __( 'TFN (employee)', 'shuffles-social-services-jobs' );
+		}
+		if ( 'vol' === $basis ) {
+			return __( 'Volunteer', 'shuffles-social-services-jobs' );
+		}
+		return $short ? __( 'ABN', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' );
+	}
+
+	/** Badge CSS modifier (tfn|abn|vol) for an engagement basis. */
+	public static function basis_class( $basis ) {
+		return 'tfn' === $basis ? 'tfn' : ( 'vol' === $basis ? 'vol' : 'abn' );
+	}
+
 	public static function base_args( $basis = '', $extra = array() ) {
 		$args = array(
 			'post_type'      => 'sssj_job',
@@ -33,7 +49,7 @@ class Shuffles_SSJ_Query {
 		);
 
 		$basis = sanitize_key( (string) $basis );
-		if ( in_array( $basis, array( 'abn', 'tfn' ), true ) ) {
+		if ( in_array( $basis, array( 'abn', 'tfn', 'vol' ), true ) ) {
 			$args['meta_query'][] = array(
 				'key'   => 'engagement_basis',
 				'value' => $basis,

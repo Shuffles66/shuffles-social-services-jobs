@@ -462,6 +462,7 @@ class Shuffles_SSJ_Admin {
 			'page_job_board'   => '[sssj_job_board]',
 			'page_tfn_board'   => '[sssj_tfn_board]',
 			'page_abn_board'   => '[sssj_abn_board]',
+			'page_volunteer_board' => '[sssj_volunteer_board]',
 			'page_post_job'    => '[sssj_post_job]',
 			'page_my_listings' => '[sssj_my_listings]',
 			'page_messages'    => '[sssj_messages]',

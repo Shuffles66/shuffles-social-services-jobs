@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.79.0 (2026-06-07)';
+		return 'v0.80.0 (2026-06-07)';
 	}
 
 	/**
@@ -44,6 +44,7 @@ class Shuffles_SSJ_Business_Rules {
 					'rules' => array(
 						__( 'Every job is either ABN (contractor/sole-trader, invoices) or TFN (employee, wages with tax withheld). Participant support requests are always ABN.', 'shuffles-social-services-jobs' ),
 						__( 'The employee board never shows contractor roles and vice-versa — this is enforced in the data layer, not just hidden on the page.', 'shuffles-social-services-jobs' ),
+						__( 'Volunteer (unpaid) is a third type with its own board ([sssj_volunteer_board]); volunteer roles never appear on the paid TFN/ABN boards. Any logged-in member can apply (no ABN, no pay).', 'shuffles-social-services-jobs' ),
 						__( 'An ABN is required for contractor advertisers, all organisations, and any worker responding to ABN or participant work. It is validated (checksum), and never asked for on TFN roles.', 'shuffles-social-services-jobs' ),
 					),
 				),

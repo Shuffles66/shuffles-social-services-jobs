@@ -243,7 +243,7 @@ class Shuffles_SSJ_Frontend_Forms {
 		$title = isset( $_POST['title'] ) ? sanitize_text_field( wp_unslash( $_POST['title'] ) ) : '';
 		$basis = isset( $_POST['engagement_basis'] ) ? sanitize_key( wp_unslash( $_POST['engagement_basis'] ) ) : '';
 
-		if ( '' === $title || ! in_array( $basis, array( 'abn', 'tfn' ), true ) ) {
+		if ( '' === $title || ! in_array( $basis, array( 'abn', 'tfn', 'vol' ), true ) ) {
 			wp_safe_redirect( add_query_arg( 'sssj_posted', 'error', $redirect ) );
 			exit;
 		}

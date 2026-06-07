@@ -626,6 +626,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_job_board', __( 'All jobs board', 'shuffles-social-services-jobs' ), '[sssj_job_board]', __( 'Both bases in a labelled split.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tfn_board', __( 'TFN (employee) board', 'shuffles-social-services-jobs' ), '[sssj_tfn_board]', __( 'Employee positions only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_abn_board', __( 'ABN (contractor) board', 'shuffles-social-services-jobs' ), '[sssj_abn_board]', __( 'Contractor / ABN engagements only.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_volunteer_board', __( 'Volunteer opportunities board', 'shuffles-social-services-jobs' ), '[sssj_volunteer_board]', __( 'Unpaid volunteer roles only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_worker_directory', __( 'Worker directory', 'shuffles-social-services-jobs' ), '[sssj_worker_directory]', __( 'Find a worker (public).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_org_directory', __( 'Organisations directory', 'shuffles-social-services-jobs' ), '[sssj_org_directory]', __( 'Browse employers/companies (SEO-able).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_swipe', __( 'Discover providers (swipe)', 'shuffles-social-services-jobs' ), '[sssj_swipe]', __( 'Tinder-style swipe deck of providers.', 'shuffles-social-services-jobs' ) );
@@ -923,6 +924,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.80.0 — 2026-06-07 · Volunteer roles as their own opportunity type</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Volunteer (unpaid) is now a third engagement type alongside TFN and ABN. Choose “Volunteer” when posting a job (no ABN, no pay).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_volunteer_board] shows only volunteer roles — segregated in the query layer, just like the TFN and ABN boards (set its page in Settings → Pages). Volunteer roles show a green “Volunteer” badge.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Applying to a volunteer role is open to any logged-in member (no ABN required).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.79.0 — 2026-06-07 · “Open to…” options (visa sponsorship · work placements · volunteers)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Jobs and organisations can now flag what they’re open to: ✈️ open to overseas applicants / visa sponsorship, and 🎓 work-placement (student placement) enquiries. Organisations can also flag 🤝 “volunteers welcome”.', 'shuffles-social-services-jobs' ); ?></li>

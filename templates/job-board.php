@@ -99,7 +99,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuff
 					<div class="sssj-row">
 						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $pid, isset( $center ) ? $center : null ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $featured ) : ?><span class="sssj-badge sssj-badge--featured" data-i18n="featured"><?php esc_html_e( '★ Featured', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
-						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis_m ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis_m ? __( 'TFN (employee)', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' ) ); ?></span>
+						<span class="sssj-badge sssj-badge--<?php echo esc_attr( Shuffles_SSJ_Query::basis_class( $basis_m ) ); ?>"><?php echo esc_html( Shuffles_SSJ_Query::basis_label( $basis_m ) ); ?></span>
 						<?php if ( $etype ) : ?><span class="sssj-badge"><?php echo esc_html( 'one-off' === $etype ? __( 'One-off', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
 						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php echo Shuffles_SSJ_Shortcodes::openness_badges( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>

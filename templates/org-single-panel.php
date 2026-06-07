@@ -141,7 +141,7 @@ $extra   = is_array( $extra ) ? $extra : array();
 					?>
 					<div class="sssj-row" style="justify-content:space-between;border-bottom:1px solid #e2e8f0;padding:6px 0">
 						<a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
-						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis ? __( 'TFN', 'shuffles-social-services-jobs' ) : __( 'ABN', 'shuffles-social-services-jobs' ) ); ?></span>
+						<span class="sssj-badge sssj-badge--<?php echo esc_attr( Shuffles_SSJ_Query::basis_class( $basis ) ); ?>"><?php echo esc_html( Shuffles_SSJ_Query::basis_label( $basis, true ) ); ?></span>
 					</div>
 				<?php endwhile; wp_reset_postdata(); ?>
 			</div>

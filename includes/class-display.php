@@ -718,7 +718,7 @@ class Shuffles_SSJ_Display {
 		echo '<h3 style="margin-top:0"><a href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html( get_the_title( $id ) ) . '</a></h3>';
 		echo '<div class="sssj-row">';
 		if ( $promoted ) { echo '<span class="sssj-badge sssj-badge--featured">' . esc_html__( '★ Featured', 'shuffles-social-services-jobs' ) . '</span>'; }
-		if ( $basis ) { echo '<span class="sssj-badge sssj-badge--' . esc_attr( 'tfn' === $basis ? 'tfn' : 'abn' ) . '">' . esc_html( 'tfn' === $basis ? __( 'TFN', 'shuffles-social-services-jobs' ) : __( 'ABN', 'shuffles-social-services-jobs' ) ) . '</span>'; }
+		if ( $basis ) { echo '<span class="sssj-badge sssj-badge--' . esc_attr( Shuffles_SSJ_Query::basis_class( $basis ) ) . '">' . esc_html( Shuffles_SSJ_Query::basis_label( $basis, true ) ) . '</span>'; }
 		echo Shuffles_SSJ_Shortcodes::openness_badges( $id ); // phpcs:ignore WordPress.Security.EscapeOutput
 		echo '</div>';
 		if ( $suburb || $state ) { echo '<p>📍 ' . esc_html( trim( $suburb . ' ' . $state ) ) . '</p>'; }
