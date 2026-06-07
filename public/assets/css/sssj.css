@@ -571,3 +571,26 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 
 /* Force a filter row to break onto its own line (location group below the search inputs). */
 .sssj .sssj-row > .sssj-break{ flex-basis:100%; height:0; margin:0; border:0; padding:0; }
+
+/* ── Why us — layout & font options ───────────────────────────────────────── */
+/* Carousel: a horizontal, snap-scrolling row; --sssj-whyus-per sets cards in view. */
+.sssj .sssj-whyus--carousel{
+	display:flex; grid-template-columns:none; gap:var(--sssj-s4);
+	overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:var(--sssj-s3);
+	-webkit-overflow-scrolling:touch;
+}
+.sssj .sssj-whyus--carousel .sssj-whyus__item{
+	scroll-snap-align:start;
+	flex:0 0 calc((100% - (var(--sssj-whyus-per,3) - 1) * var(--sssj-s4)) / var(--sssj-whyus-per,3));
+	min-width:240px;
+}
+/* Font: match the page/theme (default) vs the plugin/brand font. */
+.sssj .sssj-whyus--themefont,
+.sssj .sssj-whyus--themefont *{ font-family:inherit; }
+.sssj .sssj-whyus--brandfont,
+.sssj .sssj-whyus--brandfont *{ font-family:var(--sssj-font, inherit); }
+/* Small screens: a fixed column count collapses so cards stay readable. */
+@media (max-width:640px){
+	.sssj .sssj-whyus--grid{ grid-template-columns:1fr !important; }
+	.sssj .sssj-whyus--carousel .sssj-whyus__item{ flex-basis:85%; }
+}

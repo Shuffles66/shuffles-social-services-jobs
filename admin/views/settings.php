@@ -915,6 +915,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.73.0 — 2026-06-07 · “Why us” layout options (carousel / columns / rows / font)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( '[sssj_why_us] now supports layout="grid" (default) or layout="carousel" (a horizontal, snap-scrolling row).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'per_row="N" sets the number of columns (grid) or cards in view (carousel); rows="N" limits how many rows show (caps to per_row × rows benefits). Leave blank for a responsive auto layout.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'font="theme" (default) makes the block use the same font as the page/theme; font="brand" uses the plugin’s configured font. On small screens grids collapse to one column so cards stay readable.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.72.0 — 2026-06-07 · Join page · hero buttons fix · location layout</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New [sssj_join] custom “Join” page — a friendly welcome that funnels people into onboarding, with Create-account / Log-in and quick links (browse jobs, find a worker, browse organisations). Add it via Settings → Pages → “Join (welcome / get started)”.', 'shuffles-social-services-jobs' ); ?></li>

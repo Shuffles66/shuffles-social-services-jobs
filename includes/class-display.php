@@ -12,6 +12,8 @@
  *   [sssj_stats show="jobs,workers,orgs,placed" title=""]
  *   [sssj_featured count="3" title="Featured roles"]
  *   [sssj_recent type="jobs|workers|orgs|needs" count="6" layout="grid|list" title=""]
+ *   [sssj_why_us title="" intro="" layout="grid|carousel" per_row="3" rows="2" font="theme|brand"]
+ *   [sssj_join title="" intro=""]
  *
  * @package Shuffles_SSJ
  */
@@ -165,8 +167,12 @@ class Shuffles_SSJ_Display {
 					'access' => 'public',
 					'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
 					'atts'   => array(
-						'title="…"' => __( 'Heading (default “Why Shuffles”).', 'shuffles-social-services-jobs' ),
-						'intro="…"' => __( 'Optional sub-text under the heading.', 'shuffles-social-services-jobs' ),
+						'title="…"'           => __( 'Heading (default “Why Shuffles”).', 'shuffles-social-services-jobs' ),
+						'intro="…"'           => __( 'Optional sub-text under the heading.', 'shuffles-social-services-jobs' ),
+						'layout="grid|carousel"' => __( 'grid (default) or a horizontal scrolling carousel.', 'shuffles-social-services-jobs' ),
+						'per_row="3"'         => __( 'Columns per row (grid) or cards in view (carousel). Leave 0/blank for responsive auto.', 'shuffles-social-services-jobs' ),
+						'rows="2"'            => __( 'Show only this many rows — caps to per_row × rows items. 0/blank shows all.', 'shuffles-social-services-jobs' ),
+						'font="theme|brand"' => __( 'theme (default — match the page/theme font) or brand (the plugin’s configured font).', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(
@@ -522,13 +528,36 @@ class Shuffles_SSJ_Display {
 	public function why_us( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'title' => __( 'Why Shuffles', 'shuffles-social-services-jobs' ),
-				'intro' => '',
+				'title'   => __( 'Why Shuffles', 'shuffles-social-services-jobs' ),
+				'intro'   => '',
+				'layout'  => 'grid',   // grid | carousel
+				'per_row' => 0,        // columns (grid) / cards-in-view (carousel); 0 = responsive auto
+				'rows'    => 0,        // cap to per_row × rows items; 0 = show all
+				'font'    => 'theme',  // theme (inherit the page/theme font) | brand (the plugin font)
 			),
 			is_array( $atts ) ? $atts : array(),
 			'sssj_why_us'
 		);
 		$this->enqueue();
+
+		$layout  = ( 'carousel' === $a['layout'] ) ? 'carousel' : 'grid';
+		$per_row = max( 0, (int) $a['per_row'] );
+		$rows    = max( 0, (int) $a['rows'] );
+		$font    = ( 'brand' === $a['font'] ) ? 'brand' : 'theme';
+
+		$items = self::why_us_benefits();
+		if ( $per_row > 0 && $rows > 0 ) {
+			$items = array_slice( $items, 0, $per_row * $rows );
+		}
+
+		$classes = 'sssj-whyus sssj-whyus--' . $layout . ' sssj-whyus--' . $font . 'font';
+		$style   = '';
+		if ( $per_row > 0 ) {
+			$style = ( 'grid' === $layout )
+				? 'grid-template-columns:repeat(' . $per_row . ',minmax(0,1fr))'
+				: '--sssj-whyus-per:' . $per_row;
+		}
+
 		ob_start();
 		echo '<div class="sssj sssj--display">';
 		if ( '' !== $a['title'] ) {
@@ -537,9 +566,9 @@ class Shuffles_SSJ_Display {
 		if ( '' !== $a['intro'] ) {
 			echo '<p class="sssj-whyus__intro">' . esc_html( $a['intro'] ) . '</p>';
 		}
-		echo '<div class="sssj-whyus" data-sssj-reveal>';
+		echo '<div class="' . esc_attr( $classes ) . '"' . ( '' !== $style ? ' style="' . esc_attr( $style ) . '"' : '' ) . ' data-sssj-reveal>';
 		$i = 0;
-		foreach ( self::why_us_benefits() as $b ) {
+		foreach ( $items as $b ) {
 			echo '<article class="sssj-whyus__item sssj-reveal" ' . $this->delay( $i ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput
 			echo '<div class="sssj-whyus__icon" aria-hidden="true">' . esc_html( isset( $b['icon'] ) ? $b['icon'] : '✔' ) . '</div>';
 			echo '<div class="sssj-whyus__body"><h3 class="sssj-whyus__h">' . esc_html( $b['h'] ) . '</h3>';
