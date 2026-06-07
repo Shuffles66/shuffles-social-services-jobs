@@ -913,6 +913,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.63.0 — 2026-06-07 · instant AJAX filtering · “I need support” first</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Directory filtering is now instant. When you change the search box, location, radius, categories or any filter on the Jobs, Employee, Contractor, Worker, Organisations and Participant-request boards, only the result tiles refresh — the page no longer reloads or jumps to the top, and your cursor stays in the search box. The address bar still updates so the filtered view is shareable.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Pagination (Next / Previous / page numbers) on those boards also loads in place via AJAX, with the Shuffles spinner while results load.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Graceful fallback: if a board hasn’t opted in or JavaScript is unavailable, filtering still works the old way (a normal page reload).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Onboarding (Get started) now lists “I need support” as the first group of hats, ahead of “I’m looking for work” and “I offer work or services”.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.62.0 — 2026-06-07 · page mappings for onboarding / dashboard / swipe / tests</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Settings → Pages now includes mappings (lookup / create / edit) for the Get started (onboarding), Member dashboard (all-in-one hub), Discover providers (swipe) and Plugin tests pages — so they can be created and placed like the other pages.', 'shuffles-social-services-jobs' ); ?></li>

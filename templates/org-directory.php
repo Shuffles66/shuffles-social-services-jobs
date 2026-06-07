@@ -31,7 +31,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 	<div class="sssj-panel">
 		<h2 data-i18n="d_orgs"><?php esc_html_e( 'Organisations', 'shuffles-social-services-jobs' ); ?></h2>
 			<?php Shuffles_SSJ_Shortcodes::render_readme( 'orgs' ); ?>
-		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
+		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="org">
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search by company name…', 'shuffles-social-services-jobs' ); ?>" />
 			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
@@ -76,6 +76,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 		<div class="sssj-panel sssj-map-panel" style="padding:0;overflow:hidden"><div data-sssj-map style="height:320px;width:100%"></div></div>
 	<?php endif; ?>
 
+	<div class="sssj-results" data-sssj-results>
 	<?php if ( $query->have_posts() ) : ?>
 		<div class="sssj-grid">
 			<?php
@@ -130,4 +131,5 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 	<?php else : ?>
 		<div class="sssj-panel"><p><?php esc_html_e( 'No organisations yet.', 'shuffles-social-services-jobs' ); ?></p></div>
 	<?php endif; ?>
+	</div>
 </div>

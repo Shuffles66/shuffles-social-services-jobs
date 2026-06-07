@@ -41,7 +41,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 		?>
 		<p class="description"><?php esc_html_e( 'These requests come from participants or their nominees. Identities are protected — first contact is made through the site, never by exposing personal details. Responding requires a recorded ABN.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php Shuffles_SSJ_Shortcodes::render_readme( 'needs' ); ?>
-		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
+		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="need">
 			<select class="sssj-select" name="sssj_support">
 				<option value=""><?php esc_html_e( 'All support types', 'shuffles-social-services-jobs' ); ?></option>
 				<?php
@@ -81,6 +81,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 		<?php if ( class_exists( 'Shuffles_SSJ_Alerts' ) ) { Shuffles_SSJ_Alerts::save_search_button( 'needs' ); } ?>
 	</div>
 
+	<div class="sssj-results" data-sssj-results>
 	<?php if ( $query->have_posts() ) : ?>
 		<div class="sssj-grid">
 			<?php
@@ -151,4 +152,5 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 	<?php else : ?>
 		<div class="sssj-panel"><p><?php esc_html_e( 'No participant requests are open right now.', 'shuffles-social-services-jobs' ); ?></p></div>
 	<?php endif; ?>
+	</div>
 </div>

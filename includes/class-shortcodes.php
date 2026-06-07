@@ -38,6 +38,8 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_swipe', array( $this, 'provider_swipe' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
 		add_action( 'wp_ajax_sssj_swipe_save', array( $this, 'ajax_swipe_save' ) );
+		add_action( 'wp_ajax_sssj_filter', array( $this, 'ajax_filter' ) );
+		add_action( 'wp_ajax_nopriv_sssj_filter', array( $this, 'ajax_filter' ) );
 		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
@@ -302,7 +304,8 @@ class Shuffles_SSJ_Shortcodes {
 			wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 		}
 		if ( ! wp_script_is( 'sssj-filters', 'registered' ) ) {
-			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array(), SHUFFLES_SSJ_VERSION, true );
+			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
+			wp_localize_script( 'sssj-filters', 'SSSJ_Filter', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
 		}
 		// Shuffles spinner — branded busy state for lookups/queries (form submits + AJAX).
 		if ( ! wp_script_is( 'sssj-spinner', 'registered' ) ) {
@@ -1254,6 +1257,49 @@ class Shuffles_SSJ_Shortcodes {
 			update_user_meta( $uid, '_sssj_saved_orgs', $saved );
 		}
 		wp_send_json_success( array( 'count' => count( $saved ) ) );
+	}
+
+	/**
+	 * AJAX: re-run a board/directory query with the submitted filters and return just the results
+	 * fragment (the [data-sssj-results] region), so the front end can swap the tiles without a reload.
+	 */
+	public function ajax_filter() {
+		$board = isset( $_POST['board'] ) ? sanitize_key( wp_unslash( $_POST['board'] ) ) : 'job'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		// Mirror the submitted filter values into $_GET so the board methods (which read $_GET) work.
+		$keys = array( 'sssj_q', 'sssj_loc', 'sssj_lat', 'sssj_lng', 'sssj_radius', 'sssj_paged', 'sssj_funding', 'sssj_sector', 'sssj_orgcat', 'sssj_size', 'sssj_structure', 'sssj_open', 'sssj_cat' );
+		foreach ( $keys as $k ) {
+			if ( isset( $_POST[ $k ] ) ) {
+				$_GET[ $k ] = wp_unslash( $_POST[ $k ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput
+			} else {
+				unset( $_GET[ $k ] );
+			}
+		}
+		switch ( $board ) {
+			case 'tfn':    $html = $this->tfn_board( array() ); break;
+			case 'abn':    $html = $this->abn_board( array() ); break;
+			case 'worker': $html = $this->worker_directory( array() ); break;
+			case 'org':    $html = $this->org_directory( array() ); break;
+			case 'need':   $html = $this->need_board( array() ); break;
+			case 'job':
+			default:       $html = $this->board( array() ); break;
+		}
+		// Slice out the results region.
+		$frag = '';
+		if ( '' !== trim( (string) $html ) ) {
+			$prev = libxml_use_internal_errors( true );
+			$dom  = new DOMDocument();
+			$dom->loadHTML( '<?xml encoding="utf-8" ?>' . $html );
+			libxml_clear_errors();
+			libxml_use_internal_errors( $prev );
+			$xp   = new DOMXPath( $dom );
+			$node = $xp->query( '//*[@data-sssj-results]' )->item( 0 );
+			if ( $node ) {
+				foreach ( $node->childNodes as $c ) {
+					$frag .= $dom->saveHTML( $c );
+				}
+			}
+		}
+		wp_send_json_success( array( 'html' => $frag ) );
 	}
 
 	public function post_org_form( $atts ) {

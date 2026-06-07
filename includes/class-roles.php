@@ -103,12 +103,12 @@ class Shuffles_SSJ_Roles {
 		);
 	}
 
-	/** Group headings for the hat picker (group key => label). */
+	/** Group headings for the hat picker (group key => label). Order = display order. */
 	public static function hat_groups() {
 		return array(
-			'offer'   => __( 'I offer work or services', 'shuffles-social-services-jobs' ),
-			'seek'    => __( 'I’m looking for work', 'shuffles-social-services-jobs' ),
 			'support' => __( 'I need support', 'shuffles-social-services-jobs' ),
+			'seek'    => __( 'I’m looking for work', 'shuffles-social-services-jobs' ),
+			'offer'   => __( 'I offer work or services', 'shuffles-social-services-jobs' ),
 		);
 	}
 

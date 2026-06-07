@@ -30,7 +30,7 @@ $w_pts   = ! empty( $has_points );
 	<div class="sssj-panel">
 		<h2<?php echo empty( $atts['title'] ) ? ' data-i18n="d_workers"' : ''; ?>><?php echo esc_html( $heading ); ?></h2>
 		<?php Shuffles_SSJ_Shortcodes::render_readme( 'workers' ); ?>
-		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
+		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="worker">
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_workers" />
 			<select class="sssj-select" name="sssj_cat[]" multiple data-placeholder="<?php esc_attr_e( 'All services', 'shuffles-social-services-jobs' ); ?>">
 				<?php
@@ -60,6 +60,7 @@ $w_pts   = ! empty( $has_points );
 		<div class="sssj-panel sssj-map-panel" style="padding:0;overflow:hidden"><div data-sssj-map style="height:320px;width:100%"></div></div>
 	<?php endif; ?>
 
+	<div class="sssj-results" data-sssj-results>
 	<?php if ( $query->have_posts() ) : ?>
 		<div class="sssj-grid">
 			<?php
@@ -123,4 +124,5 @@ $w_pts   = ! empty( $has_points );
 			?>
 		</p></div>
 	<?php endif; ?>
+	</div>
 </div>

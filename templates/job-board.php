@@ -32,7 +32,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuff
 		<h2><?php echo esc_html( $heading ); ?></h2>
 			<?php Shuffles_SSJ_Shortcodes::render_readme( 'jobs' ); ?>
 
-		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form>
+		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="<?php echo esc_attr( $basis ? $basis : 'job' ); ?>">
 			<?php
 			// Preserve other query args (e.g. page id) implicitly via current URL.
 			foreach ( array( 'sssj_paged' ) as $drop ) {
@@ -68,6 +68,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuff
 		<div class="sssj-panel sssj-map-panel" style="padding:0;overflow:hidden"><div data-sssj-map style="height:320px;width:100%"></div></div>
 	<?php endif; ?>
 
+	<div class="sssj-results" data-sssj-results>
 	<?php if ( $query->have_posts() ) : ?>
 		<p class="sssj-count"><?php echo esc_html( sprintf( _n( '%d job', '%d jobs', (int) $query->found_posts, 'shuffles-social-services-jobs' ), (int) $query->found_posts ) ); ?></p>
 		<div class="sssj-grid">
@@ -132,4 +133,5 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuff
 	<?php else : ?>
 		<div class="sssj-panel"><p><?php esc_html_e( 'No jobs found. Try widening your search.', 'shuffles-social-services-jobs' ); ?></p></div>
 	<?php endif; ?>
+	</div>
 </div>
