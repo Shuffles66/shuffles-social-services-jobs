@@ -913,6 +913,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.70.0 — 2026-06-07 · more hero buttons · featured-role teaser</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Hero banner [sssj_hero] now supports up to FOUR call-to-action buttons (button_text/url, button2_*, button3_*, button4_*). The first is the primary button; the rest are outline buttons.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Featured roles [sssj_featured] now show a short teaser (about 40 characters) from each advertised position’s description, under the rate.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.69.0 — 2026-06-07 · request to join an organisation (admin approves)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Members can now ask to join an organisation. On any organisation’s profile, a logged-in member sees a “Request to join this organisation” button (with an optional message). They can cancel a pending request.', 'shuffles-social-services-jobs' ); ?></li>

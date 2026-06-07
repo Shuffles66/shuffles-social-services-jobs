@@ -8,7 +8,7 @@
  * Respects prefers-reduced-motion. Privacy: participant requests are logged-in-only and pseudonymous.
  *
  * Shortcodes:
- *   [sssj_hero title="" subtitle="" button_text="" button_url="" button2_text="" button2_url=""]
+ *   [sssj_hero title="" subtitle="" button_text="" button_url="" button2_text="" button2_url="" button3_text="" button3_url="" button4_text="" button4_url=""]
  *   [sssj_stats show="jobs,workers,orgs,placed" title=""]
  *   [sssj_featured count="3" title="Featured roles"]
  *   [sssj_recent type="jobs|workers|orgs|needs" count="6" layout="grid|list" title=""]
@@ -42,7 +42,7 @@ class Shuffles_SSJ_Display {
 			array(
 				'tag'    => 'sssj_hero',
 				'title'  => __( 'Hero banner', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A bold, animated hero banner with a headline, sub-text and up to two call-to-action buttons, plus a “Safety, built in” strip that lists the platform’s privacy & verification guardrails. Great at the very top of the home page.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A bold, animated hero banner with a headline, sub-text and up to four call-to-action buttons (the first is the primary button, the rest are outline buttons), plus a “Safety, built in” strip that lists the platform’s privacy & verification guardrails. Great at the very top of the home page.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'Top of the front page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
@@ -53,6 +53,10 @@ class Shuffles_SSJ_Display {
 					'button_url="…"'   => __( 'Primary button link.', 'shuffles-social-services-jobs' ),
 					'button2_text="…"' => __( 'Optional second button label.', 'shuffles-social-services-jobs' ),
 					'button2_url="…"'  => __( 'Optional second button link.', 'shuffles-social-services-jobs' ),
+					'button3_text="…"' => __( 'Optional third button label.', 'shuffles-social-services-jobs' ),
+					'button3_url="…"'  => __( 'Optional third button link.', 'shuffles-social-services-jobs' ),
+					'button4_text="…"' => __( 'Optional fourth button label.', 'shuffles-social-services-jobs' ),
+					'button4_url="…"'  => __( 'Optional fourth button link.', 'shuffles-social-services-jobs' ),
 					'safety="on|off"'  => __( 'Show the “Safety, built in” guardrails strip (default on).', 'shuffles-social-services-jobs' ),
 				),
 			),
@@ -72,7 +76,7 @@ class Shuffles_SSJ_Display {
 			array(
 				'tag'    => 'sssj_featured',
 				'title'  => __( 'Featured jobs strip', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A highlighted strip of featured (promoted) roles, with a subtle shine animation. Falls back to the newest jobs if none are promoted.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A highlighted strip of featured (promoted) roles, with a subtle shine animation and a short teaser from each role’s description. Falls back to the newest jobs if none are promoted.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'Home page, below the hero.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
@@ -118,6 +122,10 @@ class Shuffles_SSJ_Display {
 				'button_url'   => '',
 				'button2_text' => '',
 				'button2_url'  => '',
+				'button3_text' => '',
+				'button3_url'  => '',
+				'button4_text' => '',
+				'button4_url'  => '',
 				'safety'       => 'on',
 			),
 			is_array( $atts ) ? $atts : array(),
@@ -142,14 +150,22 @@ class Shuffles_SSJ_Display {
 					<?php if ( '' !== $a['subtitle'] ) : ?>
 						<p class="sssj-hero__subtitle"><?php echo esc_html( $a['subtitle'] ); ?></p>
 					<?php endif; ?>
-					<?php if ( ( '' !== $a['button_text'] && '' !== $a['button_url'] ) || ( '' !== $a['button2_text'] && '' !== $a['button2_url'] ) ) : ?>
+					<?php
+					// Collect up to four call-to-action buttons (first = primary, rest = ghost).
+					$sssj_btns = array();
+					foreach ( array( '', '2', '3', '4' ) as $sssj_n ) {
+						$sssj_bt = (string) $a[ 'button' . $sssj_n . '_text' ];
+						$sssj_bu = (string) $a[ 'button' . $sssj_n . '_url' ];
+						if ( '' !== $sssj_bt && '' !== $sssj_bu ) {
+							$sssj_btns[] = array( $sssj_bt, $sssj_bu );
+						}
+					}
+					?>
+					<?php if ( $sssj_btns ) : ?>
 						<div class="sssj-hero__cta">
-							<?php if ( '' !== $a['button_text'] && '' !== $a['button_url'] ) : ?>
-								<a class="sssj-btn sssj-btn--primary sssj-btn--lg" href="<?php echo esc_url( $a['button_url'] ); ?>"><?php echo esc_html( $a['button_text'] ); ?></a>
-							<?php endif; ?>
-							<?php if ( '' !== $a['button2_text'] && '' !== $a['button2_url'] ) : ?>
-								<a class="sssj-btn sssj-btn--ghost sssj-btn--lg sssj-hero__btn2" href="<?php echo esc_url( $a['button2_url'] ); ?>"><?php echo esc_html( $a['button2_text'] ); ?></a>
-							<?php endif; ?>
+							<?php foreach ( $sssj_btns as $sssj_idx => $sssj_b ) : ?>
+								<a class="sssj-btn sssj-btn--lg <?php echo 0 === $sssj_idx ? 'sssj-btn--primary' : 'sssj-btn--ghost sssj-hero__btn2'; ?>" href="<?php echo esc_url( $sssj_b[1] ); ?>"><?php echo esc_html( $sssj_b[0] ); ?></a>
+							<?php endforeach; ?>
 						</div>
 					<?php endif; ?>
 				</div>
@@ -426,6 +442,15 @@ class Shuffles_SSJ_Display {
 		echo '</div>';
 		if ( $suburb || $state ) { echo '<p>📍 ' . esc_html( trim( $suburb . ' ' . $state ) ) . '</p>'; }
 		if ( $rmin > 0 ) { echo '<p>💲 ' . esc_html( __( 'from', 'shuffles-social-services-jobs' ) . ' ' . number_format_i18n( $rmin ) . ' / ' . ( $runit ? $runit : 'hour' ) ) . '</p>'; }
+		// A short teaser (~40 chars) from the advertised position's description.
+		$raw  = get_post_field( 'post_excerpt', $id );
+		if ( '' === trim( (string) $raw ) ) { $raw = get_post_field( 'post_content', $id ); }
+		$desc = trim( wp_strip_all_tags( strip_shortcodes( (string) $raw ) ) );
+		if ( '' !== $desc ) {
+			$snippet = function_exists( 'mb_substr' ) ? mb_substr( $desc, 0, 40 ) : substr( $desc, 0, 40 );
+			$longer  = ( function_exists( 'mb_strlen' ) ? mb_strlen( $desc ) : strlen( $desc ) ) > 40;
+			echo '<p class="sssj-card__desc">' . esc_html( rtrim( $snippet ) . ( $longer ? '…' : '' ) ) . '</p>';
+		}
 		echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( get_permalink( $id ) ) . '">' . esc_html__( 'View job', 'shuffles-social-services-jobs' ) . '</a>';
 		echo '</article>';
 	}
