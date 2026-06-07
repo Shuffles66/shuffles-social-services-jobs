@@ -913,6 +913,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.67.0 — 2026-06-07 · location autocomplete fixes + apply links</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Worker profile: the “Your location” field now has address autocomplete and records the precise lat/long behind the scenes (filling Suburb / State / Postcode), so the profile works correctly in the directory and in radius matching. (The location map/autocomplete script wasn’t being loaded on the worker form.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Boards: choosing a location from the autocomplete now recenters and zooms the results map to that place AND refreshes the results via AJAX (a sensible default radius is applied so the location actually narrows results). Previously the map stayed put and the filter ignored the chosen place.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Apply for a contractor (ABN) job, or respond to a participant request, when your profile has no ABN: the “add a valid ABN” message now includes an “Edit my profile” button/link straight to your profile.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.66.0 — 2026-06-07 · D · multi-user organisations (teams)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Organisations can now have a team. The owner (creator) plus any number of members — each a “Member” or an “Admin” — can belong to one organisation.', 'shuffles-social-services-jobs' ); ?></li>

@@ -143,7 +143,12 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 						</form>
 						<?php
 					} else {
-						echo '<p class="description">' . esc_html__( 'To respond, add a valid ABN to your worker profile. (A provider subscription will also be required.)', 'shuffles-social-services-jobs' ) . '</p>';
+						$profile_url = Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' );
+						echo '<p class="description">' . esc_html__( 'To respond, add a valid ABN to your worker profile. (A provider subscription will also be required.)', 'shuffles-social-services-jobs' );
+						if ( $profile_url ) {
+							echo ' <a href="' . esc_url( $profile_url ) . '">' . esc_html__( 'Edit my profile', 'shuffles-social-services-jobs' ) . '</a>';
+						}
+						echo '</p>';
 					}
 					?>
 				</article>

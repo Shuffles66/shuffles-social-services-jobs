@@ -38,7 +38,11 @@ $uid   = get_current_user_id();
 		} elseif ( Shuffles_SSJ_Applications::already_applied( $job_id, 0, $uid ) ) {
 			echo '<p>' . esc_html__( 'You have applied for this job.', 'shuffles-social-services-jobs' ) . '</p>';
 		} elseif ( ! Shuffles_SSJ_Applications::can_respond( $basis ) ) {
+			$profile_url = Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' );
 			echo '<p>' . esc_html__( 'This is contractor (ABN) work. Add a valid ABN to your worker profile to apply.', 'shuffles-social-services-jobs' ) . '</p>';
+			if ( $profile_url ) {
+				echo '<p><a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $profile_url ) . '">' . esc_html__( 'Edit my profile', 'shuffles-social-services-jobs' ) . '</a></p>';
+			}
 		} else {
 			?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">

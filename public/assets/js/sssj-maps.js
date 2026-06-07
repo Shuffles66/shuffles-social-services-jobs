@@ -9,6 +9,15 @@
 ( function () {
 	'use strict';
 
+	// Shared handle so a place selection can recenter the already-rendered results map.
+	window.SSSJMaps = window.SSSJMaps || {};
+	window.SSSJMaps.focus = function ( lat, lng, zoom ) {
+		var m = window.SSSJMaps.map;
+		if ( ! m || lat == null || lng == null ) { return; }
+		m.setCenter( { lat: parseFloat( lat ), lng: parseFloat( lng ) } );
+		m.setZoom( zoom || 11 );
+	};
+
 	function fillFromPlace( input, place ) {
 		var group = input.closest( '[data-sssj-place-group]' ) || document;
 		var set = function ( sel, val ) {
@@ -58,7 +67,16 @@
 				} );
 				ac.addListener( 'place_changed', function () {
 					var p = ac.getPlace();
-					if ( p && p.geometry ) { fillFromPlace( input, p ); }
+					if ( ! p || ! p.geometry ) { return; }
+					fillFromPlace( input, p );
+					var loc = p.geometry.location;
+					var lat = loc ? loc.lat() : null;
+					var lng = loc ? loc.lng() : null;
+					// On a board filter, recenter the results map and trigger the AJAX refresh.
+					if ( input.closest( '[data-sssj-filter-form]' ) ) {
+						window.SSSJMaps.focus( lat, lng, 11 );
+						input.dispatchEvent( new CustomEvent( 'sssj:placechosen', { bubbles: true, detail: { lat: lat, lng: lng } } ) );
+					}
 				} );
 			} );
 		}
@@ -73,6 +91,7 @@
 				streetViewControl: false,
 				fullscreenControl: false
 			} );
+			window.SSSJMaps.map = map;
 			var bounds = new google.maps.LatLngBounds();
 			var shown = 0;
 			var info = new google.maps.InfoWindow();

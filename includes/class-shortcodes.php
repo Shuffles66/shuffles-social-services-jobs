@@ -729,6 +729,7 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_script( 'sssj-spinner' );
 		wp_enqueue_script( 'sssj-ndis-scan' );
 		wp_enqueue_script( 'sssj-form-enhance' );
+		$this->enqueue_maps(); // place autocomplete on the location field → fills suburb/state/postcode + lat/lng
 		ob_start();
 		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
@@ -1563,6 +1564,33 @@ class Shuffles_SSJ_Shortcodes {
 	/* --- Navigation menu (login-aware) --- */
 
 	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
+	/**
+	 * Static page resolver for templates (no instance handy). Same logic as resolve_page(),
+	 * reading the settings option directly: configured page id → else the page containing the shortcode.
+	 */
+	public static function page_link( $key, $shortcode ) {
+		$opts = get_option( 'shuffles_ssj_settings', array() );
+		$id   = is_array( $opts ) && isset( $opts[ $key ] ) ? (int) $opts[ $key ] : 0;
+		if ( $id && 'publish' === get_post_status( $id ) ) {
+			return (string) get_permalink( $id );
+		}
+		$tag    = trim( $shortcode, '[]' );
+		$cached = get_transient( 'sssj_menu_pg_' . $tag );
+		if ( false === $cached ) {
+			$cached = 0;
+			$pages  = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'posts_per_page' => 50, 'fields' => 'ids', 's' => $tag, 'no_found_rows' => true ) );
+			foreach ( $pages as $pid ) {
+				$p = get_post( $pid );
+				if ( $p && has_shortcode( (string) $p->post_content, $tag ) ) {
+					$cached = (int) $pid;
+					break;
+				}
+			}
+			set_transient( 'sssj_menu_pg_' . $tag, $cached, HOUR_IN_SECONDS );
+		}
+		return $cached ? (string) get_permalink( $cached ) : '';
+	}
+
 	public function resolve_page( $key, $shortcode ) {
 		$id = (int) $this->settings->get( $key, 0 );
 		if ( $id && 'publish' === get_post_status( $id ) ) {

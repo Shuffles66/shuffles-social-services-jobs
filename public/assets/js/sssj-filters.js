@@ -152,6 +152,13 @@
 			form.addEventListener( 'submit', function ( e ) { e.preventDefault(); apply( form, true ); } );
 		}
 
+		// A place chosen from the autocomplete fills lat/lng (see sssj-maps.js) then fires this.
+		// Default the radius so the location actually narrows results, then refresh.
+		form.addEventListener( 'sssj:placechosen', function () {
+			setRadius( form, DEFAULT_RADIUS );
+			apply( form, true );
+		} );
+
 		form.addEventListener( 'change', function ( e ) {
 			if ( ! ready ) { return; }
 			var t = e.target;

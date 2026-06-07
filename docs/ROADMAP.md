@@ -151,6 +151,34 @@ HTML/CSS graphic templates + caption text → copy/download to post manually now
 social later (ties to the syndication/destinations idea, #7). Admin-driven; pulls from real data
 (counts/guardrails/testimonials) so claims stay true.
 
+## Workstream H — Member reviews & ratings (NEW 2026-06-07, John request, to build)
+A **review + star-rating system for Contractors (sole traders) and Providers (organisations)** so members
+can rate/review who they've worked with.
+- **Subject:** a `sssj_worker` (contractor/sole trader) and a `sssj_org` (provider). (Employees/participants
+  are NOT publicly rated — keep the vulnerable side unrated; revisit later if needed.)
+- **Storage sketch:** a custom table `{prefix}sssj_review` (or a `sssj_review` CPT) — `subject_id`,
+  `subject_type`, `reviewer_user_id`, `rating` 1–5, `title`, `body`, `status` (pending/approved/rejected),
+  `created`, optional `engagement_id` (link to an application/booking to prove a real interaction).
+- **Trust/anti-abuse:** **moderated before showing** (mirrors the credential/verify ethos — never
+  auto-published); one review per reviewer per subject (editable); ideally **gated to people who actually
+  engaged** (had an application/message/booking) to stop drive-by/fake reviews; reviewer shown by name or
+  pseudonym per privacy rules; subject can **post one public response** per review.
+- **Display:** aggregate **average + count** as a badge on the directory cards and the profile; full list on
+  the profile (most-recent / highest). Feeds the matcher's "trust" dimension later. Emit `Review`/
+  `AggregateRating` schema.org **only** for public worker/org pages (never participants).
+- **Relation to F (testimonials):** F = owner-curated quotes; H = third-party star reviews. Likely share a
+  moderation queue + display component; decide whether to merge or keep separate at build time.
+
+## Status (shipped, cont.)
+- ✅ **v0.67.0** location fixes: worker-form place **autocomplete + lat/long** (maps script now enqueued on
+  the worker form); board **place-select recenters/zooms the map + fires the AJAX filter** with a default
+  radius (`sssj:placechosen` event; `window.SSSJMaps.focus()`); **ABN-gate apply/respond messages now link to
+  "Edit my profile"** (new static `Shuffles_SSJ_Shortcodes::page_link()`).
+- ⏳ **Known follow-up:** the results **map markers are NOT refreshed after an AJAX filter** (the map sits
+  outside `[data-sssj-results]`, so it keeps the page-load pins; only recenters on place-select). To finish:
+  return updated points in the `sssj_filter` AJAX response and re-plot markers, or move the map into the
+  refreshed region. Logged for a later pass.
+
 ## Later / optional
 - shuffles‑growth AI bridge (the 4 filters); real‑time matching panels; FluentCart Pro product for live
   licensing/billing; full i18n native review; keyless Leaflet/OSM map tiles; richer AU suburb dataset.
