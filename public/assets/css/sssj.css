@@ -216,6 +216,14 @@
 .sssj .sssj-ad{ margin:var(--sssj-s3) 0; text-align:center; }
 .sssj .sssj-ad__label{ display:block; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--sssj-muted); margin-bottom:2px; }
 
+/* Affiliate / referral promo ([sssj_affiliate] + onboarding). */
+.sssj .sssj-affiliate{ border-left:4px solid var(--sssj-success); }
+.sssj .sssj-affiliate__title{ margin-top:0; }
+.sssj .sssj-affiliate__forparticipants{ color:var(--sssj-blue-deep); font-weight:600; }
+.sssj .sssj-affiliate__paypal{ margin:var(--sssj-s3) 0; padding:var(--sssj-s3) var(--sssj-s4); background:#fff7ed; border:1px solid #fed7aa; border-radius:var(--sssj-radius); }
+.sssj .sssj-affiliate__paypal strong{ display:block; color:var(--sssj-ink); margin-bottom:2px; }
+.sssj .sssj-affiliate__later{ margin:var(--sssj-s2) 0; }
+
 /* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }

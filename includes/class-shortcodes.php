@@ -50,6 +50,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_workflows', array( $this, 'workflows_panel' ) );
 		add_shortcode( 'sssj_policies', array( $this, 'policies_panel' ) );
 		add_shortcode( 'sssj_ad', array( 'Shuffles_SSJ_Ads', 'shortcode' ) );
+		add_shortcode( 'sssj_affiliate', array( 'Shuffles_SSJ_Affiliate', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -337,6 +338,15 @@ class Shuffles_SSJ_Shortcodes {
 					'id="…"'        => __( 'A specific Advanced Ads ad id.', 'shuffles-social-services-jobs' ),
 					'group="…"'     => __( 'An Advanced Ads group id.', 'shuffles-social-services-jobs' ),
 				),
+			),
+			array(
+				'tag'    => 'sssj_affiliate',
+				'title'  => __( 'Earn by referring (FluentAffiliate)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A friendly “earn money by referring others” promo card that links members to the affiliate sign-up. It clearly states a PayPal account is needed to be paid, and that it can be set up later. Shown automatically in onboarding (with extra encouragement for participants); use this shortcode to place it elsewhere too, e.g. on the dashboard. Requires the FluentAffiliate plugin (or a configured affiliate URL); renders nothing otherwise. Configure in Settings → Monetisation.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A member dashboard / “Earn” page (it also appears in onboarding automatically).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Monetisation', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
 			),
 			array(
 				'tag'    => 'sssj_saved_searches',
@@ -996,7 +1006,12 @@ class Shuffles_SSJ_Shortcodes {
 			}
 			echo '</div>';
 		}
-		echo '</div></div>';
+		echo '</div>'; // close the first panel
+		// Optional: invite members (especially participants) to earn via referrals — never blocks onboarding.
+		if ( class_exists( 'Shuffles_SSJ_Affiliate' ) ) {
+			echo Shuffles_SSJ_Affiliate::render_card( $uid, $current, 'onboard' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		echo '</div>'; // close the outer wrapper
 		return ob_get_clean();
 	}
 

@@ -466,6 +466,22 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->number_field( 'provider_fc_product', __( 'Provider subscription — FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'FluentCart subscription product required to respond to participant needs / ABN tasks. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
 
 			echo '<tr><td colspan="2"><p class="description">' . wp_kses_post( __( 'Gates are OFF unless "Enable monetisation gates" is ticked. The site resale licence and admins always bypass. You can also plug in custom logic via the <code>shuffles_ssj_has_advertiser_sub</code>, <code>shuffles_ssj_has_provider_sub</code> and <code>shuffles_ssj_fluentcart_active</code> filters.', 'shuffles-social-services-jobs' ) ) . '</p></td></tr>';
+
+			// --- Affiliate / referral earning (FluentAffiliate) ---
+			$aff_active = class_exists( 'Shuffles_SSJ_Affiliate' ) && Shuffles_SSJ_Affiliate::is_active();
+			echo '<tr><th colspan="2" style="padding-top:14px"><strong>' . esc_html__( 'Affiliate / referral earning (FluentAffiliate)', 'shuffles-social-services-jobs' ) . '</strong>';
+			echo ' ' . ( $aff_active
+				? '<span class="sssj-badge sssj-badge--verified">' . esc_html__( 'FluentAffiliate detected', 'shuffles-social-services-jobs' ) . '</span>'
+				: '<span class="sssj-badge">' . esc_html__( 'FluentAffiliate not detected', 'shuffles-social-services-jobs' ) . '</span>' );
+			echo '</th></tr>';
+			echo '<tr><td colspan="2"><p class="description" style="max-width:820px">' . wp_kses_post( __( 'Invite members — <strong>especially participants</strong> — to earn a little income by referring others. A friendly promo card appears in onboarding (and via <code>[sssj_affiliate]</code>) that links to your affiliate sign-up and clearly tells members they need a <strong>PayPal account</strong> to be paid, and that they can set it up <strong>later</strong> — it never blocks onboarding. With FluentAffiliate active we auto-link to the page running <code>[fluent_affiliate_portal]</code>; set a URL below only to override.', 'shuffles-social-services-jobs' ) ) . '</p></td></tr>';
+			$this->checkbox_field( 'affiliate_enabled', __( 'Show the “earn by referring” promo', 'shuffles-social-services-jobs' ), __( 'Master switch for the referral promo card (onboarding + [sssj_affiliate]). Off = it never appears.', 'shuffles-social-services-jobs' ) );
+			$aff_url = (string) $this->settings()->get( 'affiliate_url', '' );
+			echo '<tr><th scope="row">' . esc_html__( 'Affiliate area URL (optional override)', 'shuffles-social-services-jobs' ) . '</th><td>';
+			echo '<input type="url" class="regular-text" name="' . esc_attr( Shuffles_SSJ_Settings::OPTION_KEY . '[affiliate_url]' ) . '" value="' . esc_attr( $aff_url ) . '" placeholder="https://justtasks.com.au/affiliates/" />';
+			echo '<p class="description">' . esc_html__( 'Where members sign up / manage referrals. Leave blank to auto-use your FluentAffiliate portal page.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '</td></tr>';
+
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -1090,6 +1106,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.90.0 — 2026-06-07 · earn by referring (FluentAffiliate in onboarding)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Onboarding now invites members — especially participants — to earn money by referring others. A friendly “Earn money by referring others” card appears at the end of onboarding (extra encouragement for participants), links to the affiliate sign-up, and never blocks finishing onboarding.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Clearly tells members they need a PayPal account to be paid (with a link to create one) and that they can set it up later.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Standalone-safe FluentAffiliate integration (never bundled/required): auto-links to your [fluent_affiliate_portal] page, or a URL you set. New [sssj_affiliate] shortcode places the same card anywhere (e.g. the dashboard). Configure + master switch in Settings → Monetisation.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Renders nothing (no errors) when FluentAffiliate is inactive or the promo is switched off. Testing + Shortcodes reference + FEATURES updated.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.89.0 — 2026-06-07 · Advanced Ads integration (banners in the marketplace)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Optional, standalone-safe integration with the Advanced Ads plugin (never bundled or required). New [sssj_ad] shortcode places a banner anywhere by placement slug, ad id or group id.', 'shuffles-social-services-jobs' ); ?></li>

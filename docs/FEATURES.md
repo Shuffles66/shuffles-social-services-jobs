@@ -78,6 +78,7 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Provider application-fee subscription** — gates responding to participant needs / ABN tasks.
 - **Resell licence** — FluentCart key + GitHub updater; white-label per sector.
 - **Banner ads (Advanced Ads)** — optional, standalone-safe integration: `[sssj_ad]` plus mapped slots (board top/bottom, single listing) show Advanced Ads banners in the marketplace; never bundled or required.
+- **Earn by referring (FluentAffiliate)** — onboarding invites members, **especially participants**, to earn referral income; states the PayPal requirement and that it can be set up later; `[sssj_affiliate]` card + auto-link to the affiliate portal. Optional, standalone-safe.
 - **Benefit:** three independent revenue lines from one platform, plus banner inventory.
 - **Sales angle:** *Three ways to earn — advertisers, providers, and resellers — with banner ad slots on top.*
 
