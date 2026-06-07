@@ -51,6 +51,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_policies', array( $this, 'policies_panel' ) );
 		add_shortcode( 'sssj_ad', array( 'Shuffles_SSJ_Ads', 'shortcode' ) );
 		add_shortcode( 'sssj_affiliate', array( 'Shuffles_SSJ_Affiliate', 'shortcode' ) );
+		add_shortcode( 'sssj_feature_today', array( 'Shuffles_SSJ_Spotlight', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );

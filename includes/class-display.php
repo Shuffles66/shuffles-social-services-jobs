@@ -52,7 +52,7 @@ class Shuffles_SSJ_Display {
 				'sssj_hero', 'sssj_stats', 'sssj_featured', 'sssj_recent', 'sssj_why_us',
 				'sssj_menu', 'sssj_job_board', 'sssj_tfn_board', 'sssj_abn_board',
 				'sssj_worker_directory', 'sssj_org_directory', 'sssj_need_board', 'sssj_guides',
-				'sssj_workflows', 'sssj_policies',
+				'sssj_workflows', 'sssj_policies', 'sssj_feature_today',
 			)
 		);
 	}
@@ -248,6 +248,17 @@ class Shuffles_SSJ_Display {
 					'title="…"'  => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
 				),
 			),
+			array(
+				'tag'    => 'sssj_feature_today',
+				'title'  => __( 'Today’s highlighted site feature', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A full-width tile that highlights one built-in feature per day (the same one for everyone, rotating daily), with a short explanation and a “Learn more” link that opens the relevant page in more depth. A rainbow tracing light briefly animates around the border. Reads “Today’s Highlighted Site Feature” and invites people to come back tomorrow for another.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'Home page, a sidebar, or any landing page. Also available as an Elementor widget.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'title="…"' => __( 'Optional heading override (default “Today’s Highlighted Site Feature”).', 'shuffles-social-services-jobs' ),
+				),
+			),
 		);
 	}
 
@@ -265,7 +276,7 @@ class Shuffles_SSJ_Display {
 	public function hero( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'title'        => __( 'Find the right support work — and the right people', 'shuffles-social-services-jobs' ),
+				'title'        => '',
 				'subtitle'     => '',
 				'button_text'  => __( 'Browse jobs', 'shuffles-social-services-jobs' ),
 				'button_url'   => '',
@@ -280,13 +291,24 @@ class Shuffles_SSJ_Display {
 			is_array( $atts ) ? $atts : array(),
 			'sssj_hero'
 		);
-		// Default the sub-text from the configured focus programs (branding), else a generic line.
-		if ( '' === $a['subtitle'] ) {
-			$programs = trim( (string) $this->settings->get( 'focus_programs', '' ) );
-			$a['subtitle'] = '' !== $programs
-				/* translators: %s: comma list of funding programs, e.g. NDIS, Aged Care, DVA. */
-				? sprintf( __( 'A safe, accessible marketplace for %s and social-services work.', 'shuffles-social-services-jobs' ), $programs )
-				: __( 'A safe, accessible marketplace for disability, aged care and social-services work.', 'shuffles-social-services-jobs' );
+		// Headline: shortcode attribute wins, else the editable Settings value, else a built-in default.
+		if ( '' === trim( (string) $a['title'] ) ) {
+			$set_heading = trim( (string) $this->settings->get( 'hero_heading', '' ) );
+			$a['title']  = '' !== $set_heading ? $set_heading : __( 'Find the right support work, and the right people', 'shuffles-social-services-jobs' );
+		}
+		// Sub-text (the main blurb): shortcode attribute, else the editable Settings blurb, else a
+		// line built from the configured focus programs, else a generic default.
+		if ( '' === trim( (string) $a['subtitle'] ) ) {
+			$set_blurb = trim( (string) $this->settings->get( 'hero_blurb', '' ) );
+			if ( '' !== $set_blurb ) {
+				$a['subtitle'] = $set_blurb;
+			} else {
+				$programs      = trim( (string) $this->settings->get( 'focus_programs', '' ) );
+				$a['subtitle'] = '' !== $programs
+					/* translators: %s: comma list of funding programs, e.g. NDIS, Aged Care, DVA. */
+					? sprintf( __( 'A safe, accessible marketplace for %s and social-services work.', 'shuffles-social-services-jobs' ), $programs )
+					: __( 'A safe, accessible marketplace for disability, aged care and social-services work.', 'shuffles-social-services-jobs' );
+			}
 		}
 		$this->enqueue();
 

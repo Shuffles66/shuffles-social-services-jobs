@@ -37,6 +37,7 @@ class Shuffles_SSJ_Elementor {
 			'Shuffles_SSJ_EW_Stats',
 			'Shuffles_SSJ_EW_Featured',
 			'Shuffles_SSJ_EW_Recent',
+			'Shuffles_SSJ_EW_Spotlight',
 			'Shuffles_SSJ_EW_Menu',
 		);
 		foreach ( $classes as $class ) {

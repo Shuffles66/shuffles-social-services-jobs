@@ -176,6 +176,35 @@ class Shuffles_SSJ_EW_Recent extends Shuffles_SSJ_Elementor_Widget {
 	}
 }
 
+class Shuffles_SSJ_EW_Spotlight extends Shuffles_SSJ_Elementor_Widget {
+	public function get_name() {
+		return 'sssj_feature_today';
+	}
+	public function get_title() {
+		return __( 'Jobs: Today’s feature spotlight', 'shuffles-social-services-jobs' );
+	}
+	public function get_icon() {
+		return 'eicon-flash';
+	}
+	protected function register_controls() {
+		$this->start_controls_section( 'sec', array( 'label' => __( 'Feature spotlight', 'shuffles-social-services-jobs' ) ) );
+		$this->add_control(
+			'about',
+			array(
+				'type' => \Elementor\Controls_Manager::RAW_HTML,
+				'raw'  => esc_html__( 'Shows one built-in feature per day, rotating daily, in a full-width tile with a brief rainbow tracing border and a “Learn more” link.', 'shuffles-social-services-jobs' ),
+			)
+		);
+		$this->add_control( 'title', array( 'label' => __( 'Heading (optional)', 'shuffles-social-services-jobs' ), 'type' => \Elementor\Controls_Manager::TEXT, 'label_block' => true, 'placeholder' => __( 'Today’s Highlighted Site Feature', 'shuffles-social-services-jobs' ) ) );
+		$this->end_controls_section();
+	}
+	protected function render() {
+		$s  = $this->get_settings_for_display();
+		$sc = '[sssj_feature_today' . $this->sc_att( 'title', $s['title'] ) . ']';
+		echo do_shortcode( $sc ); // phpcs:ignore WordPress.Security.EscapeOutput
+	}
+}
+
 class Shuffles_SSJ_EW_Menu extends Shuffles_SSJ_Elementor_Widget {
 	public function get_name() {
 		return 'sssj_menu';

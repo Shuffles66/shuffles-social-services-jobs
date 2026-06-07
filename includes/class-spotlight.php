@@ -1,0 +1,182 @@
+<?php
+/**
+ * Feature spotlight. Shows ONE built-in feature per day (the same one for everyone, rotating each
+ * day) as a full-width, eye-pleasing tile with a brief rainbow tracing light around the border and
+ * a link that explains the feature in more depth.
+ *
+ * Single source of truth: features(). Rendered by [sssj_feature_today] and the matching Elementor
+ * widget. The daily pick is deterministic (day of the year), so it changes once per day.
+ *
+ * @package Shuffles_SSJ
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+class Shuffles_SSJ_Spotlight {
+
+	/**
+	 * The pool of features to highlight. Each: title, text (one or two plain sentences), and a deep
+	 * link described as a page-finding shortcode (and optional settings key) so the link self-heals
+	 * to whatever page actually runs that feature. Use 'special' => 'affiliate' for the referral link.
+	 *
+	 * Filterable via shuffles_ssj_spotlight_features.
+	 *
+	 * @return array
+	 */
+	public static function features() {
+		$f = array(
+			array(
+				'title' => __( 'Employee, contractor and volunteer work, kept separate', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Wage jobs, ABN contracting and volunteer roles each live on their own board, so you only ever see the kind of work you are actually after.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_job_board]',
+				'key'   => 'page_job_board',
+			),
+			array(
+				'title' => __( 'Participant privacy, built in', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Participant requests are pseudonymous and suburb level only, and first contact runs through a safe internal relay. Names and contact details are never on show.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_policies]',
+				'key'   => 'page_policies',
+			),
+			array(
+				'title' => __( 'The verified badge you can trust', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'A green Verified badge appears only after our team checks the evidence. It is never self claimed, so it means something.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_policies]',
+				'key'   => 'page_policies',
+			),
+			array(
+				'title' => __( 'Store a resume, apply in seconds', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Keep one or more resumes on file and pick the right one when you apply. They stay private and are shown only to an employer you apply to.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_workflows]',
+				'key'   => 'page_workflows',
+			),
+			array(
+				'title' => __( 'Smart matching that finds the fit', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'We rank people and roles on shared services, location, availability, engagement basis, rate and trust, so the best fits surface first.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_why_us]',
+				'key'   => 'page_why_us',
+			),
+			array(
+				'title' => __( 'Real, moderated reviews', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Ratings and reviews come only from people who genuinely engaged, and every one is checked before it shows. Quality rises to the top.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_why_us]',
+				'key'   => 'page_why_us',
+			),
+			array(
+				'title' => __( 'Accessible to everyone', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Read aloud, larger text, high contrast and multiple languages are built in, so the marketplace works for the widest possible audience.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_why_us]',
+				'key'   => 'page_why_us',
+			),
+			array(
+				'title' => __( 'Save a search, let matches come to you', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Set your filters once, save the search, and get a daily email when new listings match. No need to keep checking back.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_job_board]',
+				'key'   => 'page_job_board',
+			),
+			array(
+				'title' => __( 'Earn by referring others', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Invite people to join and earn a referral reward. A flexible way to make a little income, open to everyone.', 'shuffles-social-services-jobs' ),
+				'special' => 'affiliate',
+			),
+			array(
+				'title' => __( 'Find or offer volunteer work', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'A dedicated volunteer board keeps unpaid roles separate from paid work, so giving your time is easy to find and offer.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_volunteer_board]',
+				'key'   => 'page_volunteer_board',
+			),
+			array(
+				'title' => __( 'Step by step, every task explained', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Plain English walkthroughs show you the exact path through the site for whatever you want to do, from posting to applying.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_workflows]',
+				'key'   => 'page_workflows',
+			),
+			array(
+				'title' => __( 'Browse trusted organisations', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'A searchable directory of providers and organisations, with sizes, structures and verified details, so you can choose with confidence.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_org_directory]',
+				'key'   => 'page_org_directory',
+			),
+			array(
+				'title' => __( 'Advertise without showing your name', 'shuffles-social-services-jobs' ),
+				'text'  => __( 'Post anonymously when you need to. The listing shows as Anonymous, and your name is kept out of search engines.', 'shuffles-social-services-jobs' ),
+				'sc'    => '[sssj_policies]',
+				'key'   => 'page_policies',
+			),
+		);
+		return apply_filters( 'shuffles_ssj_spotlight_features', $f );
+	}
+
+	/** The feature to show today (deterministic by day of the year, so it changes daily). */
+	public static function today() {
+		$all = self::features();
+		if ( empty( $all ) ) {
+			return null;
+		}
+		$day = (int) current_time( 'z' ); // 0..365
+		$idx = $day % count( $all );
+		return $all[ $idx ];
+	}
+
+	/** Resolve a feature's deep link to a URL ('' if none can be found). */
+	public static function link_for( $feature ) {
+		if ( ! empty( $feature['special'] ) && 'affiliate' === $feature['special'] ) {
+			return class_exists( 'Shuffles_SSJ_Affiliate' ) ? (string) Shuffles_SSJ_Affiliate::url() : '';
+		}
+		if ( ! empty( $feature['sc'] ) && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) {
+			$url = Shuffles_SSJ_Shortcodes::page_link( isset( $feature['key'] ) ? $feature['key'] : '', $feature['sc'] );
+			if ( $url ) {
+				return (string) $url;
+			}
+			// Fall back to the "Why us" page, then the home page, so the link is never dead.
+			$why = Shuffles_SSJ_Shortcodes::page_link( 'page_why_us', '[sssj_why_us]' );
+			if ( $why ) {
+				return (string) $why;
+			}
+		}
+		return home_url( '/' );
+	}
+
+	/**
+	 * Render the full-width spotlight tile.
+	 *
+	 * @param array $atts title (optional override of the section heading).
+	 * @return string
+	 */
+	public static function render( $atts = array() ) {
+		$atts    = is_array( $atts ) ? $atts : array();
+		$heading = ! empty( $atts['title'] ) ? (string) $atts['title'] : __( 'Today\'s Highlighted Site Feature', 'shuffles-social-services-jobs' );
+		$feature = self::today();
+		if ( ! $feature ) {
+			return '';
+		}
+		$url = self::link_for( $feature );
+
+		ob_start();
+		?>
+		<div class="sssj sssj--spotlight">
+			<div class="sssj-spotlight" data-sssj-spotlight>
+				<div class="sssj-spotlight__inner">
+					<p class="sssj-spotlight__eyebrow">✨ <?php echo esc_html( $heading ); ?></p>
+					<h3 class="sssj-spotlight__title"><?php echo esc_html( $feature['title'] ); ?></h3>
+					<p class="sssj-spotlight__text"><?php echo esc_html( $feature['text'] ); ?></p>
+					<?php if ( '' !== $url ) : ?>
+						<p class="sssj-spotlight__cta">
+							<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Learn more about this feature', 'shuffles-social-services-jobs' ); ?> →</a>
+						</p>
+					<?php endif; ?>
+					<p class="sssj-spotlight__more"><?php esc_html_e( 'If you want another feature to investigate, come back tomorrow.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+			</div>
+		</div>
+		<?php
+		return ob_get_clean();
+	}
+
+	/** [sssj_feature_today] */
+	public static function shortcode( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		return self::render( is_array( $atts ) ? $atts : array() );
+	}
+}

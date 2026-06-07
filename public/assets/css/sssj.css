@@ -236,7 +236,28 @@
 .sssj .sssj-life{ display:flex; align-items:center; gap:var(--sssj-s2); flex-wrap:wrap; margin:0 0 var(--sssj-s2); }
 .sssj .sssj-life__ends{ margin:0; }
 
-/* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
+/* Feature spotlight ([sssj_feature_today]): full-width tile, rainbow tracing border (briefly). */
+@property --sssj-spot-ang { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+.sssj.sssj--spotlight{ width:100%; }
+.sssj .sssj-spotlight{
+	position:relative; width:100%; border-radius:18px; padding:3px;
+	background:conic-gradient(from var(--sssj-spot-ang), #ff004c, #ff9a00, #ffe600, #18e36b, #00d4ff, #5b6cff, #b14bff, #ff004c);
+	box-shadow:var(--sssj-shadow);
+	animation:sssj-spot-trace 2.4s linear 2 both;
+}
+@keyframes sssj-spot-trace{ to { --sssj-spot-ang:360deg; } }
+.sssj .sssj-spotlight__inner{
+	position:relative; z-index:1; background:var(--sssj-bg); border-radius:15px;
+	padding:var(--sssj-s5); text-align:center;
+}
+.sssj .sssj-spotlight__eyebrow{ margin:0 0 var(--sssj-s2); font-size:var(--sssj-fs-sm); letter-spacing:.04em; text-transform:uppercase; color:var(--sssj-muted); font-weight:700; }
+.sssj .sssj-spotlight__title{ margin:0 0 var(--sssj-s2); color:var(--sssj-ink); font-size:var(--sssj-fs-lg); }
+.sssj .sssj-spotlight__text{ margin:0 auto var(--sssj-s4); max-width:60ch; color:var(--sssj-text); }
+.sssj .sssj-spotlight__cta{ margin:0 0 var(--sssj-s3); }
+.sssj .sssj-spotlight__more{ margin:0; font-size:var(--sssj-fs-sm); color:var(--sssj-muted); }
+@media (prefers-reduced-motion: reduce){ .sssj .sssj-spotlight{ animation:none; } }
+
+/* Auto header menu (testing aid) printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }
 /* Navigation menu (login-aware) — responsive, wraps on small screens (no JS needed) */

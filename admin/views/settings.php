@@ -800,7 +800,18 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$open_form( 'pages' );
 			echo '<table class="form-table" role="presentation">';
 
-			echo '<tr><td colspan="2"><h3 style="margin:6px 0 0">' . esc_html__( 'Browse (public)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
+			echo '<tr><td colspan="2"><h3 style="margin:6px 0 0">' . esc_html__( 'Home page hero ([sssj_hero])', 'shuffles-social-services-jobs' ) . '</h3>'
+				. '<p class="description" style="max-width:780px">' . esc_html__( 'Edit the hero headline and main blurb here. These are used by [sssj_hero] whenever its title / subtitle attributes are left blank, so you can change the wording without touching the shortcode on the page.', 'shuffles-social-services-jobs' ) . '</p></td></tr>';
+			$hero_heading = (string) $this->settings()->get( 'hero_heading', '' );
+			$hero_blurb   = (string) $this->settings()->get( 'hero_blurb', '' );
+			echo '<tr><th scope="row">' . esc_html__( 'Hero headline', 'shuffles-social-services-jobs' ) . '</th><td>';
+			echo '<input type="text" class="large-text" name="' . esc_attr( Shuffles_SSJ_Settings::OPTION_KEY . '[hero_heading]' ) . '" value="' . esc_attr( $hero_heading ) . '" placeholder="' . esc_attr__( 'Find the right support work, and the right people', 'shuffles-social-services-jobs' ) . '" />';
+			echo '<p class="description">' . esc_html__( 'Leave blank to use the built-in default.', 'shuffles-social-services-jobs' ) . '</p></td></tr>';
+			echo '<tr><th scope="row">' . esc_html__( 'Hero main blurb', 'shuffles-social-services-jobs' ) . '</th><td>';
+			echo '<textarea rows="3" class="large-text" name="' . esc_attr( Shuffles_SSJ_Settings::OPTION_KEY . '[hero_blurb]' ) . '" placeholder="' . esc_attr__( 'A safe, accessible marketplace for disability, aged care and social-services work.', 'shuffles-social-services-jobs' ) . '">' . esc_textarea( $hero_blurb ) . '</textarea>';
+			echo '<p class="description">' . esc_html__( 'The sub-text under the headline. Leave blank to use your focus programs, or the built-in default.', 'shuffles-social-services-jobs' ) . '</p></td></tr>';
+
+			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Browse (public)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_job_board', __( 'All jobs board', 'shuffles-social-services-jobs' ), '[sssj_job_board]', __( 'Both bases in a labelled split.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tfn_board', __( 'TFN (employee) board', 'shuffles-social-services-jobs' ), '[sssj_tfn_board]', __( 'Employee positions only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_abn_board', __( 'ABN (contractor) board', 'shuffles-social-services-jobs' ), '[sssj_abn_board]', __( 'Contractor / ABN engagements only.', 'shuffles-social-services-jobs' ) );
@@ -1106,6 +1117,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.92.0 · 2026-06-07 · editable hero blurb + daily feature spotlight</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Hero headline and main blurb are now editable in Settings → Pages → “Home page hero”. [sssj_hero] uses them whenever its title/subtitle attributes are blank, so you can change the wording without touching the shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_feature_today] shortcode and matching Elementor widget: a full-width tile titled “Today’s Highlighted Site Feature” that highlights one built-in feature per day (rotating daily, the same for everyone), with a short explanation and a “Learn more” link to the relevant page, and the invitation to come back tomorrow.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The spotlight tile has a rainbow light that traces around its border briefly on load, then settles, and respects reduce-motion. Single source of truth in includes/class-spotlight.php.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testing and the Shortcodes reference updated.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.91.0 · 2026-06-07 · easier participant advertising, listing lifecycle, dashboard tabs, marketing master</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Participant “Request a worker” form rebuilt to be super easy and professional: clear numbered steps (What you need, Where, The kind of support, When and preferences, Close date), friendly plain-English help, one required field, and a reassuring privacy intro.', 'shuffles-social-services-jobs' ); ?></li>
