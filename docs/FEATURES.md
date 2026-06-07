@@ -103,8 +103,8 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Benefit:** non-technical members (and a national, CALD audience) can self-serve; far fewer "how do I…?" support questions.
 - **Sales angle:** *Every member is guided, step by step, to do the thing they came to do — no manual, no training session.*
 
-## M. Shareable marketing assets — résumé & flyer creator 🟡 (Phase 1 built: worker résumé)
-- **Phase 1 live:** a one-click **worker / sole-trader résumé builder** ([sssj_create_asset] + a "Create an asset" dashboard tab). Built from the member's profile in the locked, readable house style (location leads, large text, verified-checks row, one call to action), with a live preview, a readability check, and Download PDF / Save image / Copy caption on the $0 browser path. Flyers, the employer job flyer and the social graphic follow next, and a server renderer adds pixel-perfect output later. See docs/RESUME-BUILDER-PLAN.md.
+## M. Shareable marketing assets — résumé & flyer creator 🟢 (Phase 1 + 1b built)
+- **Live:** a one-click asset builder ([sssj_create_asset] + a "Create an asset" dashboard tab) that turns a member's profile or job ad into clean, readable, on-brand assets in the locked house style (location leads, large text, one call to action). Four asset types: **worker / sole-trader résumé**, **service flyer**, **square social post** (all from the worker profile), and **employer job flyer** (pick one of your job ads; honours anonymous advertising). Live preview, a readability check, and Download PDF / Save image / Copy caption on the $0 browser path. A server renderer for pixel-perfect output is the remaining Phase 2 enhancement. See docs/RESUME-BUILDER-PLAN.md.
 
 - **One-click résumé + service flyer for sole traders / workers**, and a **job flyer for employers**, built from the profile/listing the member already has — location + services lead the layout.
 - **Built-in "Best Practice" guidance** for the social-services sector (national/AU audience) shown right where members create assets — so every flyer/résumé is clear, safe and sector-appropriate.

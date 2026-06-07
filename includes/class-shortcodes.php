@@ -1089,7 +1089,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_matches ) { $tabs['matches'] = __( 'Matched jobs', 'shuffles-social-services-jobs' ); }
 		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
 		if ( $want_worker ) { $tabs['resumes'] = __( 'My résumés', 'shuffles-social-services-jobs' ); }
-		if ( $want_worker && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) { $tabs['create-asset'] = __( 'Create an asset', 'shuffles-social-services-jobs' ); }
+		if ( ( $want_worker || $want_listings ) && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) { $tabs['create-asset'] = __( 'Create an asset', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
 		// Earn (referrals) + Support tabs appear only when those capabilities are available.
@@ -1171,7 +1171,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_worker ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="resumes">' . do_shortcode( '[sssj_resumes]' ) . '</section>';
 		}
-		if ( $want_worker && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) {
+		if ( ( $want_worker || $want_listings ) && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="create-asset">' . do_shortcode( '[sssj_create_asset]' ) . '</section>';
 		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';

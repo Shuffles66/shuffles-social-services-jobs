@@ -1146,6 +1146,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.1.0 · 2026-06-08 · résumé builder Phase 1b complete (employer job flyer)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “Create an asset” wizard now also makes an employer Job flyer: advertisers pick one of their job ads and get a clean, shareable flyer with the location and pay leading. It honours anonymous advertising (no organisation name or logo when the ad is anonymous).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “Create an asset” tab now shows for advertisers as well as workers. Phase 1b is complete: résumé, service flyer, social post and job flyer. The only remaining piece is the optional pixel-perfect server renderer (Phase 2).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.0.0 · 2026-06-08 · spotlight detail, résumé builder Phase 1b, instant cache busting</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Feature spotlight: “Learn more” now expands an inline “how it works” explanation right on the tile, instead of linking out to the marketing document. Each highlighted feature has its own plain-English detail.', 'shuffles-social-services-jobs' ); ?></li>

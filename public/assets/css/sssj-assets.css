@@ -45,6 +45,14 @@
 .sssj .sssj-asset__avail{ background:#dff0e6; color:#15803d; border-radius:999px; padding:5px 14px; }
 .sssj .sssj-asset--social .sssj-asset__cta{ margin:6px 0 0; }
 
+/* ---- Job flyer extras ---- */
+.sssj .sssj-asset__avatar--square{ border-radius:12px; }
+.sssj .sssj-asset__avatar--square img{ border-radius:12px; }
+.sssj .sssj-asset__org{ margin:0 0 2px; color:#0e6e8c; font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:13px; }
+.sssj .sssj-asset-joblist{ list-style:none; margin:0; padding:0; }
+.sssj .sssj-asset-joblist li{ padding:9px 0; border-bottom:1px solid var(--sssj-line); }
+.sssj .sssj-asset-joblist li:last-child{ border-bottom:0; }
+
 /* ---- Asset type selector ---- */
 .sssj .sssj-asset-types{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
 

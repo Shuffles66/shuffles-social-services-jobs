@@ -196,4 +196,97 @@ class Shuffles_SSJ_Assets {
 		$bits[] = __( 'Get in touch safely through Just Tasks.', 'shuffles-social-services-jobs' );
 		return implode( "\n", $bits );
 	}
+
+	/* ------------------------------------------------------------------ */
+	/* Employer job flyer (Phase 1b)                                      */
+	/* ------------------------------------------------------------------ */
+
+	/** The member's own published job ads (for the flyer picker). */
+	public static function member_jobs( $uid ) {
+		return get_posts( array(
+			'post_type'      => 'sssj_job',
+			'post_status'    => 'publish',
+			'author'         => (int) $uid,
+			'posts_per_page' => 50,
+			'orderby'        => 'date',
+			'order'          => 'DESC',
+		) );
+	}
+
+	/** Assemble flyer data for a single job. Null if it is not a job. Honours anonymous advertising. */
+	public static function job_data( $job_id ) {
+		$job_id = (int) $job_id;
+		$post   = get_post( $job_id );
+		if ( ! $post || 'sssj_job' !== $post->post_type ) {
+			return null;
+		}
+		$basis  = (string) get_post_meta( $job_id, 'engagement_basis', true );
+		$blabel = class_exists( 'Shuffles_SSJ_Query' ) ? Shuffles_SSJ_Query::basis_label( $basis ) : ucfirst( $basis );
+
+		$suburb = (string) get_post_meta( $job_id, 'location_suburb', true );
+		$state  = (string) get_post_meta( $job_id, 'location_state', true );
+		$loc    = trim( $suburb . ( $state ? ', ' . $state : '' ) );
+
+		$rmin = (float) get_post_meta( $job_id, 'rate_min', true );
+		$rmax = (float) get_post_meta( $job_id, 'rate_max', true );
+		$runit = (string) get_post_meta( $job_id, 'rate_unit', true );
+		$pay  = '';
+		if ( $rmin > 0 || $rmax > 0 ) {
+			$amount = ( $rmin > 0 && $rmax > 0 && $rmax !== $rmin ) ? '$' . rtrim( rtrim( number_format( $rmin, 2 ), '0' ), '.' ) . ' to $' . rtrim( rtrim( number_format( $rmax, 2 ), '0' ), '.' ) : '$' . rtrim( rtrim( number_format( $rmax > 0 ? $rmax : $rmin, 2 ), '0' ), '.' );
+			$pay    = $amount . ( $runit ? ' / ' . $runit : '' );
+		}
+
+		$anon   = '1' === (string) get_post_meta( $job_id, 'is_anonymous', true );
+		$org_id = (int) get_post_meta( $job_id, 'organisation_id', true );
+		$org    = $anon ? __( 'Private advertiser', 'shuffles-social-services-jobs' ) : ( $org_id ? get_the_title( $org_id ) : '' );
+		$logo   = ( ! $anon && $org_id ) ? (string) get_the_post_thumbnail_url( $org_id, 'medium' ) : '';
+		if ( '' === $logo && ! $anon ) {
+			$logo = (string) get_the_post_thumbnail_url( $job_id, 'medium' );
+		}
+
+		$expires = (string) get_post_meta( $job_id, 'expires_at', true );
+
+		return array(
+			'job_id'   => $job_id,
+			'title'    => $post->post_title,
+			'basis'    => $blabel,
+			'location' => $loc,
+			'pay'      => $pay,
+			'org'      => $org,
+			'logo'     => $logo,
+			'anon'     => $anon,
+			'employment' => implode( ', ', self::term_names( $job_id, 'sssjt_employment_type' ) ),
+			'services' => self::term_names( $job_id, 'sssjt_category' ),
+			'closes'   => $expires,
+			'blurb'    => wp_strip_all_tags( (string) $post->post_content ),
+		);
+	}
+
+	/** Readability check for a job flyer. */
+	public static function job_readability( $jd ) {
+		$items   = array();
+		$items[] = array( 'label' => __( 'Location is set and shows at the top', 'shuffles-social-services-jobs' ), 'ok' => '' !== trim( (string) $jd['location'] ), 'note' => __( 'Add a suburb to the job so people see where it is.', 'shuffles-social-services-jobs' ) );
+		$items[] = array( 'label' => __( 'Pay is shown', 'shuffles-social-services-jobs' ), 'ok' => '' !== trim( (string) $jd['pay'] ), 'note' => __( 'Add a pay rate to the job. Listings with pay get far more responses.', 'shuffles-social-services-jobs' ) );
+		$items[] = array( 'label' => __( 'A short description is present', 'shuffles-social-services-jobs' ), 'ok' => '' !== trim( (string) $jd['blurb'] ), 'note' => __( 'Add a short description of the role to the job.', 'shuffles-social-services-jobs' ) );
+		$ok = true;
+		foreach ( $items as $i ) { if ( ! $i['ok'] ) { $ok = false; } }
+		return array( 'ok' => $ok, 'items' => $items );
+	}
+
+	/** A copy-paste caption for a job flyer. */
+	public static function job_caption( $jd ) {
+		$bits   = array();
+		$bits[] = sprintf( __( 'Hiring: %s.', 'shuffles-social-services-jobs' ), $jd['title'] );
+		if ( '' !== trim( (string) $jd['location'] ) ) {
+			$bits[] = '📍 ' . $jd['location'] . '.';
+		}
+		if ( '' !== trim( (string) $jd['basis'] ) ) {
+			$bits[] = $jd['basis'] . '.';
+		}
+		if ( '' !== trim( (string) $jd['pay'] ) ) {
+			$bits[] = $jd['pay'] . '.';
+		}
+		$bits[] = __( 'Apply safely through Just Tasks.', 'shuffles-social-services-jobs' );
+		return implode( "\n", $bits );
+	}
 }

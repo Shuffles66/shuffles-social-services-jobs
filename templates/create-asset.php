@@ -23,6 +23,10 @@ $types = array(
 	'flyer'  => array( 'assets/service-flyer.php', __( 'Service flyer', 'shuffles-social-services-jobs' ), __( 'A promotional flyer of what you offer.', 'shuffles-social-services-jobs' ) ),
 	'social' => array( 'assets/social.php', __( 'Social post', 'shuffles-social-services-jobs' ), __( 'A square image for social media.', 'shuffles-social-services-jobs' ) ),
 );
+// Job flyer is offered only to members who can post jobs.
+if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
+	$types['job'] = array( 'assets/job-flyer.php', __( 'Job flyer', 'shuffles-social-services-jobs' ), __( 'A flyer for one of your job ads.', 'shuffles-social-services-jobs' ) );
+}
 
 $type = isset( $_GET['sssj_asset'] ) ? sanitize_key( wp_unslash( $_GET['sssj_asset'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 if ( '' === $type && ! empty( $atts['asset'] ) ) {
@@ -32,7 +36,74 @@ if ( ! isset( $types[ $type ] ) ) {
 	$type = 'resume';
 }
 
-$uid  = get_current_user_id();
+$uid = get_current_user_id();
+
+// Job flyer flow (advertiser): pick one of the member's own jobs, then render its flyer.
+if ( 'job' === $type ) {
+	$jobs   = Shuffles_SSJ_Assets::member_jobs( $uid );
+	$ids    = array_map( function ( $p ) { return (int) $p->ID; }, $jobs );
+	$job_id = isset( $_GET['sssj_job_id'] ) ? absint( $_GET['sssj_job_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	$jd     = ( $job_id && in_array( $job_id, $ids, true ) ) ? Shuffles_SSJ_Assets::job_data( $job_id ) : null;
+	$post_job_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_post_job', '[sssj_post_job]' ) : '';
+	?>
+	<div class="sssj sssj--create-asset"<?php if ( $jd ) { echo ' data-sssj-asset-wizard data-caption="' . esc_attr( Shuffles_SSJ_Assets::job_caption( $jd ) ) . '"'; } ?>>
+		<div class="sssj-panel">
+			<h2 style="margin-top:0"><?php esc_html_e( 'Create an asset', 'shuffles-social-services-jobs' ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Make a clean, shareable flyer for one of your job ads, with the location and pay leading.', 'shuffles-social-services-jobs' ); ?></p>
+			<div class="sssj-asset-types">
+				<?php foreach ( $types as $key => $meta ) : ?>
+					<a class="sssj-btn sssj-btn--sm <?php echo $key === $type ? 'sssj-btn--primary' : 'sssj-btn--ghost'; ?>" href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', $key ) ) ); ?>"><?php echo esc_html( $meta[1] ); ?></a>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php if ( empty( $jobs ) ) : ?>
+			<div class="sssj-panel"><p><?php esc_html_e( 'You have no published job ads yet. Post a job first, then come back to make a flyer for it.', 'shuffles-social-services-jobs' ); ?></p>
+				<?php if ( $post_job_url ) : ?><a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( $post_job_url ); ?>"><?php esc_html_e( 'Post a job', 'shuffles-social-services-jobs' ); ?></a><?php endif; ?></div>
+		<?php elseif ( ! $jd ) : ?>
+			<div class="sssj-panel"><h3 style="margin-top:0"><?php esc_html_e( 'Pick a job to make a flyer for', 'shuffles-social-services-jobs' ); ?></h3>
+				<ul class="sssj-asset-joblist">
+					<?php foreach ( $jobs as $j ) : ?>
+						<li><a href="<?php echo esc_url( add_query_arg( array( 'sssj_asset' => 'job', 'sssj_job_id' => (int) $j->ID ) ) ); ?>"><?php echo esc_html( get_the_title( $j ) ); ?></a></li>
+					<?php endforeach; ?>
+				</ul></div>
+		<?php else : $jcheck = Shuffles_SSJ_Assets::job_readability( $jd ); ?>
+			<div class="sssj-asset-wizard">
+				<div class="sssj-asset-wizard__controls">
+					<div class="sssj-panel">
+						<h3 style="margin-top:0"><?php echo esc_html( $jd['title'] ); ?></h3>
+						<p class="description"><?php esc_html_e( 'This flyer is built from the job ad. To change the wording, pay or location, edit the job.', 'shuffles-social-services-jobs' ); ?>
+							<a href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', 'job' ) ) ); ?>"><?php esc_html_e( 'Pick another job', 'shuffles-social-services-jobs' ); ?></a></p>
+					</div>
+					<div class="sssj-panel">
+						<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>
+						<ul class="sssj-asset-check">
+							<?php foreach ( $jcheck['items'] as $item ) : ?>
+								<li class="<?php echo $item['ok'] ? 'is-ok' : 'is-warn'; ?>"><span class="sssj-asset-check__mark" aria-hidden="true"><?php echo $item['ok'] ? '✓' : '!'; ?></span><span><?php echo esc_html( $item['label'] ); ?><?php if ( ! $item['ok'] ) : ?><br /><small class="description"><?php echo esc_html( $item['note'] ); ?></small><?php endif; ?></span></li>
+							<?php endforeach; ?>
+						</ul>
+					</div>
+					<div class="sssj-panel">
+						<h3 style="margin-top:0"><?php esc_html_e( 'Download and share', 'shuffles-social-services-jobs' ); ?></h3>
+						<div class="sssj-row" style="flex-wrap:wrap;gap:8px">
+							<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Download PDF', 'shuffles-social-services-jobs' ); ?></button>
+							<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-action="png"><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
+							<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="caption"><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
+						</div>
+						<p class="description" data-asset-msg style="margin-top:8px"></p>
+					</div>
+				</div>
+				<div class="sssj-asset-wizard__preview">
+					<div class="sssj-asset-print">
+						<?php Shuffles_SSJ_Plugin::instance()->shortcodes->load_template( 'assets/job-flyer.php', array( 'data' => $jd ) ); ?>
+					</div>
+				</div>
+			</div>
+		<?php endif; ?>
+	</div>
+	<?php
+	return;
+}
+
 $data = Shuffles_SSJ_Assets::resume_data( $uid );
 
 if ( null === $data ) {
