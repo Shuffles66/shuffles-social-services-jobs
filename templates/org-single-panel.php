@@ -38,6 +38,7 @@ $extra   = is_array( $extra ) ? $extra : array();
 			<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 			<?php echo Shuffles_SSJ_ABN::abr_badge_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php echo Shuffles_SSJ_Org::ndis_badge_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+			<?php echo Shuffles_SSJ_Shortcodes::openness_badges( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 			<?php if ( $website ) : ?>
 				<?php if ( ! class_exists( 'Shuffles_SSJ_Privacy' ) || Shuffles_SSJ_Privacy::show( $org_id, 'website' ) ) : ?>
 					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener nofollow"><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></a>

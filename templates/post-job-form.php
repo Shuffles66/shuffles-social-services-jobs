@@ -187,6 +187,12 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					</div>
 				</fieldset>
 
+				<fieldset class="sssj-fieldset">
+					<legend><?php esc_html_e( 'Open to…', 'shuffles-social-services-jobs' ); ?></legend>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" /> ✈️ <?php esc_html_e( 'Open to overseas applicants — visa sponsorship available', 'shuffles-social-services-jobs' ); ?></label></div>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="accepts_placements" value="1" /> 🎓 <?php esc_html_e( 'Accepts work-placement / student-placement enquiries', 'shuffles-social-services-jobs' ); ?></label></div>
+				</fieldset>
+
 				<div><button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="post_job"><?php esc_html_e( 'Post job', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>

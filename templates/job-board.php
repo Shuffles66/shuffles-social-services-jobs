@@ -102,6 +102,7 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuff
 						<span class="sssj-badge sssj-badge--<?php echo esc_attr( 'tfn' === $basis_m ? 'tfn' : 'abn' ); ?>"><?php echo esc_html( 'tfn' === $basis_m ? __( 'TFN (employee)', 'shuffles-social-services-jobs' ) : __( 'ABN (contractor)', 'shuffles-social-services-jobs' ) ); ?></span>
 						<?php if ( $etype ) : ?><span class="sssj-badge"><?php echo esc_html( 'one-off' === $etype ? __( 'One-off', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
 						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php echo Shuffles_SSJ_Shortcodes::openness_badges( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</div>
 					<?php if ( $suburb || $state ) : ?>
 						<p>📍 <?php echo esc_html( trim( $suburb . ' ' . $state ) ); ?></p>

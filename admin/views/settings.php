@@ -923,6 +923,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.79.0 — 2026-06-07 · “Open to…” options (visa sponsorship · work placements · volunteers)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Jobs and organisations can now flag what they’re open to: ✈️ open to overseas applicants / visa sponsorship, and 🎓 work-placement (student placement) enquiries. Organisations can also flag 🤝 “volunteers welcome”.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'These show as badges on job cards, the jobs board, organisation profiles and the organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Next: Volunteer roles as a full opportunity type (their own board), and (separately) the application pipeline phase 3.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.78.0 — 2026-06-07 · TFN apply form + screening questions + per-job mode (phase 2)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Applying to an employee (TFN) job now captures more: the candidate picks one of their stored résumés, enters availability + earliest start date, confirms right-to-work, and answers the employer’s screening questions.', 'shuffles-social-services-jobs' ); ?></li>

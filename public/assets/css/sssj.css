@@ -600,3 +600,6 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 /* Save-&-alert button: guest (logged-out) state — visible but routes to log in */
 .sssj .sssj-savesearch__guest{ opacity:.85; }
 .sssj .sssj-savesearch__guest .sssj-savesearch__hint{ font-weight:400; opacity:.7; font-size:.85em; }
+
+/* "Open to…" badges (visa sponsorship / work placements / volunteers) */
+.sssj .sssj-badge--open{ background:#ecfeff; color:#0e7490; border:1px solid #a5f3fc; }

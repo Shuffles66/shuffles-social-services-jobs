@@ -106,6 +106,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 						<?php if ( $type ) : ?><span class="sssj-badge"><?php echo esc_html( ucfirst( $type ) ); ?></span><?php endif; ?>
 						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php echo Shuffles_SSJ_Org::ndis_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php echo Shuffles_SSJ_Shortcodes::openness_badges( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $locn > 0 ) : ?><span class="sssj-badge"><?php echo esc_html( sprintf( _n( '%d location', '%d locations', $locn, 'shuffles-social-services-jobs' ), $locn ) ); ?></span><?php endif; ?>
 						<?php $o_stats = Shuffles_SSJ_Org::stats( $oid ); ?>
 						<span class="sssj-badge sssj-badge--verified" title="<?php esc_attr_e( 'Currently open positions', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_html( sprintf( _n( '%d open job', '%d open jobs', $o_stats['open'], 'shuffles-social-services-jobs' ), $o_stats['open'] ) ); ?></span>

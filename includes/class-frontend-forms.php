@@ -304,6 +304,8 @@ class Shuffles_SSJ_Frontend_Forms {
 			'expires_at'        => isset( $_POST['expires_at'] ) ? sanitize_text_field( wp_unslash( $_POST['expires_at'] ) ) : '',
 			'organisation_id'   => isset( $_POST['organisation_id'] ) ? absint( $_POST['organisation_id'] ) : 0,
 			'sssj_alert_candidates' => empty( $_POST['alert_candidates'] ) ? '' : '1',
+			'offers_sponsorship' => empty( $_POST['offers_sponsorship'] ) ? '' : '1',
+			'accepts_placements' => empty( $_POST['accepts_placements'] ) ? '' : '1',
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
@@ -840,6 +842,9 @@ class Shuffles_SSJ_Frontend_Forms {
 			'org_website'       => isset( $_POST['org_website'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['org_website'] ) ) ) : '',
 			'org_type'          => isset( $_POST['org_type'] ) ? sanitize_key( wp_unslash( $_POST['org_type'] ) ) : 'employer',
 			'org_phone'         => isset( $_POST['org_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['org_phone'] ) ) : '',
+			'offers_sponsorship' => empty( $_POST['offers_sponsorship'] ) ? '' : '1',
+			'accepts_placements' => empty( $_POST['accepts_placements'] ) ? '' : '1',
+			'welcomes_volunteers' => empty( $_POST['welcomes_volunteers'] ) ? '' : '1',
 			'location_suburb'   => isset( $_POST['location_suburb'] ) ? sanitize_text_field( wp_unslash( $_POST['location_suburb'] ) ) : '',
 			'location_state'    => isset( $_POST['location_state'] ) ? sanitize_text_field( wp_unslash( $_POST['location_state'] ) ) : '',
 			'location_postcode' => isset( $_POST['location_postcode'] ) ? sanitize_text_field( wp_unslash( $_POST['location_postcode'] ) ) : '',

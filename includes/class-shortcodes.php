@@ -1646,6 +1646,25 @@ class Shuffles_SSJ_Shortcodes {
 		return self::page_link( $key, $shortcode );
 	}
 
+	/**
+	 * "Open to…" badges for a job or organisation — visa sponsorship, work placements, volunteers.
+	 * Reads the offers_sponsorship / accepts_placements / welcomes_volunteers meta flags. '' if none.
+	 */
+	public static function openness_badges( $id ) {
+		$id  = (int) $id;
+		$out = '';
+		if ( get_post_meta( $id, 'offers_sponsorship', true ) ) {
+			$out .= '<span class="sssj-badge sssj-badge--open" title="' . esc_attr__( 'Open to overseas applicants — visa sponsorship available', 'shuffles-social-services-jobs' ) . '">✈️ ' . esc_html__( 'Visa sponsorship', 'shuffles-social-services-jobs' ) . '</span> ';
+		}
+		if ( get_post_meta( $id, 'accepts_placements', true ) ) {
+			$out .= '<span class="sssj-badge sssj-badge--open" title="' . esc_attr__( 'Accepts work-placement / student-placement enquiries', 'shuffles-social-services-jobs' ) . '">🎓 ' . esc_html__( 'Work placements', 'shuffles-social-services-jobs' ) . '</span> ';
+		}
+		if ( get_post_meta( $id, 'welcomes_volunteers', true ) ) {
+			$out .= '<span class="sssj-badge sssj-badge--open" title="' . esc_attr__( 'Welcomes volunteer enquiries', 'shuffles-social-services-jobs' ) . '">🤝 ' . esc_html__( 'Volunteers welcome', 'shuffles-social-services-jobs' ) . '</span> ';
+		}
+		return $out;
+	}
+
 	private function add_nav_item( &$items, $label, $url, $cta = false ) {
 		if ( '' !== (string) $url ) {
 			$items[] = array( 'label' => $label, 'url' => $url, 'cta' => (bool) $cta );

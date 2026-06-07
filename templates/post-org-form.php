@@ -200,6 +200,13 @@ if ( $existing ) {
 					<label><input type="checkbox" name="org_hidden" value="1" <?php checked( '1', (string) $gm( 'org_hidden' ) ); ?> /> <?php esc_html_e( 'Do not display — hide this organisation from search engines and the directory', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
+				<fieldset class="sssj-fieldset">
+					<legend><?php esc_html_e( 'Open to…', 'shuffles-social-services-jobs' ); ?></legend>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" <?php checked( '1', (string) $gm( 'offers_sponsorship' ) ); ?> /> ✈️ <?php esc_html_e( 'Open to overseas applicants — we sponsor visas', 'shuffles-social-services-jobs' ); ?></label></div>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="accepts_placements" value="1" <?php checked( '1', (string) $gm( 'accepts_placements' ) ); ?> /> 🎓 <?php esc_html_e( 'We accept work-placement / student-placement enquiries', 'shuffles-social-services-jobs' ); ?></label></div>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="welcomes_volunteers" value="1" <?php checked( '1', (string) $gm( 'welcomes_volunteers' ) ); ?> /> 🤝 <?php esc_html_e( 'We welcome volunteer enquiries', 'shuffles-social-services-jobs' ); ?></label></div>
+				</fieldset>
+
 				<?php if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) { Shuffles_SSJ_Privacy::fields_html( 'org', $existing ? $existing->ID : 0 ); } ?>
 				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php echo $existing ? esc_html__( 'Save profile', 'shuffles-social-services-jobs' ) : esc_html__( 'Create profile', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
