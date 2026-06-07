@@ -90,7 +90,7 @@ class Shuffles_SSJ_Applications {
 	 * @param string $cover   Cover message.
 	 * @return int|WP_Error
 	 */
-	public static function apply( $job_id, $need_id, $cover ) {
+	public static function apply( $job_id, $need_id, $cover, $extra = array() ) {
 		global $wpdb;
 		$uid = get_current_user_id();
 		if ( ! $uid ) {
@@ -99,6 +99,15 @@ class Shuffles_SSJ_Applications {
 		if ( self::already_applied( $job_id, $need_id, $uid ) ) {
 			return new WP_Error( 'dup', __( 'You have already applied.', 'shuffles-social-services-jobs' ) );
 		}
+		// Verify a chosen résumé actually belongs to this applicant.
+		$resume_id = isset( $extra['resume_id'] ) ? (int) $extra['resume_id'] : 0;
+		if ( $resume_id && class_exists( 'Shuffles_SSJ_Resumes' ) ) {
+			$r = Shuffles_SSJ_Resumes::get( $resume_id );
+			if ( ! $r || (int) $r->user_id !== (int) $uid ) {
+				$resume_id = 0;
+			}
+		}
+		unset( $extra['resume_id'] ); // stored in its own column
 		$now = current_time( 'mysql' );
 		$ok  = $wpdb->insert(
 			self::table(),
@@ -108,11 +117,13 @@ class Shuffles_SSJ_Applications {
 				'worker_id'         => self::worker_id_for_user( $uid ),
 				'applicant_user_id' => (int) $uid,
 				'cover_message'     => wp_kses_post( $cover ),
+				'resume_id'         => $resume_id,
+				'extra'             => ! empty( $extra ) ? wp_json_encode( $extra ) : null,
 				'status'            => 'new',
 				'created_at'        => $now,
 				'updated_at'        => $now,
 			),
-			array( '%d', '%d', '%d', '%d', '%s', '%s', '%s', '%s' )
+			array( '%d', '%d', '%d', '%d', '%s', '%d', '%s', '%s', '%s', '%s' )
 		);
 		if ( false === $ok ) {
 			return new WP_Error( 'db', __( 'Could not record your application.', 'shuffles-social-services-jobs' ) );
@@ -149,6 +160,34 @@ class Shuffles_SSJ_Applications {
 		$col = 'need' === $type ? 'need_id' : 'job_id';
 		// phpcs:ignore WordPress.DB.PreparedSQL
 		return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM {$t} WHERE {$col} = %d ORDER BY created_at DESC", (int) $entity_id ) );
+	}
+
+	/** True if $viewer owns a job/need that this résumé was submitted to (lets them view it). */
+	public static function employer_can_view_resume( $resume_id, $viewer_id ) {
+		global $wpdb;
+		$resume_id = (int) $resume_id;
+		$viewer_id = (int) $viewer_id;
+		if ( ! $resume_id || ! $viewer_id ) {
+			return false;
+		}
+		$t    = self::table();
+		$rows = $wpdb->get_results( $wpdb->prepare( "SELECT job_id, need_id FROM {$t} WHERE resume_id = %d", $resume_id ) ); // phpcs:ignore WordPress.DB
+		foreach ( (array) $rows as $row ) {
+			$entity = (int) $row->job_id ? (int) $row->job_id : (int) $row->need_id;
+			if ( $entity && (int) get_post_field( 'post_author', $entity ) === $viewer_id ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Decoded extra answers (availability, start date, right-to-work, screening) for an application row. */
+	public static function extra( $row ) {
+		if ( is_object( $row ) && isset( $row->extra ) && $row->extra ) {
+			$d = json_decode( (string) $row->extra, true );
+			return is_array( $d ) ? $d : array();
+		}
+		return array();
 	}
 
 	/** Allowed application statuses. */

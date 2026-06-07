@@ -274,8 +274,22 @@ class Shuffles_SSJ_Frontend_Forms {
 			exit;
 		}
 
+		// Employer screening questions (one per line) + how applications are handled.
+		$screening_qs = array();
+		if ( ! empty( $_POST['screening_questions'] ) ) {
+			foreach ( preg_split( '/\r\n|\r|\n/', (string) wp_unslash( $_POST['screening_questions'] ) ) as $line ) { // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				$line = trim( sanitize_text_field( $line ) );
+				if ( '' !== $line ) {
+					$screening_qs[] = $line;
+				}
+			}
+			$screening_qs = array_slice( $screening_qs, 0, 12 );
+		}
+
 		$meta = array(
-			'engagement_basis'  => $basis,
+			'engagement_basis'   => $basis,
+			'application_mode'   => ( isset( $_POST['application_mode'] ) && 'simple' === $_POST['application_mode'] ) ? 'simple' : 'full',
+			'screening_questions' => $screening_qs,
 			'engagement_type'   => isset( $_POST['engagement_type'] ) ? sanitize_key( wp_unslash( $_POST['engagement_type'] ) ) : 'ongoing',
 			'organisation_type' => isset( $_POST['organisation_type'] ) ? sanitize_key( wp_unslash( $_POST['organisation_type'] ) ) : 'employer',
 			'advertiser_abn'    => $abn,
@@ -645,7 +659,35 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 
 		$cover = isset( $_POST['cover_message'] ) ? wp_unslash( $_POST['cover_message'] ) : '';
-		$res   = Shuffles_SSJ_Applications::apply( $job_id, $need_id, $cover );
+
+		// Employee (TFN) applications capture extra detail: résumé, availability, start date,
+		// right-to-work, and answers to the employer's per-listing screening questions.
+		$extra = array();
+		if ( 'tfn' === $basis && $job_id ) {
+			$extra['resume_id']     = isset( $_POST['resume_id'] ) ? (int) $_POST['resume_id'] : 0;
+			$extra['availability']  = isset( $_POST['availability'] ) ? sanitize_text_field( wp_unslash( $_POST['availability'] ) ) : '';
+			$extra['start_date']    = isset( $_POST['start_date'] ) ? sanitize_text_field( wp_unslash( $_POST['start_date'] ) ) : '';
+			$extra['right_to_work'] = ! empty( $_POST['right_to_work'] ) ? 1 : 0;
+			// Right-to-work is required for employee positions.
+			if ( ! $extra['right_to_work'] ) {
+				wp_safe_redirect( add_query_arg( 'sssj_applied', 'rtw', $redirect ) );
+				exit;
+			}
+			$questions = (array) get_post_meta( $job_id, 'screening_questions', true );
+			if ( $questions ) {
+				$posted  = isset( $_POST['screening'] ) ? (array) wp_unslash( $_POST['screening'] ) : array(); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+				$answers = array();
+				foreach ( $questions as $i => $q ) {
+					$answers[] = array(
+						'q' => (string) $q,
+						'a' => isset( $posted[ $i ] ) ? sanitize_textarea_field( $posted[ $i ] ) : '',
+					);
+				}
+				$extra['screening'] = $answers;
+			}
+		}
+
+		$res = Shuffles_SSJ_Applications::apply( $job_id, $need_id, $cover, $extra );
 		if ( is_wp_error( $res ) ) {
 			$code = ( 'dup' === $res->get_error_code() ) ? 'dup' : 'error';
 			wp_safe_redirect( add_query_arg( 'sssj_applied', $code, $redirect ) );

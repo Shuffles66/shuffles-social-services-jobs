@@ -67,7 +67,7 @@ Living backlog. Keep current as items ship or priorities change. (Companion to
 - **Pipeline depth = a per‑job choice the employer makes when creating the job** (Full pipeline w/ stages + notifications **vs** Simple), **changeable later**.
 - **Build phasing:**
   - ✅ **Phase 1 (v0.77.0): stored résumés** — `Shuffles_SSJ_Resumes` (table `{prefix}sssj_resume`, DB_VERSION 6), `[sssj_resumes]` + dashboard "My résumés" tab, private DB‑stored files served via `sssj_resume_file` (owner/admin/applied‑employer). Multiple named, default, ≤5, PDF/DOC/DOCX/RTF/ODT ≤8 MB.
-  - ⏳ **Phase 2:** TFN apply form picks a résumé + availability/start‑date/right‑to‑work + **employer screening questions** (defined on the job form) + **per‑job application mode** (full/simple). Needs new application columns (resume_id, screening answers JSON) → DB_VERSION bump.
+  - ✅ **Phase 2 (v0.78.0):** TFN apply form picks a résumé + availability/start‑date/required right‑to‑work + **employer screening questions** (set on the job form) + **per‑job application mode** (full/simple). App table gained `resume_id` + `extra` (JSON) cols (DB_VERSION 7); `Applications::apply($job,$need,$cover,$extra)`; employer sees all extras + résumé link on each applicant; résumé view gated to the applied‑to employer via `shuffles_ssj_resume_can_view`.
   - ⏳ **Phase 3:** full pipeline — Hired/Declined + status history + withdraw + email notifications (surfaced in "full" mode).
 
 **Recommended build order:** B1 (foundation — defines the hats that drive everything) → A1 (pipeline) →

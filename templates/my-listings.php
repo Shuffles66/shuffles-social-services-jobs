@@ -39,6 +39,28 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 		if ( ! empty( $a->cover_message ) ) {
 			echo '<p>' . esc_html( wp_trim_words( wp_strip_all_tags( $a->cover_message ), 50 ) ) . '</p>';
 		}
+		// Employee (TFN) application extras: résumé, availability, start, right-to-work, screening answers.
+		if ( ! empty( $a->resume_id ) && class_exists( 'Shuffles_SSJ_Resumes' ) ) {
+			echo '<p>📄 <a href="' . esc_url( Shuffles_SSJ_Resumes::file_url( (int) $a->resume_id ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'View résumé', 'shuffles-social-services-jobs' ) . '</a></p>';
+		}
+		$sssj_ex = Shuffles_SSJ_Applications::extra( $a );
+		if ( ! empty( $sssj_ex['availability'] ) ) {
+			echo '<p><strong>' . esc_html__( 'Availability:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html( $sssj_ex['availability'] ) . '</p>';
+		}
+		if ( ! empty( $sssj_ex['start_date'] ) ) {
+			echo '<p><strong>' . esc_html__( 'Earliest start:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html( $sssj_ex['start_date'] ) . '</p>';
+		}
+		if ( ! empty( $sssj_ex['right_to_work'] ) ) {
+			echo '<p>✓ ' . esc_html__( 'Confirmed right to work in Australia', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		if ( ! empty( $sssj_ex['screening'] ) && is_array( $sssj_ex['screening'] ) ) {
+			echo '<ul class="ul-disc" style="margin-left:18px">';
+			foreach ( $sssj_ex['screening'] as $sssj_qa ) {
+				$sssj_a = ( isset( $sssj_qa['a'] ) && '' !== $sssj_qa['a'] ) ? $sssj_qa['a'] : '—';
+				echo '<li><strong>' . esc_html( isset( $sssj_qa['q'] ) ? $sssj_qa['q'] : '' ) . '</strong> — ' . esc_html( $sssj_a ) . '</li>';
+			}
+			echo '</ul>';
+		}
 		echo '<form method="post" action="' . $action . '" class="sssj-row">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		echo '<input type="hidden" name="action" value="sssj_app_status" />';
 		echo '<input type="hidden" name="app_id" value="' . esc_attr( $a->id ) . '" />';

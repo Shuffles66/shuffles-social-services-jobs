@@ -923,6 +923,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.78.0 — 2026-06-07 · TFN apply form + screening questions + per-job mode (phase 2)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Applying to an employee (TFN) job now captures more: the candidate picks one of their stored résumés, enters availability + earliest start date, confirms right-to-work, and answers the employer’s screening questions.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'When posting a job, the employer can add screening questions (one per line, up to 12) and choose how applications are handled — Full pipeline (track stages) or Simple — changeable later.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Employers see all of this on each applicant in My dashboard → My listings (résumé link, availability, start date, right-to-work, and the screening answers). The chosen résumé opens only for the employer who was applied to.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Next (phase 3): Hired/Declined stages, status history, candidate withdraw, and email notifications.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.77.0 — 2026-06-07 · stored résumés (TFN application — phase 1)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Candidates can now store one or more named résumés against their profile (PDF / Word / RTF / ODT, up to 5), set a default, and remove old ones — via the new “My résumés” tab in the member dashboard, or the [sssj_resumes] shortcode.', 'shuffles-social-services-jobs' ); ?></li>

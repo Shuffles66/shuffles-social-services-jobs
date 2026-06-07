@@ -93,6 +93,8 @@ final class Shuffles_SSJ_Plugin {
 		// Smart synonym-aware keyword search (C5) — opts in per query via the sssj_smart_search var.
 			Shuffles_SSJ_Search::init();
 			Shuffles_SSJ_Resumes::register(); // Stored résumés (upload / manage / private serve).
+			// An employer applied to with a résumé may view it.
+			add_filter( 'shuffles_ssj_resume_can_view', array( 'Shuffles_SSJ_Plugin', 'resume_can_view' ), 10, 3 );
 			// ABR enrichment whenever an ABN is recorded (free GUID required; no-op otherwise).
 		add_action( 'shuffles_ssj_abn_recorded', array( 'Shuffles_SSJ_ABN', 'on_abn_recorded' ), 10, 3 );
 		// NDIS register auto-scan hook whenever an NDIS provider number is recorded (best-effort).
@@ -146,5 +148,13 @@ final class Shuffles_SSJ_Plugin {
 	 */
 	public function register_front_assets() {
 		wp_register_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
+	}
+
+	/** Filter: allow an employer who was applied to with a résumé to view it. */
+	public static function resume_can_view( $allowed, $row, $viewer_id ) {
+		if ( $allowed || ! class_exists( 'Shuffles_SSJ_Applications' ) ) {
+			return $allowed;
+		}
+		return Shuffles_SSJ_Applications::employer_can_view_resume( (int) $row->id, (int) $viewer_id );
 	}
 }

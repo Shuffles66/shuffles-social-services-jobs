@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.77.0 (2026-06-07)';
+		return 'v0.78.0 (2026-06-07)';
 	}
 
 	/**
@@ -114,7 +114,8 @@ class Shuffles_SSJ_Business_Rules {
 					'intro' => __( 'Connecting the right people, and keeping them informed — only if they opt in.', 'shuffles-social-services-jobs' ),
 					'rules' => array(
 						__( 'Matching scores candidates on shared categories, distance, availability, engagement basis, rate and trust.', 'shuffles-social-services-jobs' ),
-							__( 'Keyword search is synonym-aware: it understands sector language (e.g. “support work” also finds “carer” / “DSW”, “OT” finds “occupational therapist”) and broadens with OR so a sensible search never returns nothing. It is built deterministically now and ready for a smarter (AI) expander later.', 'shuffles-social-services-jobs' ),
+							__( 'Applying to an employee (TFN) job captures a chosen résumé, availability, earliest start date, a required right-to-work confirmation, and answers to the employer’s screening questions. The employer sets those questions on the job and picks how applications are handled — full pipeline (track stages) or simple — changeable later. ABN / participant work keeps the lighter expression-of-interest path.', 'shuffles-social-services-jobs' ),
+						__( 'Keyword search is synonym-aware: it understands sector language (e.g. “support work” also finds “carer” / “DSW”, “OT” finds “occupational therapist”) and broadens with OR so a sensible search never returns nothing. It is built deterministically now and ready for a smarter (AI) expander later.', 'shuffles-social-services-jobs' ),
 						__( 'Email alerts (job matches, new candidates, saved searches) are opt-in and sent on a daily schedule.', 'shuffles-social-services-jobs' ),
 						__( 'Ticking a program (e.g. NDIS) can keep the matching CRM tags/lists in sync, logged per member.', 'shuffles-social-services-jobs' ),
 					),

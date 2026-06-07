@@ -170,6 +170,23 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					<label><input type="checkbox" name="alert_candidates" value="1" /> <?php esc_html_e( 'Email me when new candidates match this job', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
+				<fieldset class="sssj-fieldset">
+					<legend><?php esc_html_e( 'Applications', 'shuffles-social-services-jobs' ); ?></legend>
+					<div class="sssj-field">
+						<label for="sssj-appmode"><?php esc_html_e( 'How do you want to handle applications?', 'shuffles-social-services-jobs' ); ?></label>
+						<select class="sssj-select" id="sssj-appmode" name="application_mode">
+							<option value="full"><?php esc_html_e( 'Full pipeline — track stages (shortlist, interview, offer, hired) with notifications', 'shuffles-social-services-jobs' ); ?></option>
+							<option value="simple"><?php esc_html_e( 'Simple — just receive applications', 'shuffles-social-services-jobs' ); ?></option>
+						</select>
+						<p class="description"><?php esc_html_e( 'You can change this later. Employee (TFN) roles also ask applicants for availability, start date and right-to-work.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+					<div class="sssj-field">
+						<label for="sssj-screening"><?php esc_html_e( 'Screening questions (optional — one per line)', 'shuffles-social-services-jobs' ); ?></label>
+						<textarea class="sssj-textarea" id="sssj-screening" name="screening_questions" rows="4" placeholder="<?php esc_attr_e( "e.g. Do you hold a current WWCC?\nHow many years of aged-care experience do you have?", 'shuffles-social-services-jobs' ); ?>"></textarea>
+						<p class="description"><?php esc_html_e( 'Applicants answer these when they apply (up to 12). Great for quick must-have checks.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+				</fieldset>
+
 				<div><button class="sssj-btn sssj-btn--primary" type="submit" data-i18n="post_job"><?php esc_html_e( 'Post job', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>

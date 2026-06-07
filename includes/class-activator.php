@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 6;
+	const DB_VERSION = 7;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -96,6 +96,8 @@ class Shuffles_SSJ_Activator {
   worker_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   applicant_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
   cover_message LONGTEXT NULL,
+  resume_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  extra LONGTEXT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'new',
   created_at DATETIME NULL DEFAULT NULL,
   updated_at DATETIME NULL DEFAULT NULL,
