@@ -719,6 +719,7 @@ class Shuffles_SSJ_Display {
 		echo '<div class="sssj-row">';
 		if ( $promoted ) { echo '<span class="sssj-badge sssj-badge--featured">' . esc_html__( '★ Featured', 'shuffles-social-services-jobs' ) . '</span>'; }
 		if ( $basis ) { echo '<span class="sssj-badge sssj-badge--' . esc_attr( Shuffles_SSJ_Query::basis_class( $basis ) ) . '">' . esc_html( Shuffles_SSJ_Query::basis_label( $basis, true ) ) . '</span>'; }
+		if ( get_post_meta( $id, 'is_anonymous', true ) ) { echo '<span class="sssj-badge sssj-badge--anon">🕶️ ' . esc_html__( 'Anonymous', 'shuffles-social-services-jobs' ) . '</span>'; }
 		echo Shuffles_SSJ_Shortcodes::openness_badges( $id ); // phpcs:ignore WordPress.Security.EscapeOutput
 		echo '</div>';
 		if ( $suburb || $state ) { echo '<p>📍 ' . esc_html( trim( $suburb . ' ' . $state ) ) . '</p>'; }

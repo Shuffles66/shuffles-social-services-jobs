@@ -68,6 +68,12 @@ class Shuffles_SSJ_Query {
 
 		if ( ! empty( $extra['org'] ) ) {
 			$args['meta_query'][] = array( 'key' => 'organisation_id', 'value' => (int) $extra['org'] );
+			// Anonymous ads must not reveal their organisation on that org's public profile.
+			$args['meta_query'][] = array(
+				'relation' => 'OR',
+				array( 'key' => 'is_anonymous', 'compare' => 'NOT EXISTS' ),
+				array( 'key' => 'is_anonymous', 'value' => '1', 'compare' => '!=' ),
+			);
 		}
 
 		if ( count( $args['meta_query'] ) > 1 ) {

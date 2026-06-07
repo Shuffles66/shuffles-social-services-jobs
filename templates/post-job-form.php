@@ -188,6 +188,10 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					</div>
 				</fieldset>
 
+				<div class="sssj-field">
+					<label class="sssj-check"><input type="checkbox" name="is_anonymous" value="1" /> 🕶️ <?php esc_html_e( 'Advertise anonymously — hide our organisation / advertiser name (the listing shows “Anonymous”, and our name is kept out of search engines)', 'shuffles-social-services-jobs' ); ?></label>
+				</div>
+
 				<fieldset class="sssj-fieldset">
 					<legend><?php esc_html_e( 'Open to…', 'shuffles-social-services-jobs' ); ?></legend>
 					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" /> ✈️ <?php esc_html_e( 'Open to overseas applicants — visa sponsorship available', 'shuffles-social-services-jobs' ); ?></label></div>

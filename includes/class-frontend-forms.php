@@ -306,6 +306,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'sssj_alert_candidates' => empty( $_POST['alert_candidates'] ) ? '' : '1',
 			'offers_sponsorship' => empty( $_POST['offers_sponsorship'] ) ? '' : '1',
 			'accepts_placements' => empty( $_POST['accepts_placements'] ) ? '' : '1',
+			'is_anonymous'      => empty( $_POST['is_anonymous'] ) ? '' : '1',
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );

@@ -924,6 +924,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.81.0 — 2026-06-07 · advertise anonymously (employers)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Employers can tick “Advertise anonymously” when posting a job. The listing then shows an “🕶️ Anonymous” badge instead of the organisation name/logo, the organisation isn’t revealed (it’s also kept off that organisation’s public “open positions”), and the advertiser’s name is kept out of search engines (structured data shows “Private advertiser”).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant requests are already anonymous by design — pseudonymous, members-only and never indexed — so this option is built in for participants.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.80.0 — 2026-06-07 · Volunteer roles as their own opportunity type</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Volunteer (unpaid) is now a third engagement type alongside TFN and ABN. Choose “Volunteer” when posting a job (no ABN, no pay).', 'shuffles-social-services-jobs' ); ?></li>

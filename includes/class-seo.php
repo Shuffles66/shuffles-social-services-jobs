@@ -185,10 +185,16 @@ class Shuffles_SSJ_SEO {
 			$data['employmentType'] = $this->map_employment_type( $emp[0] );
 		}
 
-		$org_name = get_the_author_meta( 'display_name', (int) $post->post_author );
+		// Anonymous ads keep the advertiser's name out of structured data / search.
+		if ( get_post_meta( $id, 'is_anonymous', true ) ) {
+			$org_name = __( 'Private advertiser', 'shuffles-social-services-jobs' );
+		} else {
+			$org_name = get_the_author_meta( 'display_name', (int) $post->post_author );
+			$org_name = $org_name ? $org_name : get_bloginfo( 'name' );
+		}
 		$data['hiringOrganization'] = array(
 			'@type' => 'Organization',
-			'name'  => $org_name ? $org_name : get_bloginfo( 'name' ),
+			'name'  => $org_name,
 		);
 
 		$suburb   = (string) get_post_meta( $id, 'location_suburb', true );

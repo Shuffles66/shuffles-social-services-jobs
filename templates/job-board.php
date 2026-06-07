@@ -91,17 +91,19 @@ $cur_rad    = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : Shuff
 				}
 				?>
 				<article class="sssj-card <?php echo esc_attr( $mod ); ?>" data-sssj-id="<?php echo esc_attr( $pid ); ?>">
+					<?php $anon = (bool) get_post_meta( $pid, 'is_anonymous', true ); ?>
 					<div class="sssj-row" style="gap:10px;flex-wrap:nowrap;align-items:flex-start">
-						<?php $job_logo = class_exists( 'Shuffles_SSJ_Org' ) ? Shuffles_SSJ_Org::job_logo_url( $pid, 'thumbnail' ) : ''; ?>
+						<?php $job_logo = ( ! $anon && class_exists( 'Shuffles_SSJ_Org' ) ) ? Shuffles_SSJ_Org::job_logo_url( $pid, 'thumbnail' ) : ''; ?>
 						<?php if ( $job_logo ) : ?><img class="sssj-org-logo" src="<?php echo esc_url( $job_logo ); ?>" alt="" /><?php endif; ?>
-						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php $job_org = (int) get_post_meta( $pid, 'organisation_id', true ); if ( $job_org ) { echo Shuffles_SSJ_Verification::tick_html( $job_org, false ); } // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
+						<h3 style="margin:0"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a> <?php if ( ! $anon ) { $job_org = (int) get_post_meta( $pid, 'organisation_id', true ); if ( $job_org ) { echo Shuffles_SSJ_Verification::tick_html( $job_org, false ); } } // phpcs:ignore WordPress.Security.EscapeOutput ?></h3>
 					</div>
 					<div class="sssj-row">
 						<?php echo Shuffles_SSJ_Shortcodes::distance_pill( $pid, isset( $center ) ? $center : null ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 						<?php if ( $featured ) : ?><span class="sssj-badge sssj-badge--featured" data-i18n="featured"><?php esc_html_e( '★ Featured', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<span class="sssj-badge sssj-badge--<?php echo esc_attr( Shuffles_SSJ_Query::basis_class( $basis_m ) ); ?>"><?php echo esc_html( Shuffles_SSJ_Query::basis_label( $basis_m ) ); ?></span>
 						<?php if ( $etype ) : ?><span class="sssj-badge"><?php echo esc_html( 'one-off' === $etype ? __( 'One-off', 'shuffles-social-services-jobs' ) : __( 'Ongoing', 'shuffles-social-services-jobs' ) ); ?></span><?php endif; ?>
-						<?php echo Shuffles_SSJ_ABN::abr_badge_html( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php if ( ! $anon ) { echo Shuffles_SSJ_ABN::abr_badge_html( $pid ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
+						<?php if ( $anon ) : ?><span class="sssj-badge sssj-badge--anon" title="<?php esc_attr_e( 'The advertiser has chosen to remain anonymous', 'shuffles-social-services-jobs' ); ?>">🕶️ <?php esc_html_e( 'Anonymous', 'shuffles-social-services-jobs' ); ?></span><?php endif; ?>
 						<?php echo Shuffles_SSJ_Shortcodes::openness_badges( $pid ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 					</div>
 					<?php if ( $suburb || $state ) : ?>

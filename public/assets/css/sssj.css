@@ -606,3 +606,6 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 
 /* Volunteer engagement basis badge */
 .sssj .sssj-badge--vol{ background:#dcfce7; color:#166534; }
+
+/* Anonymous advertiser badge */
+.sssj .sssj-badge--anon{ background:#e2e8f0; color:#334155; }
