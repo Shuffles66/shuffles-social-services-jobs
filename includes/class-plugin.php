@@ -95,6 +95,10 @@ final class Shuffles_SSJ_Plugin {
 			Shuffles_SSJ_Resumes::register(); // Stored résumés (upload / manage / private serve).
 			// An employer applied to with a résumé may view it.
 			add_filter( 'shuffles_ssj_resume_can_view', array( 'Shuffles_SSJ_Plugin', 'resume_can_view' ), 10, 3 );
+			// "View as" a demo user (admin-only, demo accounts only) + a toolbar "Return to admin".
+			add_action( 'admin_post_sssj_view_as', array( 'Shuffles_SSJ_Plugin', 'handle_view_as' ) );
+			add_action( 'admin_post_sssj_view_as_return', array( 'Shuffles_SSJ_Plugin', 'handle_view_as_return' ) );
+			add_action( 'admin_bar_menu', array( 'Shuffles_SSJ_Plugin', 'view_as_admin_bar' ), 90 );
 			// ABR enrichment whenever an ABN is recorded (free GUID required; no-op otherwise).
 		add_action( 'shuffles_ssj_abn_recorded', array( 'Shuffles_SSJ_ABN', 'on_abn_recorded' ), 10, 3 );
 		// NDIS register auto-scan hook whenever an NDIS provider number is recorded (best-effort).
@@ -156,5 +160,74 @@ final class Shuffles_SSJ_Plugin {
 			return $allowed;
 		}
 		return Shuffles_SSJ_Applications::employer_can_view_resume( (int) $row->id, (int) $viewer_id );
+	}
+
+	/* ----------------------------------------------------------- "View as" demo users (QA) */
+
+	const VIEWAS_COOKIE = 'sssj_viewas';
+
+	/** Admin → impersonate a DEMO user. Strictly: manage_options + nonce + target is a demo account. */
+	public static function handle_view_as() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_view_as' );
+		$target = isset( $_POST['user_id'] ) ? (int) $_POST['user_id'] : 0;
+		if ( ! $target || ! get_user_by( 'id', $target ) || ! get_user_meta( $target, '_sssj_demo', true ) ) {
+			wp_die( esc_html__( '“View as” is only available for demo/test accounts.', 'shuffles-social-services-jobs' ) );
+		}
+		$origin = get_current_user_id();
+		$token  = wp_generate_password( 24, false, false );
+		set_transient( 'sssj_viewas_' . $token, $origin, HOUR_IN_SECONDS );
+		$path = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+		$dom  = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
+		setcookie( self::VIEWAS_COOKIE, $token, time() + HOUR_IN_SECONDS, $path, $dom, is_ssl(), true );
+		wp_clear_auth_cookie();
+		wp_set_current_user( $target );
+		wp_set_auth_cookie( $target, false );
+		wp_safe_redirect( home_url( '/' ) );
+		exit;
+	}
+
+	/** Return from impersonation to the original admin (validated via the stored origin id). */
+	public static function handle_view_as_return() {
+		check_admin_referer( 'sssj_view_as_return' );
+		$token  = isset( $_COOKIE[ self::VIEWAS_COOKIE ] ) ? sanitize_text_field( wp_unslash( $_COOKIE[ self::VIEWAS_COOKIE ] ) ) : '';
+		$origin = $token ? (int) get_transient( 'sssj_viewas_' . $token ) : 0;
+		$path   = defined( 'COOKIEPATH' ) && COOKIEPATH ? COOKIEPATH : '/';
+		$dom    = defined( 'COOKIE_DOMAIN' ) ? COOKIE_DOMAIN : '';
+		if ( $token ) {
+			delete_transient( 'sssj_viewas_' . $token );
+		}
+		setcookie( self::VIEWAS_COOKIE, '', time() - 3600, $path, $dom, is_ssl(), true );
+		if ( $origin && user_can( $origin, 'manage_options' ) ) {
+			wp_clear_auth_cookie();
+			wp_set_current_user( $origin );
+			wp_set_auth_cookie( $origin, false );
+			wp_safe_redirect( admin_url( 'admin.php?page=shuffles-ssj&tab=demo' ) );
+		} else {
+			wp_safe_redirect( home_url( '/' ) );
+		}
+		exit;
+	}
+
+	/** Toolbar node shown while impersonating: "Viewing as X — Return to admin". */
+	public static function view_as_admin_bar( $bar ) {
+		if ( empty( $_COOKIE[ self::VIEWAS_COOKIE ] ) ) {
+			return;
+		}
+		$token  = sanitize_text_field( wp_unslash( $_COOKIE[ self::VIEWAS_COOKIE ] ) );
+		$origin = $token ? (int) get_transient( 'sssj_viewas_' . $token ) : 0;
+		if ( ! $origin ) {
+			return; // stale cookie — ignore
+		}
+		$cur = wp_get_current_user();
+		$url = wp_nonce_url( admin_url( 'admin-post.php?action=sssj_view_as_return' ), 'sssj_view_as_return' );
+		$bar->add_node( array(
+			'id'    => 'sssj-viewas',
+			'title' => '👁 ' . sprintf( __( 'Viewing as %s — Return to admin', 'shuffles-social-services-jobs' ), esc_html( $cur->display_name ) ),
+			'href'  => $url,
+			'meta'  => array( 'class' => 'sssj-viewas-bar' ),
+		) );
 	}
 }

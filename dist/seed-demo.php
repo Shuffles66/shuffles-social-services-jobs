@@ -44,6 +44,7 @@ $mk_user = function ( $login, $email, $name, $hats ) {
 			return 0;
 		}
 		update_user_meta( $uid, '_sssj_demo', 1 );
+		update_user_meta( $uid, '_sssj_demo_pass', $pass ); // shown in Settings → Demo Users (test only)
 		echo "  + user {$login}  (pass: {$pass})\n";
 	} else {
 		$uid = (int) $u->ID;

@@ -305,6 +305,46 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo Shuffles_SSJ_Tests::render( array( 'title' => __( 'Testing worksheet', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
+		case 'demo':
+			echo '<h2>' . esc_html__( 'Demo / test users', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'These are the demo accounts created by the seeder (<code>dist/seed-demo.php</code>) — one per functional role, each with a sample listing. Click <strong>“View as”</strong> to instantly browse the site as that user; a “Return to admin” link appears in the toolbar to switch back. <strong>For testing only:</strong> the initial passwords are stored in plain text so they can be shared here, and “View as” works only for demo accounts — remove these accounts before going to production (a one-line cleanup is in the seeder file).', 'shuffles-social-services-jobs' ) ) . '</p>';
+			$demo_users = get_users( array( 'meta_key' => '_sssj_demo', 'meta_value' => 1, 'orderby' => 'login', 'order' => 'ASC' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+			if ( empty( $demo_users ) ) {
+				echo '<div class="notice notice-info inline" style="margin:8px 0;max-width:820px"><p>' . wp_kses_post( __( 'No demo users yet. Run the seeder on the server with <code>wp eval-file dist/seed-demo.php</code> (from the plugin folder), then reload this tab.', 'shuffles-social-services-jobs' ) ) . '</p></div>';
+			} else {
+				$hat_defs = class_exists( 'Shuffles_SSJ_Roles' ) ? Shuffles_SSJ_Roles::hats() : array();
+				echo '<table class="widefat striped" style="max-width:980px"><thead><tr>';
+				echo '<th>' . esc_html__( 'Username', 'shuffles-social-services-jobs' ) . '</th>';
+				echo '<th>' . esc_html__( 'Initial password', 'shuffles-social-services-jobs' ) . '</th>';
+				echo '<th>' . esc_html__( 'Email', 'shuffles-social-services-jobs' ) . '</th>';
+				echo '<th>' . esc_html__( 'Function(s)', 'shuffles-social-services-jobs' ) . '</th>';
+				echo '<th>' . esc_html__( 'View as', 'shuffles-social-services-jobs' ) . '</th>';
+				echo '</tr></thead><tbody>';
+				foreach ( $demo_users as $du ) {
+					$pass = (string) get_user_meta( $du->ID, '_sssj_demo_pass', true );
+					$hats = class_exists( 'Shuffles_SSJ_Roles' ) ? Shuffles_SSJ_Roles::member_roles( $du->ID ) : array();
+					$fns  = array();
+					foreach ( $hats as $h ) {
+						$fns[] = isset( $hat_defs[ $h ]['label'] ) ? $hat_defs[ $h ]['label'] : $h;
+					}
+					echo '<tr>';
+					echo '<td><strong>' . esc_html( $du->user_login ) . '</strong></td>';
+					echo '<td>' . ( '' !== $pass ? '<code>' . esc_html( $pass ) . '</code>' : '<span class="description">' . esc_html__( '(not recorded — reset via Users)', 'shuffles-social-services-jobs' ) . '</span>' ) . '</td>';
+					echo '<td>' . esc_html( $du->user_email ) . '</td>';
+					echo '<td>' . esc_html( $fns ? implode( ', ', $fns ) : '—' ) . '</td>';
+					echo '<td><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0">';
+					echo '<input type="hidden" name="action" value="sssj_view_as" />';
+					echo '<input type="hidden" name="user_id" value="' . esc_attr( $du->ID ) . '" />';
+					echo wp_nonce_field( 'sssj_view_as', '_wpnonce', true, false ); // phpcs:ignore WordPress.Security.EscapeOutput
+					echo '<button type="submit" class="button button-small">👁 ' . esc_html__( 'View as', 'shuffles-social-services-jobs' ) . '</button>';
+					echo '</form></td>';
+					echo '</tr>';
+				}
+				echo '</tbody></table>';
+				echo '<p class="description" style="margin-top:10px">' . esc_html__( 'Tip: log in via a private/incognito window so you stay signed in as admin in this one.', 'shuffles-social-services-jobs' ) . '</p>';
+			}
+			break;
+
 		case 'maps':
 			$open_form( 'maps' );
 			echo '<table class="form-table" role="presentation">';
@@ -924,6 +964,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.82.0 — 2026-06-07 · Demo Users settings tab + “View as”</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New Settings → Demo Users tab lists the seeded demo/test accounts with their username, initial password and function(s), so you can test each side of the marketplace. The seeder now records each initial password for this list.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( '“View as” — one click to browse the site as a demo user, with a “Return to admin” link in the toolbar to switch back. Admins only, and only for demo accounts (safe-gated).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'For testing only — passwords are shown in plain text; remove the demo accounts before production (one-line cleanup in dist/seed-demo.php). Run the seeder with: wp eval-file dist/seed-demo.php', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.81.0 — 2026-06-07 · advertise anonymously (employers)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Employers can tick “Advertise anonymously” when posting a job. The listing then shows an “🕶️ Anonymous” badge instead of the organisation name/logo, the organisation isn’t revealed (it’s also kept off that organisation’s public “open positions”), and the advertiser’s name is kept out of search engines (structured data shows “Private advertiser”).', 'shuffles-social-services-jobs' ); ?></li>
