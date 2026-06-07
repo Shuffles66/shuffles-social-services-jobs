@@ -93,3 +93,15 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Integrations:** PMPro, FluentCart, FluentCRM, Fluent Boards, Notion, Google Maps, and the `shuffles-growth` AI engine.
 - **Benefit:** everything configurable in one familiar place; plugs into the existing Shuffles stack.
 - **Sales angle:** *Configure once, integrate everywhere — no code required.*
+
+## M. Shareable marketing assets — résumé & flyer creator ⬜ (planned, Workstream E)
+- **One-click résumé + service flyer for sole traders / workers**, and a **job flyer for employers**, built from the profile/listing the member already has — location + services lead the layout.
+- **Built-in "Best Practice" guidance** for the social-services sector (national/AU audience) shown right where members create assets — so every flyer/résumé is clear, safe and sector-appropriate.
+- **No design skills needed:** brand-styled HTML/CSS templates → print-to-PDF in the browser, a downloadable graphic, plus copy-paste text. Participants get a **private, relay-safe share link** (never public, never indexed).
+- **Benefit:** members promote themselves professionally in minutes; the platform's brand travels with every share.
+- **Sales angle:** *Turn any profile into a polished résumé, flyer and shareable post — in one click, on-brand, with sector best-practice built in.*
+
+## N. Member reviews & ratings ⬜ (planned, Workstream H)
+- **Star ratings + reviews for contractors and providers**, moderated before they show and gated to people who actually engaged — feeds the matching "trust" signal.
+- **Benefit:** trust you can see at a glance; quality rises to the top.
+- **Sales angle:** *Real, verified reviews — so participants and employers choose with confidence.*

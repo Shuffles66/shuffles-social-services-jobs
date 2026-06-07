@@ -102,14 +102,77 @@ class Shuffles_SSJ_ABN {
 		if ( ! is_array( $data ) || empty( $data['Abn'] ) ) {
 			return null;
 		}
+		$names = array();
+		if ( ! empty( $data['BusinessName'] ) && is_array( $data['BusinessName'] ) ) {
+			foreach ( $data['BusinessName'] as $bn ) {
+				$bn = trim( (string) $bn );
+				if ( '' !== $bn ) {
+					$names[] = $bn;
+				}
+			}
+		}
 		$out = array(
-			'abn'    => (string) $data['Abn'],
-			'status' => isset( $data['AbnStatus'] ) ? (string) $data['AbnStatus'] : '',
-			'name'   => isset( $data['EntityName'] ) ? (string) $data['EntityName'] : '',
-			'type'   => isset( $data['EntityTypeName'] ) ? (string) $data['EntityTypeName'] : '',
+			'abn'         => (string) $data['Abn'],
+			'status'      => isset( $data['AbnStatus'] ) ? (string) $data['AbnStatus'] : '',
+			'status_from' => isset( $data['AbnStatusEffectiveFrom'] ) ? (string) $data['AbnStatusEffectiveFrom'] : '',
+			'name'        => isset( $data['EntityName'] ) ? (string) $data['EntityName'] : '',
+			'type'        => isset( $data['EntityTypeName'] ) ? (string) $data['EntityTypeName'] : '',
+			'type_code'   => isset( $data['EntityTypeCode'] ) ? (string) $data['EntityTypeCode'] : '',
+			'acn'         => isset( $data['Acn'] ) ? (string) $data['Acn'] : '',
+			'gst'         => isset( $data['Gst'] ) ? (string) $data['Gst'] : '',
+			'state'       => isset( $data['AddressState'] ) ? (string) $data['AddressState'] : '',
+			'postcode'    => isset( $data['AddressPostcode'] ) ? (string) $data['AddressPostcode'] : '',
+			'address_date' => isset( $data['AddressDate'] ) ? (string) $data['AddressDate'] : '',
+			'names'       => $names,
+			'message'     => isset( $data['Message'] ) ? (string) $data['Message'] : '',
 		);
+		$out['details'] = self::format_details( $out );
 		set_transient( $cache_key, $out, DAY_IN_SECONDS );
 		return $out;
+	}
+
+	/**
+	 * Build a plain-text, multi-line record of EVERYTHING the ABR returned (entity + trading names,
+	 * status, type, ACN, GST, main location). Stored verbatim so admins/owners can see the full
+	 * register feedback. National audience: the ABR is the single source of truth for AU businesses.
+	 *
+	 * @param array $r abr_lookup result.
+	 * @return string
+	 */
+	public static function format_details( $r ) {
+		$lines = array();
+		if ( ! empty( $r['name'] ) ) {
+			$lines[] = __( 'Entity name:', 'shuffles-social-services-jobs' ) . ' ' . $r['name'];
+		}
+		if ( ! empty( $r['names'] ) ) {
+			$lines[] = __( 'Trading / business name(s):', 'shuffles-social-services-jobs' ) . ' ' . implode( ', ', $r['names'] );
+		}
+		if ( ! empty( $r['abn'] ) ) {
+			$lines[] = __( 'ABN:', 'shuffles-social-services-jobs' ) . ' ' . self::format( $r['abn'] );
+		}
+		if ( ! empty( $r['acn'] ) ) {
+			$lines[] = __( 'ACN:', 'shuffles-social-services-jobs' ) . ' ' . $r['acn'];
+		}
+		if ( ! empty( $r['status'] ) ) {
+			$s = $r['status'];
+			if ( ! empty( $r['status_from'] ) ) {
+				$s .= ' (' . __( 'from', 'shuffles-social-services-jobs' ) . ' ' . $r['status_from'] . ')';
+			}
+			$lines[] = __( 'ABN status:', 'shuffles-social-services-jobs' ) . ' ' . $s;
+		}
+		if ( ! empty( $r['type'] ) ) {
+			$lines[] = __( 'Entity type:', 'shuffles-social-services-jobs' ) . ' ' . $r['type'] . ( ! empty( $r['type_code'] ) ? ' (' . $r['type_code'] . ')' : '' );
+		}
+		$lines[] = __( 'GST:', 'shuffles-social-services-jobs' ) . ' ' . ( ! empty( $r['gst'] ) ? ( __( 'Registered from', 'shuffles-social-services-jobs' ) . ' ' . $r['gst'] ) : __( 'Not currently registered', 'shuffles-social-services-jobs' ) );
+		$loc = trim( (string) ( $r['state'] ?? '' ) . ' ' . (string) ( $r['postcode'] ?? '' ) );
+		if ( '' !== $loc ) {
+			$lines[] = __( 'Main business location:', 'shuffles-social-services-jobs' ) . ' ' . $loc;
+		}
+		if ( ! empty( $r['message'] ) ) {
+			$lines[] = __( 'Note:', 'shuffles-social-services-jobs' ) . ' ' . $r['message'];
+		}
+		$lines[] = __( 'Checked:', 'shuffles-social-services-jobs' ) . ' ' . current_time( 'Y-m-d H:i' ) . ' — ' . __( 'source: Australian Business Register (abr.business.gov.au)', 'shuffles-social-services-jobs' );
+		return implode( "\n", $lines );
 	}
 
 	/**
@@ -128,6 +191,33 @@ class Shuffles_SSJ_ABN {
 		update_post_meta( $entity_id, '_sssj_abr_name', $res['name'] );
 		update_post_meta( $entity_id, '_sssj_abr_status', $res['status'] );
 		update_post_meta( $entity_id, '_sssj_abr_checked', current_time( 'mysql' ) );
+		// Full register feedback (incl. trading/business names) in one large recorded field.
+		update_post_meta( $entity_id, '_sssj_abr_details', isset( $res['details'] ) ? (string) $res['details'] : '' );
+		update_post_meta( $entity_id, '_sssj_abr_names', ! empty( $res['names'] ) ? implode( ', ', (array) $res['names'] ) : '' );
+	}
+
+	/** The stored full ABR record text for an entity ('' if never checked). Read-only register data. */
+	public static function abr_record_text( $entity_id ) {
+		return (string) get_post_meta( (int) $entity_id, '_sssj_abr_details', true );
+	}
+
+	/** Recorded trading / business names for an entity ('' if none). */
+	public static function abr_trading_names( $entity_id ) {
+		return (string) get_post_meta( (int) $entity_id, '_sssj_abr_names', true );
+	}
+
+	/**
+	 * Read-only display block of the full ABR record (entity + trading names, status, type, GST,
+	 * location). '' if never checked. This is the Register's own public data, shown verbatim.
+	 */
+	public static function abr_details_html( $entity_id ) {
+		$text = self::abr_record_text( $entity_id );
+		if ( '' === $text ) {
+			return '';
+		}
+		return '<div class="sssj-abr"><h3 style="margin:0 0 6px">🏢 ' . esc_html__( 'Australian Business Register', 'shuffles-social-services-jobs' ) . '</h3>'
+			. '<pre class="sssj-abr__record">' . esc_html( $text ) . '</pre>'
+			. '<p class="description">' . esc_html__( 'Recorded automatically from the Australian Business Register. Read-only — it cannot be edited here.', 'shuffles-social-services-jobs' ) . '</p></div>';
 	}
 
 	/** A badge for a card/profile showing the ABR-verified entity name + status, '' if not checked. */

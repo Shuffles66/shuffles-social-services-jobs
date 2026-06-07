@@ -137,6 +137,14 @@ text**. Per audience:
 - **Participants:** a **shareable link + ready copy‑paste "how to respond/apply"** text. ⚠ **Privacy:**
   participant needs are pseudonymous + `noindex` — so this is a **private/relay‑safe link**, NOT public SEO.
   (Public "SEO info" applies to jobs / workers / orgs per their visibility, never to participant needs.)
+- **Best-practice guidance (DONE — content ready, surface inline when building E):** `docs/BEST-PRACTICE-ASSETS.md`
+  is the single source of best-practice for flyer + résumé creation in the social-services sector (national/AU
+  audience): location+services first, Easy-Read plain English, person-centred/strengths-based language, show
+  safety credentials, specifics, privacy/dignity (never identify a participant; consented photos only),
+  accessible-by-design, one clear CTA. **Already accessible in-app** as the `asset-best-practice` Guides panel
+  (`Shuffles_SSJ_Guides::sections()`, via `[sssj_guides]` + Settings → Guides). **When E is built, these rules
+  MUST appear inline in the asset wizard** (tips beside each step, sensible defaults, an accessibility +
+  no-participant-PII check before download/share). Keep doc ↔ Guides ↔ wizard copy aligned.
 
 ## Workstream F — Testimonials (NEW 2026-06-07)
 A testimonials section on most user pages (worker / sole trader / organisation). Owner‑curated + optional

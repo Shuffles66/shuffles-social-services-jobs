@@ -1565,52 +1565,59 @@ class Shuffles_SSJ_Shortcodes {
 
 	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
 	/**
-	 * Static page resolver for templates (no instance handy). Same logic as resolve_page(),
-	 * reading the settings option directly: configured page id → else the page containing the shortcode.
+	 * Resolve a feature page URL ('' if none). Order of preference:
+	 *   1. The configured page (settings key) IF it actually contains the shortcode (or none given).
+	 *   2. Otherwise the page that DOES contain the shortcode — this self-heals a stale mapping, e.g.
+	 *      a "Jobs" item still pointing at a legacy board page, or "My dashboard" pointing at the old
+	 *      my-listings page, repoints automatically to the page running our shortcode.
+	 *   3. As a last resort, the configured page even without the literal shortcode (e.g. an Elementor
+	 *      widget renders it), so an intentionally-mapped builder page still works.
+	 * Static so templates can call it without an instance.
 	 */
 	public static function page_link( $key, $shortcode ) {
 		$opts = get_option( 'shuffles_ssj_settings', array() );
 		$id   = is_array( $opts ) && isset( $opts[ $key ] ) ? (int) $opts[ $key ] : 0;
-		if ( $id && 'publish' === get_post_status( $id ) ) {
+		$tag  = trim( (string) $shortcode, '[]' );
+
+		$cfg_ok = ( $id && 'publish' === get_post_status( $id ) );
+		if ( $cfg_ok && '' === $tag ) {
 			return (string) get_permalink( $id );
 		}
-		$tag    = trim( $shortcode, '[]' );
-		$cached = get_transient( 'sssj_menu_pg_' . $tag );
-		if ( false === $cached ) {
-			$cached = 0;
-			$pages  = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'posts_per_page' => 50, 'fields' => 'ids', 's' => $tag, 'no_found_rows' => true ) );
-			foreach ( $pages as $pid ) {
-				$p = get_post( $pid );
-				if ( $p && has_shortcode( (string) $p->post_content, $tag ) ) {
-					$cached = (int) $pid;
-					break;
-				}
+		if ( $cfg_ok ) {
+			$cfg = get_post( $id );
+			if ( $cfg && has_shortcode( (string) $cfg->post_content, $tag ) ) {
+				return (string) get_permalink( $id ); // configured page is valid for this shortcode
 			}
-			set_transient( 'sssj_menu_pg_' . $tag, $cached, HOUR_IN_SECONDS );
 		}
-		return $cached ? (string) get_permalink( $cached ) : '';
+
+		// Find the page that actually contains the shortcode (cached).
+		$found = 0;
+		if ( '' !== $tag ) {
+			$cached = get_transient( 'sssj_menu_pg_' . $tag );
+			if ( false === $cached ) {
+				$cached = 0;
+				$pages  = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'posts_per_page' => 50, 'fields' => 'ids', 's' => $tag, 'no_found_rows' => true ) );
+				foreach ( $pages as $pid ) {
+					$p = get_post( $pid );
+					if ( $p && has_shortcode( (string) $p->post_content, $tag ) ) {
+						$cached = (int) $pid;
+						break;
+					}
+				}
+				set_transient( 'sssj_menu_pg_' . $tag, $cached, HOUR_IN_SECONDS );
+			}
+			$found = (int) $cached;
+		}
+		if ( $found ) {
+			return (string) get_permalink( $found );
+		}
+
+		// Last resort: the configured page even if the literal tag isn't in its content.
+		return $cfg_ok ? (string) get_permalink( $id ) : '';
 	}
 
 	public function resolve_page( $key, $shortcode ) {
-		$id = (int) $this->settings->get( $key, 0 );
-		if ( $id && 'publish' === get_post_status( $id ) ) {
-			return (string) get_permalink( $id );
-		}
-		$tag   = trim( $shortcode, '[]' );
-		$cached = get_transient( 'sssj_menu_pg_' . $tag );
-		if ( false === $cached ) {
-			$cached = 0;
-			$pages  = get_posts( array( 'post_type' => 'page', 'post_status' => 'publish', 'posts_per_page' => 50, 'fields' => 'ids', 's' => $tag, 'no_found_rows' => true ) );
-			foreach ( $pages as $pid ) {
-				$p = get_post( $pid );
-				if ( $p && has_shortcode( (string) $p->post_content, $tag ) ) {
-					$cached = (int) $pid;
-					break;
-				}
-			}
-			set_transient( 'sssj_menu_pg_' . $tag, $cached, HOUR_IN_SECONDS );
-		}
-		return $cached ? (string) get_permalink( $cached ) : '';
+		return self::page_link( $key, $shortcode );
 	}
 
 	private function add_nav_item( &$items, $label, $url, $cta = false ) {

@@ -167,6 +167,14 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<input class="sssj-input" id="sssj-wabn" type="text" name="worker_abn" inputmode="numeric" placeholder="11 digits" value="<?php echo esc_attr( (string) $gm( 'worker_abn', '' ) ); ?>" />
 				</div>
 
+				<?php if ( $existing && class_exists( 'Shuffles_SSJ_ABN' ) ) { $abr_rec = Shuffles_SSJ_ABN::abr_record_text( $existing->ID ); if ( '' !== $abr_rec ) : ?>
+				<div class="sssj-field">
+					<label for="sssj-wabr"><?php esc_html_e( 'Australian Business Register — recorded details', 'shuffles-social-services-jobs' ); ?></label>
+					<textarea class="sssj-textarea" id="sssj-wabr" rows="8" readonly><?php echo esc_textarea( $abr_rec ); ?></textarea>
+					<p class="description"><?php esc_html_e( 'Recorded automatically from the ABR when your ABN was saved (includes trading / business names). Read-only — this is the Register’s own data.', 'shuffles-social-services-jobs' ); ?></p>
+				</div>
+				<?php endif; } ?>
+
 				<div class="sssj-field">
 					<label><input type="checkbox" name="ndis_registered" value="1" <?php checked( '1', (string) $gm( 'ndis_registered' ) ); ?> /> <?php esc_html_e( 'I’m an NDIS-registered sole trader (registered in my own right)', 'shuffles-social-services-jobs' ); ?></label>
 				</div>

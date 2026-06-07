@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.66.0 (2026-06-07)
+- **Last updated:** v0.68.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -105,7 +105,8 @@ Posting precedence is checked in order: `sssj_post_job` → `sssj_post_worker` �
 
 ## 9. ABR (ABN) verification
 
-- When an ABR GUID is configured, ABNs are checked against the Australian Business Register on save; entity name + active status are stored and shown as an "ABR Active · <Name>" badge. Without a GUID, only the offline checksum runs.
+- When an ABR GUID is configured (Settings → Compliance, `abr_guid`), ABNs are checked against the Australian Business Register on save (`shuffles_ssj_abn_recorded` → `Shuffles_SSJ_ABN::on_abn_recorded`). Entity name + active status are stored and shown as an "ABR Active · <Name>" badge. Without a GUID, only the offline checksum runs.
+- **Full register record (`_sssj_abr_details`, v0.68):** the complete ABR response — entity name, **trading / business names** (`BusinessName[]`), ABN status + effective date, entity type + code, ACN, GST registration, and main business location — is captured into one large read-only field (`Shuffles_SSJ_ABN::abr_lookup()` → `format_details()`), stored in `_sssj_abr_details` (+ `_sssj_abr_names`). Shown as a read-only "recorded details" field on the worker & organisation **forms** (owner-only) and as a public block on the **organisation profile** (`abr_details_html()`). It is the Register's own data — **read-only, never edited here** (same principle as the NDIS register data).
 
 ## 10. Privacy (structural, non-negotiable)
 

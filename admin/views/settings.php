@@ -913,6 +913,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.68.0 — 2026-06-07 · full ABR record (trading names) · menu repoint · best-practice guide</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'ABN / ABR: when an ABN is saved (and an ABR GUID is set in Settings → Compliance), the FULL Australian Business Register response is now recorded — entity name, trading / business names, ABN status & date, entity type, ACN, GST registration and main business location — in one read-only “recorded details” field on the worker and organisation forms, and shown on the organisation’s public profile. (The ABR key field and the on-save check already existed in Settings → Compliance.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Header menu repoint: menu/links now self-heal to the page that actually contains the right shortcode — so “My dashboard” resolves to the all-in-one dashboard hub and “Jobs” resolves to our jobs board, even if an old/legacy page was previously mapped. The header menu re-syncs automatically on this update.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New guide “Best practice: creating a flyer or résumé (social services)” — national, plain-English, person-centred and privacy-safe guidance, available now under Settings → Guides and via [sssj_guides]. It will also appear inline when the asset creator is built.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.67.0 — 2026-06-07 · location autocomplete fixes + apply links</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Worker profile: the “Your location” field now has address autocomplete and records the precise lat/long behind the scenes (filling Suburb / State / Postcode), so the profile works correctly in the directory and in radius matching. (The location map/autocomplete script wasn’t being loaded on the worker form.)', 'shuffles-social-services-jobs' ); ?></li>

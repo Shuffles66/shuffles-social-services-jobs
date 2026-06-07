@@ -534,3 +534,13 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-note{ border-radius:var(--sssj-radius); padding:var(--sssj-s2) var(--sssj-s3); margin:0 0 var(--sssj-s3); border:1px solid var(--sssj-line); }
 .sssj .sssj-note--ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--sssj-success); }
 .sssj .sssj-note--warn{ background:#fffbeb; border-color:#fde68a; color:var(--sssj-warning); }
+
+/* ── ABR (Australian Business Register) recorded details ──────────────────── */
+.sssj .sssj-abr{ margin:var(--sssj-s3) 0; }
+.sssj .sssj-abr__record{
+	white-space:pre-wrap; word-break:break-word; margin:0;
+	background:var(--sssj-bg-soft); border:1px solid var(--sssj-line);
+	border-left:4px solid var(--sssj-abn); border-radius:var(--sssj-radius);
+	padding:var(--sssj-s3); font-size:var(--sssj-fs-sm); line-height:1.5;
+	font-family:inherit; color:var(--sssj-text);
+}

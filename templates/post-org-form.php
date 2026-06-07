@@ -125,6 +125,14 @@ if ( $existing ) {
 					<div class="sssj-field"><label><?php esc_html_e( 'Phone', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="org_phone" value="<?php echo esc_attr( $gm( 'org_phone' ) ); ?>" /></div>
 					<div class="sssj-field"><label><?php esc_html_e( 'ABN', 'shuffles-social-services-jobs' ); ?> *</label><input class="sssj-input" type="text" name="org_abn" inputmode="numeric" placeholder="11 digits" required value="<?php echo esc_attr( $gm( 'org_abn' ) ); ?>" /><p class="description"><?php esc_html_e( 'Required — organisations are businesses. Checked against the Australian Business Register when ABR verification is configured.', 'shuffles-social-services-jobs' ); ?></p></div>
 
+					<?php if ( $existing && class_exists( 'Shuffles_SSJ_ABN' ) ) { $abr_rec = Shuffles_SSJ_ABN::abr_record_text( $existing->ID ); if ( '' !== $abr_rec ) : ?>
+					<div class="sssj-field">
+						<label for="sssj-oabr"><?php esc_html_e( 'Australian Business Register — recorded details', 'shuffles-social-services-jobs' ); ?></label>
+						<textarea class="sssj-textarea" id="sssj-oabr" rows="8" readonly><?php echo esc_textarea( $abr_rec ); ?></textarea>
+						<p class="description"><?php esc_html_e( 'Recorded automatically from the ABR when your ABN was saved (includes trading / business names). Read-only — this is the Register’s own data.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+					<?php endif; } ?>
+
 				<div class="sssj-field">
 					<label><input type="checkbox" name="ndis_registered" value="1" <?php checked( '1', (string) $gm( 'ndis_registered' ) ); ?> /> <?php esc_html_e( 'We are a registered NDIS provider', 'shuffles-social-services-jobs' ); ?></label>
 				</div>

@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.66.0 (2026-06-07)';
+		return 'v0.68.0 (2026-06-07)';
 	}
 
 	/**
@@ -80,6 +80,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'Workers upload evidence (WWCC, police check, NDIS screening, etc.) → it sits as Pending → an admin approves or rejects. The badge needs at least one approved, in-date credential.', 'shuffles-social-services-jobs' ),
 						__( 'Evidence files are stored privately (in the database, no public link) and served only to the owner or an admin.', 'shuffles-social-services-jobs' ),
 						__( 'When a credential expires, reminders go out beforehand and the badge drops automatically.', 'shuffles-social-services-jobs' ),
+						__( 'ABN verification: if an ABR Web Services GUID is set (Settings → Compliance), any ABN saved on a job, worker or organisation is checked against the Australian Business Register on save. The FULL register response — entity name, trading/business names, status, type, ACN, GST, location — is recorded read-only and shown (organisation profile + owner forms). It is the Register’s own data, never edited here.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(

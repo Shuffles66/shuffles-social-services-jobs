@@ -53,6 +53,7 @@ $extra   = is_array( $extra ) ? $extra : array();
 		</div>
 		<?php echo Shuffles_SSJ_Org::social_html( $org_id ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 		<?php if ( class_exists( 'Shuffles_SSJ_NDIS_Register' ) ) { echo Shuffles_SSJ_NDIS_Register::status_table_html( $org_id ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
+		<?php if ( class_exists( 'Shuffles_SSJ_ABN' ) ) { echo Shuffles_SSJ_ABN::abr_details_html( $org_id ); } // phpcs:ignore WordPress.Security.EscapeOutput ?>
 		<?php $org_travel = (int) get_post_meta( $org_id, 'travel_radius_km', true ); if ( $org_travel > 0 ) : ?>
 			<p><strong><?php esc_html_e( 'Service area:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( sprintf( __( 'up to %d km from our location(s)', 'shuffles-social-services-jobs' ), $org_travel ) ); ?></p>
 		<?php endif; ?>

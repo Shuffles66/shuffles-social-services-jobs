@@ -144,6 +144,52 @@ class Shuffles_SSJ_Guides {
 					__( 'Mention cultural focus and languages — many participants search specifically for these.', 'shuffles-social-services-jobs' ),
 				),
 			),
+			array(
+				'id'       => 'asset-best-practice',
+				'audience' => __( 'For workers, sole traders & organisations', 'shuffles-social-services-jobs' ),
+				'title'    => __( 'Best practice: creating a flyer or résumé (social services)', 'shuffles-social-services-jobs' ),
+				'intro'    => __( 'A flyer or résumé in the care-and-support sector is read by busy participants, families, coordinators and employers right across Australia — many with low vision, limited English, or little time. Clear, respectful, honest beats flashy every time. These are the rules we build into the asset creator.', 'shuffles-social-services-jobs' ),
+				'steps'    => array(
+					array(
+						'h' => __( 'Put location and services at the very top', 'shuffles-social-services-jobs' ),
+						'p' => __( 'The first two things anyone scans are “where are you?” and “what do you do?”. Lead with your suburb / service area and a short list of the services you offer, before anything else.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Write in plain, Easy-Read English', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Short sentences, one idea per line, everyday words, no acronyms or jargon. Aim for a reading age of about 12. This is a national, culturally diverse audience — many readers use translation or read-aloud tools, so simple text helps everyone.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Use person-centred, strengths-based language', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Say what you help people to do and achieve (“I support people to get out and about, cook, and stay independent”), not clinical labels. Lead with dignity and choice — that is the language the sector and participants expect.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Show your safety credentials clearly', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Trust is the sector’s currency. State the checks you hold — WWCC / Blue Card, NDIS Worker Screening, Police Check, First Aid/CPR — and your ABN if you contract. On Shuffles these can show as a ✓ Verified badge once an admin confirms them.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Be specific about who you help and when', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Name your real availability (e.g. “evenings & weekends”), the supports you’re great at, and any specialisms — complex care, mental health, ageing, Auslan, LGBTQIA+ friendly, a language you speak. Specific beats generic for getting matched.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Protect privacy and dignity', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Never name or identify a participant on a flyer, and never use a photo of someone without their written consent. Participant-facing assets are private, relay-safe links — never public or search-indexed.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Make it accessible by design', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Large text (12pt+), high contrast, a clean sans-serif font, plenty of white space, and meaningful image descriptions. An accessible flyer reaches the widest audience and reflects the values of the sector.', 'shuffles-social-services-jobs' ),
+					),
+					array(
+						'h' => __( 'Finish with one clear next step', 'shuffles-social-services-jobs' ),
+						'p' => __( 'End with a single, obvious call to action — how to get in touch or apply (through the safe Shuffles relay where privacy matters). One clear ask gets far more responses than several.', 'shuffles-social-services-jobs' ),
+					),
+				),
+				'tips'     => array(
+					__( 'One page is plenty — white space and short lines make it readable, not empty.', 'shuffles-social-services-jobs' ),
+					__( 'Use real, consented photos that reflect your actual work; avoid stock images that misrepresent.', 'shuffles-social-services-jobs' ),
+					__( 'Inclusive language and imagery (CALD, First Nations, disability dignity, LGBTQIA+) widen your reach across Australia.', 'shuffles-social-services-jobs' ),
+					__( 'Keep it current — update availability, rates and credentials so nothing reads as out of date.', 'shuffles-social-services-jobs' ),
+				),
+			),
 		);
 		return apply_filters( 'shuffles_ssj_guides', $g );
 	}
