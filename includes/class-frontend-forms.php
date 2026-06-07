@@ -26,6 +26,54 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
 		add_action( 'wp_ajax_sssj_autofill', array( $this, 'ajax_autofill' ) );
 		add_action( 'admin_post_sssj_save_roles', array( $this, 'handle_save_roles' ) );
+		add_action( 'admin_post_sssj_org_team', array( $this, 'handle_org_team' ) );
+		add_action( 'admin_post_nopriv_sssj_org_team', array( $this, 'deny' ) );
+	}
+
+	/**
+	 * Org team management (D): add / change-role / remove a member. Only an org admin
+	 * (owner, an 'admin' member, or a site admin) may act, and only on an org they manage.
+	 */
+	public function handle_org_team() {
+		$nonce = isset( $_POST['sssj_team_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_team_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_org_team' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$org_id   = isset( $_POST['org_id'] ) ? (int) $_POST['org_id'] : 0;
+		$op       = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+
+		if ( ! $org_id || ! Shuffles_SSJ_Org_Team::is_admin( $org_id, get_current_user_id() ) ) {
+			wp_die( esc_html__( 'You do not manage this organisation’s team.', 'shuffles-social-services-jobs' ) );
+		}
+
+		$notice = 'ok';
+		if ( 'add' === $op ) {
+			$needle = isset( $_POST['member'] ) ? sanitize_text_field( wp_unslash( $_POST['member'] ) ) : '';
+			$role   = ( isset( $_POST['role'] ) && 'admin' === $_POST['role'] ) ? 'admin' : 'member';
+			$uid    = Shuffles_SSJ_Org_Team::find_user( $needle );
+			if ( ! $uid ) {
+				$notice = 'nouser';
+			} else {
+				$res    = Shuffles_SSJ_Org_Team::add_member( $org_id, $uid, $role );
+				$notice = is_wp_error( $res ) ? 'err' : 'added';
+			}
+		} elseif ( 'role' === $op ) {
+			$uid  = isset( $_POST['user_id'] ) ? (int) $_POST['user_id'] : 0;
+			$role = ( isset( $_POST['role'] ) && 'admin' === $_POST['role'] ) ? 'admin' : 'member';
+			$res  = Shuffles_SSJ_Org_Team::set_role( $org_id, $uid, $role );
+			$notice = is_wp_error( $res ) ? 'err' : 'updated';
+		} elseif ( 'remove' === $op ) {
+			$uid    = isset( $_POST['user_id'] ) ? (int) $_POST['user_id'] : 0;
+			$res    = Shuffles_SSJ_Org_Team::remove_member( $org_id, $uid );
+			$notice = is_wp_error( $res ) ? 'err' : 'removed';
+		}
+
+		wp_safe_redirect( add_query_arg( 'sssj_team', $notice, remove_query_arg( 'sssj_team', $redirect ) ) );
+		exit;
 	}
 
 	/** Save a member's declared roles (from [sssj_roles]) and grant the matching capabilities. */
@@ -315,6 +363,11 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
+		}
+
+		// Per-field privacy masking (C4) — "members only" toggles for sensitive fields.
+		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
+			Shuffles_SSJ_Privacy::save( $post_id, 'worker', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 
 		// Profile photo → featured image; extra photos → gallery (attachment IDs in _sssj_gallery).
@@ -680,6 +733,11 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
+		}
+
+		// Per-field privacy masking (C4) — "members only" toggles for contact fields.
+		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
+			Shuffles_SSJ_Privacy::save( $post_id, 'org', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
 
 		// Logo → the org post's featured image (also used by Organization JSON-LD).

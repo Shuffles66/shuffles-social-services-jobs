@@ -56,7 +56,11 @@ $status_labels = array(
 				<p><strong><?php esc_html_e( 'Services:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( implode( ', ', $svcs ) ); ?></p>
 			<?php endif; ?>
 			<?php if ( $rmin > 0 || $rmax > 0 ) : ?>
-				<p><strong><?php esc_html_e( 'Rate:', 'shuffles-social-services-jobs' ); ?></strong> 💲 <?php echo esc_html( $rmin > 0 ? number_format_i18n( $rmin ) : '' ); ?><?php echo esc_html( $rmax > 0 ? ' – ' . number_format_i18n( $rmax ) : '' ); ?> / <?php echo esc_html( $runit ? $runit : 'hour' ); ?></p>
+				<?php if ( ! class_exists( 'Shuffles_SSJ_Privacy' ) || Shuffles_SSJ_Privacy::show( $worker_id, 'rate' ) ) : ?>
+					<p><strong><?php esc_html_e( 'Rate:', 'shuffles-social-services-jobs' ); ?></strong> 💲 <?php echo esc_html( $rmin > 0 ? number_format_i18n( $rmin ) : '' ); ?><?php echo esc_html( $rmax > 0 ? ' – ' . number_format_i18n( $rmax ) : '' ); ?> / <?php echo esc_html( $runit ? $runit : 'hour' ); ?></p>
+				<?php else : ?>
+					<p><strong><?php esc_html_e( 'Rate:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo Shuffles_SSJ_Privacy::lock_html(); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
+				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( $suburb || $state ) : ?>
 				<p><strong><?php esc_html_e( 'Location:', 'shuffles-social-services-jobs' ); ?></strong> 📍 <?php echo esc_html( trim( $suburb . ' ' . $state ) ); ?></p>

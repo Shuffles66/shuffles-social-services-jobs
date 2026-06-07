@@ -106,7 +106,17 @@ C3 **Sole‑trader opt‑in in providers directory** → C4 **Per‑field maskin
 — interleaved with application‑process A1→A3 and legislation B2/B3 as you prioritise. (Syndication push/pull
 = later, see #7.)
 
-## Workstream D — Multi-user organisations (NEW 2026-06-07, to build)
+### Status (shipped)
+- ✅ **C1** Onboarding wizard — v0.61.0 (`[sssj_onboard]`).
+- ✅ **C2** Provider size band + structure (+ directory filters) — v0.61.0.
+- ✅ **C3** Sole‑trader opt‑in in providers directory — v0.61.0.
+- ✅ **AJAX filtering** (instant in‑place results, "I need support" first) — v0.63.0.
+- ✅ **C4** Per‑field masking — v0.64.0 (`Shuffles_SSJ_Privacy`; worker rate, org phone/website; "members only").
+- ✅ **C5** Smart synonym search (AI‑ready) — v0.65.0 (`Shuffles_SSJ_Search`; `shuffles_ssj_search_expand_terms` hook for AI later).
+- ✅ **D** Multi‑user organisations / teams — v0.66.0 (`Shuffles_SSJ_Org_Team`; `[sssj_org_team]` + dashboard Team tab).
+- **Next up:** A1→A3 application pipeline; B2/B3 mode fields + legislation; E/F/G; syndication (#7).
+
+## Workstream D — Multi-user organisations (✅ shipped v0.66.0)
 - Several **users belong to one organisation** (a team), not just a single `org_user_id` owner.
 - An **organisation admin** can **invite / manage / remove** other members of that org and set their role
   within it (e.g. org‑admin vs member/recruiter).

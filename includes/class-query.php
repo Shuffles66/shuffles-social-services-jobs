@@ -81,7 +81,7 @@ class Shuffles_SSJ_Query {
 		}
 
 		if ( ! empty( $extra['s'] ) ) {
-			$args['s'] = sanitize_text_field( $extra['s'] );
+			$args[ class_exists( 'Shuffles_SSJ_Search' ) ? Shuffles_SSJ_Search::QV : 's' ] = sanitize_text_field( $extra['s'] );
 		}
 
 		/**
@@ -144,7 +144,7 @@ class Shuffles_SSJ_Query {
 			);
 		}
 		if ( ! empty( $extra['s'] ) ) {
-			$args['s'] = sanitize_text_field( $extra['s'] );
+			$args[ class_exists( 'Shuffles_SSJ_Search' ) ? Shuffles_SSJ_Search::QV : 's' ] = sanitize_text_field( $extra['s'] );
 		}
 
 		return apply_filters( 'shuffles_ssj_worker_query_args', $args, $extra );

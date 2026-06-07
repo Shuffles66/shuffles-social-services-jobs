@@ -191,6 +191,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<label><input type="checkbox" name="alert_jobs" value="1" <?php checked( '1', (string) get_user_meta( get_current_user_id(), 'sssj_alert_jobs', true ) ); ?> /> <?php esc_html_e( 'Email me when new jobs match my profile', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
+				<?php if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) { Shuffles_SSJ_Privacy::fields_html( 'worker', $existing ? $existing->ID : 0 ); } ?>
 				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php echo $existing ? esc_html__( 'Save profile', 'shuffles-social-services-jobs' ) : esc_html__( 'Create profile', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>

@@ -90,7 +90,9 @@ final class Shuffles_SSJ_Plugin {
 		$this->verification->register();
 		$this->alerts = new Shuffles_SSJ_Alerts( $this->settings );
 		$this->alerts->register();
-		// ABR enrichment whenever an ABN is recorded (free GUID required; no-op otherwise).
+		// Smart synonym-aware keyword search (C5) — opts in per query via the sssj_smart_search var.
+			Shuffles_SSJ_Search::init();
+			// ABR enrichment whenever an ABN is recorded (free GUID required; no-op otherwise).
 		add_action( 'shuffles_ssj_abn_recorded', array( 'Shuffles_SSJ_ABN', 'on_abn_recorded' ), 10, 3 );
 		// NDIS register auto-scan hook whenever an NDIS provider number is recorded (best-effort).
 		add_action( 'shuffles_ssj_ndis_recorded', array( 'Shuffles_SSJ_Org', 'on_ndis_recorded' ), 10, 2 );

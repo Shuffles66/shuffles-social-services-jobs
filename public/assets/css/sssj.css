@@ -505,3 +505,32 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 /* No-colour accessibility mode keeps the tick legible as a dark ring. */
 .sssj-a11y-mono .sssj .sssj-bluetick__mark,
 .sssj-a11y-mono.sssj .sssj-bluetick__mark{ background:#334155; }
+
+/* ── C4 · Per-field privacy masking ──────────────────────────────────────── */
+/* Lock pill shown to guests in place of a masked contact / sensitive value. */
+.sssj .sssj-masked{
+	background:var(--sssj-bg-soft); color:var(--sssj-muted);
+	border:1px dashed var(--sssj-line); font-weight:var(--sssj-weight-strong);
+}
+.sssj .sssj-masked [aria-hidden]{ font-size:.9em; }
+/* "Members only" toggle group on the posting forms. */
+.sssj .sssj-fieldset--privacy{
+	border:1px solid var(--sssj-line); border-left:4px solid var(--sssj-info);
+	border-radius:var(--sssj-radius); padding:var(--sssj-s4); margin:var(--sssj-s4) 0;
+	background:var(--sssj-bg-soft);
+}
+.sssj .sssj-fieldset--privacy legend{ font-weight:var(--sssj-weight-strong); padding:0 var(--sssj-s2); }
+.sssj .sssj-fieldset--privacy .sssj-check{ display:flex; align-items:center; gap:var(--sssj-s2); margin:var(--sssj-s2) 0; }
+.sssj .sssj-fieldset--privacy .description{ margin:0 0 var(--sssj-s3); color:var(--sssj-muted); font-size:var(--sssj-fs-sm); }
+
+/* ── D · Org team manager ────────────────────────────────────────────────── */
+.sssj .sssj-team-table{ width:100%; border-collapse:collapse; margin:var(--sssj-s3) 0; }
+.sssj .sssj-team-table th,
+.sssj .sssj-team-table td{ text-align:left; padding:var(--sssj-s2) var(--sssj-s3); border-bottom:1px solid var(--sssj-line); vertical-align:middle; }
+.sssj .sssj-team-table th{ font-size:var(--sssj-fs-sm); color:var(--sssj-muted); font-weight:var(--sssj-weight-strong); }
+.sssj .sssj-inline-form{ display:inline-flex; align-items:center; gap:var(--sssj-s2); margin:0; }
+.sssj .sssj-select--sm{ min-height:34px; padding:var(--sssj-s1) var(--sssj-s2); font-size:var(--sssj-fs-sm); }
+.sssj .sssj-badge--sm{ font-size:.72rem; padding:1px 6px; }
+.sssj .sssj-note{ border-radius:var(--sssj-radius); padding:var(--sssj-s2) var(--sssj-s3); margin:0 0 var(--sssj-s3); border:1px solid var(--sssj-line); }
+.sssj .sssj-note--ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--sssj-success); }
+.sssj .sssj-note--warn{ background:#fffbeb; border-color:#fde68a; color:var(--sssj-warning); }

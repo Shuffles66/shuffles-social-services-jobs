@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.60.0 (2026-06-07)';
+		return 'v0.66.0 (2026-06-07)';
 	}
 
 	/**
@@ -69,6 +69,7 @@ class Shuffles_SSJ_Business_Rules {
 					'rules' => array(
 						__( 'Categories: support provider, supplier/services to the sector, SDA/housing, real estate, professional services, or other — shown as a badge and a directory filter.', 'shuffles-social-services-jobs' ),
 						__( 'A “Sponsored” organisation sorts to the top of the directory and shows a ★ badge. Only an administrator can grant it — members cannot self-promote.', 'shuffles-social-services-jobs' ),
+						__( 'Teams: an organisation has one owner (its creator) plus any number of team members, each a “member” or an “admin”. An org admin can add an existing person (by email/username), change a member’s role, or remove someone — the owner can never be removed or demoted. Adding a member never creates an account, and removing one only unlinks them (their account is untouched).', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(
@@ -102,6 +103,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'New participant requests are held for admin approval before they appear.', 'shuffles-social-services-jobs' ),
 						__( 'First contact runs through a safe internal relay — a worker never sees a participant’s email or phone.', 'shuffles-social-services-jobs' ),
 						__( 'Worker profiles honour their chosen visibility (public / logged-in / hidden) and never expose personal contact details publicly.', 'shuffles-social-services-jobs' ),
+						__( 'Owners can mask individual sensitive fields (worker pay rate; organisation phone & website) as “members only”. Logged-out visitors then see a “Log in to view” lock instead of the value; signed-in members, the owner and admins still see it, and the profile stays findable. Masking can never reveal register-sourced NDIS data, which stays read-only regardless.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(
@@ -109,6 +111,7 @@ class Shuffles_SSJ_Business_Rules {
 					'intro' => __( 'Connecting the right people, and keeping them informed — only if they opt in.', 'shuffles-social-services-jobs' ),
 					'rules' => array(
 						__( 'Matching scores candidates on shared categories, distance, availability, engagement basis, rate and trust.', 'shuffles-social-services-jobs' ),
+							__( 'Keyword search is synonym-aware: it understands sector language (e.g. “support work” also finds “carer” / “DSW”, “OT” finds “occupational therapist”) and broadens with OR so a sensible search never returns nothing. It is built deterministically now and ready for a smarter (AI) expander later.', 'shuffles-social-services-jobs' ),
 						__( 'Email alerts (job matches, new candidates, saved searches) are opt-in and sent on a daily schedule.', 'shuffles-social-services-jobs' ),
 						__( 'Ticking a program (e.g. NDIS) can keep the matching CRM tags/lists in sync, logged per member.', 'shuffles-social-services-jobs' ),
 					),

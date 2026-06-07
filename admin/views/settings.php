@@ -913,6 +913,26 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.66.0 — 2026-06-07 · D · multi-user organisations (teams)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Organisations can now have a team. The owner (creator) plus any number of members — each a “Member” or an “Admin” — can belong to one organisation.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Team” tab in the member dashboard (and a [sssj_org_team] shortcode): an org admin can add an existing person by email or username, change a member’s role, or remove someone. The owner can never be removed or demoted.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Safety: accounts are never created here (the person must already be registered — otherwise you’re prompted to ask them to sign up first), and removing a member only unlinks them from the organisation; their account is not deleted.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Added team members gain the ability to post jobs for the organisation.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.65.0 — 2026-06-07 · C5 · smart synonym-aware search</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Search now understands sector language. A search for “support work” also finds “Disability Support Worker”, “carer”, “DSW”, “PCA” and similar; “aged care” matches “home care” and “elderly care”; “OT” matches “occupational therapist”, and so on across the Jobs, Worker and Organisations boards.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Synonyms broaden a search rather than narrowing it — related terms are matched with OR, so a sensible search never collapses to zero results.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Built deterministically now and ready for a smarter (AI) expander later via a single hook — with no change to the boards and nothing vendor-named shown to members.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.64.0 — 2026-06-07 · C4 · per-field privacy masking (“members only”)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New privacy control on the worker and organisation profile forms: tick a sensitive field to show it only to logged-in members. Logged-out visitors then see a “🔒 Log in to view” note instead of the value; signed-in members, the owner and admins still see it.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Maskable fields: a worker’s pay rate; an organisation’s phone number and website. The profile itself stays findable in the directory — only the chosen field’s value is hidden from guests.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Applies everywhere the field shows — profile pages and the directory cards (including the instant-filter results) — from one setting.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Safety: masking is additive and can never reveal NDIS-register data, which stays read-only; participant privacy and worker visibility rules are unchanged.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.63.0 — 2026-06-07 · instant AJAX filtering · “I need support” first</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Directory filtering is now instant. When you change the search box, location, radius, categories or any filter on the Jobs, Employee, Contractor, Worker, Organisations and Participant-request boards, only the result tiles refresh — the page no longer reloads or jumps to the top, and your cursor stays in the search box. The address bar still updates so the filtered view is shareable.', 'shuffles-social-services-jobs' ); ?></li>

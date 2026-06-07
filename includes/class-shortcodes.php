@@ -37,6 +37,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
 		add_shortcode( 'sssj_swipe', array( $this, 'provider_swipe' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
+		add_shortcode( 'sssj_org_team', array( $this, 'org_team' ) );
 		add_action( 'wp_ajax_sssj_swipe_save', array( $this, 'ajax_swipe_save' ) );
 		add_action( 'wp_ajax_sssj_filter', array( $this, 'ajax_filter' ) );
 		add_action( 'wp_ajax_nopriv_sssj_filter', array( $this, 'ajax_filter' ) );
@@ -201,8 +202,17 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_post_org',
 				'title'  => __( 'Create / edit organisation profile', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Lets an advertiser create or update their organisation profile (one per user): name, description, ABN, website, phone, type, primary location and additional locations.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets an advertiser create or update their organisation profile (one per user): name, description, ABN, website, phone, type, primary location and additional locations. Phone and website can be set "members only" in the Privacy section.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "Create your organisation profile" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'advertisers',
+				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_org_team',
+				'title'  => __( 'Organisation team', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets several people belong to one organisation. An organisation admin (the owner, or any member promoted to admin) can add an existing member by email/username, change a member’s role, or remove someone. Accounts are never created here — the person must already be registered. Also appears as a “Team” tab inside the member dashboard.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Team" page for organisations, or rely on the Team tab in [sssj_dashboard].', 'shuffles-social-services-jobs' ),
 				'access' => 'advertisers',
 				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
@@ -928,6 +938,9 @@ class Shuffles_SSJ_Shortcodes {
 		$want_creds    = $has_hats ? in_array( 'credentials', $rev, true ) : $is_worker;
 		$want_org      = $has_hats ? in_array( 'org', $rev, true ) : ( $is_adv || $has_org );
 		$want_needs    = $has_hats ? in_array( 'needs', $rev, true ) : current_user_can( 'sssj_post_need' );
+		// Team (D): show the team manager to anyone who administers at least one organisation.
+		$admin_orgs    = class_exists( 'Shuffles_SSJ_Org_Team' ) ? Shuffles_SSJ_Org_Team::orgs_administered_by( $uid ) : array();
+		$want_team     = ! empty( $admin_orgs );
 
 		// Quick counts.
 		$n_apps = class_exists( 'Shuffles_SSJ_Applications' ) ? count( (array) Shuffles_SSJ_Applications::for_applicant( $uid ) ) : 0;
@@ -939,6 +952,7 @@ class Shuffles_SSJ_Shortcodes {
 		$tabs = array( 'overview' => __( 'Overview', 'shuffles-social-services-jobs' ) );
 		if ( $want_worker ) { $tabs['profile'] = __( 'My profile', 'shuffles-social-services-jobs' ); }
 		if ( $want_listings ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
+		if ( $want_team ) { $tabs['team'] = __( 'Team', 'shuffles-social-services-jobs' ); }
 		if ( $want_matches ) { $tabs['matches'] = __( 'Matched jobs', 'shuffles-social-services-jobs' ); }
 		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
@@ -996,6 +1010,9 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_listings ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="listings">' . do_shortcode( '[sssj_my_listings]' ) . '</section>';
 		}
+		if ( $want_team ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="team">' . do_shortcode( '[sssj_org_team]' ) . '</section>';
+		}
 		if ( $want_matches ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="matches">' . do_shortcode( '[sssj_matches]' ) . '</section>';
 		}
@@ -1007,6 +1024,39 @@ class Shuffles_SSJ_Shortcodes {
 		echo '<section class="sssj-dash__panel" data-dash-panel="roles">' . do_shortcode( '[sssj_roles]' ) . '</section>';
 
 		echo '</div>';
+		return ob_get_clean();
+	}
+
+	/**
+	 * Org team manager (D). Shows the roster of the organisation the current user manages; org
+	 * admins can add an existing member, change a role, or remove someone. With no manageable org
+	 * it nudges the user to create one. Accepts an optional org id via ?sssj_org_id= when a user
+	 * manages more than one.
+	 */
+	public function org_team( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to manage your organisation’s team.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+		$uid     = get_current_user_id();
+		$managed = class_exists( 'Shuffles_SSJ_Org_Team' ) ? Shuffles_SSJ_Org_Team::orgs_administered_by( $uid ) : array();
+		if ( empty( $managed ) ) {
+			return '<div class="sssj"><div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'Your team', 'shuffles-social-services-jobs' ) . '</h3><p>'
+				. esc_html__( 'You don’t manage an organisation yet. Create your organisation profile first, then you can invite team members here.', 'shuffles-social-services-jobs' )
+				. '</p><a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html__( 'Create organisation', 'shuffles-social-services-jobs' ) . '</a></div></div>';
+		}
+		$want = isset( $_GET['sssj_org_id'] ) ? (int) $_GET['sssj_org_id'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$org_id = ( $want && in_array( $want, array_map( 'intval', $managed ), true ) ) ? $want : (int) $managed[0];
+
+		ob_start();
+		$this->load_template(
+			'org-team.php',
+			array(
+				'org_id'  => $org_id,
+				'managed' => array_map( 'intval', $managed ),
+			)
+		);
 		return ob_get_clean();
 	}
 
@@ -1027,6 +1077,11 @@ class Shuffles_SSJ_Shortcodes {
 		// phpcs:disable WordPress.Security.NonceVerification.Recommended
 		$paged = isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1;
 		$q     = ! empty( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : '';
+		// Smart synonym-aware search (C5) needs the posts_search filter, which get_posts() suppresses
+		// by default — so opt in via the smart var + suppress_filters=false when there's a query.
+		$search_args = ( '' !== $q && class_exists( 'Shuffles_SSJ_Search' ) )
+			? array( Shuffles_SSJ_Search::QV => $q, 'suppress_filters' => false )
+			: array( 's' => $q );
 
 		// Resolve a radius centre (client coords, else keyless server geocode of the typed place).
 		$radius = isset( $_GET['sssj_radius'] ) ? (float) $_GET['sssj_radius'] : 0;
@@ -1115,7 +1170,7 @@ class Shuffles_SSJ_Shortcodes {
 
 		if ( $radius > 0 && $clat && $clng ) {
 			// Match an org if ANY of its locations is within the radius; order by nearest.
-			$cand = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 's' => $q, 'no_found_rows' => true ), $base_filter ) );
+			$cand = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 'no_found_rows' => true ), $search_args, $base_filter ) );
 			$dist = array();
 			foreach ( $cand as $id ) {
 				$d = Shuffles_SSJ_Org::nearest_km( $id, $clat, $clng );
@@ -1137,7 +1192,7 @@ class Shuffles_SSJ_Shortcodes {
 		} else {
 			// Sponsored orgs first, then newest — partitioned in PHP so orgs without the meta are never excluded
 			// and pagination stays correct (ordering by an optional meta inside a nested clause is unreliable in WP_Query).
-			$all_ids = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 's' => $q, 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ), $base_filter ) );
+			$all_ids = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ), $search_args, $base_filter ) );
 			$spon = array();
 			$rest = array();
 			foreach ( $all_ids as $id ) {

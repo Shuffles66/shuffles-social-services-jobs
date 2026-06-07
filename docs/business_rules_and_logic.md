@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.60.0 (2026-06-07)
+- **Last updated:** v0.66.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -112,11 +112,13 @@ Posting precedence is checked in order: `sssj_post_job` → `sssj_post_worker` �
 - Participant needs: **pseudonymous** (`P-XXXXXXX`), suburb-level location only, **logged-in only**, **always `noindex`**, **no public profile page**, and **pre-moderated** (`pending` until an admin approves).
 - First contact always runs through the **internal relay** (`Shuffles_SSJ_Messaging`) — a worker never sees a participant's email/phone; the participant is shown only as the pseudonym.
 - Worker profiles honour their `visibility` flag (`public` / `logged_in` / `hidden`) **in the query layer**, and never expose PII.
+- **Per-field masking (`Shuffles_SSJ_Privacy`, meta `_sssj_mask`).** Beyond the whole-profile visibility flag, an owner can mark *individual* sensitive fields "members only": worker **pay rate**; organisation **phone** and **website** (maskable set defined in `Shuffles_SSJ_Privacy::maskable()`, extensible via the `shuffles_ssj_maskable_fields` filter). A masked field shows a "Log in to view" lock (`lock_html()`) to logged-out guests; `show($post_id,$key)` returns true for signed-in members, the owner (author / `user_id` / `org_user_id`) and admins. The profile itself stays findable — only the field's value is gated. Masking is **additive** and can never reveal register-sourced NDIS data, which is read-only regardless of these toggles.
 - Vendor-naming rule: never name the third-party AI/search vendor to members/public ("our AI"). Showing the NDIS Commission register or Google Business data is fine — that is the source's own public data, attributed.
 
 ## 11. Matching
 
 - `Shuffles_SSJ_Matcher` gathers candidates sharing a category, then scores on services, location (Haversine distance), availability, engagement basis, rate and trust. Used for the "best matches" panels and candidate alerts.
+- **Smart keyword search (`Shuffles_SSJ_Search`, C5).** A board search opts in via the `sssj_smart_search` query var (set in `Shuffles_SSJ_Query`; org directory also flips `suppress_filters=false` since `get_posts()` suppresses the `posts_search` filter). The phrase is expanded into the phrase + its words + any matching synonym group (`synonyms()`, sector-tuned: support worker/carer/DSW, aged care/home care, OT/occupational therapist, …) and OR-matched against title/excerpt/content. OR makes search **broader, never narrower** — it can't zero out a sensible search. Expansion runs through `shuffles_ssj_search_expand_terms` and the table through `shuffles_ssj_search_synonyms`, so an **AI expander can be dropped in later** with no board changes (and never names the vendor to members).
 
 ## 12. Alerts (opt-in)
 
@@ -144,6 +146,13 @@ Last-run/next-run/status are recorded by `Shuffles_SSJ_Cron_Monitor` and shown o
 ## 16. UX rule — branded busy state
 
 - Any lookup/query that may take a few seconds shows the **Shuffles spinner** (site logo pulse if set, else a brand-blue ring): profile saves (NDIS/ABR/geocode), website auto-fill, and the NDIS re-check. Driven by `form[data-sssj-busy]` / `window.SSSJSpinner`.
+
+## 17. Organisation teams (multi-user orgs) — D
+
+- `Shuffles_SSJ_Org_Team`. An organisation (`sssj_org`) has **one owner** (its creator, `org_user_id`) plus any number of team members in `_sssj_org_members` (`[ user_id => 'admin'|'member' ]`). The owner is an implicit admin.
+- **Org admins** (owner, `admin` members, or site admins) can **add** an existing member, **change a role**, or **remove** a member — via `[sssj_org_team]` and the dashboard **Team** tab (`admin_post_sssj_org_team`, nonce `sssj_org_team`, gated by `Org_Team::is_admin($org_id, $uid)`).
+- **Hard limits:** the owner can never be removed or demoted. Adding a member **never creates an account** (`find_user()` only links an existing email/username; missing → "ask them to sign up first"). Removing a member only **unlinks** them — their WP account and site-wide roles are untouched.
+- Adding a member additively grants `sssj_post_job` so they can act for the org (never revoked here). `orgs_administered_by()` / `orgs_for_user()` resolve a user's orgs (membership matched via the serialized `i:<uid>;` needle).
 
 ---
 
