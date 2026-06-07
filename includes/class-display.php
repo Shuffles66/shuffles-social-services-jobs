@@ -57,15 +57,61 @@ class Shuffles_SSJ_Display {
 	}
 
 	/**
-	 * Single source of truth for the "Why us" benefits (icon + heading + plain-English blurb).
-	 * Filterable so the list can be tuned in one place.
+	 * The "Why us" benefits shown by [sssj_why_us] (icon + heading + blurb).
+	 * Reads the admin-editable points (Settings → Pages → "Why us — benefit points"); when that
+	 * is empty it falls back to the built-in defaults. Still filterable as one source of truth.
 	 *
 	 * @return array[]
 	 */
 	public static function why_us_benefits() {
-		return apply_filters(
-			'shuffles_ssj_why_us',
-			array(
+		$opts = get_option( 'shuffles_ssj_settings', array() );
+		$text = ( is_array( $opts ) && ! empty( $opts['why_us_points'] ) ) ? (string) $opts['why_us_points'] : '';
+		$list = ( '' !== trim( $text ) ) ? self::parse_points( $text ) : self::why_us_default_benefits();
+		return apply_filters( 'shuffles_ssj_why_us', $list );
+	}
+
+	/**
+	 * Parse the admin-entered points text into benefit rows. One benefit per line, pipe-separated:
+	 *   icon | Heading | Blurb        (icon optional — a two-part line is Heading | Blurb)
+	 *
+	 * @param string $text
+	 * @return array[]
+	 */
+	public static function parse_points( $text ) {
+		$out = array();
+		foreach ( preg_split( '/\r\n|\r|\n/', (string) $text ) as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+			$parts = array_map( 'trim', explode( '|', $line ) );
+			if ( count( $parts ) >= 3 ) {
+				$out[] = array( 'icon' => $parts[0], 'h' => $parts[1], 'p' => implode( ' | ', array_slice( $parts, 2 ) ) );
+			} elseif ( 2 === count( $parts ) ) {
+				$out[] = array( 'icon' => '✔', 'h' => $parts[0], 'p' => $parts[1] );
+			} else {
+				$out[] = array( 'icon' => '✔', 'h' => $parts[0], 'p' => '' );
+			}
+		}
+		return $out;
+	}
+
+	/** The default benefits as editable text (icon | Heading | Blurb per line) — seeds the admin field. */
+	public static function why_us_points_text() {
+		$lines = array();
+		foreach ( self::why_us_default_benefits() as $b ) {
+			$lines[] = ( isset( $b['icon'] ) ? $b['icon'] : '✔' ) . ' | ' . $b['h'] . ' | ' . $b['p'];
+		}
+		return implode( "\n", $lines );
+	}
+
+	/**
+	 * Built-in default "Why us" benefits (used when the admin field is empty).
+	 *
+	 * @return array[]
+	 */
+	public static function why_us_default_benefits() {
+		return array(
 				array(
 					'icon' => '🔗',
 					'h'    => __( 'Everything connected in one place', 'shuffles-social-services-jobs' ),
@@ -106,7 +152,6 @@ class Shuffles_SSJ_Display {
 					'h'    => __( 'Giving back, fair pricing', 'shuffles-social-services-jobs' ),
 					'p'    => __( 'Built for the community we all belong to. We keep it affordable and never charge unnecessary amounts — participants post for free — because we want to set an example for how this sector should be served.', 'shuffles-social-services-jobs' ),
 				),
-			)
 		);
 	}
 
@@ -162,7 +207,7 @@ class Shuffles_SSJ_Display {
 			array(
 				'tag'    => 'sssj_why_us',
 					'title'  => __( 'Why us (benefits)', 'shuffles-social-services-jobs' ),
-					'what'   => __( 'A point-form list of the platform’s benefits, each with a short blurb — interconnectivity, the community/Facebook-group connection, purpose-built for the sector, employment + contracting, résumé/flyer creation, privacy (hide your profile), high visibility, and giving back with fair pricing. Edit the list in one place via the shuffles_ssj_why_us filter.', 'shuffles-social-services-jobs' ),
+					'what'   => __( 'A point-form list of the platform’s benefits, each with a short blurb — interconnectivity, the community/Facebook-group connection, purpose-built for the sector, employment + contracting, résumé/flyer creation, privacy (hide your profile), high visibility, and giving back with fair pricing. Edit the points in Settings → Pages → “Why us — benefit points” (one “icon | Heading | Blurb” per line).', 'shuffles-social-services-jobs' ),
 					'where'  => __( 'A "Why us" / "About" page, or a section on the home page.', 'shuffles-social-services-jobs' ),
 					'access' => 'public',
 					'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),

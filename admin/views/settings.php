@@ -647,6 +647,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox)', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tests', __( 'Plugin tests (admin/testing)', 'shuffles-social-services-jobs' ), '[sssj_tests]', __( 'The interactive Pass/Fail test worksheet (also at Settings → Testing).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_why_us', __( 'Why us (benefits)', 'shuffles-social-services-jobs' ), '[sssj_why_us]', __( 'A point-form “why choose us” page — interconnectivity, community, purpose-built, privacy, fair pricing, etc.', 'shuffles-social-services-jobs' ) );
+			$wu_points = (string) $this->settings()->get( 'why_us_points', '' );
+			if ( '' === trim( $wu_points ) && class_exists( 'Shuffles_SSJ_Display' ) ) {
+				$wu_points = Shuffles_SSJ_Display::why_us_points_text();
+			}
+			echo '<tr><th scope="row">' . esc_html__( 'Why us — benefit points', 'shuffles-social-services-jobs' ) . '</th><td>';
+			echo '<textarea name="why_us_points" rows="12" class="large-text code" style="font-family:inherit">' . esc_textarea( $wu_points ) . '</textarea>';
+			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'These are the points shown by <code>[sssj_why_us]</code>. <strong>One benefit per line</strong>, in the form <code>icon | Heading | Blurb</code> — e.g. <code>🔗 | Everything connected | Jobs, workers and providers in one place.</code> The icon is optional (a two-part line <code>Heading | Blurb</code> uses a default tick). The box is pre-filled with the current points — edit, reorder, add or remove lines. Clear it completely to restore the built-in defaults.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '</td></tr>';
 			$this->page_picker_field( 'page_join', __( 'Join (welcome / get started)', 'shuffles-social-services-jobs' ), '[sssj_join]', __( 'A friendly “Join” landing page that funnels people into onboarding, with sign-up / log-in.', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
@@ -915,6 +923,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.74.0 — 2026-06-07 · edit the “Why us” points in Settings</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'You can now edit the “Why us” benefit points without code: Settings → Pages → “Why us — benefit points”. One benefit per line as “icon | Heading | Blurb”. The box is pre-filled with the current points to edit, reorder, add or remove. Clear it to restore the built-in defaults.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.73.0 — 2026-06-07 · “Why us” layout options (carousel / columns / rows / font)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( '[sssj_why_us] now supports layout="grid" (default) or layout="carousel" (a horizontal, snap-scrolling row).', 'shuffles-social-services-jobs' ); ?></li>

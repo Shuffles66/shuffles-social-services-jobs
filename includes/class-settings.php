@@ -47,6 +47,7 @@ class Shuffles_SSJ_Settings {
 			'cald_languages'            => '',
 			'cald_custom_langs'         => '',
 			'cald_lang_overrides'       => '',
+			'why_us_points'             => '',
 			'licence_key'               => '',
 			'license_item_id'           => '',
 			'vendor_url'                => 'https://shuffles.com.au',
@@ -216,7 +217,7 @@ class Shuffles_SSJ_Settings {
 			$out['cald_languages'] = implode( ',', array_unique( $codes ) );
 		}
 		// CALD: custom language definitions + JSON overrides — keep multiline text, strip angle brackets.
-		foreach ( array( 'cald_custom_langs', 'cald_lang_overrides' ) as $k ) {
+		foreach ( array( 'cald_custom_langs', 'cald_lang_overrides', 'why_us_points' ) as $k ) {
 			if ( isset( $input[ $k ] ) ) {
 				$out[ $k ] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input[ $k ] ) );
 			}
