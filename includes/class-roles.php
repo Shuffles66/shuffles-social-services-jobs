@@ -185,6 +185,29 @@ class Shuffles_SSJ_Roles {
 		return (bool) self::member_roles( $user_id );
 	}
 
+	/**
+	 * The member's primary (focus) role — one of their hats. Used to focus the dashboard + menu
+	 * by default while keeping everything reachable via "See all". '' if no hats.
+	 */
+	public static function primary_role( $user_id ) {
+		$hats = self::member_roles( $user_id );
+		if ( ! $hats ) {
+			return '';
+		}
+		$p = (string) get_user_meta( (int) $user_id, '_sssj_primary_role', true );
+		return ( $p && in_array( $p, $hats, true ) ) ? $p : $hats[0];
+	}
+
+	/** Set (or clear) the primary role. Only accepts a role the member actually holds. */
+	public static function set_primary_role( $user_id, $role ) {
+		$role = sanitize_key( (string) $role );
+		if ( $role && in_array( $role, self::member_roles( $user_id ), true ) ) {
+			update_user_meta( (int) $user_id, '_sssj_primary_role', $role );
+		} else {
+			delete_user_meta( (int) $user_id, '_sssj_primary_role' );
+		}
+	}
+
 	/** Employer / business side. */
 	public static function is_employer( $user_id ) {
 		return (bool) array_intersect( self::member_roles( $user_id ), array( 'employer', 'provider', 'supplier' ) );

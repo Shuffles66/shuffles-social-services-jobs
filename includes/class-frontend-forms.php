@@ -162,6 +162,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 		$roles = isset( $_POST['sssj_roles'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['sssj_roles'] ) ) : array();
 		Shuffles_SSJ_Roles::set_member_roles( get_current_user_id(), $roles );
+		// Primary (focus) role — must be one of the saved hats; '' clears it.
+		Shuffles_SSJ_Roles::set_primary_role( get_current_user_id(), isset( $_POST['sssj_primary_role'] ) ? wp_unslash( $_POST['sssj_primary_role'] ) : '' );
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 		wp_safe_redirect( add_query_arg( 'sssj_roles', '1', $redirect ) );
 		exit;

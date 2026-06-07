@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.81.0 (2026-06-07)';
+		return 'v0.83.0 (2026-06-07)';
 	}
 
 	/**
@@ -34,6 +34,7 @@ class Shuffles_SSJ_Business_Rules {
 					'rules' => array(
 						__( 'One account, many “hats”. In My roles a member ticks the hats that apply — Employer/company, NDIS/service provider, Supplier, Available for contracting (sole trader/ABN), Looking for employee work (PAYG/TFN), Participant, or Participant representative/nominee — any combination.', 'shuffles-social-services-jobs' ),
 						__( 'The dashboard reveals only the sections matching the ticked hats, so an employer who also contracts manages both from one place without confusion (members with no hats yet fall back to capability detection, so nothing disappears).', 'shuffles-social-services-jobs' ),
+						__( 'A member can pick a “primary role” to focus the experience: the dashboard opens to that role’s tab and the menu leads with its items. This is focus, not lock-out — a “See all” option always reveals everything the member can use. No primary role = show everything.', 'shuffles-social-services-jobs' ),
 						__( 'Each hat grants the matching abilities: employer/provider → post jobs + an organisation; supplier → an organisation; contractor/candidate → a worker profile; participant/representative → support requests (participants may also post their own roles, free).', 'shuffles-social-services-jobs' ),
 						__( '“Provider” is not the same as “Organisation”, and an employer is not necessarily an NDIS provider. A provider can also be an individual sole trader (a worker profile with an ABN), not only a company.', 'shuffles-social-services-jobs' ),
 					),

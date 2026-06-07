@@ -873,6 +873,19 @@ class Shuffles_SSJ_Shortcodes {
 			}
 			echo '</div>';
 		}
+		// Primary (focus) role — tailors the default dashboard view + menu; everything stays reachable via "See all".
+		$primary = Shuffles_SSJ_Roles::primary_role( get_current_user_id() );
+		echo '<h3 class="sssj-hats__group">' . esc_html__( 'Primary role (optional)', 'shuffles-social-services-jobs' ) . '</h3>';
+		echo '<p class="description">' . esc_html__( 'Pick the hat you use most. Your dashboard opens to it and your menu focuses on it — the rest stays one click away under “See all”. Leave on “No preference” to see everything.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<select class="sssj-select" name="sssj_primary_role">';
+		echo '<option value="">' . esc_html__( 'No preference — show everything', 'shuffles-social-services-jobs' ) . '</option>';
+		foreach ( $hats as $key => $h ) {
+			$sel = ( $key === $primary && in_array( $key, $current, true ) ) ? ' selected' : '';
+			echo '<option value="' . esc_attr( $key ) . '"' . $sel . '>' . esc_html( $h['label'] ) . '</option>';
+		}
+		echo '</select>';
+		echo '<p class="description">' . esc_html__( 'Tip: the primary role only takes effect once you’ve ticked it as one of your hats above.', 'shuffles-social-services-jobs' ) . '</p>';
+
 		echo '<div style="margin-top:14px"><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Save my hats', 'shuffles-social-services-jobs' ) . '</button></div>';
 		echo '</form></div></div>';
 		return ob_get_clean();
@@ -997,8 +1010,17 @@ class Shuffles_SSJ_Shortcodes {
 		$current = wp_get_current_user();
 		$name    = $current->display_name ? $current->display_name : $current->user_login;
 
+		// Open the dashboard on the member's primary-role tab (everything else stays one click away).
+		$primary_role = $has_hats ? Shuffles_SSJ_Roles::primary_role( $uid ) : '';
+		$tab_map      = array(
+			'employer' => 'listings', 'provider' => 'listings', 'supplier' => 'listings',
+			'contractor' => 'profile', 'candidate' => 'profile',
+			'participant' => 'overview', 'representative' => 'overview',
+		);
+		$default_tab = ( $primary_role && isset( $tab_map[ $primary_role ], $tabs[ $tab_map[ $primary_role ] ] ) ) ? $tab_map[ $primary_role ] : 'overview';
+
 		ob_start();
-		echo '<div class="sssj sssj--dash" data-sssj-dash>';
+		echo '<div class="sssj sssj--dash" data-sssj-dash data-sssj-dash-default="' . esc_attr( $default_tab ) . '">';
 		echo '<div class="sssj-panel sssj-dash__head"><h2 style="margin-top:0">' . esc_html( sprintf( __( 'Welcome, %s', 'shuffles-social-services-jobs' ), $name ) ) . '</h2>';
 		echo '<nav class="sssj-dash__tabs" role="tablist">';
 		$first = true;
@@ -1685,9 +1707,9 @@ class Shuffles_SSJ_Shortcodes {
 		return $out;
 	}
 
-	private function add_nav_item( &$items, $label, $url, $cta = false ) {
+	private function add_nav_item( &$items, $label, $url, $cta = false, $roles = array() ) {
 		if ( '' !== (string) $url ) {
-			$items[] = array( 'label' => $label, 'url' => $url, 'cta' => (bool) $cta );
+			$items[] = array( 'label' => $label, 'url' => $url, 'cta' => (bool) $cta, 'roles' => (array) $roles );
 		}
 	}
 
@@ -1707,17 +1729,17 @@ class Shuffles_SSJ_Shortcodes {
 		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
 
 		if ( $logged_in ) {
-			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ) );
+			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ), false, array( 'contractor', 'provider' ) );
 			if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
-				$this->add_nav_item( $items, __( 'Post a job', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) );
+				$this->add_nav_item( $items, __( 'Post a job', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_job', '[sssj_post_job]' ), false, array( 'employer', 'provider', 'supplier', 'participant', 'representative' ) );
 			}
 			if ( current_user_can( 'sssj_post_worker' ) || current_user_can( 'manage_options' ) ) {
-				$this->add_nav_item( $items, __( 'My credentials', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_credentials', '[sssj_credentials]' ) );
+				$this->add_nav_item( $items, __( 'My credentials', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_credentials', '[sssj_credentials]' ), false, array( 'contractor', 'candidate' ) );
 			}
 			if ( current_user_can( 'sssj_post_need' ) || current_user_can( 'manage_options' ) ) {
-				$this->add_nav_item( $items, __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) );
+				$this->add_nav_item( $items, __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ), false, array( 'participant', 'representative' ) );
 			}
-			$this->add_nav_item( $items, __( 'Edit my profile', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) );
+			$this->add_nav_item( $items, __( 'Edit my profile', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ), false, array( 'contractor', 'candidate' ) );
 			$this->add_nav_item( $items, __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
 			$dash = $this->resolve_page( 'page_my_listings', '[sssj_dashboard]' );
 			$dash = $dash ? $dash : $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' );
@@ -1754,6 +1776,24 @@ class Shuffles_SSJ_Shortcodes {
 		$items = $this->menu_items();
 		if ( empty( $items ) ) {
 			return '';
+		}
+		// Focus by the member's primary role: items for other roles move under a "See all" dropdown.
+		$primary = ( is_user_logged_in() && class_exists( 'Shuffles_SSJ_Roles' ) ) ? Shuffles_SSJ_Roles::primary_role( get_current_user_id() ) : '';
+		if ( $primary ) {
+			$shown = array();
+			$more  = array();
+			foreach ( $items as $it ) {
+				$r = ! empty( $it['roles'] ) ? (array) $it['roles'] : array();
+				if ( $r && ! in_array( $primary, $r, true ) ) {
+					$more[] = $it;
+				} else {
+					$shown[] = $it;
+				}
+			}
+			if ( $more ) {
+				$shown[] = array( 'label' => __( 'See all', 'shuffles-social-services-jobs' ), 'url' => '#', 'cta' => false, 'children' => $more );
+			}
+			$items = $shown;
 		}
 		$cur = untrailingslashit( (string) home_url( add_query_arg( array() ) ) );
 		ob_start();

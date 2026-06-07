@@ -964,6 +964,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.83.0 — 2026-06-07 · primary role (focus) + menu “See all”</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Members can choose a primary role in “My roles”. The dashboard then opens to that role’s tab, and the menu focuses on its items — keeping the experience clean for single-purpose members.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Nothing is locked away: a “See all” dropdown in the [sssj_menu] reveals every item the member can use, and the dashboard still shows all their tabs. Leave the primary role on “No preference” to show everything by default.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.82.0 — 2026-06-07 · Demo Users settings tab + “View as”</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New Settings → Demo Users tab lists the seeded demo/test accounts with their username, initial password and function(s), so you can test each side of the marketplace. The seeder now records each initial password for this list.', 'shuffles-social-services-jobs' ); ?></li>

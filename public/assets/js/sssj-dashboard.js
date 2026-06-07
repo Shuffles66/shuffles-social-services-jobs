@@ -29,11 +29,17 @@
 			t.addEventListener( 'click', function () { show( t.getAttribute( 'data-dash-tab' ) ); } );
 		} );
 
-		// Deep-link support: #dash-<slug>
+		// Deep-link support: #dash-<slug>. Otherwise open the member's primary-role tab
+		// (data-sssj-dash-default), falling back to the first tab.
 		var hash = ( window.location.hash || '' ).replace( '#dash-', '' );
-		var valid = false;
-		Array.prototype.forEach.call( tabs, function ( t ) { if ( t.getAttribute( 'data-dash-tab' ) === hash ) { valid = true; } } );
-		show( valid ? hash : ( tabs.length ? tabs[ 0 ].getAttribute( 'data-dash-tab' ) : '' ) );
+		var def  = root.getAttribute( 'data-sssj-dash-default' ) || '';
+		var hashValid = false, defValid = false;
+		Array.prototype.forEach.call( tabs, function ( t ) {
+			var s = t.getAttribute( 'data-dash-tab' );
+			if ( s === hash ) { hashValid = true; }
+			if ( s === def ) { defValid = true; }
+		} );
+		show( hashValid ? hash : ( defValid ? def : ( tabs.length ? tabs[ 0 ].getAttribute( 'data-dash-tab' ) : '' ) ) );
 	}
 
 	function boot() {
