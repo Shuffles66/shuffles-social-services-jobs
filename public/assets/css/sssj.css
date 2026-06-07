@@ -123,8 +123,20 @@
 /* Responsive: stack filter controls + single-column cards on small screens */
 @media (max-width:640px){
 	.sssj form.sssj-row{ flex-direction:column; align-items:stretch; }
-	.sssj form.sssj-row > *{ flex:1 1 auto !important; max-width:none !important; width:100%; }
-	.sssj form.sssj-row .sssj-radius{ flex-direction:row; justify-content:space-between; }
+	/* Text inputs + dropdowns fill the width (easy to tap)... */
+	.sssj form.sssj-row > .sssj-input,
+	.sssj form.sssj-row > .sssj-select,
+	.sssj form.sssj-row > .sssj-textarea,
+	.sssj form.sssj-row > .ts-wrapper{ flex:1 1 auto !important; max-width:none !important; width:100%; }
+	/* ...but the small icon / pill controls keep their shape, so they read as buttons, not full-width text bars. */
+	.sssj form.sssj-row > .sssj-btn,
+	.sssj form.sssj-row > .sssj-chip,
+	.sssj form.sssj-row > .sssj-here,
+	.sssj form.sssj-row > .sssj-clear,
+	.sssj form.sssj-row > .sssj-a11y-mic{ flex:0 0 auto !important; width:auto !important; max-width:none; align-self:flex-start; }
+	/* Funding / banner chips wrap as a tidy row of pills. */
+	.sssj form.sssj-row > .sssj-fundingchips{ display:flex; flex-wrap:wrap; gap:6px; width:100%; align-self:stretch; }
+	.sssj form.sssj-row .sssj-radius{ width:100%; align-self:stretch; flex-direction:row; justify-content:space-between; }
 	.sssj form.sssj-row .sssj-radius input[type="range"]{ flex:1; width:auto; }
 	.sssj .sssj-grid{ grid-template-columns:1fr; }
 	.sssj .sssj-panel{ padding:var(--sssj-s4); }
@@ -314,7 +326,21 @@
 .sssj.sssj-nav .sssj-nav__item--has-sub:focus-within .sssj-nav__sub{ display:block; }
 .sssj.sssj-nav .sssj-nav__subitem a{ display:block; padding:8px 12px; border-radius:8px; color:var(--sssj-text); text-decoration:none; white-space:nowrap; }
 .sssj.sssj-nav .sssj-nav__subitem a:hover{ background:var(--sssj-bg-soft); color:var(--sssj-blue-deep); }
+/* Hamburger toggle — hidden on desktop, revealed on mobile by the media query below. */
+.sssj.sssj-nav .sssj-nav__toggle{ display:none; margin-left:auto; align-items:center; gap:8px; padding:8px 12px; border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); background:#fff; color:var(--sssj-text); font-weight:var(--sssj-weight-strong); cursor:pointer; }
+.sssj.sssj-nav .sssj-nav__bars{ position:relative; display:inline-block; width:18px; height:2px; background:currentColor; border-radius:2px; }
+.sssj.sssj-nav .sssj-nav__bars::before,
+.sssj.sssj-nav .sssj-nav__bars::after{ content:""; position:absolute; left:0; width:18px; height:2px; background:currentColor; border-radius:2px; }
+.sssj.sssj-nav .sssj-nav__bars::before{ top:-6px; }
+.sssj.sssj-nav .sssj-nav__bars::after{ top:6px; }
 @media (max-width:640px){
+	.sssj.sssj-nav{ position:relative; }
+	.sssj.sssj-nav .sssj-nav__toggle{ display:inline-flex; }
+	/* Collapse the list behind the hamburger; it drops to a full-width column when opened. */
+	.sssj.sssj-nav .sssj-nav__list{ display:none; flex-basis:100%; flex-direction:column; align-items:stretch; width:100%; gap:2px; margin-top:8px; }
+	.sssj.sssj-nav.is-open .sssj-nav__list{ display:flex; }
+	.sssj.sssj-nav .sssj-nav__item{ width:100%; }
+	.sssj.sssj-nav .sssj-nav__item > a{ display:block; width:100%; }
 	.sssj.sssj-nav .sssj-nav__sub{ position:static; display:block; box-shadow:none; border:0; padding:0 0 0 14px; min-width:0; }
 }
 

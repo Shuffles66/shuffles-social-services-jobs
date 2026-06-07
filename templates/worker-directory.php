@@ -32,16 +32,7 @@ $w_pts   = ! empty( $has_points );
 		<?php Shuffles_SSJ_Shortcodes::render_readme( 'workers' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="worker">
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search workers…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_workers" />
-			<select class="sssj-select" name="sssj_cat[]" multiple data-placeholder="<?php esc_attr_e( 'All services', 'shuffles-social-services-jobs' ); ?>">
-				<?php
-				if ( ! is_wp_error( $cats ) ) {
-					foreach ( $cats as $t ) {
-						echo '<option value="' . esc_attr( $t->slug ) . '" ' . ( in_array( $t->slug, $cur_cats, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>';
-					}
-				}
-				?>
-			</select>
-			<div class="sssj-break" aria-hidden="true"></div>
+			<?php // Location group sits to the right of the search field on desktop; categories drop to the next row. ?>
 			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
 			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
@@ -51,6 +42,16 @@ $w_pts   = ! empty( $has_points );
 				<output><?php echo esc_html( $cur_rad > 0 ? ( $cur_rad . ' km' ) : __( 'Any', 'shuffles-social-services-jobs' ) ); ?></output>
 			</label>
 			<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
+			<div class="sssj-break" aria-hidden="true"></div>
+			<select class="sssj-select" name="sssj_cat[]" multiple data-placeholder="<?php esc_attr_e( 'All services', 'shuffles-social-services-jobs' ); ?>">
+				<?php
+				if ( ! is_wp_error( $cats ) ) {
+					foreach ( $cats as $t ) {
+						echo '<option value="' . esc_attr( $t->slug ) . '" ' . ( in_array( $t->slug, $cur_cats, true ) ? 'selected' : '' ) . '>' . esc_html( $t->name ) . '</option>';
+					}
+				}
+				?>
+			</select>
 			<label class="sssj-chip <?php echo $avail ? 'is-on' : ''; ?>"><input type="checkbox" name="sssj_avail" value="1" <?php checked( $avail ); ?> /> <span data-i18n="avail_now"><?php esc_html_e( 'Available now', 'shuffles-social-services-jobs' ); ?></span></label>
 			<?php Shuffles_SSJ_Field_Registry::render_banner_filters( 'worker' ); Shuffles_SSJ_Shortcodes::filter_actions(); ?>
 		</form>

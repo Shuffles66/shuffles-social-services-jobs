@@ -33,7 +33,7 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 			<?php Shuffles_SSJ_Shortcodes::render_readme( 'orgs' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="org">
 			<input class="sssj-input" type="search" name="sssj_q" value="<?php echo esc_attr( $cur_q ); ?>" placeholder="<?php esc_attr_e( 'Search by company name…', 'shuffles-social-services-jobs' ); ?>" />
-			<div class="sssj-break" aria-hidden="true"></div>
+			<?php // Location group sits to the right of the search field on desktop; the filters drop to the next row. ?>
 			<input class="sssj-input" type="text" name="sssj_loc" data-sssj-place value="<?php echo esc_attr( $cur_loc ); ?>" placeholder="<?php esc_attr_e( 'Near a suburb…', 'shuffles-social-services-jobs' ); ?>" data-i18n-placeholder="ph_near" />
 			<input type="hidden" name="sssj_lat" data-sssj-lat value="<?php echo esc_attr( $cur_lat ); ?>" />
 			<input type="hidden" name="sssj_lng" data-sssj-lng value="<?php echo esc_attr( $cur_lng ); ?>" />
@@ -43,7 +43,8 @@ $o_fundings  = get_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_emp
 				<output><?php echo esc_html( $rad_lbl ); ?></output>
 			</label>
 			<?php Shuffles_SSJ_Shortcodes::location_button(); ?>
-				<select class="sssj-select" name="sssj_sector">
+				<div class="sssj-break" aria-hidden="true"></div>
+					<select class="sssj-select" name="sssj_sector">
 					<option value=""><?php esc_html_e( 'All sectors', 'shuffles-social-services-jobs' ); ?></option>
 					<?php if ( ! is_wp_error( $o_sectors ) ) { foreach ( $o_sectors as $t ) { echo '<option value="' . esc_attr( $t->slug ) . '" ' . selected( $cur_sector, $t->slug, false ) . '>' . esc_html( $t->name ) . '</option>'; } } ?>
 				</select>

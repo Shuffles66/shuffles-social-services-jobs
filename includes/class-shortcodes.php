@@ -416,6 +416,10 @@ class Shuffles_SSJ_Shortcodes {
 			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
 			wp_localize_script( 'sssj-filters', 'SSSJ_Filter', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
 		}
+		// Navigation menu — mobile hamburger toggle for [sssj_menu].
+		if ( ! wp_script_is( 'sssj-nav', 'registered' ) ) {
+			wp_register_script( 'sssj-nav', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-nav.js', array(), SHUFFLES_SSJ_VERSION, true );
+		}
 		// Shuffles spinner — branded busy state for lookups/queries (form submits + AJAX).
 		if ( ! wp_script_is( 'sssj-spinner', 'registered' ) ) {
 			wp_register_script( 'sssj-spinner', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-spinner.js', array(), SHUFFLES_SSJ_VERSION, true );
@@ -1916,6 +1920,7 @@ class Shuffles_SSJ_Shortcodes {
 	public function menu( $atts ) {
 		$atts = shortcode_atts( array( 'title' => '', 'class' => '' ), is_array( $atts ) ? $atts : array(), 'sssj_menu' );
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-nav' );
 		$items = $this->menu_items();
 		if ( empty( $items ) ) {
 			return '';
@@ -1944,7 +1949,14 @@ class Shuffles_SSJ_Shortcodes {
 		if ( '' !== $atts['title'] ) {
 			echo '<span class="sssj-nav__brand">' . esc_html( $atts['title'] ) . '</span>';
 		}
-		echo '<ul class="sssj-nav__list">';
+		// Mobile hamburger toggle (hidden on desktop via CSS; wired by sssj-nav.js). Unique list id per nav.
+		static $nav_n = 0;
+		$nav_n++;
+		$list_id = 'sssj-nav-list-' . (int) $nav_n;
+		echo '<button type="button" class="sssj-nav__toggle" aria-expanded="false" aria-controls="' . esc_attr( $list_id ) . '">'
+			. '<span class="sssj-nav__bars" aria-hidden="true"></span>'
+			. '<span>' . esc_html__( 'Menu', 'shuffles-social-services-jobs' ) . '</span></button>';
+		echo '<ul class="sssj-nav__list" id="' . esc_attr( $list_id ) . '">';
 		foreach ( $items as $it ) {
 			$is_cur   = ( untrailingslashit( (string) $it['url'] ) === $cur );
 			$children = ( ! empty( $it['children'] ) && is_array( $it['children'] ) ) ? $it['children'] : array();

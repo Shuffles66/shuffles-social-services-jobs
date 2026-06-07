@@ -1146,6 +1146,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.4.0 · 2026-06-08 · board filter layout + mobile menu</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Desktop: the location controls (Near a suburb, Within radius, Use my location) now sit on the same row to the right of the search box, instead of on their own row below it. The category / funding filters drop to a tidy second row. Applies to the Jobs, Employee (TFN), Contractor (ABN), Volunteer, Worker and Organisation boards.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Mobile: the navigation menu ([sssj_menu]) now collapses into a hamburger “Menu” button and opens as a clean vertical list, instead of wrapping across the screen.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Mobile: the filter bar no longer stretches the small icon buttons (Use my location, voice search, Available now, Clear all) to full width, so they read as proper buttons again rather than full-width text. Search boxes and dropdowns still fill the width for easy tapping.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.3.0 · 2026-06-08 · security hardening pass</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Private profiles are now fully private. A worker profile set to “members only” or “verified only” can no longer be opened by its direct web link by people who should not see it (previously it was hidden from the directory but still reachable by URL). The owner and site admins can always preview their own page. Guests hitting a members-only profile are sent to log in; everyone else gets a normal “not found” page.', 'shuffles-social-services-jobs' ); ?></li>
