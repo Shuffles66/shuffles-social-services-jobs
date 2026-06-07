@@ -103,7 +103,9 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Benefit:** non-technical members (and a national, CALD audience) can self-serve; far fewer "how do I…?" support questions.
 - **Sales angle:** *Every member is guided, step by step, to do the thing they came to do — no manual, no training session.*
 
-## M. Shareable marketing assets — résumé & flyer creator ⬜ (planned, Workstream E)
+## M. Shareable marketing assets — résumé & flyer creator 🟡 (Phase 1 built: worker résumé)
+- **Phase 1 live:** a one-click **worker / sole-trader résumé builder** ([sssj_create_asset] + a "Create an asset" dashboard tab). Built from the member's profile in the locked, readable house style (location leads, large text, verified-checks row, one call to action), with a live preview, a readability check, and Download PDF / Save image / Copy caption on the $0 browser path. Flyers, the employer job flyer and the social graphic follow next, and a server renderer adds pixel-perfect output later. See docs/RESUME-BUILDER-PLAN.md.
+
 - **One-click résumé + service flyer for sole traders / workers**, and a **job flyer for employers**, built from the profile/listing the member already has — location + services lead the layout.
 - **Built-in "Best Practice" guidance** for the social-services sector (national/AU audience) shown right where members create assets — so every flyer/résumé is clear, safe and sector-appropriate.
 - **No design skills needed:** brand-styled HTML/CSS templates → print-to-PDF in the browser, a downloadable graphic, plus copy-paste text. Participants get a **private, relay-safe share link** (never public, never indexed).

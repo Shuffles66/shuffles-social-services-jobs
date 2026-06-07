@@ -53,6 +53,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_affiliate', array( 'Shuffles_SSJ_Affiliate', 'shortcode' ) );
 		add_shortcode( 'sssj_feature_today', array( 'Shuffles_SSJ_Spotlight', 'shortcode' ) );
 		add_shortcode( 'sssj_marketing', array( 'Shuffles_SSJ_Marketing', 'shortcode' ) );
+		add_shortcode( 'sssj_create_asset', array( $this, 'create_asset' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -336,6 +337,15 @@ class Shuffles_SSJ_Shortcodes {
 				'where'  => __( 'A “Marketing” / “About the platform” page (often partner-facing or internal).', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_create_asset',
+				'title'  => __( 'Create an asset (résumé builder)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A guided builder that turns a member’s worker profile into a clean, readable, one-page résumé in the locked house style (location leads, large text, verified-checks row, one call to action). Live preview, a readability check, and one-click Download PDF, Save image and Copy caption (the $0 browser path). Members polish only the wording; everything else comes from their profile. Phase 1 covers the worker / sole-trader résumé; flyers and the social graphic follow.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A “Create my résumé” page, and the “Create an asset” tab in My dashboard.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
 			),
 			array(
@@ -1079,6 +1089,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_matches ) { $tabs['matches'] = __( 'Matched jobs', 'shuffles-social-services-jobs' ); }
 		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
 		if ( $want_worker ) { $tabs['resumes'] = __( 'My résumés', 'shuffles-social-services-jobs' ); }
+		if ( $want_worker && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) { $tabs['create-asset'] = __( 'Create an asset', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
 		// Earn (referrals) + Support tabs appear only when those capabilities are available.
@@ -1159,6 +1170,9 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		if ( $want_worker ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="resumes">' . do_shortcode( '[sssj_resumes]' ) . '</section>';
+		}
+		if ( $want_worker && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="create-asset">' . do_shortcode( '[sssj_create_asset]' ) . '</section>';
 		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';
 		echo '<section class="sssj-dash__panel" data-dash-panel="messages">' . do_shortcode( '[sssj_messages]' ) . '</section>';
@@ -1730,6 +1744,19 @@ class Shuffles_SSJ_Shortcodes {
 		return Shuffles_SSJ_Policies::render( is_array( $atts ) ? $atts : array() );
 	}
 
+	/** [sssj_create_asset] — the shareable-asset wizard (Phase 1: worker / sole-trader résumé). */
+	public function create_asset( $atts ) {
+		if ( class_exists( 'Shuffles_SSJ_Assets' ) && ! Shuffles_SSJ_Assets::enabled() ) {
+			return '';
+		}
+		wp_enqueue_style( 'sssj' );
+		wp_enqueue_style( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/css/sssj-assets.css', array( 'sssj' ), SHUFFLES_SSJ_VERSION );
+		wp_enqueue_script( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-assets.js', array(), SHUFFLES_SSJ_VERSION, true );
+		ob_start();
+		$this->load_template( 'create-asset.php' );
+		return ob_get_clean();
+	}
+
 	/* --- Navigation menu (login-aware) --- */
 
 	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
@@ -2102,7 +2129,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	/* --- Template loader (theme-overridable) --- */
 
-	private function load_template( $file, $ctx = array() ) {
+	public function load_template( $file, $ctx = array() ) {
 		$override = locate_template( 'shuffles-jobs/' . $file );
 		$path     = $override ? $override : SHUFFLES_SSJ_DIR . 'templates/' . $file;
 		if ( file_exists( $path ) ) {

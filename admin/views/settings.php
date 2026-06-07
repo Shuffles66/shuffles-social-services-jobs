@@ -862,6 +862,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_dashboard', __( 'Member dashboard (all-in-one hub)', 'shuffles-social-services-jobs' ), '[sssj_dashboard]', __( 'The tabbed hub that reveals sections by the member’s hats.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_my_listings', __( 'My listings (legacy)', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Just applications + listings (the dashboard above includes this).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox)', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_create_asset', __( 'Create an asset (résumé builder)', 'shuffles-social-services-jobs' ), '[sssj_create_asset]', __( 'The résumé builder: turns a worker profile into a clean, readable, downloadable résumé (PDF, image, caption). Also a tab in the dashboard.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tests', __( 'Plugin tests (admin/testing)', 'shuffles-social-services-jobs' ), '[sssj_tests]', __( 'The interactive Pass/Fail test worksheet (also at Settings → Testing).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_why_us', __( 'Why us (benefits)', 'shuffles-social-services-jobs' ), '[sssj_why_us]', __( 'A point-form “why choose us” page — interconnectivity, community, purpose-built, privacy, fair pricing, etc.', 'shuffles-social-services-jobs' ) );
 			$wu_points = (string) $this->settings()->get( 'why_us_points', '' );
@@ -1145,6 +1146,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.98.0 · 2026-06-08 · résumé builder (Workstream E, Phase 1)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New one-click résumé builder for workers and sole traders: [sssj_create_asset] and a “Create an asset” tab in My dashboard. It turns the member’s profile into a clean, readable, one-page résumé in the locked house style, with LOCATION in the header so people see where they work at a glance.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Live preview while you polish the headline and introduction; a readability check (location, services, blurb length, a verified check); and one-click Download PDF (browser print), Save image (PNG) and Copy caption for social media. The $0 browser path, no third-party service.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Everything else (photo, location, services, languages, verified checks) comes from the member’s profile, so nobody starts from a blank page. New “Create an asset” page mapping in Settings → Pages. Flyers and the social graphic follow next; a server renderer adds pixel-perfect output later.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.97.0 · 2026-06-08 · feature spotlight: cache-immune daily feature</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “Today’s Highlighted Site Feature” now refreshes its daily feature on the client from a small REST endpoint (sssj/v1/spotlight, no-store), so a full-page cache can no longer freeze the feature of the day. The server-rendered feature remains as a no-JS fallback.', 'shuffles-social-services-jobs' ); ?></li>

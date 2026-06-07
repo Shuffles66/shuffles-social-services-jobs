@@ -513,6 +513,7 @@ class Shuffles_SSJ_Admin {
 			'page_workflows'   => '[sssj_workflows]',
 			'page_policies'    => '[sssj_policies]',
 			'page_marketing'   => '[sssj_marketing]',
+			'page_create_asset' => '[sssj_create_asset]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );
