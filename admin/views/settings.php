@@ -628,6 +628,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_abn_board', __( 'ABN (contractor) board', 'shuffles-social-services-jobs' ), '[sssj_abn_board]', __( 'Contractor / ABN engagements only.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_worker_directory', __( 'Worker directory', 'shuffles-social-services-jobs' ), '[sssj_worker_directory]', __( 'Find a worker (public).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_org_directory', __( 'Organisations directory', 'shuffles-social-services-jobs' ), '[sssj_org_directory]', __( 'Browse employers/companies (SEO-able).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_swipe', __( 'Discover providers (swipe)', 'shuffles-social-services-jobs' ), '[sssj_swipe]', __( 'Tinder-style swipe deck of providers.', 'shuffles-social-services-jobs' ) );
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Participants (members only)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_need_board', __( 'Participant requests', 'shuffles-social-services-jobs' ), '[sssj_need_board]', __( 'Members-only; pseudonymous.', 'shuffles-social-services-jobs' ) );
@@ -640,8 +641,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_credentials', __( 'My credentials', 'shuffles-social-services-jobs' ), '[sssj_credentials]', __( 'Workers upload checks for verification.', 'shuffles-social-services-jobs' ) );
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Member account', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
-			$this->page_picker_field( 'page_my_listings', __( 'Member dashboard', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Applications, your listings + applicants.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_onboard', __( 'Get started (onboarding)', 'shuffles-social-services-jobs' ), '[sssj_onboard]', __( 'Guided first-run: pick hats → next steps. Send new members here.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_dashboard', __( 'Member dashboard (all-in-one hub)', 'shuffles-social-services-jobs' ), '[sssj_dashboard]', __( 'The tabbed hub that reveals sections by the member’s hats.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_my_listings', __( 'My listings (legacy)', 'shuffles-social-services-jobs' ), '[sssj_my_listings]', __( 'Just applications + listings (the dashboard above includes this).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox)', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_tests', __( 'Plugin tests (admin/testing)', 'shuffles-social-services-jobs' ), '[sssj_tests]', __( 'The interactive Pass/Fail test worksheet (also at Settings → Testing).', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
 			submit_button();
@@ -909,6 +913,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.62.0 — 2026-06-07 · page mappings for onboarding / dashboard / swipe / tests</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Settings → Pages now includes mappings (lookup / create / edit) for the Get started (onboarding), Member dashboard (all-in-one hub), Discover providers (swipe) and Plugin tests pages — so they can be created and placed like the other pages.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.61.0 — 2026-06-07 · onboarding wizard · provider size/structure · sole-trader listings</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'C1 — Get started: a new [sssj_onboard] guided wizard. New members tick the hats that apply, then get tailored next-step buttons (set up profile, create organisation/provider listing, post a job, request support, go to dashboard).', 'shuffles-social-services-jobs' ); ?></li>
