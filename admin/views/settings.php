@@ -1146,6 +1146,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.99.0 · 2026-06-08 · mobile NDIS layout, outlet prompt, participant fields, private marketing</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Mobile: the NDIS provider registration details now stack (each value under its heading) and long values wrap, so nothing runs off the right of the screen.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'When a sole trader’s (or an organisation’s) NDIS registration lists more than one outlet, we now ask what to do: a sole trader is prompted to create an organisation and attribute the registration there (multiple outlets usually mean an organisation); an organisation is prompted to add each outlet under Additional locations. The register provides only outlet name and phone, not addresses, so outlet locations are entered, not auto-mapped.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant-only members are no longer asked for ABN or NDIS provider-registration details on the worker profile form (those fields are for contractors and providers).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The Marketing master is now members-only: logged-out visitors see a log-in prompt, and the page is kept out of search engines (noindex), so it is neither readable nor findable by non-members.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.98.0 · 2026-06-08 · résumé builder (Workstream E, Phase 1)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New one-click résumé builder for workers and sole traders: [sssj_create_asset] and a “Create an asset” tab in My dashboard. It turns the member’s profile into a clean, readable, one-page résumé in the locked house style, with LOCATION in the header so people see where they work at a glance.', 'shuffles-social-services-jobs' ); ?></li>

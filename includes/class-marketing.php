@@ -135,6 +135,12 @@ class Shuffles_SSJ_Marketing {
 	 * @return string
 	 */
 	public static function render( $atts = array() ) {
+		// Members-only: the marketing master is not readable by logged-out visitors.
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj sssj--marketing"><div class="sssj-panel"><p>'
+				. esc_html__( 'Please log in to read this.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
 		$md = self::markdown();
 		if ( '' === trim( $md ) ) {
 			return '<div class="sssj sssj--marketing"><div class="sssj-panel"><p>'
@@ -148,5 +154,16 @@ class Shuffles_SSJ_Marketing {
 	public static function shortcode( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		return self::render( is_array( $atts ) ? $atts : array() );
+	}
+
+	/** Keep the configured Marketing page out of search engines (not findable). */
+	public static function noindex_marketing( $robots ) {
+		$opts = get_option( 'shuffles_ssj_settings', array() );
+		$pid  = is_array( $opts ) && ! empty( $opts['page_marketing'] ) ? (int) $opts['page_marketing'] : 0;
+		if ( $pid && ( is_page( $pid ) || is_singular() && get_queried_object_id() === $pid ) ) {
+			$robots['noindex']  = true;
+			$robots['nofollow'] = true;
+		}
+		return $robots;
 	}
 }

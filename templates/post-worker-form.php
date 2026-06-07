@@ -14,6 +14,12 @@ $can = is_user_logged_in() && ( current_user_can( 'sssj_post_worker' ) || curren
 $st  = isset( $_GET['sssj_worker'] ) ? sanitize_key( wp_unslash( $_GET['sssj_worker'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 $cats = get_terms( array( 'taxonomy' => 'sssjt_category', 'hide_empty' => false ) );
 
+// Participants (and their representatives) are not businesses: do not ask them for ABN or NDIS
+// provider-registration details. Only hide when the member has declared hats and they are all
+// participant / representative (legacy no-hat users still see everything).
+$roles_w          = ( is_user_logged_in() && class_exists( 'Shuffles_SSJ_Roles' ) ) ? (array) Shuffles_SSJ_Roles::member_roles( get_current_user_id() ) : array();
+$participant_only = ! empty( $roles_w ) && ! array_diff( $roles_w, array( 'participant', 'representative' ) );
+
 // Pre-fill from the user's existing profile, if any.
 $existing = null;
 $ex_services = array();
@@ -164,6 +170,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					</div>
 				</div>
 
+				<?php if ( ! $participant_only ) : ?>
 				<div class="sssj-field">
 					<label for="sssj-wabn"><?php esc_html_e( 'Your ABN (optional — required to respond to ABN/participant work)', 'shuffles-social-services-jobs' ); ?></label>
 					<input class="sssj-input" id="sssj-wabn" type="text" name="worker_abn" inputmode="numeric" placeholder="11 digits" value="<?php echo esc_attr( (string) $gm( 'worker_abn', '' ) ); ?>" />
@@ -187,6 +194,24 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<div data-sssj-ndis-result style="margin-top:8px"></div>
 					<p class="description"><?php echo wp_kses_post( sprintf( __( 'If you hold NDIS registration as an individual / sole trader, enter the number after <code>?id=</code> in your listing URL on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a>. We’ll read your public listing and show your verified status, registration groups and expiry — refreshed automatically each month.', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/provider-registration/find-registered-provider' ) ) ); ?></p>
 				</div>
+				<?php
+				// Multiple registered outlets usually mean an organisation, not one person. Ask.
+				$wk_outlets = $existing ? json_decode( (string) get_post_meta( $existing->ID, 'ndis_outlets', true ), true ) : array();
+				$wk_outlets = is_array( $wk_outlets ) ? array_values( array_filter( $wk_outlets, function ( $o ) { return ! empty( $o['name'] ) || ! empty( $o['phone'] ); } ) ) : array();
+				if ( count( $wk_outlets ) > 1 ) :
+					$org_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_post_org', '[sssj_post_org]' ) : '';
+					?>
+					<div class="sssj-ask">
+						<strong><?php echo esc_html( sprintf( __( 'Your registration lists %d outlets.', 'shuffles-social-services-jobs' ), count( $wk_outlets ) ) ); ?></strong>
+						<p><?php esc_html_e( 'Multiple outlets usually belong to an organisation, not one person. Would you like to attribute this registration to an organisation instead? The registration and its locations then sit on the organisation, and your personal profile keeps your own single location.', 'shuffles-social-services-jobs' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Note: the register only shares each outlet’s name and phone, not its street address, so outlet locations are added on the organisation, not placed on the map automatically.', 'shuffles-social-services-jobs' ); ?></p>
+						<?php if ( $org_url ) : ?>
+							<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( $org_url ); ?>"><?php esc_html_e( 'Create an organisation and attribute it there', 'shuffles-social-services-jobs' ); ?></a>
+						<?php endif; ?>
+						<p class="description"><?php esc_html_e( 'Prefer to keep it on your profile? No change is needed.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+				<?php endif; ?>
+				<?php endif; // ! participant_only ?>
 
 				<div class="sssj-field">
 					<label for="sssj-wvis"><?php esc_html_e( 'Who can see your profile', 'shuffles-social-services-jobs' ); ?></label>

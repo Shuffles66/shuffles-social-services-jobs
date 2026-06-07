@@ -184,6 +184,17 @@ if ( $existing ) {
 					<input type="hidden" name="location_lng" data-sssj-lng value="<?php echo esc_attr( $gm( 'location_lng' ) ); ?>" />
 				</div>
 
+				<?php
+				$org_outlets = $existing ? json_decode( (string) get_post_meta( $existing->ID, 'ndis_outlets', true ), true ) : array();
+				$org_outlets = is_array( $org_outlets ) ? array_values( array_filter( $org_outlets, function ( $o ) { return ! empty( $o['name'] ) || ! empty( $o['phone'] ); } ) ) : array();
+				if ( count( $org_outlets ) > 1 ) :
+					?>
+					<div class="sssj-ask">
+						<strong><?php echo esc_html( sprintf( __( 'Your registration lists %d outlets.', 'shuffles-social-services-jobs' ), count( $org_outlets ) ) ); ?></strong>
+						<p><?php esc_html_e( 'Add each outlet under “Additional locations” below so it shows on the map and in location searches. The register only shares each outlet’s name and phone, not its street address, so add each outlet’s suburb, state and postcode here.', 'shuffles-social-services-jobs' ); ?></p>
+					</div>
+				<?php endif; ?>
+
 				<div class="sssj-field">
 					<label for="sssj-olocs"><?php esc_html_e( 'Additional locations', 'shuffles-social-services-jobs' ); ?></label>
 					<textarea class="sssj-textarea" id="sssj-olocs" name="locations" rows="4" placeholder="<?php esc_attr_e( 'One per line:  Label | Suburb | State | Postcode', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_textarea( trim( $ex_locs ) ); ?></textarea>
