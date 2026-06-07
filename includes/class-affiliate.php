@@ -122,6 +122,26 @@ class Shuffles_SSJ_Affiliate {
 		return ob_get_clean();
 	}
 
+	/**
+	 * The full "Earn" dashboard: the promo card (with the PayPal note) plus the affiliate portal
+	 * itself when available, so members can get their link and see their referrals in one place.
+	 *
+	 * @return string
+	 */
+	public static function render_dashboard( $uid = 0 ) {
+		if ( ! self::enabled() ) {
+			return '';
+		}
+		$out = self::render_card( (int) $uid );
+		if ( shortcode_exists( 'fluent_affiliate_portal' ) ) {
+			$portal = do_shortcode( '[fluent_affiliate_portal]' );
+			if ( '' !== trim( (string) $portal ) ) {
+				$out .= '<div class="sssj sssj--affiliate-portal">' . $portal . '</div>';
+			}
+		}
+		return $out;
+	}
+
 	/** [sssj_affiliate] — the referral promo card, placeable anywhere (e.g. the dashboard). */
 	public static function shortcode( $atts ) {
 		wp_enqueue_style( 'sssj' );

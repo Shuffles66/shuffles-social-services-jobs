@@ -1106,6 +1106,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.91.0 · 2026-06-07 · easier participant advertising, listing lifecycle, dashboard tabs, marketing master</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Participant “Request a worker” form rebuilt to be super easy and professional: clear numbered steps (What you need, Where, The kind of support, When and preferences, Close date), friendly plain-English help, one required field, and a reassuring privacy intro.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Listing lifecycle: every participant request (and job ad) has a close date. If it is not filled by then it auto-closes. Owners get a “closing soon” reminder and a “now closed” reminder, and can reopen (“rebirth”) it in one click from My dashboard, which gives it a fresh close date. Requests with no date set default to about two months out.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'My Dashboard now includes an “Earn” tab (referrals, with the PayPal note and the referral dashboard) and a “Support” tab (help desk), each shown only when that capability is available, separated by tabs.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New living marketing master document (docs/MARKETING-MASTER.md) combining the business logic, the functional spec, and an out-of-the-box audience analysis. It names no third-party tools, describing everything as our internally curated and constructed tech stack and customised workflows.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'House style: em dashes are no longer used anywhere in new content. Testing and Business Logic updated.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.90.0 — 2026-06-07 · earn by referring (FluentAffiliate in onboarding)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Onboarding now invites members — especially participants — to earn money by referring others. A friendly “Earn money by referring others” card appears at the end of onboarding (extra encouragement for participants), links to the affiliate sign-up, and never blocks finishing onboarding.', 'shuffles-social-services-jobs' ); ?></li>

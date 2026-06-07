@@ -26,6 +26,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_review_submit', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_review_respond', array( $this, 'handle_review_respond' ) );
 		add_action( 'admin_post_nopriv_sssj_review_respond', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_listing_reactivate', array( $this, 'handle_listing_reactivate' ) );
+		add_action( 'admin_post_nopriv_sssj_listing_reactivate', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
@@ -540,6 +542,20 @@ class Shuffles_SSJ_Frontend_Forms {
 	 * Privacy: stores a generated pseudonym (never a real name), suburb-only location, and
 	 * defaults to 'pending' for admin moderation before it can appear on the board.
 	 */
+	/**
+	 * Normalise a submitted end date to Y-m-d. Blank, invalid or past dates fall back to today plus
+	 * $default_days, so a listing always has a sensible auto-close date.
+	 */
+	private function clean_end_date( $raw, $default_days = 60 ) {
+		$raw      = trim( (string) $raw );
+		$ts       = $raw ? strtotime( $raw ) : false;
+		$today_ts = strtotime( current_time( 'Y-m-d' ) );
+		if ( ! $ts || $ts < $today_ts ) {
+			return gmdate( 'Y-m-d', strtotime( current_time( 'Y-m-d' ) . ' +' . max( 1, (int) $default_days ) . ' days' ) );
+		}
+		return gmdate( 'Y-m-d', $ts );
+	}
+
 	public function handle_post_need() {
 		$nonce = isset( $_POST['sssj_need_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_need_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'sssj_post_need' ) ) {
@@ -591,6 +607,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'gender_preference'  => isset( $_POST['gender_preference'] ) ? sanitize_key( wp_unslash( $_POST['gender_preference'] ) ) : 'any',
 			'contact_mode'       => 'internal-only', // First contact always via internal relay.
 			'visibility'         => 'logged_in',
+			'expires_at'         => $this->clean_end_date( isset( $_POST['expires_at'] ) ? wp_unslash( $_POST['expires_at'] ) : '', 60 ),
 		);
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $post_id, $k, $v );
@@ -762,6 +779,38 @@ class Shuffles_SSJ_Frontend_Forms {
 		$redirect = $sid ? get_permalink( $sid ) : ( wp_get_referer() ? wp_get_referer() : home_url( '/' ) );
 		$redirect = remove_query_arg( 'sssj_review', (string) $redirect );
 		wp_safe_redirect( add_query_arg( 'sssj_review', $ok ? 'pending' : 'error', $redirect ) . '#sssj-reviews' );
+		exit;
+	}
+
+	/**
+	 * Reopen ("rebirth") a closed job ad or participant request: owner (or admin) only. Republishes
+	 * it and gives it a fresh end date, and clears the reminder flag so reminders fire again.
+	 */
+	public function handle_listing_reactivate() {
+		$nonce = isset( $_POST['sssj_react_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_react_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_listing_reactivate' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$id   = isset( $_POST['listing_id'] ) ? absint( $_POST['listing_id'] ) : 0;
+		$post = $id ? get_post( $id ) : null;
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		if ( ! $post || ! in_array( $post->post_type, array( 'sssj_job', 'sssj_need' ), true ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_react', 'error', $redirect ) );
+			exit;
+		}
+		if ( (int) $post->post_author !== get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to reopen this listing.', 'shuffles-social-services-jobs' ) );
+		}
+
+		$days = max( 1, (int) apply_filters( 'shuffles_ssj_reactivate_days', 30 ) );
+		update_post_meta( $id, 'expires_at', gmdate( 'Y-m-d', strtotime( current_time( 'Y-m-d' ) . ' +' . $days . ' days' ) ) );
+		delete_post_meta( $id, '_sssj_pre_reminded' );
+		wp_update_post( array( 'ID' => $id, 'post_status' => 'publish' ) );
+
+		wp_safe_redirect( add_query_arg( 'sssj_react', 'ok', remove_query_arg( 'sssj_react', $redirect ) ) );
 		exit;
 	}
 

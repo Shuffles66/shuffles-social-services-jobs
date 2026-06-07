@@ -224,6 +224,18 @@
 .sssj .sssj-affiliate__paypal strong{ display:block; color:var(--sssj-ink); margin-bottom:2px; }
 .sssj .sssj-affiliate__later{ margin:var(--sssj-s2) 0; }
 
+/* Participant request form: clear, friendly, numbered steps. */
+.sssj .sssj-need-intro h2{ margin-top:0; }
+.sssj .sssj-need-step{ position:relative; }
+.sssj .sssj-need-step__title{ margin:0 0 var(--sssj-s3); display:flex; align-items:center; gap:var(--sssj-s2); color:var(--sssj-ink); }
+.sssj .sssj-need-step__n{ display:inline-flex; align-items:center; justify-content:center; width:28px; height:28px; border-radius:50%; background:var(--sssj-blue); color:#fff; font-size:var(--sssj-fs-sm); font-weight:700; flex:0 0 auto; }
+.sssj .sssj-req{ color:var(--sssj-danger); }
+.sssj .sssj-need-submit{ display:flex; align-items:center; gap:var(--sssj-s3); flex-wrap:wrap; margin-top:var(--sssj-s2); }
+
+/* Listing lifecycle: end date + reopen ("rebirth"). */
+.sssj .sssj-life{ display:flex; align-items:center; gap:var(--sssj-s2); flex-wrap:wrap; margin:0 0 var(--sssj-s2); }
+.sssj .sssj-life__ends{ margin:0; }
+
 /* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }

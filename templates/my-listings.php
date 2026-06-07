@@ -16,14 +16,38 @@ if ( ! is_user_logged_in() ) {
 	return;
 }
 
-$uid       = get_current_user_id();
-$nonce     = wp_create_nonce( 'sssj_app_status' );
-$wd_nonce  = wp_create_nonce( 'sssj_app_withdraw' );
-$action    = esc_url( admin_url( 'admin-post.php' ) );
+$uid        = get_current_user_id();
+$nonce      = wp_create_nonce( 'sssj_app_status' );
+$wd_nonce   = wp_create_nonce( 'sssj_app_withdraw' );
+$react_nonce = wp_create_nonce( 'sssj_listing_reactivate' );
+$action     = esc_url( admin_url( 'admin-post.php' ) );
 
 $badge = function ( $status ) {
 	$cls = in_array( $status, array( 'offer', 'shortlisted', 'interview', 'hired' ), true ) ? ' sssj-badge--verified' : '';
 	return '<span class="sssj-badge' . $cls . '">' . esc_html( Shuffles_SSJ_Applications::status_label( $status ) ) . '</span>';
+};
+
+// End-date line + Reopen ("rebirth") control for a listing the current user owns.
+$lifecycle = function ( $post ) use ( $action, $react_nonce ) {
+	$ends   = (string) get_post_meta( $post->ID, 'expires_at', true );
+	$status = get_post_status( $post );
+	$out    = '';
+	if ( '' !== $ends ) {
+		if ( 'publish' === $status ) {
+			$out .= '<span class="sssj-life__ends description">' . esc_html( sprintf( __( 'Closes on %s', 'shuffles-social-services-jobs' ), mysql2date( get_option( 'date_format' ), $ends ) ) ) . '</span>';
+		} else {
+			$out .= '<span class="sssj-life__ends description">' . esc_html( sprintf( __( 'Closed (was due %s)', 'shuffles-social-services-jobs' ), mysql2date( get_option( 'date_format' ), $ends ) ) ) . '</span>';
+		}
+	}
+	if ( 'publish' !== $status ) {
+		$out .= '<form method="post" action="' . $action . '" style="display:inline-block;margin:0 0 0 8px">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$out .= '<input type="hidden" name="action" value="sssj_listing_reactivate" />';
+		$out .= '<input type="hidden" name="listing_id" value="' . esc_attr( $post->ID ) . '" />';
+		$out .= '<input type="hidden" name="sssj_react_nonce" value="' . esc_attr( $react_nonce ) . '" />';
+		$out .= '<button type="submit" class="sssj-btn sssj-btn--secondary sssj-btn--sm">' . esc_html__( '↻ Reopen', 'shuffles-social-services-jobs' ) . '</button>';
+		$out .= '</form>';
+	}
+	return $out ? '<div class="sssj-life">' . $out . '</div>' : '';
 };
 
 /** Render the applicant rows + status control for an entity owned by the current user. */
@@ -97,6 +121,13 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 ?>
 <div class="sssj sssj--dashboard">
 
+	<?php
+	$react_note = isset( $_GET['sssj_react'] ) ? sanitize_key( wp_unslash( $_GET['sssj_react'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( 'ok' === $react_note ) {
+		echo '<div class="sssj-panel"><p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Reopened, your listing is live again with a fresh close date.', 'shuffles-social-services-jobs' ) . '</p></div>';
+	}
+	?>
+
 	<div class="sssj-panel">
 		<h2><?php esc_html_e( 'My applications', 'shuffles-social-services-jobs' ); ?></h2>
 		<?php
@@ -135,6 +166,7 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 			foreach ( $jobs as $j ) {
 				$feat = get_post_meta( $j->ID, 'is_promoted', true ) ? ' <span class="sssj-badge sssj-badge--featured">' . esc_html__( '★ Featured', 'shuffles-social-services-jobs' ) . '</span>' : '';
 				echo '<h3 style="margin:14px 0 4px"><a href="' . esc_url( (string) get_permalink( $j ) ) . '">' . esc_html( get_the_title( $j ) ) . '</a> <span class="sssj-badge">' . esc_html( get_post_status( $j ) ) . '</span>' . $feat . '</h3>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo $lifecycle( $j ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				$render_apps( 'job', $j->ID );
 			}
 		}
@@ -150,6 +182,7 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 		} else {
 			foreach ( $needs as $n ) {
 				echo '<h3 style="margin:14px 0 4px">' . esc_html( get_the_title( $n ) ) . ' <span class="sssj-badge">' . esc_html( get_post_status( $n ) ) . '</span></h3>';
+				echo $lifecycle( $n ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 				$render_apps( 'need', $n->ID );
 			}
 		}

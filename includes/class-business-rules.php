@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.87.0 (2026-06-07)';
+		return 'v0.91.0 (2026-06-07)';
 	}
 
 	/**
@@ -113,6 +113,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'Owners can mask individual sensitive fields (worker pay rate; organisation phone & website) as “members only”. Logged-out visitors then see a “Log in to view” lock instead of the value; signed-in members, the owner and admins still see it, and the profile stays findable. Masking can never reveal register-sourced NDIS data, which stays read-only regardless.', 'shuffles-social-services-jobs' ),
 						__( 'Anonymous advertising: an employer can post a job anonymously — the listing shows “Anonymous” instead of the organisation name/logo, the organisation isn’t revealed (and the role is hidden from that organisation’s public open-positions), and the advertiser’s name is kept out of search-engine data. Participant requests are anonymous by default.', 'shuffles-social-services-jobs' ),
 						__( 'Stored résumés are private: a candidate may keep several named résumé files on their profile, stored securely (bytes in the database) and streamed only through an authenticated link to the owner, an admin, or an employer they have applied to — never via a public URL.', 'shuffles-social-services-jobs' ),
+						__( 'Listing lifecycle: a participant request (and a job ad) carries a close date. A request with no date set defaults to about two months out. The owner gets a “closing soon” reminder, the listing auto-closes on its date (so nobody is contacted about something already sorted), the owner gets a “now closed” reminder, and the owner can reopen it any time with one click, which gives it a fresh close date.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(

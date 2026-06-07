@@ -1069,6 +1069,11 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_worker ) { $tabs['resumes'] = __( 'My résumés', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
+		// Earn (referrals) + Support tabs appear only when those capabilities are available.
+		$want_earn    = class_exists( 'Shuffles_SSJ_Affiliate' ) && Shuffles_SSJ_Affiliate::enabled();
+		$want_support = class_exists( 'Shuffles_SSJ_Support' ) && Shuffles_SSJ_Support::enabled();
+		if ( $want_earn ) { $tabs['earn'] = __( 'Earn', 'shuffles-social-services-jobs' ); }
+		if ( $want_support ) { $tabs['support'] = __( 'Support', 'shuffles-social-services-jobs' ); }
 		$tabs['roles']    = __( 'My roles', 'shuffles-social-services-jobs' );
 
 		$current = wp_get_current_user();
@@ -1145,6 +1150,12 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';
 		echo '<section class="sssj-dash__panel" data-dash-panel="messages">' . do_shortcode( '[sssj_messages]' ) . '</section>';
+		if ( $want_earn ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="earn">' . Shuffles_SSJ_Affiliate::render_dashboard( $uid ) . '</section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
+		if ( $want_support ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="support">' . Shuffles_SSJ_Support::render() . '</section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="roles">' . do_shortcode( '[sssj_roles]' ) . '</section>';
 
 		echo '</div>';
