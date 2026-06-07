@@ -18,6 +18,73 @@
 		m.setZoom( zoom || 11 );
 	};
 
+	/**
+	 * Render (or re-render) the results-map markers from a points array. Creates the map on first
+	 * use, clears the previous markers, then plots the new ones and fits the view. Safe to call after
+	 * an AJAX filter so the pins always match the visible results.
+	 */
+	window.SSSJMaps.render = function ( points ) {
+		if ( ! ( window.google && google.maps ) ) { return; }
+		var mapEl = document.querySelector( '[data-sssj-map]' );
+		if ( ! mapEl ) { return; }
+		points = points || [];
+
+		if ( ! window.SSSJMaps.map ) {
+			window.SSSJMaps.map = new google.maps.Map( mapEl, {
+				zoom: 5,
+				center: { lat: -25.2744, lng: 133.7751 },
+				mapTypeControl: false,
+				streetViewControl: false,
+				fullscreenControl: false
+			} );
+			window.SSSJMaps.info = new google.maps.InfoWindow();
+			window.SSSJMaps.markers = [];
+		}
+		var map  = window.SSSJMaps.map;
+		var info = window.SSSJMaps.info;
+
+		// Clear the previous markers.
+		( window.SSSJMaps.markers || [] ).forEach( function ( m ) { m.setMap( null ); } );
+		window.SSSJMaps.markers = [];
+
+		var bounds = new google.maps.LatLngBounds();
+		var shown  = 0;
+
+		points.forEach( function ( pt ) {
+			if ( ! pt.lat || ! pt.lng ) { return; }
+			var marker = new google.maps.Marker( {
+				position: { lat: parseFloat( pt.lat ), lng: parseFloat( pt.lng ) },
+				map: map,
+				title: pt.title || ''
+			} );
+			var clickTimer = null;
+			marker.addListener( 'click', function () {
+				window.clearTimeout( clickTimer );
+				clickTimer = window.setTimeout( function () {
+					var html = '<div class="sssj-iw"><strong>' + esc( pt.title ) + '</strong>'
+						+ ( pt.sub ? '<br><span class="sssj-iw__sub">📍 ' + esc( pt.sub ) + '</span>' : '' )
+						+ ( pt.url ? '<br><a class="sssj-iw__link" href="' + esc( pt.url ) + '">View &rarr;</a>' : '' )
+						+ '<br><span class="sssj-iw__hint">Double-click the pin to find this card.</span></div>';
+					info.setContent( html );
+					info.open( map, marker );
+				}, 240 );
+			} );
+			marker.addListener( 'dblclick', function () {
+				window.clearTimeout( clickTimer );
+				info.close();
+				highlightCard( pt.id );
+			} );
+			window.SSSJMaps.markers.push( marker );
+			bounds.extend( marker.getPosition() );
+			shown++;
+		} );
+
+		if ( shown > 0 ) {
+			map.fitBounds( bounds );
+			if ( shown === 1 ) { google.maps.event.addListenerOnce( map, 'idle', function () { map.setZoom( 11 ); } ); }
+		}
+	};
+
 	function fillFromPlace( input, place ) {
 		var group = input.closest( '[data-sssj-place-group]' ) || document;
 		var set = function ( sel, val ) {
@@ -81,56 +148,6 @@
 			} );
 		}
 
-		var cfg = window.SSJ_Maps || {};
-		var mapEl = document.querySelector( '[data-sssj-map]' );
-		if ( mapEl && cfg.points && cfg.points.length ) {
-			var map = new google.maps.Map( mapEl, {
-				zoom: 5,
-				center: { lat: -25.2744, lng: 133.7751 },
-				mapTypeControl: false,
-				streetViewControl: false,
-				fullscreenControl: false
-			} );
-			window.SSSJMaps.map = map;
-			var bounds = new google.maps.LatLngBounds();
-			var shown = 0;
-			var info = new google.maps.InfoWindow();
-
-			cfg.points.forEach( function ( pt ) {
-				if ( ! pt.lat || ! pt.lng ) { return; }
-				var marker = new google.maps.Marker( {
-					position: { lat: parseFloat( pt.lat ), lng: parseFloat( pt.lng ) },
-					map: map,
-					title: pt.title || ''
-				} );
-
-				var clickTimer = null;
-				marker.addListener( 'click', function () {
-					// Delay so a double-click can cancel the single-click info box.
-					window.clearTimeout( clickTimer );
-					clickTimer = window.setTimeout( function () {
-						var html = '<div class="sssj-iw"><strong>' + esc( pt.title ) + '</strong>'
-							+ ( pt.sub ? '<br><span class="sssj-iw__sub">📍 ' + esc( pt.sub ) + '</span>' : '' )
-							+ ( pt.url ? '<br><a class="sssj-iw__link" href="' + esc( pt.url ) + '">View &rarr;</a>' : '' )
-							+ '<br><span class="sssj-iw__hint">Double-click the pin to find this card.</span></div>';
-						info.setContent( html );
-						info.open( map, marker );
-					}, 240 );
-				} );
-				marker.addListener( 'dblclick', function () {
-					window.clearTimeout( clickTimer );
-					info.close();
-					highlightCard( pt.id );
-				} );
-
-				bounds.extend( marker.getPosition() );
-				shown++;
-			} );
-
-			if ( shown > 0 ) {
-				map.fitBounds( bounds );
-				if ( shown === 1 ) { google.maps.event.addListenerOnce( map, 'idle', function () { map.setZoom( 11 ); } ); }
-			}
-		}
+		window.SSSJMaps.render( ( window.SSJ_Maps || {} ).points || [] );
 	};
 }() );

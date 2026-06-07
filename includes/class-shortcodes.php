@@ -14,6 +14,9 @@ class Shuffles_SSJ_Shortcodes {
 	/** @var Shuffles_SSJ_Settings */
 	private $settings;
 
+	/** @var array Map points from the most recent board/directory render (for the AJAX marker refresh). */
+	private $last_points = array();
+
 	public function __construct( $settings ) {
 		$this->settings = $settings;
 	}
@@ -619,6 +622,7 @@ class Shuffles_SSJ_Shortcodes {
 
 		$query  = $this->build_board_query( 'job', $basis, $extra, (int) $atts['per_page'] );
 		$points = $this->points_from_query( $query );
+		$this->last_points = $points;
 		$maps   = $this->enqueue_maps( $points );
 
 		ob_start();
@@ -827,6 +831,7 @@ class Shuffles_SSJ_Shortcodes {
 
 		$query  = $this->build_board_query( 'worker', '', $extra, (int) $atts['per_page'] );
 		$points = $this->points_from_query( $query );
+		$this->last_points = $points;
 		$maps   = $this->enqueue_maps( $points );
 		ob_start();
 		$this->load_template( 'worker-directory.php', array( 'query' => $query, 'atts' => $atts, 'maps' => $maps, 'has_points' => ! empty( $points ), 'center' => $this->resolve_center() ) );
@@ -1480,6 +1485,7 @@ class Shuffles_SSJ_Shortcodes {
 	 * fragment (the [data-sssj-results] region), so the front end can swap the tiles without a reload.
 	 */
 	public function ajax_filter() {
+		$this->last_points = array(); // reset so a board with no map returns no markers
 		$board = isset( $_POST['board'] ) ? sanitize_key( wp_unslash( $_POST['board'] ) ) : 'job'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		// Mirror the submitted filter values into $_GET so the board methods (which read $_GET) work.
 		$keys = array( 'sssj_q', 'sssj_loc', 'sssj_lat', 'sssj_lng', 'sssj_radius', 'sssj_paged', 'sssj_funding', 'sssj_sector', 'sssj_orgcat', 'sssj_size', 'sssj_structure', 'sssj_open', 'sssj_cat' );
@@ -1516,7 +1522,7 @@ class Shuffles_SSJ_Shortcodes {
 				}
 			}
 		}
-		wp_send_json_success( array( 'html' => $frag ) );
+		wp_send_json_success( array( 'html' => $frag, 'points' => array_values( $this->last_points ) ) );
 	}
 
 	public function post_org_form( $atts ) {

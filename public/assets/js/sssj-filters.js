@@ -71,7 +71,14 @@
 			.then( function ( r ) { return r.json(); } )
 			.then( function ( j ) {
 				if ( window.SSSJSpinner ) { window.SSSJSpinner.hide( res ); }
-				if ( j && j.success && j.data ) { res.innerHTML = j.data.html; bindPagination( form, res ); }
+				if ( j && j.success && j.data ) {
+					res.innerHTML = j.data.html;
+					bindPagination( form, res );
+					// Refresh the results-map markers so the pins match the filtered results.
+					if ( window.SSSJMaps && typeof window.SSSJMaps.render === 'function' ) {
+						window.SSSJMaps.render( j.data.points || [] );
+					}
+				}
 				try { var qs = queryString( form ); window.history.replaceState( {}, '', window.location.pathname + ( qs ? ( '?' + qs ) : '' ) ); } catch ( e ) {}
 			} )
 			.catch( function () { if ( window.SSSJSpinner ) { window.SSSJSpinner.hide( res ); } } );

@@ -1146,6 +1146,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.2.0 · 2026-06-08 · results map markers refresh with AJAX filters</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'On the Jobs board and Worker directory, the results map now updates its markers when you filter: the AJAX filter returns the matching points, old pins clear, new pins plot and the map refits, so the map always matches the visible results.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.1.0 · 2026-06-08 · résumé builder Phase 1b complete (employer job flyer)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “Create an asset” wizard now also makes an employer Job flyer: advertisers pick one of their job ads and get a clean, shareable flyer with the location and pay leading. It honours anonymous advertising (no organisation name or logo when the ad is anonymous).', 'shuffles-social-services-jobs' ); ?></li>
