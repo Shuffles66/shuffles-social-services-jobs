@@ -48,6 +48,7 @@ class Shuffles_SSJ_Nav_Sync {
 				array( 'key' => 'jobs',     'label' => __( 'Jobs', 'shuffles-social-services-jobs' ),                 'page' => 'page_job_board',         'sc' => '[sssj_job_board]' ),
 				array( 'key' => 'workers',  'label' => __( 'Find a worker', 'shuffles-social-services-jobs' ),        'page' => 'page_worker_directory',  'sc' => '[sssj_worker_directory]' ),
 				array( 'key' => 'orgs',     'label' => __( 'Organisations', 'shuffles-social-services-jobs' ),        'page' => 'page_org_directory',     'sc' => '[sssj_org_directory]' ),
+				array( 'key' => 'howto',    'label' => __( 'How it works', 'shuffles-social-services-jobs' ),        'page' => 'page_workflows',         'sc' => '[sssj_workflows]' ),
 				array( 'key' => 'needs',    'label' => __( 'Participant requests', 'shuffles-social-services-jobs' ), 'page' => 'page_need_board',        'sc' => '[sssj_need_board]' ),
 				array( 'key' => 'post_job', 'label' => __( 'Post a job', 'shuffles-social-services-jobs' ),           'page' => 'page_post_job',          'sc' => '[sssj_post_job]' ),
 				array( 'key' => 'dashboard','label' => __( 'My dashboard', 'shuffles-social-services-jobs' ),         'page' => 'page_my_listings',       'sc' => '[sssj_dashboard]' ),

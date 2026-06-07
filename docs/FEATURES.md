@@ -94,6 +94,13 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Benefit:** everything configurable in one familiar place; plugs into the existing Shuffles stack.
 - **Sales angle:** *Configure once, integrate everywhere — no code required.*
 
+## L2. Self-serve help — Guides & explainer workflows ✅
+- **Advice guides** (`[sssj_guides]`, Settings → Guides): "how to do it well" — writing a job post, responding, working as an ABN contractor, building a standing profile, and sector best-practice for flyers/résumés.
+- **Step-by-step explainer workflows** (`[sssj_workflows]`, Settings → How-to Workflows): "the exact steps to do it" — eleven plain-English walkthroughs (set up your account, advertise a role, apply for an employee job, quote for contractor work, review applicants, request support privately, store a résumé, join an organisation, save alerts, volunteer, stay safe). Each has a goal, a "before you start" checklist, numbered steps with location hints, a "done" outcome and a self-healing "Start here" button.
+- **Personalised:** for logged-in members, workflows for their primary role float to the top with a "For you" marker — without hiding anything ("See all" is always available).
+- **Benefit:** non-technical members (and a national, CALD audience) can self-serve; far fewer "how do I…?" support questions.
+- **Sales angle:** *Every member is guided, step by step, to do the thing they came to do — no manual, no training session.*
+
 ## M. Shareable marketing assets — résumé & flyer creator ⬜ (planned, Workstream E)
 - **One-click résumé + service flyer for sole traders / workers**, and a **job flyer for employers**, built from the profile/listing the member already has — location + services lead the layout.
 - **Built-in "Best Practice" guidance** for the social-services sector (national/AU audience) shown right where members create assets — so every flyer/résumé is clear, safe and sector-appropriate.

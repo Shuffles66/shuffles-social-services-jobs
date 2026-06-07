@@ -223,11 +223,16 @@ class Shuffles_SSJ_Tests {
 				),
 			),
 			array(
-				'title' => __( 'Guides & help', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove the in-app guides render (including the flyer/résumé best-practice for the social-services sector). Goal: members can self-serve clear, sector-appropriate help.', 'shuffles-social-services-jobs' ),
+				'title' => __( 'Guides, help & explainer workflows', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the in-app advice guides AND the step-by-step end-user workflows render and self-heal their links. Goal: members can self-serve clear, sector-appropriate help — both “how to do it well” (Guides) and “the exact steps to do it” (How it works).', 'shuffles-social-services-jobs' ),
 				'cases' => array(
-					array( 'id' => 'guides-show', 'do' => __( 'Put [sssj_guides] on a page (or open Settings → Guides) and click each guide header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Four guides show (write a job post, respond to a job, ABN contractor, standing profile); the first is open; clicking expands/collapses each.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'guides-show', 'do' => __( 'Put [sssj_guides] on a page (or open Settings → Guides) and click each guide header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The advice guides show (write a job post, respond to a job, ABN contractor, standing profile, flyer/résumé best-practice); the first is open; clicking expands/collapses each.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'guides-only', 'do' => __( 'Use [sssj_guides only="respond-to-job"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the chosen guide renders.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'flows-show', 'do' => __( 'Put [sssj_workflows] on a page (or open Settings → How-to Workflows) and click each workflow header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The eleven explainer workflows show (set up account, advertise a role, apply for a TFN job, quote for ABN work, review applicants, request support, store a résumé, join an org, save alerts, volunteer, stay safe); each has a Goal, “Before you start”, numbered steps with location hints, a “Done” line; the first is open and headers expand/collapse.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'flows-start', 'do' => __( 'In a workflow, click its “Start here” button (e.g. “Post a job →” or “Browse employee jobs →”).', 'shuffles-social-services-jobs' ), 'expect' => __( 'It lands on the page that actually runs that shortcode (self-healing link); if no such page exists yet, the button is simply hidden rather than dead.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'flows-foryou', 'do' => __( 'Log in as a member with a primary role set (e.g. Participant), then open the [sssj_workflows] page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Workflows for that role (e.g. “Ask for support privately”) float to the top with a “For you” badge; everything else still appears below (nothing is hidden).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'flows-filter', 'do' => __( 'Use [sssj_workflows only="apply-tfn,build-resume"] and, separately, [sssj_workflows roles="contractor"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'The first shows only those two workflows; the second shows only workflows tagged for contractors.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'flows-nav', 'do' => __( 'Create the “How it works” page (Settings → Pages → How it works → Create), then view the [sssj_menu] / header menu.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A “How it works” item appears in the navigation (and in the synced Appearance menu after the next version re-sync), pointing at the workflows page.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(

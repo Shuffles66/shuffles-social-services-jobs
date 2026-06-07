@@ -166,6 +166,19 @@
 .sssj .sssj-guide__tips strong{ display:block; color:var(--sssj-ink); margin-bottom:var(--sssj-s2); }
 .sssj .sssj-guide__tips ul{ margin:0; padding-left:1.2em; color:var(--sssj-text); }
 .sssj .sssj-guide__tips li{ margin:2px 0; }
+
+/* Explainer workflows ([sssj_workflows]) — builds on the guide panels above. */
+.sssj .sssj-flow__foryou{ margin-left:var(--sssj-s2); }
+.sssj .sssj-flow__need{ margin:0 0 var(--sssj-s4); padding:var(--sssj-s3) var(--sssj-s4); background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); }
+.sssj .sssj-flow__need strong{ display:block; color:var(--sssj-ink); margin-bottom:var(--sssj-s2); }
+.sssj .sssj-flow__need ul{ margin:0; padding-left:1.2em; color:var(--sssj-text); }
+.sssj .sssj-flow__need li{ margin:2px 0; }
+.sssj .sssj-flow__steps li{ counter-increment:none; }
+.sssj .sssj-flow__where{ display:block; margin-top:2px; color:var(--sssj-blue-deep); font-size:var(--sssj-fs-sm); }
+.sssj .sssj-flow__note{ display:block; margin-top:2px; color:var(--sssj-muted); font-size:var(--sssj-fs-sm); }
+.sssj .sssj-flow__done{ margin:var(--sssj-s4) 0 0; padding:var(--sssj-s3) var(--sssj-s4); background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); color:var(--sssj-text); }
+.sssj .sssj-flow__cta{ margin:var(--sssj-s4) 0 0; }
+
 /* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }

@@ -47,6 +47,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
+		add_shortcode( 'sssj_workflows', array( $this, 'workflows_panel' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -292,6 +293,19 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'   => array(
 					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
 					'only="…"'  => __( 'Optional comma-separated guide ids to show only some (write-job-post, respond-to-job, abn-contractor-work, standing-profile).', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
+				'tag'    => 'sssj_workflows',
+				'title'  => __( 'How it works (step-by-step workflows)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Plain-language, step-by-step walkthroughs that show end users the exact path through the app to finish a task: setting up, advertising a role, applying for an employee job, quoting for contractor work, managing applicants, requesting support as a participant, storing a résumé, joining an organisation, saving alerts, volunteering, and staying safe. Collapsible numbered steps with a “Start here” button; for logged-in members, workflows for their primary role float to the top with a “For you” marker. Same content as Settings → How-to Workflows.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public “How it works” / “Help” page (and link it from the menu).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
+					'only="…"'  => __( 'Optional comma-separated workflow ids (get-started, post-job, apply-tfn, respond-abn, manage-applicants, post-need, build-resume, join-org, save-alerts, volunteer, stay-safe).', 'shuffles-social-services-jobs' ),
+					'roles="…"' => __( 'Optional comma-separated role keys to show only workflows for those roles (employer, provider, contractor, candidate, participant, representative, supplier).', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
@@ -1629,6 +1643,13 @@ class Shuffles_SSJ_Shortcodes {
 		return Shuffles_SSJ_Guides::render( is_array( $atts ) ? $atts : array() );
 	}
 
+	public function workflows_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		// Reuses the Guides collapse JS (same data-sssj-guides / data-guide-toggle hooks).
+		wp_enqueue_script( 'sssj-guides', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-guides.js', array(), SHUFFLES_SSJ_VERSION, true );
+		return Shuffles_SSJ_Workflows::render( is_array( $atts ) ? $atts : array() );
+	}
+
 	/* --- Navigation menu (login-aware) --- */
 
 	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
@@ -1727,6 +1748,7 @@ class Shuffles_SSJ_Shortcodes {
 		$this->add_nav_item( $items, __( 'Jobs', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_job_board', '[sssj_job_board]' ) );
 		$this->add_nav_item( $items, __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) );
 		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
+		$this->add_nav_item( $items, __( 'How it works', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_workflows', '[sssj_workflows]' ) );
 
 		if ( $logged_in ) {
 			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ), false, array( 'contractor', 'provider' ) );

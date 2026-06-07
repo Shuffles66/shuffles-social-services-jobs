@@ -102,6 +102,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo Shuffles_SSJ_Guides::render( array( 'title' => __( 'Guides', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
+		case 'workflows':
+			echo '<h2>' . esc_html__( 'How-to Workflows', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'Step-by-step <strong>explainer workflows for end users</strong> — the exact path through the app to finish each task. This is the same content members read via the <code>[sssj_workflows]</code> shortcode; put it on a public “How it works” / “Help” page and link it from the menu. Keep it current in <code>includes/class-workflows.php</code> as member-facing flows change.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo Shuffles_SSJ_Workflows::render( array( 'title' => __( 'How it works', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+			break;
+
 		case 'fields':
 			$fstatus  = isset( $_GET['sssj_field'] ) ? sanitize_key( wp_unslash( $_GET['sssj_field'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$edit_key = isset( $_GET['edit'] ) ? sanitize_key( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -698,6 +704,9 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</td></tr>';
 			$this->page_picker_field( 'page_join', __( 'Join (welcome / get started)', 'shuffles-social-services-jobs' ), '[sssj_join]', __( 'A friendly “Join” landing page that funnels people into onboarding, with sign-up / log-in.', 'shuffles-social-services-jobs' ) );
 
+			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Help & content', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
+			$this->page_picker_field( 'page_workflows', __( 'How it works (step-by-step)', 'shuffles-social-services-jobs' ), '[sssj_workflows]', __( 'Plain-English explainer workflows for end users — set up, advertise, apply, quote, manage applicants, request support, store a résumé, join an org, alerts, volunteer, stay safe. Also at Settings → How-to Workflows; the “Guides” advice content lives at Settings → Guides ([sssj_guides]).', 'shuffles-social-services-jobs' ) );
+
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -964,6 +973,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.86.0 — 2026-06-07 · explainer workflows for end users (“How it works”)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New [sssj_workflows] shortcode and Settings → How-to Workflows tab: eleven plain-English, step-by-step walkthroughs that show end users the exact path through the app — set up your account, advertise a role, apply for an employee (TFN) job, quote for contractor (ABN) work, review applicants, request support privately, store a résumé, join an organisation, save alerts, volunteer, and stay safe.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Each workflow has a Goal, a “Before you start” checklist, numbered steps with location hints, a “Done” outcome, and a self-healing “Start here” button. For logged-in members, workflows matching their primary role float to the top with a “For you” marker (nothing is hidden). Optional only="…" and roles="…" attributes filter the list.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Single source of truth in includes/class-workflows.php (distinct from the advice-style Guides). Added a “How it works” page mapping with one-click create (Settings → Pages → Help & content) and a “How it works” item in the navigation (shortcode menu + synced Appearance menu).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testing updated: the “Guides, help & explainer workflows” suite now covers rendering, the Start-here links, primary-role “For you” ordering, attribute filtering, and the navigation item.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.85.0 — 2026-06-07 · application pipeline phase 3 (Hired/Declined · history · withdraw · notifications)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Application stages now include Hired and Declined. Employers move applicants through the pipeline in My listings; jobs set to “Full pipeline” show all stages plus a Status history, while “Simple” jobs show a minimal set.', 'shuffles-social-services-jobs' ); ?></li>

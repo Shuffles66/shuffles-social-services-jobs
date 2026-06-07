@@ -149,7 +149,7 @@ class Shuffles_SSJ_Admin {
 			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 			wp_enqueue_script( 'sssj-tests', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-tests.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
-		if ( 'guides' === $tab ) {
+		if ( 'guides' === $tab || 'workflows' === $tab ) {
 			wp_enqueue_style( 'sssj', SHUFFLES_SSJ_URL . 'public/assets/css/sssj.css', array(), SHUFFLES_SSJ_VERSION );
 			wp_enqueue_script( 'sssj-guides', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-guides.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
@@ -202,6 +202,7 @@ class Shuffles_SSJ_Admin {
 			'alerts'       => array( 'T23', __( 'Email Alerts', 'shuffles-social-services-jobs' ), 'orange' ),
 			'privacy'      => array( 'T13', __( 'Privacy & Moderation', 'shuffles-social-services-jobs' ), 'amber' ),
 			'guides'       => array( 'T20', __( 'Guides', 'shuffles-social-services-jobs' ), 'orange' ),
+			'workflows'    => array( 'T28', __( 'How-to Workflows', 'shuffles-social-services-jobs' ), 'orange' ),
 			'logic'        => array( 'T25', __( 'Business Logic', 'shuffles-social-services-jobs' ), 'slate' ),
 			'testing'      => array( 'T19', __( 'Testing', 'shuffles-social-services-jobs' ), 'slate' ),
 			'demo'         => array( 'T27', __( 'Demo Users', 'shuffles-social-services-jobs' ), 'teal' ),
@@ -480,6 +481,7 @@ class Shuffles_SSJ_Admin {
 			'page_tests'       => '[sssj_tests]',
 			'page_why_us'      => '[sssj_why_us]',
 			'page_join'        => '[sssj_join]',
+			'page_workflows'   => '[sssj_workflows]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );
