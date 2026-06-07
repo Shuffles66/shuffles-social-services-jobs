@@ -576,9 +576,11 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 /* Carousel: a horizontal, snap-scrolling row; --sssj-whyus-per sets cards in view. */
 .sssj .sssj-whyus--carousel{
 	display:flex; grid-template-columns:none; gap:var(--sssj-s4);
-	overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:var(--sssj-s3);
+	overflow-x:auto; scroll-snap-type:x mandatory; padding-bottom:var(--sssj-s2);
 	-webkit-overflow-scrolling:touch;
+	scrollbar-width:none; -ms-overflow-style:none; /* hide the raw scrollbar — it auto-scrolls */
 }
+.sssj .sssj-whyus--carousel::-webkit-scrollbar{ width:0; height:0; display:none; }
 .sssj .sssj-whyus--carousel .sssj-whyus__item{
 	scroll-snap-align:start;
 	flex:0 0 calc((100% - (var(--sssj-whyus-per,3) - 1) * var(--sssj-s4)) / var(--sssj-whyus-per,3));

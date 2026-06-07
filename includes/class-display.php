@@ -12,7 +12,7 @@
  *   [sssj_stats show="jobs,workers,orgs,placed" title=""]
  *   [sssj_featured count="3" title="Featured roles"]
  *   [sssj_recent type="jobs|workers|orgs|needs" count="6" layout="grid|list" title=""]
- *   [sssj_why_us title="" intro="" layout="grid|carousel" per_row="3" rows="2" font="theme|brand"]
+ *   [sssj_why_us title="" intro="" layout="grid|carousel" per_row="3" rows="2" font="theme|brand" autoscroll="on|off|4000"]
  *   [sssj_join title="" intro=""]
  *
  * @package Shuffles_SSJ
@@ -212,12 +212,13 @@ class Shuffles_SSJ_Display {
 					'access' => 'public',
 					'group'  => __( 'Front-page display', 'shuffles-social-services-jobs' ),
 					'atts'   => array(
-						'title="…"'           => __( 'Heading (default “Why Shuffles”).', 'shuffles-social-services-jobs' ),
+						'title="…"'           => __( 'Heading (default: “Why ” + your site name).', 'shuffles-social-services-jobs' ),
 						'intro="…"'           => __( 'Optional sub-text under the heading.', 'shuffles-social-services-jobs' ),
-						'layout="grid|carousel"' => __( 'grid (default) or a horizontal scrolling carousel.', 'shuffles-social-services-jobs' ),
+						'layout="grid|carousel"' => __( 'grid (default) or a horizontal auto-scrolling carousel.', 'shuffles-social-services-jobs' ),
 						'per_row="3"'         => __( 'Columns per row (grid) or cards in view (carousel). Leave 0/blank for responsive auto.', 'shuffles-social-services-jobs' ),
 						'rows="2"'            => __( 'Show only this many rows — caps to per_row × rows items. 0/blank shows all.', 'shuffles-social-services-jobs' ),
 						'font="theme|brand"' => __( 'theme (default — match the page/theme font) or brand (the plugin’s configured font).', 'shuffles-social-services-jobs' ),
+						'autoscroll="on|off|4000"' => __( 'Carousel only: auto-scroll on (default), off, or a number of milliseconds between steps. Pauses on hover/touch.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(
@@ -573,16 +574,21 @@ class Shuffles_SSJ_Display {
 	public function why_us( $atts ) {
 		$a = shortcode_atts(
 			array(
-				'title'   => __( 'Why Shuffles', 'shuffles-social-services-jobs' ),
-				'intro'   => '',
-				'layout'  => 'grid',   // grid | carousel
-				'per_row' => 0,        // columns (grid) / cards-in-view (carousel); 0 = responsive auto
-				'rows'    => 0,        // cap to per_row × rows items; 0 = show all
-				'font'    => 'theme',  // theme (inherit the page/theme font) | brand (the plugin font)
+				'title'      => '', // defaults to "Why <site name>" below
+				'intro'      => '',
+				'layout'     => 'grid',   // grid | carousel
+				'per_row'    => 0,        // columns (grid) / cards-in-view (carousel); 0 = responsive auto
+				'rows'       => 0,        // cap to per_row × rows items; 0 = show all
+				'font'       => 'theme',  // theme (inherit the page/theme font) | brand (the plugin font)
+				'autoscroll' => 'on',     // carousel only: on | off | <milliseconds>
 			),
 			is_array( $atts ) ? $atts : array(),
 			'sssj_why_us'
 		);
+		if ( '' === trim( (string) $a['title'] ) ) {
+			/* translators: %s: site name. */
+			$a['title'] = sprintf( __( 'Why %s', 'shuffles-social-services-jobs' ), get_bloginfo( 'name' ) );
+		}
 		$this->enqueue();
 
 		$layout  = ( 'carousel' === $a['layout'] ) ? 'carousel' : 'grid';
@@ -602,6 +608,16 @@ class Shuffles_SSJ_Display {
 				? 'grid-template-columns:repeat(' . $per_row . ',minmax(0,1fr))'
 				: '--sssj-whyus-per:' . $per_row;
 		}
+		// Carousel auto-scroll (default on; a number sets the step interval in ms).
+		$autoscroll = ( 'carousel' === $layout && 'off' !== (string) $a['autoscroll'] );
+		$ascroll_ms = ctype_digit( (string) $a['autoscroll'] ) ? max( 1500, (int) $a['autoscroll'] ) : 4000;
+		$attrs      = ' data-sssj-reveal';
+		if ( '' !== $style ) {
+			$attrs .= ' style="' . esc_attr( $style ) . '"';
+		}
+		if ( $autoscroll ) {
+			$attrs .= ' data-sssj-autoscroll="' . esc_attr( $ascroll_ms ) . '"';
+		}
 
 		ob_start();
 		echo '<div class="sssj sssj--display">';
@@ -611,7 +627,7 @@ class Shuffles_SSJ_Display {
 		if ( '' !== $a['intro'] ) {
 			echo '<p class="sssj-whyus__intro">' . esc_html( $a['intro'] ) . '</p>';
 		}
-		echo '<div class="' . esc_attr( $classes ) . '"' . ( '' !== $style ? ' style="' . esc_attr( $style ) . '"' : '' ) . ' data-sssj-reveal>';
+		echo '<div class="' . esc_attr( $classes ) . '"' . $attrs . '>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		$i = 0;
 		foreach ( $items as $b ) {
 			echo '<article class="sssj-whyus__item sssj-reveal" ' . $this->delay( $i ) . '>'; // phpcs:ignore WordPress.Security.EscapeOutput

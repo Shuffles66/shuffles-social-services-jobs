@@ -59,9 +59,45 @@
 		Array.prototype.forEach.call( containers, function ( c ) { io.observe( c ); } );
 	}
 
+	// Auto-scrolling carousels (e.g. [sssj_why_us layout="carousel"]). Steps one card on an
+	// interval, loops back to the start at the end, and pauses on hover / focus / touch.
+	function carousels() {
+		var els = document.querySelectorAll( '[data-sssj-autoscroll]' );
+		Array.prototype.forEach.call( els, function ( el ) {
+			if ( reduce ) { return; }
+			var delay = parseInt( el.getAttribute( 'data-sssj-autoscroll' ), 10 ) || 4000;
+			if ( delay < 1500 ) { delay = 1500; }
+			var paused = false;
+
+			function step() {
+				if ( paused ) { return; }
+				if ( el.scrollWidth - el.clientWidth <= 4 ) { return; } // nothing to scroll
+				var card = el.querySelector( '.sssj-whyus__item, *' );
+				var by = card ? Math.round( card.getBoundingClientRect().width + 16 ) : el.clientWidth;
+				if ( el.scrollLeft + el.clientWidth >= el.scrollWidth - 8 ) {
+					el.scrollTo( { left: 0, behavior: 'smooth' } ); // loop back to the start
+				} else {
+					el.scrollBy( { left: by, behavior: 'smooth' } );
+				}
+			}
+
+			window.setInterval( step, delay );
+			var pause = function () { paused = true; };
+			var resume = function () { paused = false; };
+			el.addEventListener( 'mouseenter', pause );
+			el.addEventListener( 'mouseleave', resume );
+			el.addEventListener( 'focusin', pause );
+			el.addEventListener( 'focusout', resume );
+			el.addEventListener( 'touchstart', pause, { passive: true } );
+			el.addEventListener( 'touchend', function () { window.setTimeout( resume, 4000 ); }, { passive: true } );
+		} );
+	}
+
+	function start() { boot(); carousels(); }
+
 	if ( 'loading' === document.readyState ) {
-		document.addEventListener( 'DOMContentLoaded', boot );
+		document.addEventListener( 'DOMContentLoaded', start );
 	} else {
-		boot();
+		start();
 	}
 }() );
