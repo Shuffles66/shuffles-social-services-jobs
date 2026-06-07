@@ -22,6 +22,7 @@ class Shuffles_SSJ_Tests {
 		$s = array(
 			array(
 				'title' => __( 'Job ads & segregated boards', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove that jobs post correctly and that employee (TFN), contractor (ABN) and volunteer work stay strictly on their own boards. Goal: no engagement type ever leaks onto the wrong board, and anonymous/“open to” options behave.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'job-tfn', 'do' => __( 'As an advertiser, post a job with basis = TFN (employee).', 'shuffles-social-services-jobs' ), 'expect' => __( 'It shows on the Jobs board and the TFN board, and NEVER on the ABN board.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-abn', 'do' => __( 'Post a job with basis = ABN and a valid 11-digit ABN.', 'shuffles-social-services-jobs' ), 'expect' => __( 'ABN passes validation; it shows on the ABN board, never the TFN board. A bad ABN is rejected.', 'shuffles-social-services-jobs' ) ),
@@ -41,6 +42,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Applying & messaging', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove candidates can apply (including the full employee/TFN flow) and that first contact runs through the safe internal relay. Goal: applications record once, screening answers reach the employer, and no email/phone is ever exposed.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'apply', 'do' => __( 'As a logged-in member, apply to a job with a cover note.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Application is recorded once (no duplicates); a message thread to the advertiser is started.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'apply-tfn', 'do' => __( 'Post a TFN (employee) job with a couple of screening questions and “Full pipeline”. As a candidate with a saved résumé, open that job and apply: pick a résumé, set availability + start date, answer the screening questions, and submit WITHOUT ticking right-to-work, then again WITH it ticked.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Without right-to-work it’s refused with a prompt; with it, the application saves. As the employer (My listings) the applicant shows the résumé link, availability, start date, right-to-work tick and the screening answers; the résumé opens for that employer only.', 'shuffles-social-services-jobs' ) ),
@@ -51,6 +53,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Workers', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove worker/contractor profiles, availability, visibility, résumés, travel radius and location search all behave. Goal: a worker is found exactly as widely as they choose — never more.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'worker-profile', 'do' => __( 'Create a worker profile; add Services via the search-and-add picker; set a location; choose visibility.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Profile saves; services show as pills; location geocodes; one profile per user.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-place-ac', 'do' => __( 'On the worker profile, start typing a suburb in “Your location” and pick a suggestion (needs a Google Maps API key set in Settings → Integrations).', 'shuffles-social-services-jobs' ), 'expect' => __( 'An autocomplete dropdown appears; picking a place fills Suburb / State / Postcode and records the lat/long, so the profile is found by location and radius.', 'shuffles-social-services-jobs' ) ),
@@ -67,6 +70,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Participants (privacy-critical)', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove participant requests stay pseudonymous, suburb-level, members-only, admin-moderated and never indexed. Goal: the most vulnerable people on the platform are protected by design, not by setting.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'need-post', 'do' => __( 'Post a participant support request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is held for admin moderation; once approved it shows only a pseudonym + suburb — never a name or contact detail.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-gate', 'do' => __( 'Open the Participant requests board as a logged-out guest.', 'shuffles-social-services-jobs' ), 'expect' => __( 'You are prompted to log in; no requests are shown.', 'shuffles-social-services-jobs' ) ),
@@ -77,6 +81,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Organisations', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove org profiles, categories, size/structure, NDIS + ABR data, teams (incl. request-to-join), sponsorship and the directory all work. Goal: organisations present accurately and reveal only what they intend.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'org-profile', 'do' => __( 'Create an org profile: logo, social links, sectors + funding (search-and-add), multiple locations.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Saves; logo + social icons + sector/funding pills appear on the profile and card.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-find', 'do' => __( 'On the Organisations directory, filter by sector, funding, location/radius, and “Only with open placements”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results match all filters; multi-location orgs match if ANY site is in range.', 'shuffles-social-services-jobs' ) ),
@@ -98,6 +103,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Compliance & verification', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove credential uploads, the admin verification queue, the ✓ Verified / blue-tick badges, and the live ABN (ABR) + NDIS register checks. Goal: a trust badge is only ever granted by an admin against real evidence — never self-claimed — and register data stays read-only.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'cred-upload', 'do' => __( 'As a worker, add a credential (e.g. WWCC) with an evidence PDF.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Saved as Pending; the evidence file has no public URL.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cred-verify', 'do' => __( 'As an admin, open Jobs & Engagements → Verification, view the evidence, Approve it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The worker gains the ✓ Verified badge (and the verified checks show on their card).', 'shuffles-social-services-jobs' ) ),
@@ -118,6 +124,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Monetisation', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the paid gates (posting volume, featured placement, directory listing, responding) apply only when monetisation is switched on. Goal: the site is never locked by default, and participants always post free.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'mon-off', 'do' => __( 'With monetisation OFF, post jobs and respond.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Everything is free / ungated.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mon-cap', 'do' => __( 'Turn monetisation ON; set a free-listing cap; post beyond it without a subscription.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Posting is blocked with an upgrade prompt; a subscriber posts unlimited + gets featured placement.', 'shuffles-social-services-jobs' ) ),
@@ -127,6 +134,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Hats / roles & onboarding', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove hats grant the right abilities, onboarding routes new members, the dashboard reveals by hat, and the primary-role focus + “See all” work. Goal: members see what’s relevant to them, with everything still reachable.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'roles-pick', 'do' => __( 'Put [sssj_roles] on a page (or open the “My roles” tab in [sssj_dashboard]); as a logged-in member tick hats from the grouped picker (I offer work / I’m looking for work / I need support) — e.g. Employer/company AND Available for contracting — and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Hats save (confirmation shows), persist on reload, and the matching capabilities are granted (employer → post jobs + org; contractor → worker profile).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'roles-dashboard', 'do' => __( 'After setting hats, reopen the dashboard.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The dashboard reveals only the sections matching your hats — an employer sees My listings & applicants + Post a job / organisation; a contractor sees My profile + Matched jobs + Credentials; a member with both sees both, in one place. A member with no hats yet still sees everything (capability fallback).', 'shuffles-social-services-jobs' ) ),
@@ -138,6 +146,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Accessibility / CALD + appearance', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the accessibility / multilingual (CALD) tools and the theming (Style Studio) work. Goal: the platform is usable by everyone — including low-vision, neurodiverse and non-English speakers — and stays on-brand.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'cald-lang', 'do' => __( 'Switch the language in the toolbar.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Tagged UI labels translate; right-to-left languages flip layout; the choice persists site-wide.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cald-english', 'do' => __( 'While in another language, hit the “English Hot Key”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The interface returns to English (button shows only when not in English).', 'shuffles-social-services-jobs' ) ),
@@ -148,6 +157,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Navigation, selects & responsive', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the login-aware menu (+ admin Settings sub-item + Appearance-menu sync), the searchable pill selects, and the responsive layout. Goal: navigation and inputs work cleanly on every device.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'menu', 'do' => __( 'View [sssj_menu] logged out, then logged in.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Logged-out shows browse + Log in/Register; logged-in shows dashboard/messages/log out + capability links.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'auto-menu', 'do' => __( 'In Settings → General, tick “Show navigation menu at the top of every page”, save, and open any front-end page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The navigation bar appears at the very top of every page; un-ticking removes it.', 'shuffles-social-services-jobs' ) ),
@@ -164,6 +174,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Custom profile fields & CRM sync', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove admin-defined custom fields (incl. banner filters) and the FluentCRM tag/list sync behave. Goal: extra fields and CRM stay in step without exposing private data or naming the AI/search vendor.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'field-add', 'do' => __( 'In Settings → Profile Fields, add a multi-select field (e.g. “Programs” with options NDIS, Aged Care, DVA), shown on Workers.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The field is listed; on the worker profile form it appears as a searchable multi-select pill picker and saves.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'field-banner', 'do' => __( 'Tick “show on banner filters” for a select field; edit and delete a field.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Edit pre-fills the form; delete removes the field (saved values are untouched).', 'shuffles-social-services-jobs' ) ),
@@ -175,6 +186,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Front-page display & animations', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the marketing blocks render and animate: hero (multi-button), counters, featured (with teaser), recent, Why-us (grid/carousel/font) and Join. Goal: the public front end looks right and funnels people in.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'disp-hero', 'do' => __( 'Put [sssj_hero title="…" button_text="Browse jobs" button_url="/jobs" button2_text="Find a worker" button2_url="/find-a-worker" button3_text="Request support" button3_url="/request-support"] on a page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A gradient hero banner fades in with the headline, up to FOUR call-to-action buttons (first = primary, rest = outline), and a “🛡️ Safety, built in” strip. safety="off" hides the strip.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'disp-stats', 'do' => __( 'Add [sssj_stats] and scroll it into view; then try [sssj_stats min="25"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'The counters animate up to the live totals. With min="25", any counter below 25 is hidden until the real total reaches it (so small early numbers stay hidden).', 'shuffles-social-services-jobs' ) ),
@@ -190,6 +202,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Email alerts', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove opt-in alerts (job matches, new candidates, saved-search digests) — including the logged-out “Save & alert me” login prompt. Goal: members only ever get alerts they asked for.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'alert-worker', 'do' => __( 'On a worker profile tick “Email me when new jobs match my profile”, then (Settings → Email Alerts) click “Run alerts now” after a matching job is posted.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The worker receives an email digest of new matching jobs. Nothing is sent if they did not opt in.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'alert-advertiser', 'do' => __( 'When posting a job tick “Email me when new candidates match this job”; add a matching worker, then run alerts.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The advertiser receives an email digest of new matching candidates.', 'shuffles-social-services-jobs' ) ),
@@ -200,6 +213,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Smart matching', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the matcher surfaces relevant workers on a job, relevant jobs on a worker, and the synonym-aware search. Goal: the right people see the right opportunities, with clear reasons.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'match-job', 'do' => __( 'Open a job that has a service category and a location.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A “Workers who may suit this role” panel lists ranked workers, each with a short reason (shared services, distance, available, has ABN).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'match-worker', 'do' => __( 'Open a worker profile that has services + a location.', 'shuffles-social-services-jobs' ), 'expect' => __( 'An “Open roles this worker may suit” panel lists ranked jobs with reasons.', 'shuffles-social-services-jobs' ) ),
@@ -209,6 +223,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Guides & help', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the in-app guides render (including the flyer/résumé best-practice for the social-services sector). Goal: members can self-serve clear, sector-appropriate help.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'guides-show', 'do' => __( 'Put [sssj_guides] on a page (or open Settings → Guides) and click each guide header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Four guides show (write a job post, respond to a job, ABN contractor, standing profile); the first is open; clicking expands/collapses each.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'guides-only', 'do' => __( 'Use [sssj_guides only="respond-to-job"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the chosen guide renders.', 'shuffles-social-services-jobs' ) ),
@@ -216,6 +231,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Dashboard & operations', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the all-in-one dashboard hub, scheduled (cron) jobs, demo users + “View as”, and admin operations. Goal: members and admins can run everything from one place, and background jobs report their status.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'dash-profile', 'do' => __( 'Open [sssj_dashboard] as a logged-in member and click the “My profile” tab.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Your personal worker/candidate profile editor is embedded right there, with buttons to manage an organisation or a participant support request, and a tip pointing to the “My roles” tab.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'form-enhance', 'do' => __( 'Open the Create worker profile page and scroll/fill it in.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Fields are grouped into titled section cards (each with a tasteful left accent border); a completeness meter updates as you fill fields; the “available for work” checkbox shows as a pill toggle (and still submits); the About box has a character counter; file buttons are styled and the profile photo previews; a sticky Save bar appears on scroll; Ctrl+S saves; the tab title shows a ● when there are unsaved changes. Tom Select pickers, the suburb autocomplete, NDIS “Scan now” and form submission all still work.', 'shuffles-social-services-jobs' ) ),
@@ -256,7 +272,7 @@ class Shuffles_SSJ_Tests {
 		<div class="sssj sssj--tests" data-sssj-tests data-tests-version="<?php echo esc_attr( $version ); ?>">
 			<div class="sssj-panel">
 				<h2 style="margin-top:0"><?php echo esc_html( $title ); ?> <?php if ( $version ) : ?><span class="sssj-badge"><?php echo esc_html( 'v' . $version ); ?></span><?php endif; ?></h2>
-				<p class="description"><?php esc_html_e( 'Give this to a tester. Work through each case, mark Pass or Fail. Progress is saved in your browser; use Print for a paper copy or a PDF.', 'shuffles-social-services-jobs' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Give this to a tester. Checks are grouped by area, and each group states its overall objective so you know what it’s proving. Work through each case, mark Pass or Fail. Progress is saved in your browser; use Print for a paper copy or a PDF.', 'shuffles-social-services-jobs' ); ?></p>
 				<div class="sssj-tests__bar">
 					<strong data-tests-progress>0 / <?php echo esc_html( (string) self::count_cases() ); ?></strong>
 					<span class="sssj-tests__track"><span class="sssj-tests__fill" data-tests-fill></span></span>
@@ -266,7 +282,10 @@ class Shuffles_SSJ_Tests {
 			</div>
 			<?php foreach ( self::suites() as $suite ) : ?>
 				<div class="sssj-panel">
-					<h3 style="margin-top:0"><?php echo esc_html( $suite['title'] ); ?></h3>
+					<h3 style="margin-top:0"><?php echo esc_html( $suite['title'] ); ?> <span class="sssj-badge sssj-badge--sm"><?php echo esc_html( sprintf( _n( '%d check', '%d checks', count( $suite['cases'] ), 'shuffles-social-services-jobs' ), count( $suite['cases'] ) ) ); ?></span></h3>
+					<?php if ( ! empty( $suite['objective'] ) ) : ?>
+						<p class="sssj-tests__obj"><strong><?php esc_html_e( 'Objective:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( $suite['objective'] ); ?></p>
+					<?php endif; ?>
 					<table class="sssj-tests__table">
 						<?php foreach ( $suite['cases'] as $c ) : ?>
 							<tr data-test-id="<?php echo esc_attr( $c['id'] ); ?>">

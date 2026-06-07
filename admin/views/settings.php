@@ -964,6 +964,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.84.0 — 2026-06-07 · testing worksheet — per-area objectives</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The Testing worksheet (Settings → Testing and [sssj_tests]) now states an overall Objective for each area of checks, and shows the number of checks per group — so testers know what each group is proving, not just the steps.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.83.0 — 2026-06-07 · primary role (focus) + menu “See all”</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Members can choose a primary role in “My roles”. The dashboard then opens to that role’s tab, and the menu focuses on its items — keeping the experience clean for single-purpose members.', 'shuffles-social-services-jobs' ); ?></li>

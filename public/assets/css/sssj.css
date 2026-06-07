@@ -609,3 +609,6 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 
 /* Anonymous advertiser badge */
 .sssj .sssj-badge--anon{ background:#e2e8f0; color:#334155; }
+
+/* Testing worksheet — per-group objective line */
+.sssj .sssj-tests__obj{ margin:0 0 10px; color:var(--sssj-text); background:var(--sssj-bg-soft); border-left:4px solid var(--sssj-info); border-radius:var(--sssj-radius); padding:8px 12px; font-size:var(--sssj-fs-sm); }
