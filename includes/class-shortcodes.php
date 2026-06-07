@@ -48,6 +48,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
 		add_shortcode( 'sssj_guides', array( $this, 'guides_panel' ) );
 		add_shortcode( 'sssj_workflows', array( $this, 'workflows_panel' ) );
+		add_shortcode( 'sssj_policies', array( $this, 'policies_panel' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -308,6 +309,18 @@ class Shuffles_SSJ_Shortcodes {
 					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
 					'only="…"'  => __( 'Optional comma-separated workflow ids (get-started, post-job, apply-tfn, respond-abn, manage-applicants, post-need, build-resume, join-org, save-alerts, volunteer, stay-safe).', 'shuffles-social-services-jobs' ),
 					'roles="…"' => __( 'Optional comma-separated role keys to show only workflows for those roles (employer, provider, contractor, candidate, participant, representative, supplier).', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
+				'tag'    => 'sssj_policies',
+				'title'  => __( 'Policies (plain-English, member-facing)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Easy-read summaries of the platform’s policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms/Acceptable Use, Worker Screening & Verification, Data Retention, Cookies & Consent, and Anti-Discrimination & Inclusion — each with the key points and the NDIS/OAIC/AHRC + interpreter contacts. Collapsible panels. Same content as Settings → Policies. (The full, formal templates live in /docs and must be adopted before relying on them.)', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public “Policies” / “Safety & policies” page (link it in the footer and menu).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
+					'only="…"'  => __( 'Optional comma-separated policy ids (complaints, privacy, code-of-conduct, incident, safeguarding, terms, screening, retention, cookies, inclusion).', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
@@ -1652,6 +1665,13 @@ class Shuffles_SSJ_Shortcodes {
 		return Shuffles_SSJ_Workflows::render( is_array( $atts ) ? $atts : array() );
 	}
 
+	public function policies_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		// Reuses the Guides collapse JS (same data-sssj-guides / data-guide-toggle hooks).
+		wp_enqueue_script( 'sssj-guides', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-guides.js', array(), SHUFFLES_SSJ_VERSION, true );
+		return Shuffles_SSJ_Policies::render( is_array( $atts ) ? $atts : array() );
+	}
+
 	/* --- Navigation menu (login-aware) --- */
 
 	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
@@ -1751,6 +1771,7 @@ class Shuffles_SSJ_Shortcodes {
 		$this->add_nav_item( $items, __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) );
 		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
 		$this->add_nav_item( $items, __( 'How it works', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_workflows', '[sssj_workflows]' ) );
+		$this->add_nav_item( $items, __( 'Policies', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_policies', '[sssj_policies]' ) );
 
 		if ( $logged_in ) {
 			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ), false, array( 'contractor', 'provider' ) );

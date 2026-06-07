@@ -108,6 +108,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo Shuffles_SSJ_Workflows::render( array( 'title' => __( 'How it works', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
+		case 'policies':
+			echo '<h2>' . esc_html__( 'Policies', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'These are the <strong>plain-English, member-facing</strong> policy summaries shown on the site via <code>[sssj_policies]</code> — publish them on a public “Policies” page and link it in the footer/menu. The full, formal templates live in <code>/docs/*.md</code> (e.g. Privacy, NDIS Code of Conduct, Incident Management) and must be reviewed and formally adopted by your organisation before you rely on them — they are starting templates, not legal advice. Keep both in sync; the source of the summaries is <code>includes/class-policies.php</code>.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo Shuffles_SSJ_Policies::render( array( 'title' => __( 'Our policies', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+			break;
+
 		case 'fields':
 			$fstatus  = isset( $_GET['sssj_field'] ) ? sanitize_key( wp_unslash( $_GET['sssj_field'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$edit_key = isset( $_GET['edit'] ) ? sanitize_key( wp_unslash( $_GET['edit'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -781,6 +787,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Help & content', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_workflows', __( 'How it works (step-by-step)', 'shuffles-social-services-jobs' ), '[sssj_workflows]', __( 'Plain-English explainer workflows for end users — set up, advertise, apply, quote, manage applicants, request support, store a résumé, join an org, alerts, volunteer, stay safe. Also at Settings → How-to Workflows; the “Guides” advice content lives at Settings → Guides ([sssj_guides]).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_policies', __( 'Policies (safety & privacy)', 'shuffles-social-services-jobs' ), '[sssj_policies]', __( 'Plain-English summaries of all platform policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion. Also at Settings → Policies. Link it in your footer.', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
 			submit_button();
@@ -1048,6 +1055,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.88.0 — 2026-06-07 · policies completed & published</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'All ten platform policies drafted as formal /docs templates: Privacy, NDIS Code of Conduct, Incident Management & Reportable Incidents, Safeguarding & Risk, Terms of Use / Acceptable Use, Worker Screening & Verification, Data Retention & Destruction, Cookie & Consent, and Anti-Discrimination & Inclusion (Complaints was already drafted).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Published, member-facing layer: new [sssj_policies] shortcode + Settings → Policies tab — plain-English, easy-read summaries of every policy with key points and the NDIS / OAIC / AHRC + interpreter contacts. Single source: includes/class-policies.php.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Policies (safety & privacy)” page mapping with one-click create (Settings → Pages → Help & content) and a “Policies” item in the navigation (shortcode menu + synced Appearance menu).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Policy register (docs/POLICIES.md) updated — all ten now show a formal template + a published summary; the remaining work is your review, bracket fill-in and formal adoption (Terms liability/governing-law needs legal review). Testing + Shortcodes reference updated.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.87.0 — 2026-06-07 · member reviews & ratings (contractors + providers)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New star-rating + written-review system for contractors (worker profiles) and providers (organisations). Reviews show automatically on the profile page with an average summary, individual reviews and the owner’s public response.', 'shuffles-social-services-jobs' ); ?></li>

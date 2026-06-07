@@ -223,8 +223,8 @@ class Shuffles_SSJ_Tests {
 				),
 			),
 			array(
-				'title' => __( 'Guides, help & explainer workflows', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove the in-app advice guides AND the step-by-step end-user workflows render and self-heal their links. Goal: members can self-serve clear, sector-appropriate help — both “how to do it well” (Guides) and “the exact steps to do it” (How it works).', 'shuffles-social-services-jobs' ),
+				'title' => __( 'Guides, workflows & policies', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the in-app advice guides, the step-by-step end-user workflows, and the plain-English policy summaries all render and self-heal their links. Goal: members can self-serve clear, sector-appropriate help — “how to do it well” (Guides), “the exact steps” (How it works) and “the rules that keep it safe” (Policies).', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'guides-show', 'do' => __( 'Put [sssj_guides] on a page (or open Settings → Guides) and click each guide header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The advice guides show (write a job post, respond to a job, ABN contractor, standing profile, flyer/résumé best-practice); the first is open; clicking expands/collapses each.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'guides-only', 'do' => __( 'Use [sssj_guides only="respond-to-job"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the chosen guide renders.', 'shuffles-social-services-jobs' ) ),
@@ -233,6 +233,8 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'flows-foryou', 'do' => __( 'Log in as a member with a primary role set (e.g. Participant), then open the [sssj_workflows] page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Workflows for that role (e.g. “Ask for support privately”) float to the top with a “For you” badge; everything else still appears below (nothing is hidden).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'flows-filter', 'do' => __( 'Use [sssj_workflows only="apply-tfn,build-resume"] and, separately, [sssj_workflows roles="contractor"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'The first shows only those two workflows; the second shows only workflows tagged for contractors.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'flows-nav', 'do' => __( 'Create the “How it works” page (Settings → Pages → How it works → Create), then view the [sssj_menu] / header menu.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A “How it works” item appears in the navigation (and in the synced Appearance menu after the next version re-sync), pointing at the workflows page.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'policies-show', 'do' => __( 'Put [sssj_policies] on a page (or open Settings → Policies) and click each policy header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Ten plain-English policies show (Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion); the first is open; each has a summary + key points; the footer lists NDIS/OAIC/AHRC + interpreter contacts.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'policies-only', 'do' => __( 'Use [sssj_policies only="privacy,complaints"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the chosen policies render. The full formal templates remain in /docs for adoption.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(

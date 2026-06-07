@@ -1,23 +1,32 @@
-# Policy register (to-do)
+# Policy register
 
-Living checklist of the policies the platform should have. Several are NDIS-relevant. Each is a
-**template / operational document** — review and formally adopt before publishing (not legal advice).
-Keep status current as each is drafted, reviewed and published.
+Living checklist of the policies the platform should have. Several are NDIS-relevant. Each formal
+doc is a **template / operational document** — review and formally adopt before relying on it (not
+legal advice). A plain-English, member-facing summary of every policy is **published in-product** via
+the `[sssj_policies]` shortcode / Settings → Policies (single source: `includes/class-policies.php`).
 
-| Policy | Status | Notes / file |
-|---|---|---|
-| **Complaints Management & Resolution** | ✅ Drafted — needs review, adoption & publish | `docs/COMPLAINTS-POLICY.md`. NDIS Practice Standards + Complaints Rules 2018; built around Fluent Support. Fill bracketed details; publish as a page / Guide. |
-| **Privacy Policy** | ⏳ To do | Australian Privacy Principles; what data we collect (participants pseudonymous, workers, orgs), credential storage, relay messaging, exporter/eraser hooks already in `class-privacy.php`. |
-| **NDIS Code of Conduct (acknowledgement)** | ⏳ To do | Workers/providers acknowledge the NDIS Code of Conduct; surface at onboarding/profile. |
-| **Incident Management & Reportable Incidents** | ⏳ To do | Referenced by the Complaints Policy; reportable-incident process + NDIS Commission notification. |
-| **Safeguarding / Risk Management** | ⏳ To do | Worker screening, WWCC, vulnerable-person safeguards (plugin enforces verification; policy doc needed). |
-| **Terms of Use / Acceptable Use** | ⏳ To do | Platform terms for members; conduct, prohibited use, listing rules. |
-| **Worker Screening & Verification** | ⏳ To do (partly enforced in product) | Admin-only verification, evidence privacy, expiry — documented to match `class-credentials.php`. |
-| **Data Retention & Destruction** | ⏳ To do | Credential ≤7 years (ATO), résumé/application retention, purge on deletion + grace. |
-| **Cookie / Consent** | ⏳ To do | Plugin defaults to privacy-preserving; document consent handling. |
-| **Anti-Discrimination / Inclusion (CALD, disability, LGBTQIA+)** | ⏳ To do | Aligns with the accessibility/CALD layer and best-practice guidance. |
+**Two layers, kept in sync:**
+1. **Formal templates** — the full documents under `docs/` (below). Status “Drafted” = ready for your
+   review, bracketed-detail fill-in, and formal adoption before you rely on them.
+2. **Published summaries** — the easy-read member-facing versions, live on the site via `[sssj_policies]`.
 
-> **Next action:** prioritise Privacy + NDIS Code of Conduct + Incident/Reportable next, then the rest.
-> When each is drafted, add it under `docs/` and (where member-facing) publish as a page or Guide.
+| Policy | Formal template | Published (in-app) | Notes |
+|---|---|---|---|
+| **Complaints Management & Resolution** | ✅ `docs/COMPLAINTS-POLICY.md` | ✅ `[sssj_policies]` | NDIS Practice Standards + Complaints Rules 2018; built around Fluent Support. |
+| **Privacy** | ✅ `docs/PRIVACY-POLICY.md` | ✅ | Privacy Act 1988 / APPs; pseudonymous participants, relay, credential/résumé storage, export/erasure. |
+| **NDIS Code of Conduct** | ✅ `docs/NDIS-CODE-OF-CONDUCT.md` | ✅ | The seven elements; acknowledged at onboarding/profile. |
+| **Incident Management & Reportable Incidents** | ✅ `docs/INCIDENT-MANAGEMENT-POLICY.md` | ✅ | Reportable categories + NDIS Commission notification timeframes (confirm current Rules). |
+| **Safeguarding / Risk Management** | ✅ `docs/SAFEGUARDING-RISK-POLICY.md` | ✅ | Worker screening, by-design safeguards, risk cycle; zero tolerance. |
+| **Terms of Use / Acceptable Use** | ✅ `docs/TERMS-OF-USE.md` | ✅ | Member terms; connector model; prohibited use; fees; liability {{needs legal review}}. |
+| **Worker Screening & Verification** | ✅ `docs/WORKER-SCREENING-VERIFICATION-POLICY.md` | ✅ | Matches `class-credentials.php`: admin-only verification, evidence privacy, expiry. |
+| **Data Retention & Destruction** | ✅ `docs/DATA-RETENTION-POLICY.md` | ✅ | Privacy Act/APP 11 + ATO; credential ≤7 years; retention table; purge + grace. |
+| **Cookie / Consent** | ✅ `docs/COOKIE-CONSENT-POLICY.md` | ✅ | Privacy-preserving defaults; category table; no ad targeting on participant pages. |
+| **Anti-Discrimination / Inclusion (CALD, disability, LGBTQIA+)** | ✅ `docs/ANTI-DISCRIMINATION-INCLUSION-POLICY.md` | ✅ | Protected attributes; lawful participant preferences; AHRC escalation. |
 
-*Maintenance: update statuses as policies are drafted/adopted. Last updated: 2026-06-07.*
+> **Status:** all ten drafted as formal templates **and** published as plain-English summaries in-product.
+> **Next action (yours):** review each template, fill the `{{bracketed}}` details (owner, dates, contacts,
+> governing law, liability), have them formally adopted, and publish the public **Policies** page
+> (Settings → Pages → “Policies (safety & privacy)” → Create). Get the Terms of Use liability/disclaimer
+> and governing-law clauses reviewed by a lawyer before relying on them.
+
+*Maintenance: keep the formal `docs/` templates and the published summaries (`class-policies.php`) in sync. Last updated: 2026-06-07.*

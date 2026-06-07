@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Shuffles Social Services Jobs and Engagements
  * Description:       A four-sided work marketplace for disability, aged care and social services — ABN & TFN engagements, participant-safe, accessible. Phase 0 scaffold.
- * Version:           0.87.0
+ * Version:           0.88.0
  * Author:            Shuffles
  * Author URI:        https://shuffles.com.au
  * Plugin URI:        https://github.com/Shuffles66/shuffles-social-services-jobs
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SHUFFLES_SSJ_VERSION', '0.87.0' );
+define( 'SHUFFLES_SSJ_VERSION', '0.88.0' );
 define( 'SHUFFLES_SSJ_FILE', __FILE__ );
 define( 'SHUFFLES_SSJ_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SHUFFLES_SSJ_URL', plugin_dir_url( __FILE__ ) );
@@ -57,6 +57,7 @@ require_once SHUFFLES_SSJ_DIR . 'includes/class-verification.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-tests.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-guides.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-workflows.php';
+require_once SHUFFLES_SSJ_DIR . 'includes/class-policies.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-business-rules.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-provider-import.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-nav-sync.php';

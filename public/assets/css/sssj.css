@@ -204,6 +204,13 @@
 .sssj .sssj-rate input[type="radio"]:checked ~ label{ color:var(--sssj-warning); }
 .sssj .sssj-rate input[type="radio"]:focus-visible + label{ outline:2px solid var(--sssj-blue); outline-offset:2px; border-radius:3px; }
 
+/* Policies ([sssj_policies]) — builds on the guide panels. */
+.sssj .sssj-policy{ border-left:4px solid var(--sssj-info); }
+.sssj .sssj-policy__points{ margin:var(--sssj-s2) 0 0; padding-left:1.2em; color:var(--sssj-text); }
+.sssj .sssj-policy__points li{ margin:3px 0; }
+.sssj .sssj-policy__help{ background:var(--sssj-bg-soft); }
+.sssj .sssj-policy__help .description{ margin:0; line-height:1.8; }
+
 /* Auto header menu (testing aid) — printed at wp_body_open, above the theme. */
 .sssj-auto-menu{ margin:0 0 10px; }
 .sssj-auto-menu .sssj.sssj-nav{ border-radius:0; }
