@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Résumé mockup, Warm and human</title>
+<style>
+  :root{
+    --ink:#1f2937; --text:#3f3a34; --muted:#8a7f72;
+    --teal:#0f766e; --teal-soft:#d8efe9; --amber:#b45309; --amber-soft:#fde7cf;
+    --bg:#f6f1ea; --paper:#fffdf9; --line:#ece3d6;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text);
+    font:16px/1.6 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif; padding:28px 14px; }
+  .label{ max-width:760px; margin:0 auto 12px; color:var(--muted); font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+  .page{ max-width:760px; margin:0 auto; background:var(--paper); border-radius:22px;
+    box-shadow:0 14px 34px rgba(63,58,52,.16); overflow:hidden; border:1px solid var(--line); }
+  .pad{ padding:38px 40px; }
+  .head{ display:flex; gap:22px; align-items:center; background:var(--teal-soft); margin:-38px -40px 26px; padding:32px 40px; border-bottom:3px solid #bfe3da; }
+  .avatar{ width:92px; height:92px; flex:0 0 auto; border-radius:50%; background:var(--teal); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; box-shadow:0 6px 16px rgba(15,118,110,.35); }
+  h1{ margin:0; font-size:30px; color:var(--ink); }
+  .role{ margin:3px 0 0; font-size:18px; color:var(--teal); font-weight:700; }
+  .where{ margin:8px 0 0; color:var(--ink); font-weight:600; }
+  .facts{ display:flex; flex-wrap:wrap; gap:12px; margin:0 0 6px; }
+  .fact{ background:var(--amber-soft); color:var(--amber); border-radius:14px; padding:10px 16px; font-weight:700; font-size:14px; }
+  .fact small{ display:block; color:#9a6a1c; font-weight:600; font-size:11px; text-transform:uppercase; letter-spacing:.04em; }
+  h2{ font-size:15px; color:var(--teal); margin:26px 0 10px; }
+  h2::before{ content:"\2022"; margin-right:8px; color:var(--amber); }
+  p.about{ margin:0; font-size:16.5px; color:var(--text); }
+  .chips{ display:flex; flex-wrap:wrap; gap:9px; margin:0; padding:0; list-style:none; }
+  .chips li{ background:var(--teal-soft); color:var(--teal); border-radius:999px; padding:7px 15px; font-weight:700; font-size:14px; }
+  .checks{ display:flex; flex-wrap:wrap; gap:9px 22px; margin:0; padding:0; list-style:none; }
+  .checks li{ color:var(--ink); font-weight:600; }
+  .checks li::before{ content:"\2713"; color:var(--teal); font-weight:800; margin-right:8px; }
+  .cta{ margin-top:30px; padding:18px 20px; background:var(--amber); color:#fff; border-radius:16px; text-align:center; font-weight:700; font-size:17px; }
+  .foot{ margin-top:12px; color:var(--muted); font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+  <div class="label">Mockup, direction B, warm and human, worker résumé</div>
+  <div class="page">
+    <div class="pad">
+      <div class="head">
+        <div class="avatar">JL</div>
+        <div>
+          <h1>Jordan Lee</h1>
+          <p class="role">Disability Support Worker</p>
+          <p class="where">📍 Armidale, NSW, happy to travel up to 40 km</p>
+        </div>
+      </div>
+
+      <div class="facts">
+        <div class="fact"><small>Available</small>Mornings, evenings, weekends</div>
+        <div class="fact"><small>Experience</small>5 years</div>
+        <div class="fact"><small>Languages</small>English, Auslan</div>
+      </div>
+
+      <h2>A little about me</h2>
+      <p class="about">I support people to live the life they choose. I am calm, reliable and practical, and I love helping people get out and about, stay independent at home, and feel confident day to day.</p>
+
+      <h2>What I help with</h2>
+      <ul class="chips">
+        <li>Personal care</li><li>Community access</li><li>Domestic assistance</li>
+        <li>Transport</li><li>Meal preparation</li><li>Social support</li>
+      </ul>
+
+      <h2>My verified checks</h2>
+      <ul class="checks">
+        <li>NDIS Worker Screening</li><li>Working With Children Check</li>
+        <li>First Aid and CPR</li><li>Police Check</li>
+      </ul>
+
+      <div class="cta">Say hello safely through Just Tasks</div>
+      <p class="foot">We chat through the platform relay first, so your details stay private.</p>
+    </div>
+  </div>
+</body>
+</html>

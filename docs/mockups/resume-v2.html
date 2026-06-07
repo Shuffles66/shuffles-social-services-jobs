@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Résumé mockup v2, refined blend</title>
+<style>
+  :root{
+    --ink:#0f172a; --text:#334155; --muted:#64748b; --line:#e6ebf2;
+    --brand:#0e6e8c;        /* calm blue-teal, primary (trust) */
+    --brand-deep:#0b566f;
+    --tint-a:#e7f3f6;       /* soft header tint */
+    --tint-b:#eef4fb;
+    --warm:#c2580c;         /* one warm accent, used sparingly */
+    --chip:#e8f1f4; --paper:#ffffff; --bg:#eef2f6;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text);
+    font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; padding:28px 14px; }
+  .label{ max-width:770px; margin:0 auto 12px; color:var(--muted); font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+  .page{ max-width:770px; margin:0 auto; background:var(--paper); border-radius:16px;
+    box-shadow:0 14px 36px rgba(2,6,23,.14); overflow:hidden; }
+  /* Header: soft tinted band (warmth) + clean layout (trust) */
+  .head{ display:flex; gap:22px; align-items:center; padding:34px 44px;
+    background:linear-gradient(135deg,var(--tint-a),var(--tint-b)); border-bottom:1px solid var(--line); }
+  .avatar{ width:90px; height:90px; flex:0 0 auto; border-radius:50%; background:var(--brand); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-size:32px; font-weight:700; letter-spacing:1px;
+    box-shadow:0 0 0 5px #fff, 0 8px 18px rgba(14,110,140,.30); }
+  h1{ margin:0; font-size:34px; color:var(--ink); letter-spacing:-.015em; }
+  .role{ margin:3px 0 0; font-size:18px; color:var(--brand); font-weight:700; }
+  .where{ margin:9px 0 0; color:var(--ink); font-weight:700; }
+  .pad{ padding:30px 44px 40px; }
+  /* Facts row: strong, scannable (from C) but calm */
+  .facts{ display:flex; flex-wrap:wrap; border:1px solid var(--line); border-radius:12px; overflow:hidden; margin:0 0 6px; }
+  .fact{ flex:1 1 0; min-width:150px; padding:14px 18px; border-right:1px solid var(--line); }
+  .fact:last-child{ border-right:0; }
+  .fact b{ display:block; color:var(--brand); font-size:11px; text-transform:uppercase; letter-spacing:.05em; font-weight:800; }
+  .fact span{ color:var(--ink); font-weight:700; }
+  /* Section headers: small caps with a short accent bar (from C, subtle) */
+  h2{ font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); margin:26px 0 10px;
+    border-left:4px solid var(--brand); padding-left:10px; }
+  p.about{ margin:0; font-size:16.5px; color:var(--text); }
+  /* Service chips: soft and rounded (from B) */
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none; }
+  .chips li{ background:var(--chip); color:var(--brand-deep); border-radius:999px; padding:7px 15px; font-weight:700; font-size:14px; }
+  .checks{ display:flex; flex-wrap:wrap; gap:9px 22px; margin:0; padding:0; list-style:none; }
+  .checks li{ color:var(--ink); font-weight:700; }
+  .checks li::before{ content:"\2713"; color:#15803d; font-weight:800; margin-right:8px; }
+  /* CTA: confident but friendly */
+  .cta{ margin-top:30px; padding:18px 20px; background:var(--brand); color:#fff; border-radius:14px; text-align:center; font-weight:800; font-size:18px; }
+  .cta .dot{ color:#ffd9b0; }
+  .foot{ margin-top:12px; color:var(--muted); font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+  <div class="label">Mockup v2, refined blend (clean structure + warm header + scannable facts)</div>
+  <div class="page">
+    <div class="head">
+      <div class="avatar">JL</div>
+      <div>
+        <h1>Jordan Lee</h1>
+        <p class="role">Disability Support Worker</p>
+        <p class="where">📍 Armidale, NSW, travels up to 40 km</p>
+      </div>
+    </div>
+    <div class="pad">
+      <div class="facts">
+        <div class="fact"><b>Available</b><span>Mornings, evenings, weekends</span></div>
+        <div class="fact"><b>Experience</b><span>5 years</span></div>
+        <div class="fact"><b>Languages</b><span>English, Auslan</span></div>
+      </div>
+
+      <h2>About me</h2>
+      <p class="about">I support people to live the life they choose. I am calm, reliable and practical, and I love helping people get out and about, stay independent at home, and feel confident day to day.</p>
+
+      <h2>What I help with</h2>
+      <ul class="chips">
+        <li>Personal care</li><li>Community access</li><li>Domestic assistance</li>
+        <li>Transport</li><li>Meal preparation</li><li>Social support</li>
+      </ul>
+
+      <h2>Verified checks</h2>
+      <ul class="checks">
+        <li>NDIS Worker Screening</li><li>Working With Children Check</li>
+        <li>First Aid and CPR</li><li>Police Check</li>
+      </ul>
+
+      <div class="cta">Get in touch safely through <span class="dot">Just Tasks</span></div>
+      <p class="foot">Contact runs through the platform relay, so your details stay private.</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1145,6 +1145,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.96.0 · 2026-06-07 · feature spotlight: stop / reverse the ball of light</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “Today’s Highlighted Site Feature” tile now has a small control: tap once to stop or start the orbiting ball of light, double-tap to reverse its direction. A real focusable button serves keyboard and screen-reader users (Space or Enter to stop/start, R to reverse), and the control is hidden when the OS prefers reduced motion.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.95.0 · 2026-06-07 · feature spotlight: a real ball of light tracing the border</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “Today’s Highlighted Site Feature” tile now shows a bright ball of light that continuously traces around the outside of the border (a soft glowing comet over a static rainbow edge), instead of the previous brief, hard-to-see effect. It still respects reduce-motion.', 'shuffles-social-services-jobs' ); ?></li>

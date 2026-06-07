@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Résumé mockup, Bold and modern</title>
+<style>
+  :root{
+    --ink:#0b1020; --text:#2b3245; --muted:#6b7280;
+    --brand:#3730a3; --brand-2:#2563eb; --accent:#06b6d4; --chip:#eef2ff; --paper:#ffffff; --bg:#0b1020;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:var(--bg); color:var(--text);
+    font:16px/1.5 "Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif; padding:28px 14px; }
+  .label{ max-width:780px; margin:0 auto 12px; color:#9aa3b2; font-size:13px; letter-spacing:.04em; text-transform:uppercase; }
+  .page{ max-width:780px; margin:0 auto; background:var(--paper); border-radius:10px; overflow:hidden; box-shadow:0 16px 40px rgba(0,0,0,.45); }
+  .hero{ background:linear-gradient(135deg,var(--brand),var(--brand-2)); color:#fff; padding:38px 40px; position:relative; }
+  .hero::after{ content:""; position:absolute; right:-40px; top:-40px; width:180px; height:180px; border-radius:50%; background:rgba(255,255,255,.10); }
+  .hero::before{ content:""; position:absolute; right:60px; bottom:-50px; width:120px; height:120px; border-radius:50%; background:var(--accent); opacity:.25; }
+  .eyebrow{ text-transform:uppercase; letter-spacing:.14em; font-size:12px; font-weight:700; color:var(--accent); }
+  h1{ margin:6px 0 0; font-size:42px; line-height:1.05; letter-spacing:-.02em; }
+  .role{ margin:8px 0 0; font-size:20px; font-weight:700; color:#dbe4ff; }
+  .where{ margin:14px 0 0; font-weight:700; font-size:16px; }
+  .pad{ padding:32px 40px 40px; }
+  .facts{ display:flex; flex-wrap:wrap; gap:0; margin:-58px 0 26px; position:relative; z-index:2; }
+  .fact{ flex:1 1 0; min-width:150px; background:#fff; border:1px solid #e6e8f0; border-right:0; padding:14px 18px; }
+  .fact:last-child{ border-right:1px solid #e6e8f0; border-radius:0 12px 12px 0; }
+  .fact:first-child{ border-radius:12px 0 0 12px; }
+  .fact b{ display:block; color:var(--brand); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+  .fact span{ color:var(--ink); font-weight:800; }
+  h2{ font-size:14px; letter-spacing:.05em; text-transform:uppercase; color:var(--brand); margin:26px 0 10px; border-left:4px solid var(--accent); padding-left:10px; }
+  p.about{ margin:0; font-size:16.5px; color:var(--text); }
+  .chips{ display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none; }
+  .chips li{ background:var(--chip); color:var(--brand); border-radius:6px; padding:7px 14px; font-weight:800; font-size:14px; }
+  .checks{ display:flex; flex-wrap:wrap; gap:8px 20px; margin:0; padding:0; list-style:none; }
+  .checks li{ color:var(--ink); font-weight:700; }
+  .checks li::before{ content:"\2713"; color:#0ea5a4; font-weight:900; margin-right:7px; }
+  .cta{ margin-top:30px; padding:18px 20px; background:var(--ink); color:#fff; border-radius:10px; text-align:center; font-weight:800; font-size:18px; letter-spacing:.01em; }
+  .cta span{ color:var(--accent); }
+  .foot{ margin-top:12px; color:var(--muted); font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+  <div class="label">Mockup, direction C, bold and modern, worker résumé</div>
+  <div class="page">
+    <div class="hero">
+      <div class="eyebrow">Disability Support Worker</div>
+      <h1>Jordan Lee</h1>
+      <p class="role">Calm, reliable, hands-on support</p>
+      <p class="where">📍 Armidale, NSW, travels up to 40 km</p>
+    </div>
+    <div class="pad">
+      <div class="facts">
+        <div class="fact"><b>Available</b><span>Mornings, eves, weekends</span></div>
+        <div class="fact"><b>Experience</b><span>5 years</span></div>
+        <div class="fact"><b>Languages</b><span>English, Auslan</span></div>
+      </div>
+
+      <h2>About me</h2>
+      <p class="about">I support people to live the life they choose. I am calm, reliable and practical, and I love helping people get out and about, stay independent at home, and feel confident day to day.</p>
+
+      <h2>What I help with</h2>
+      <ul class="chips">
+        <li>Personal care</li><li>Community access</li><li>Domestic assistance</li>
+        <li>Transport</li><li>Meal preparation</li><li>Social support</li>
+      </ul>
+
+      <h2>Verified checks</h2>
+      <ul class="checks">
+        <li>NDIS Worker Screening</li><li>Working With Children Check</li>
+        <li>First Aid and CPR</li><li>Police Check</li>
+      </ul>
+
+      <div class="cta">Get in touch through <span>Just Tasks</span></div>
+      <p class="foot">Contact runs through the platform relay, so your details stay private.</p>
+    </div>
+  </div>
+</body>
+</html>

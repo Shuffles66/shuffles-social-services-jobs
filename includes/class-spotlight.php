@@ -172,6 +172,7 @@ class Shuffles_SSJ_Spotlight {
 		?>
 		<div class="sssj sssj--spotlight">
 			<div class="sssj-spotlight" data-sssj-spotlight>
+					<button type="button" class="sssj-spotlight__ctrl" data-spot-ctrl aria-pressed="false" title="<?php esc_attr_e( 'Tap once to stop or start the light. Double-tap to reverse it.', 'shuffles-social-services-jobs' ); ?>"><span class="sssj-spotlight__ctrl-icon" data-spot-icon aria-hidden="true">&#9208;</span> <span data-spot-label><?php esc_html_e( 'Pause', 'shuffles-social-services-jobs' ); ?></span></button>
 				<div class="sssj-spotlight__inner">
 					<p class="sssj-spotlight__eyebrow">✨ <?php echo esc_html( $heading ); ?></p>
 					<h3 class="sssj-spotlight__title"><?php echo esc_html( $feature['title'] ); ?></h3>
@@ -192,6 +193,7 @@ class Shuffles_SSJ_Spotlight {
 	/** [sssj_feature_today] */
 	public static function shortcode( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-spotlight', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-spotlight.js', array(), SHUFFLES_SSJ_VERSION, true );
 		return self::render( is_array( $atts ) ? $atts : array() );
 	}
 }
