@@ -34,7 +34,9 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_roles', array( $this, 'roles_panel' ) );
 		add_shortcode( 'sssj_messages', array( $this, 'messages' ) );
 		add_shortcode( 'sssj_org_directory', array( $this, 'org_directory' ) );
+		add_shortcode( 'sssj_swipe', array( $this, 'provider_swipe' ) );
 		add_shortcode( 'sssj_post_org', array( $this, 'post_org_form' ) );
+		add_action( 'wp_ajax_sssj_swipe_save', array( $this, 'ajax_swipe_save' ) );
 		add_shortcode( 'sssj_credentials', array( $this, 'credentials_panel' ) );
 		add_shortcode( 'sssj_menu', array( $this, 'menu' ) );
 		add_shortcode( 'sssj_tests', array( $this, 'tests_panel' ) );
@@ -182,6 +184,18 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'   => array( 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
+				'tag'    => 'sssj_swipe',
+				'title'  => __( 'Provider swipe deck', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A Tinder-style way to browse providers one card at a time: swipe right (♥ / → / drag) to save a provider to your shortlist, left (✕ / ← / drag) to skip; tap a card to view the full profile. Works on touch, mouse and keyboard. Saving requires login.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Discover providers" page, or alongside the Organisations directory as a fun browse mode.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'count="24"' => __( 'Optional — how many providers to load into the deck (max 60).', 'shuffles-social-services-jobs' ),
+					'title="…"'  => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
 				'tag'    => 'sssj_post_org',
 				'title'  => __( 'Create / edit organisation profile', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'Lets an advertiser create or update their organisation profile (one per user): name, description, ABN, website, phone, type, primary location and additional locations.', 'shuffles-social-services-jobs' ),
@@ -284,6 +298,20 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_script_is( 'sssj-spinner', 'registered' ) ) {
 			wp_register_script( 'sssj-spinner', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-spinner.js', array(), SHUFFLES_SSJ_VERSION, true );
 			wp_localize_script( 'sssj-spinner', 'SSSJ_Spinner', array( 'logo' => self::site_logo_url() ) );
+		}
+		// Profile-form enhancements (section cards, completeness, toggle, sticky bar, toast).
+		if ( ! wp_script_is( 'sssj-form-enhance', 'registered' ) ) {
+			wp_register_script( 'sssj-form-enhance', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-form-enhance.js', array(), SHUFFLES_SSJ_VERSION, true );
+		}
+		// Provider swipe deck (Tinder-style browse).
+		if ( ! wp_script_is( 'sssj-swipe', 'registered' ) ) {
+			wp_register_script( 'sssj-swipe', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-swipe.js', array( 'sssj-form-enhance' ), SHUFFLES_SSJ_VERSION, true );
+			wp_localize_script( 'sssj-swipe', 'SSSJ_Swipe', array(
+				'ajax'       => admin_url( 'admin-ajax.php' ),
+				'nonce'      => wp_create_nonce( 'sssj_swipe' ),
+				'logged_in'  => is_user_logged_in() ? 1 : 0,
+				'login_url'  => wp_login_url(),
+			) );
 		}
 		// NDIS "Scan now" preview (org + worker forms).
 		if ( ! wp_script_is( 'sssj-ndis-scan', 'registered' ) ) {
@@ -677,6 +705,7 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-spinner' );
 		wp_enqueue_script( 'sssj-ndis-scan' );
+		wp_enqueue_script( 'sssj-form-enhance' );
 		ob_start();
 		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
 		return ob_get_clean();
@@ -726,6 +755,7 @@ class Shuffles_SSJ_Shortcodes {
 	public function post_need_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-spinner' );
+		wp_enqueue_script( 'sssj-form-enhance' );
 		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-need-form.php', array( 'settings' => $this->settings ) );
@@ -1036,10 +1066,96 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+	/**
+	 * [sssj_swipe] — a Tinder-style swipe deck for browsing providers (organisations).
+	 * Swipe/keys/buttons: right (or ♥ / →) saves to the member's shortlist, left (or ✕ / ←) skips.
+	 */
+	public function provider_swipe( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-swipe' );
+		$a   = shortcode_atts( array( 'count' => 24, 'title' => __( 'Browse providers', 'shuffles-social-services-jobs' ) ), is_array( $atts ) ? $atts : array(), 'sssj_swipe' );
+		$per = max( 1, min( 60, (int) $a['count'] ) );
+
+		$hidden_or = array( 'relation' => 'OR', array( 'key' => 'org_hidden', 'compare' => 'NOT EXISTS' ), array( 'key' => 'org_hidden', 'value' => '1', 'compare' => '!=' ) );
+		$mq        = array( $hidden_or );
+		if ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::enabled() ) {
+			$mq = array( 'relation' => 'AND', $hidden_or, array( 'key' => 'org_listed', 'value' => '1' ) );
+		}
+		$q = new WP_Query( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => $per, 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true, 'meta_query' => $mq ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$saved = is_user_logged_in() ? array_map( 'intval', (array) get_user_meta( get_current_user_id(), '_sssj_saved_orgs', true ) ) : array();
+
+		ob_start();
+		echo '<div class="sssj sssj--swipe"><div class="sssj-panel">';
+		echo '<h2 style="margin-top:0">' . esc_html( $a['title'] ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Swipe right (♥ or →) to save a provider to your shortlist, left (✕ or ←) to skip. Tap a card to view the full profile.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<div class="sssj-swipe" data-sssj-swipe>';
+		if ( $q->have_posts() ) {
+			echo '<div class="sssj-swipe__deck">';
+			while ( $q->have_posts() ) {
+				$q->the_post();
+				$oid   = get_the_ID();
+				$logo  = Shuffles_SSJ_Org::logo_url( $oid, 'medium' );
+				$cat   = Shuffles_SSJ_Org::category_label( get_post_meta( $oid, 'org_category', true ) );
+				$sub   = trim( (string) get_post_meta( $oid, 'location_suburb', true ) . ' ' . (string) get_post_meta( $oid, 'location_state', true ) );
+				$is_s  = in_array( (int) $oid, $saved, true );
+				echo '<article class="sssj-swipe__card' . ( $is_s ? ' is-saved' : '' ) . '" data-id="' . esc_attr( $oid ) . '" data-url="' . esc_url( get_permalink() ) . '" data-name="' . esc_attr( get_the_title() ) . '">';
+				echo '<div class="sssj-swipe__stamp sssj-swipe__stamp--like">' . esc_html__( 'SAVED', 'shuffles-social-services-jobs' ) . '</div><div class="sssj-swipe__stamp sssj-swipe__stamp--nope">' . esc_html__( 'SKIP', 'shuffles-social-services-jobs' ) . '</div>';
+				if ( $logo ) {
+					echo '<div class="sssj-swipe__media" style="background-image:url(' . esc_url( $logo ) . ')"></div>';
+				} else {
+					echo '<div class="sssj-swipe__media sssj-swipe__media--initial"><span>' . esc_html( mb_substr( wp_strip_all_tags( get_the_title() ), 0, 1 ) ) . '</span></div>';
+				}
+				echo '<div class="sssj-swipe__body">';
+				echo '<h3 class="sssj-swipe__name">' . esc_html( get_the_title() ) . ' ' . Shuffles_SSJ_Verification::tick_html( $oid, false ) . '</h3>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				echo '<div class="sssj-row" style="gap:6px;flex-wrap:wrap">';
+				if ( $cat ) { echo '<span class="sssj-badge">' . esc_html( $cat ) . '</span>'; }
+				echo Shuffles_SSJ_Org::ndis_badge_html( $oid ); // phpcs:ignore WordPress.Security.EscapeOutput
+				if ( '' !== $sub ) { echo '<span class="sssj-badge">📍 ' . esc_html( $sub ) . '</span>'; }
+				echo '</div>';
+				echo '<p class="sssj-swipe__excerpt">' . esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 28 ) ) . '</p>';
+				echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm sssj-swipe__view" href="' . esc_url( get_permalink() ) . '" target="_blank" rel="noopener">' . esc_html__( 'View profile', 'shuffles-social-services-jobs' ) . '</a>';
+				echo '</div></article>';
+			}
+			echo '</div>'; // deck
+			echo '<div class="sssj-swipe__controls">'
+				. '<button type="button" class="sssj-swipe__btn sssj-swipe__btn--skip" data-swipe="left" aria-label="' . esc_attr__( 'Skip', 'shuffles-social-services-jobs' ) . '">✕</button>'
+				. '<button type="button" class="sssj-swipe__btn sssj-swipe__btn--undo" data-swipe="undo" aria-label="' . esc_attr__( 'Undo', 'shuffles-social-services-jobs' ) . '">↺</button>'
+				. '<button type="button" class="sssj-swipe__btn sssj-swipe__btn--save" data-swipe="right" aria-label="' . esc_attr__( 'Save', 'shuffles-social-services-jobs' ) . '">♥</button>'
+				. '</div>';
+			echo '<div class="sssj-swipe__counter" data-swipe-counter></div>';
+			echo '<div class="sssj-swipe__end" data-swipe-end hidden><h3>' . esc_html__( 'That’s everyone for now', 'shuffles-social-services-jobs' ) . '</h3><div class="sssj-swipe__shortlist" data-swipe-shortlist></div></div>';
+		} else {
+			echo '<p>' . esc_html__( 'No providers to show yet.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		echo '</div></div></div>';
+		wp_reset_postdata();
+		return ob_get_clean();
+	}
+
+	/** AJAX: save a provider to the member's shortlist (user meta _sssj_saved_orgs). */
+	public function ajax_swipe_save() {
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'msg' => __( 'Please log in to save providers to your shortlist.', 'shuffles-social-services-jobs' ) ) );
+		}
+		check_ajax_referer( 'sssj_swipe', 'nonce' );
+		$id = isset( $_POST['id'] ) ? (int) $_POST['id'] : 0;
+		if ( ! $id || 'sssj_org' !== get_post_type( $id ) ) {
+			wp_send_json_error( array( 'msg' => 'bad_id' ) );
+		}
+		$uid   = get_current_user_id();
+		$saved = array_values( array_unique( array_filter( array_map( 'intval', (array) get_user_meta( $uid, '_sssj_saved_orgs', true ) ) ) ) );
+		if ( ! in_array( $id, $saved, true ) ) {
+			$saved[] = $id;
+			update_user_meta( $uid, '_sssj_saved_orgs', $saved );
+		}
+		wp_send_json_success( array( 'count' => count( $saved ) ) );
+	}
+
 	public function post_org_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-spinner' );
 		wp_enqueue_script( 'sssj-ndis-scan' );
+		wp_enqueue_script( 'sssj-form-enhance' );
 		$this->enqueue_maps();
 		wp_enqueue_script( 'sssj-autofill', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-autofill.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
 		wp_localize_script( 'sssj-autofill', 'SSJ_Autofill', array( 'ajax' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'sssj_autofill' ) ) );
@@ -1241,7 +1357,7 @@ class Shuffles_SSJ_Shortcodes {
 	/* --- Navigation menu (login-aware) --- */
 
 	/** Resolve a page URL from its setting; fall back to finding the shortcode's page (cached). */
-	private function resolve_page( $key, $shortcode ) {
+	public function resolve_page( $key, $shortcode ) {
 		$id = (int) $this->settings->get( $key, 0 );
 		if ( $id && 'publish' === get_post_status( $id ) ) {
 			return (string) get_permalink( $id );

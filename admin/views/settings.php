@@ -646,6 +646,42 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</table>';
 			submit_button();
 			echo '</form>';
+
+			// --- Header menu (Appearance → Menus) ------------------------------------------------
+			echo '<hr /><h3 style="margin-top:18px">' . esc_html__( 'Header menu (Appearance → Menus)', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Create a real WordPress menu — “Jobs & Engagements” — that mirrors the plugin navigation, so it appears under Appearance → Menus and can be placed in your theme header. The plugin keeps it maintained: once created it re-syncs on each update, adding/removing items as features change (it only touches items it created — anything you add by hand is left alone). Note: a WordPress menu is the same for everyone, so it carries the public items (Jobs, Find a worker, Organisations, Participant requests, Post a job, My dashboard, Log in, Register); the login-aware, capability-gated version (with admin Settings) stays available via the [sssj_menu] shortcode.', 'shuffles-social-services-jobs' ) . '</p>';
+
+			if ( ! empty( $_GET['sssj_nav'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$nav_s = sanitize_text_field( wp_unslash( $_GET['sssj_nav'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				if ( 'error' === $nav_s ) {
+					echo '<div class="notice notice-error inline"><p>' . esc_html__( 'Could not create the menu.', 'shuffles-social-services-jobs' ) . '</p></div>';
+				} else {
+					echo '<div class="notice notice-success inline"><p>' . esc_html__( 'Header menu synced.', 'shuffles-social-services-jobs' ) . '</p></div>';
+				}
+			}
+
+			if ( class_exists( 'Shuffles_SSJ_Nav_Sync' ) ) {
+				$exists   = Shuffles_SSJ_Nav_Sync::menu_exists();
+				$cur_loc  = Shuffles_SSJ_Nav_Sync::assigned_location();
+				$regs     = get_registered_nav_menus();
+				echo '<p>' . ( $exists
+					? '<strong>' . esc_html__( 'Status:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html__( 'menu exists.', 'shuffles-social-services-jobs' ) . ( $cur_loc ? ' ' . esc_html( sprintf( __( 'Assigned to location: %s.', 'shuffles-social-services-jobs' ), isset( $regs[ $cur_loc ] ) ? $regs[ $cur_loc ] : $cur_loc ) ) : ' ' . esc_html__( 'Not yet assigned to a theme location.', 'shuffles-social-services-jobs' ) )
+					: '<strong>' . esc_html__( 'Status:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html__( 'not created yet.', 'shuffles-social-services-jobs' ) ) . '</p>';
+
+				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+				echo '<input type="hidden" name="action" value="sssj_sync_nav" />';
+				wp_nonce_field( 'sssj_sync_nav' );
+				if ( $regs ) {
+					echo '<p><label>' . esc_html__( 'Also assign to theme location:', 'shuffles-social-services-jobs' ) . ' <select name="assign_location"><option value="">' . esc_html__( '— don’t change —', 'shuffles-social-services-jobs' ) . '</option>';
+					foreach ( $regs as $slug => $desc ) {
+						echo '<option value="' . esc_attr( $slug ) . '" ' . selected( $cur_loc, $slug, false ) . '>' . esc_html( $desc ) . '</option>';
+					}
+					echo '</select></label></p>';
+				}
+				submit_button( $exists ? __( 'Sync header menu now', 'shuffles-social-services-jobs' ) : __( 'Create header menu', 'shuffles-social-services-jobs' ), 'secondary' );
+				echo '</form>';
+				echo '<p class="description"><a href="' . esc_url( admin_url( 'nav-menus.php' ) ) . '">' . esc_html__( 'Open Appearance → Menus', 'shuffles-social-services-jobs' ) . '</a></p>';
+			}
 			break;
 
 		case 'logic':
@@ -680,6 +716,67 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				}
 				echo '<p class="description" style="margin-top:16px">' . esc_html__( 'The full technical version (with the functions/hooks that enforce each rule) lives in docs/business_rules_and_logic.md in the plugin repository.', 'shuffles-social-services-jobs' ) . '</p>';
 			}
+			break;
+
+		case 'import':
+			echo '<h2>' . esc_html__( 'Provider Import (beta)', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description">' . wp_kses_post( sprintf(
+				/* translators: 1: active providers dataset URL, 2: compliance actions dataset URL */
+				__( 'Proof of concept — <strong>preview only</strong>. This tool reads the NDIS Commission’s official bulk datasets and shows what it found; <strong>it does not write anything</strong> (no organisations are created, no data is changed). Get the <strong>Active providers</strong> CSV from the <a href="%1$s" target="_blank" rel="noopener">NDIS provider datasets</a>, and the <strong>Compliance actions</strong> CSV from <a href="%2$s" target="_blank" rel="noopener">data.gov.au</a>. Columns are auto-detected so you can confirm the mapping before any future import is enabled.', 'shuffles-social-services-jobs' ),
+				esc_url( 'https://dataresearch.ndis.gov.au/datasets/provider-datasets' ),
+				esc_url( 'https://www.data.gov.au/' )
+			) ) . '</p>';
+			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'Import is disabled in this proof of concept — uploads are previewed only. Nothing is saved.', 'shuffles-social-services-jobs' ) . '</p></div>';
+
+			$rep = class_exists( 'Shuffles_SSJ_Provider_Import' ) ? Shuffles_SSJ_Provider_Import::pull_report() : null;
+			if ( is_array( $rep ) ) {
+				if ( '' !== $rep['error'] ) {
+					echo '<div class="notice notice-error inline"><p>' . esc_html( $rep['error'] ) . '</p></div>';
+				} else {
+					$mode = $rep['dry_run'] ? esc_html__( 'Preview (dry run — nothing written)', 'shuffles-social-services-jobs' ) : esc_html__( 'Imported', 'shuffles-social-services-jobs' );
+					echo '<div class="notice notice-success inline"><p><strong>' . $mode . '.</strong> ';
+					echo esc_html( sprintf( __( '%1$s data rows read%2$s.', 'shuffles-social-services-jobs' ), number_format_i18n( $rep['total'] ), $rep['truncated'] ? '+' : '' ) );
+					if ( ! $rep['dry_run'] ) {
+						if ( 'compliance' === $rep['kind'] ) {
+							echo ' ' . esc_html( sprintf( __( 'Compliance rows passed to integrations: %d.', 'shuffles-social-services-jobs' ), $rep['fired'] ) );
+						} else {
+							echo ' ' . esc_html( sprintf( __( 'Created %1$d, updated %2$d, skipped %3$d (cap %4$d).', 'shuffles-social-services-jobs' ), $rep['created'], $rep['updated'], $rep['skipped'], $rep['cap'] ) );
+						}
+					}
+					echo '</p></div>';
+
+					// Detected column mapping.
+					echo '<h3>' . esc_html__( 'Detected columns', 'shuffles-social-services-jobs' ) . '</h3><p class="description">';
+					$pairs = array();
+					foreach ( $rep['mapping'] as $field => $idx ) {
+						$col = ( null !== $idx && isset( $rep['headers'][ $idx ] ) ) ? $rep['headers'][ $idx ] : '—';
+						$pairs[] = $field . ' → ' . $col;
+					}
+					echo esc_html( implode( '  ·  ', $pairs ) ) . '</p>';
+
+					// Sample of parsed rows.
+					if ( ! empty( $rep['sample'] ) ) {
+						echo '<h3>' . esc_html__( 'Sample rows', 'shuffles-social-services-jobs' ) . '</h3>';
+						echo '<table class="widefat striped"><thead><tr><th>Name</th><th>ABN</th><th>Reg&nbsp;ID</th><th>Status</th><th>State</th><th>Suburb</th></tr></thead><tbody>';
+						foreach ( $rep['sample'] as $s ) {
+							$nm = '' !== $s['legal_name'] ? $s['legal_name'] : $s['trading_name'];
+							echo '<tr><td>' . esc_html( $nm ) . '</td><td>' . esc_html( $s['abn'] ) . '</td><td>' . esc_html( $s['register_id'] ) . '</td><td>' . esc_html( $s['status'] ) . '</td><td>' . esc_html( $s['state'] ) . '</td><td>' . esc_html( $s['suburb'] ) . '</td></tr>';
+						}
+						echo '</tbody></table>';
+					}
+				}
+			}
+
+			echo '<h3 style="margin-top:18px">' . esc_html__( 'Upload a CSV to preview', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<form method="post" enctype="multipart/form-data" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '">';
+			echo '<input type="hidden" name="action" value="sssj_provider_import" />';
+			wp_nonce_field( 'sssj_provider_import' );
+			echo '<table class="form-table" role="presentation">';
+			echo '<tr><th scope="row">' . esc_html__( 'Dataset', 'shuffles-social-services-jobs' ) . '</th><td><select name="kind"><option value="active">' . esc_html__( 'Active providers → organisations', 'shuffles-social-services-jobs' ) . '</option><option value="compliance">' . esc_html__( 'Compliance / enforcement actions → integrations', 'shuffles-social-services-jobs' ) . '</option></select></td></tr>';
+			echo '<tr><th scope="row">' . esc_html__( 'CSV file', 'shuffles-social-services-jobs' ) . '</th><td><input type="file" name="csv" accept=".csv,text/csv" required /></td></tr>';
+			echo '</table>';
+			submit_button( __( 'Upload & preview', 'shuffles-social-services-jobs' ) );
+			echo '</form>';
 			break;
 
 		case 'cron':
@@ -812,6 +909,27 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.59.0 — 2026-06-07 · provider swipe deck · section accent borders</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New [sssj_swipe] — a Tinder-style swipe deck for browsing providers: swipe right (♥ / →) to save a provider to your shortlist, left (✕ / ←) to skip, tap to view the profile. Works on touch, mouse and keyboard; saving is stored to the member’s shortlist. Drop it on a “Discover providers” page.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Form section cards now carry a tasteful left accent border (a muted brand-colour per group) for clearer, more professional grouping.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.58.0 — 2026-06-07 · profile form UI polish (section cards, completeness, sticky save)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The worker/organisation/participant forms are grouped into clean “section cards” (Basic information, Photos, Availability & status, Skills & services, Location & travel, Experience & rates, Business & credentials, Visibility & notifications) with icons, and fade in as you scroll.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Worker form: a live “Profile completeness” meter, an Available-for-work pill toggle, an “About you” character counter, friendlier file-upload buttons with an instant profile-photo preview.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'All sssj forms: a sticky “Save now” bar on scroll, Ctrl/Cmd+S to save, an unsaved-changes dot in the browser tab title, and toast notifications. Brand-styled (uses the existing design tokens / Style Studio) and reuses the existing Tom Select pickers, suburb autocomplete, NDIS “Scan now” and the Shuffles spinner — no field names or submission logic changed.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.57.0 — 2026-06-07 · header menu mirrored into Appearance → Menus</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New: the plugin can create and maintain a real WordPress menu (“Jobs & Engagements”) under Appearance → Menus that mirrors the [sssj_menu] navigation — so it shows in your theme header and is editable there. Settings → Pages → “Header menu”: click to create it, optionally assign it to a theme location.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Self-maintaining: once created, the menu re-syncs on each plugin update — adding/removing items as features change. It only manages items it created (tagged internally); any menu items you add by hand are never touched. A WordPress menu is the same for all visitors, so it carries the public items; the login-aware, capability-gated version (with admin Settings) stays in the [sssj_menu] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v0.56.0 — 2026-06-07 · Provider Import (beta) — bulk NDIS CSV importer</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New “Provider Import (beta)” tab: a proof-of-concept reader for the NDIS Commission’s official bulk datasets — the “Active providers” CSV and the “Compliance/enforcement actions” CSV. It demonstrates the recommended bulk route (official datasets, not scraping the register).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'PREVIEW ONLY: this proof of concept never writes anything — uploads are parsed, the columns auto-detected, and the row count + mapping + a sample shown, with nothing saved. Admin-only and nonce-checked. (The import/write path exists in code behind a hard “preview only” switch for when bulk import is actually wanted.)', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.55.4 — 2026-06-07 · NDIS outlets & phone · red “Revoked/Banned” status</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The NDIS register check now also captures the listing’s outlets and phone number (from the listing footer) and shows them on the profile + “Scan now” preview. All register-sourced details are read-only — they can’t be edited by the member.', 'shuffles-social-services-jobs' ); ?></li>

@@ -205,6 +205,7 @@ class Shuffles_SSJ_Admin {
 			'logic'        => array( 'T25', __( 'Business Logic', 'shuffles-social-services-jobs' ), 'slate' ),
 			'testing'      => array( 'T19', __( 'Testing', 'shuffles-social-services-jobs' ), 'slate' ),
 			'cron'         => array( 'T24', __( 'Cron Job List & Status', 'shuffles-social-services-jobs' ), 'slate' ),
+			'import'       => array( 'T26', __( 'Provider Import (beta)', 'shuffles-social-services-jobs' ), 'indigo' ),
 			'diagnostics'  => array( 'T14', __( 'Diagnostics', 'shuffles-social-services-jobs' ), 'slate' ),
 			'changelog'    => array( 'T15', __( 'Changelog', 'shuffles-social-services-jobs' ), 'slate' ),
 			'pm'           => array( 'PM', __( 'Project Management', 'shuffles-social-services-jobs' ), 'slate' ),

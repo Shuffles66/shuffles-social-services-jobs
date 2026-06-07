@@ -25,6 +25,8 @@ Every change session MUST complete ALL of the following steps in order:
 
 **Also keep `docs/business_rules_and_logic.md` current** — whenever a business rule changes, a gate is added, or a default flips, update that doc and bump its "Last updated" line. It is the authoritative plain-English record of the plugin's decision logic.
 
+**Also keep the header menu in sync** — the WP Appearance menu is generated from `Shuffles_SSJ_Nav_Sync::definitions()`, which mirrors the `[sssj_menu]` items in `Shuffles_SSJ_Shortcodes::menu_items()`. When you add/rename/remove a public nav item or its page mapping, update BOTH so the shortcode nav and the Appearance menu stay aligned (the menu re-syncs automatically on version change).
+
 ---
 
 ## What You Are Building

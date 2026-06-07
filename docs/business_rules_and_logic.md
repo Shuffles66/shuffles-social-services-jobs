@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.55.4 (2026-06-07)
+- **Last updated:** v0.56.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -101,6 +101,7 @@ Posting precedence is checked in order: `sssj_post_job` → `sssj_post_worker` �
 - **Monthly cron** re-reads every registered org **and** sole trader; on any change (status, groups, expiry) it **alerts staff only** (`ndis_alert_email`, default admin) — **never the provider** — and fires `shuffles_ssj_ndis_changed`.
 - **Safe-by-design:** a fetch/parse failure **never overwrites** stored values; it flags `ndis_scan_state` and alerts staff (a register-page layout change can't silently read as "no change"). Feature toggle: `ndis_scan_enabled` (Settings → Compliance).
 - There is **no official public JSON API** for the Commission register; this reads server-rendered HTML on a gentle cadence with a short per-id cache.
+- **Bulk:** for *all* providers, the official **datasets** are the route, not scraping — the NDIS "Active providers" CSV and the data.gov.au compliance-actions CSV (the latter is for the Reference Check banning plugin). The admin **Provider Import** tab is a **proof of concept that is preview-only — it reads/maps/reports a CSV but writes nothing**. (The write path — draft `sssj_org` records, idempotent by ABN, + a `shuffles_ssj_ndis_compliance_row` hook — exists in code behind a hard `PREVIEW_ONLY` switch for when bulk import is actually wanted.)
 
 ## 9. ABR (ABN) verification
 

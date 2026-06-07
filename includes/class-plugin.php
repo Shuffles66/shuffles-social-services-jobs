@@ -105,6 +105,10 @@ final class Shuffles_SSJ_Plugin {
 		$this->cron->register();
 		// Cron monitor — records last-run/next-run/status for the “Cron Jobs” tab.
 		Shuffles_SSJ_Cron_Monitor::register();
+		// Provider CSV importer (PoC) — admin-post handler.
+		Shuffles_SSJ_Provider_Import::register();
+		// Header-menu sync — mirrors [sssj_menu] into Appearance → Menus + maintains it.
+		Shuffles_SSJ_Nav_Sync::register();
 
 		// Daily licence re-validation (cached + grace-handled; never on the hot path).
 		add_action( 'shuffles_ssj_daily', array( 'Shuffles_SSJ_License', 'check' ) );
