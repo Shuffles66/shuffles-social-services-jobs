@@ -1145,6 +1145,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.97.0 · 2026-06-08 · feature spotlight: cache-immune daily feature</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “Today’s Highlighted Site Feature” now refreshes its daily feature on the client from a small REST endpoint (sssj/v1/spotlight, no-store), so a full-page cache can no longer freeze the feature of the day. The server-rendered feature remains as a no-JS fallback.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Note: clear your full-page cache once to pick up this version (the page markup and script change); after that the spotlight stays fresh on its own.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.96.0 · 2026-06-07 · feature spotlight: stop / reverse the ball of light</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “Today’s Highlighted Site Feature” tile now has a small control: tap once to stop or start the orbiting ball of light, double-tap to reverse its direction. A real focusable button serves keyboard and screen-reader users (Space or Enter to stop/start, R to reverse), and the control is hidden when the OS prefers reduced motion.', 'shuffles-social-services-jobs' ); ?></li>

@@ -10,9 +10,23 @@
 
 	var DBL = 280; // ms window to tell a single tap from a double tap
 
+	/* Refresh today's feature from the REST endpoint so a full-page cache can never freeze it. */
+	function refresh( tile ) {
+		var ep  = tile.getAttribute( 'data-spot-endpoint' );
+		var box = tile.querySelector( '[data-spot-content]' );
+		if ( ! ep || ! box ) { return; }
+		var url = ep + ( ep.indexOf( '?' ) > -1 ? '&' : '?' ) + 't=' + ( new Date() ).getTime();
+		fetch( url, { credentials: 'same-origin', cache: 'no-store' } )
+			.then( function ( r ) { return r.ok ? r.json() : null; } )
+			.then( function ( d ) { if ( d && typeof d.html === 'string' && d.html.replace( /\s/g, '' ) !== '' ) { box.innerHTML = d.html; } } )
+			.catch( function () {} );
+	}
+
 	function init( tile ) {
 		if ( tile.getAttribute( 'data-spot-ready' ) === '1' ) { return; }
 		tile.setAttribute( 'data-spot-ready', '1' );
+
+		refresh( tile );
 
 		var ctrl  = tile.querySelector( '[data-spot-ctrl]' );
 		var icon  = tile.querySelector( '[data-spot-icon]' );

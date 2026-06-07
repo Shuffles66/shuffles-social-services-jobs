@@ -166,28 +166,68 @@ class Shuffles_SSJ_Spotlight {
 		if ( ! $feature ) {
 			return '';
 		}
-		$url = self::link_for( $feature );
+		$url      = self::link_for( $feature );
+		$endpoint = esc_url( rest_url( 'sssj/v1/spotlight' ) );
 
 		ob_start();
 		?>
 		<div class="sssj sssj--spotlight">
-			<div class="sssj-spotlight" data-sssj-spotlight>
-					<button type="button" class="sssj-spotlight__ctrl" data-spot-ctrl aria-pressed="false" title="<?php esc_attr_e( 'Tap once to stop or start the light. Double-tap to reverse it.', 'shuffles-social-services-jobs' ); ?>"><span class="sssj-spotlight__ctrl-icon" data-spot-icon aria-hidden="true">&#9208;</span> <span data-spot-label><?php esc_html_e( 'Pause', 'shuffles-social-services-jobs' ); ?></span></button>
+			<div class="sssj-spotlight" data-sssj-spotlight data-spot-endpoint="<?php echo $endpoint; // phpcs:ignore WordPress.Security.EscapeOutput ?>">
+				<button type="button" class="sssj-spotlight__ctrl" data-spot-ctrl aria-pressed="false" title="<?php esc_attr_e( 'Tap once to stop or start the light. Double-tap to reverse it.', 'shuffles-social-services-jobs' ); ?>"><span class="sssj-spotlight__ctrl-icon" data-spot-icon aria-hidden="true">&#9208;</span> <span data-spot-label><?php esc_html_e( 'Pause', 'shuffles-social-services-jobs' ); ?></span></button>
 				<div class="sssj-spotlight__inner">
 					<p class="sssj-spotlight__eyebrow">✨ <?php echo esc_html( $heading ); ?></p>
-					<h3 class="sssj-spotlight__title"><?php echo esc_html( $feature['title'] ); ?></h3>
-					<p class="sssj-spotlight__text"><?php echo esc_html( $feature['text'] ); ?></p>
-					<?php if ( '' !== $url ) : ?>
-						<p class="sssj-spotlight__cta">
-							<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Learn more about this feature', 'shuffles-social-services-jobs' ); ?> →</a>
-						</p>
-					<?php endif; ?>
-					<p class="sssj-spotlight__more"><?php esc_html_e( 'If you want another feature to investigate, come back tomorrow.', 'shuffles-social-services-jobs' ); ?></p>
+					<div class="sssj-spotlight__dyn" data-spot-content>
+						<?php echo self::feature_content_html( $feature, $url ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+					</div>
 				</div>
 			</div>
 		</div>
 		<?php
 		return ob_get_clean();
+	}
+
+	/**
+	 * The day-specific inner content (title, text, learn-more link, footer line). Rendered both
+	 * server-side (as a no-JS fallback) and returned by the REST endpoint so the client can refresh
+	 * it on every load, which keeps the daily feature correct even behind a full-page cache.
+	 *
+	 * @return string
+	 */
+	public static function feature_content_html( $feature, $url ) {
+		ob_start();
+		?>
+		<h3 class="sssj-spotlight__title"><?php echo esc_html( $feature['title'] ); ?></h3>
+		<p class="sssj-spotlight__text"><?php echo esc_html( $feature['text'] ); ?></p>
+		<?php if ( '' !== $url ) : ?>
+			<p class="sssj-spotlight__cta">
+				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( $url ); ?>"><?php esc_html_e( 'Learn more about this feature', 'shuffles-social-services-jobs' ); ?> →</a>
+			</p>
+		<?php endif; ?>
+		<p class="sssj-spotlight__more"><?php esc_html_e( 'If you want another feature to investigate, come back tomorrow.', 'shuffles-social-services-jobs' ); ?></p>
+		<?php
+		return ob_get_clean();
+	}
+
+	/** Register the public REST route that serves today's feature (cache-immune). */
+	public static function register_rest() {
+		register_rest_route(
+			'sssj/v1',
+			'/spotlight',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( __CLASS__, 'rest_feature' ),
+				'permission_callback' => '__return_true',
+			)
+		);
+	}
+
+	/** REST callback: today's feature content HTML, with no-store headers so caches never freeze it. */
+	public static function rest_feature() {
+		$feature = self::today();
+		$html    = $feature ? self::feature_content_html( $feature, self::link_for( $feature ) ) : '';
+		$resp    = new WP_REST_Response( array( 'html' => $html ) );
+		$resp->header( 'Cache-Control', 'no-store, max-age=0' );
+		return $resp;
 	}
 
 	/** [sssj_feature_today] */
