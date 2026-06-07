@@ -596,3 +596,7 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 	.sssj .sssj-whyus--grid{ grid-template-columns:1fr !important; }
 	.sssj .sssj-whyus--carousel .sssj-whyus__item{ flex-basis:85%; }
 }
+
+/* Save-&-alert button: guest (logged-out) state — visible but routes to log in */
+.sssj .sssj-savesearch__guest{ opacity:.85; }
+.sssj .sssj-savesearch__guest .sssj-savesearch__hint{ font-weight:400; opacity:.7; font-size:.85em; }

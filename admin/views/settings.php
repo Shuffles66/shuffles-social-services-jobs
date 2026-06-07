@@ -923,6 +923,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.76.0 — 2026-06-07 · “Save & alert me” visible to logged-out visitors</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “🔔 Save & alert me” button on the boards is now visible to logged-out visitors too — so they can see the feature exists. It isn’t active for them: clicking it sends them to log in and returns to the exact same search, where they can then save it. Saving alerts still requires being logged in.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.75.0 — 2026-06-07 · auto-scrolling “Why us” carousel · title = your site name</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The [sssj_why_us] carousel now auto-scrolls (one card at a time, looping), pauses when you hover or touch it, and the raw scrollbar is hidden. Control it with autoscroll="on|off|4000" (milliseconds between steps).', 'shuffles-social-services-jobs' ); ?></li>

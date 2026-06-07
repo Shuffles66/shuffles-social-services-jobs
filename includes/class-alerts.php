@@ -235,7 +235,11 @@ class Shuffles_SSJ_Alerts {
 
 	/** "Save this search & alert me" button for a directory ($type: jobs|workers|orgs|needs). */
 	public static function save_search_button( $type ) {
+		$here = ( is_ssl() ? 'https://' : 'http://' ) . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+		// Guests see the button (so they know the feature exists) but it isn't active — it sends them
+		// to log in, returning to this exact search so they can save it once signed in.
 		if ( ! is_user_logged_in() ) {
+			echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-savesearch__guest" href="' . esc_url( wp_login_url( $here ) ) . '" title="' . esc_attr__( 'Log in to save this search and get email alerts', 'shuffles-social-services-jobs' ) . '">🔔 ' . esc_html__( 'Save & alert me', 'shuffles-social-services-jobs' ) . ' <span class="sssj-savesearch__hint">(' . esc_html__( 'log in', 'shuffles-social-services-jobs' ) . ')</span></a>';
 			return;
 		}
 		$params = self::capture_params();
