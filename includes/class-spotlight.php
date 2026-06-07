@@ -119,23 +119,38 @@ class Shuffles_SSJ_Spotlight {
 		return $all[ $idx ];
 	}
 
-	/** Resolve a feature's deep link to a URL ('' if none can be found). */
+	/**
+	 * Resolve a feature's deep link to a real, existing page. Returns '' when nothing suitable
+	 * exists yet (the caller then hides the link rather than sending people to a dead end).
+	 * It deliberately never falls back to the home page, since the tile often sits on the home page.
+	 */
 	public static function link_for( $feature ) {
 		if ( ! empty( $feature['special'] ) && 'affiliate' === $feature['special'] ) {
 			return class_exists( 'Shuffles_SSJ_Affiliate' ) ? (string) Shuffles_SSJ_Affiliate::url() : '';
 		}
-		if ( ! empty( $feature['sc'] ) && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) {
+		if ( ! class_exists( 'Shuffles_SSJ_Shortcodes' ) ) {
+			return '';
+		}
+		// 1) The feature's own page, if it exists.
+		if ( ! empty( $feature['sc'] ) ) {
 			$url = Shuffles_SSJ_Shortcodes::page_link( isset( $feature['key'] ) ? $feature['key'] : '', $feature['sc'] );
 			if ( $url ) {
 				return (string) $url;
 			}
-			// Fall back to the "Why us" page, then the home page, so the link is never dead.
-			$why = Shuffles_SSJ_Shortcodes::page_link( 'page_why_us', '[sssj_why_us]' );
-			if ( $why ) {
-				return (string) $why;
+		}
+		// 2) Otherwise a rich "explains everything" page if one has been published: Marketing, then
+		//    Why us, then How it works. If none exist, return '' so the link is hidden.
+		foreach ( array(
+			array( 'page_marketing', '[sssj_marketing]' ),
+			array( 'page_why_us', '[sssj_why_us]' ),
+			array( 'page_workflows', '[sssj_workflows]' ),
+		) as $fallback ) {
+			$url = Shuffles_SSJ_Shortcodes::page_link( $fallback[0], $fallback[1] );
+			if ( $url ) {
+				return (string) $url;
 			}
 		}
-		return home_url( '/' );
+		return '';
 	}
 
 	/**

@@ -1825,6 +1825,7 @@ class Shuffles_SSJ_Shortcodes {
 		$items     = array();
 
 		// Browse — everyone.
+		$this->add_nav_item( $items, __( 'Home', 'shuffles-social-services-jobs' ), home_url( '/' ) );
 		$this->add_nav_item( $items, __( 'Jobs', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_job_board', '[sssj_job_board]' ) );
 		$this->add_nav_item( $items, __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) );
 		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );

@@ -45,6 +45,7 @@ class Shuffles_SSJ_Nav_Sync {
 		return apply_filters(
 			'shuffles_ssj_nav_menu_defs',
 			array(
+				array( 'key' => 'home',     'label' => __( 'Home', 'shuffles-social-services-jobs' ),                 'kind' => 'home' ),
 				array( 'key' => 'jobs',     'label' => __( 'Jobs', 'shuffles-social-services-jobs' ),                 'page' => 'page_job_board',         'sc' => '[sssj_job_board]' ),
 				array( 'key' => 'workers',  'label' => __( 'Find a worker', 'shuffles-social-services-jobs' ),        'page' => 'page_worker_directory',  'sc' => '[sssj_worker_directory]' ),
 				array( 'key' => 'orgs',     'label' => __( 'Organisations', 'shuffles-social-services-jobs' ),        'page' => 'page_org_directory',     'sc' => '[sssj_org_directory]' ),
@@ -62,6 +63,9 @@ class Shuffles_SSJ_Nav_Sync {
 	/** Resolve an item definition to a URL ('' = skip this item). */
 	protected static function url_for( $def ) {
 		if ( ! empty( $def['kind'] ) ) {
+			if ( 'home' === $def['kind'] ) {
+				return home_url( '/' );
+			}
 			if ( 'login' === $def['kind'] ) {
 				return wp_login_url( home_url( '/' ) );
 			}

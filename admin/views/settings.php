@@ -130,7 +130,9 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			} else {
 				echo '<span class="sssj-page-picker" data-key="page_marketing" data-shortcode="[sssj_marketing]">';
 				echo '<button type="button" class="button button-primary sssj-create-page" data-title="' . esc_attr__( 'Marketing', 'shuffles-social-services-jobs' ) . '">' . esc_html__( 'Create the Marketing page', 'shuffles-social-services-jobs' ) . '</button>';
+				echo '<span class="sssj-page-links" style="margin-left:8px"></span>';
 				echo '</span>';
+				echo '<span class="description" style="display:block;margin-top:6px">' . esc_html__( 'After it is created, View and Edit links appear next to the button. Reload this tab to swap in the permanent buttons.', 'shuffles-social-services-jobs' ) . '</span>';
 			}
 			echo '</p>';
 			echo '<hr /><h3>' . esc_html__( 'Preview', 'shuffles-social-services-jobs' ) . '</h3>';
@@ -1143,6 +1145,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.94.0 · 2026-06-07 · Home menu item + feature spotlight link fix</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Added a “Home” item to the navigation (both the [sssj_menu] bar and the synced “Jobs & Engagements” menu), shown first.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fixed the “Today’s Highlighted Site Feature” tile: the “Learn more” link now points to the feature’s own page, or, if that is not published yet, to the Marketing, Why us or How it works page. If none of those exist it hides the link instead of going nowhere. Tip: publish the Marketing (or Why us / How it works) page so every spotlight link lands on rich content.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Settings → Marketing “Create page” now shows View and Edit links for the new page straight after creating it (reload the tab for the permanent buttons).', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.93.0 · 2026-06-07 · marketing page, image guidance + video, advertising policy</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The marketing master is now a readable page: new [sssj_marketing] shortcode renders docs/MARKETING-MASTER.md, with a new Settings → Marketing tab to preview it and create the page in one click. The document file is the single source (location: docs/MARKETING-MASTER.md in the plugin folder).', 'shuffles-social-services-jobs' ); ?></li>
