@@ -909,6 +909,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v0.60.0 — 2026-06-07 · “hats” onboarding + dashboard reveal (employer vs contractor, one account)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'My roles is now a clear “hat picker”: one account can tick the hats that apply — Employer / company, NDIS / service provider, Supplier, Available for contracting (sole trader / ABN), Looking for employee work (PAYG / TFN), Participant, or Participant representative / nominee — grouped under “I offer work”, “I’m looking for work”, “I need support”, each with a plain-English description.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The dashboard now reveals only the sections that match your hats — so an employer who also contracts manages both from one place without confusion. Members who haven’t set hats yet see everything (capability fallback), so nothing disappears.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Foundation for the application-process expansion (basis-aware apply) and the legislation-aware guidance coming next. Existing roles still work; the legacy “worker” role is recognised.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v0.59.0 — 2026-06-07 · provider swipe deck · section accent borders</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New [sssj_swipe] — a Tinder-style swipe deck for browsing providers: swipe right (♥ / →) to save a provider to your shortlist, left (✕ / ←) to skip, tap to view the profile. Works on touch, mouse and keyboard; saving is stored to the member’s shortlist. Drop it on a “Discover providers” page.', 'shuffles-social-services-jobs' ); ?></li>

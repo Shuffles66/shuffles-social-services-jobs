@@ -430,6 +430,18 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-swipe__end li{ padding:3px 0; }
 @media (max-width:600px){ .sssj .sssj-swipe__deck{ height:60vh; min-height:420px; } }
 
+/* ============================ Hat picker ([sssj_roles]) ============================ */
+.sssj .sssj-hats__group{ margin:18px 0 8px; font-size:13px; font-weight:800; text-transform:uppercase; letter-spacing:.06em; color:var(--sssj-blue-deep,#1e5d9c); }
+.sssj .sssj-hats{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+@media (max-width:640px){ .sssj .sssj-hats{ grid-template-columns:1fr; } }
+.sssj .sssj-hat{ display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border:1.5px solid var(--sssj-line,#e2e8f0); border-radius:var(--sssj-radius,10px); background:var(--sssj-bg,#fff); cursor:pointer; transition:border-color .15s, background .15s, box-shadow .15s; }
+.sssj .sssj-hat:hover{ border-color:var(--sssj-blue,#3897e0); background:var(--sssj-bg-soft,#f8fafc); }
+.sssj .sssj-hat.is-on{ border-color:var(--sssj-blue,#3897e0); background:#eaf3fb; box-shadow:var(--sssj-shadow,0 1px 3px rgba(0,0,0,.08)); }
+.sssj .sssj-hat input[type="checkbox"]{ margin-top:3px; width:18px; height:18px; flex:0 0 auto; accent-color:var(--sssj-blue,#3897e0); }
+.sssj .sssj-hat__body{ display:flex; flex-direction:column; gap:2px; }
+.sssj .sssj-hat__label{ font-weight:700; color:var(--sssj-ink,#0f172a); }
+.sssj .sssj-hat__desc{ font-size:var(--sssj-fs-sm,.85rem); color:var(--sssj-muted,#64748b); line-height:1.4; }
+
 .sssj .sssj-ndis--preview{ margin-top:0; }
 .sssj .sssj-ndis--preview > div{ margin:2px 0; }
 

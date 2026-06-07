@@ -109,10 +109,10 @@ class Shuffles_SSJ_Tests {
 				),
 			),
 			array(
-				'title' => __( 'Roles & onboarding', 'shuffles-social-services-jobs' ),
+				'title' => __( 'Hats / roles & onboarding', 'shuffles-social-services-jobs' ),
 				'cases' => array(
-					array( 'id' => 'roles-pick', 'do' => __( 'Put [sssj_roles] on a page (or open the “My roles” tab in [sssj_dashboard]); as a logged-in member tick one or more roles (worker / candidate / participant / sole-trader provider / provider representative / supplier) and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The choices save (a confirmation shows), persist on reload, and the matching capabilities are granted — e.g. a participant can now post a need and a direct job; a provider can post jobs and an organisation.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'roles-dashboard', 'do' => __( 'After setting roles, reopen the dashboard.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The dashboard tabs reflect the roles (e.g. the worker keeps Matched jobs + Credentials; an advertiser/provider gets My listings & applicants).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'roles-pick', 'do' => __( 'Put [sssj_roles] on a page (or open the “My roles” tab in [sssj_dashboard]); as a logged-in member tick hats from the grouped picker (I offer work / I’m looking for work / I need support) — e.g. Employer/company AND Available for contracting — and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Hats save (confirmation shows), persist on reload, and the matching capabilities are granted (employer → post jobs + org; contractor → worker profile).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'roles-dashboard', 'do' => __( 'After setting hats, reopen the dashboard.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The dashboard reveals only the sections matching your hats — an employer sees My listings & applicants + Post a job / organisation; a contractor sees My profile + Matched jobs + Credentials; a member with both sees both, in one place. A member with no hats yet still sees everything (capability fallback).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'roles-guest', 'do' => __( 'Open the [sssj_roles] page while logged out.', 'shuffles-social-services-jobs' ), 'expect' => __( 'You are prompted to log in; no role form is shown.', 'shuffles-social-services-jobs' ) ),
 				),
 			),

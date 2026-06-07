@@ -16,7 +16,7 @@ class Shuffles_SSJ_Business_Rules {
 
 	/** Shown at the top of the tab. */
 	public static function last_updated() {
-		return 'v0.55.4 (2026-06-07)';
+		return 'v0.60.0 (2026-06-07)';
 	}
 
 	/**
@@ -32,9 +32,10 @@ class Shuffles_SSJ_Business_Rules {
 					'title' => __( 'Members & roles', 'shuffles-social-services-jobs' ),
 					'intro' => __( 'One account can wear many hats. Roles are self-declared and add abilities; they are never taken away automatically.', 'shuffles-social-services-jobs' ),
 					'rules' => array(
-						__( 'A member can be a worker, candidate, participant, sole-trader provider, provider representative, an employee of an organisation, or a supplier — any combination.', 'shuffles-social-services-jobs' ),
-						__( 'Declaring a role (My roles) grants the matching abilities: participants can post jobs and support requests; providers/representatives can post jobs and an organisation; suppliers can post an organisation; workers/candidates can post a worker profile.', 'shuffles-social-services-jobs' ),
-						__( '“Provider” is not the same as “Organisation”. A provider is one kind of organisation, and a provider can be an individual sole trader (a worker profile), not only a company.', 'shuffles-social-services-jobs' ),
+						__( 'One account, many “hats”. In My roles a member ticks the hats that apply — Employer/company, NDIS/service provider, Supplier, Available for contracting (sole trader/ABN), Looking for employee work (PAYG/TFN), Participant, or Participant representative/nominee — any combination.', 'shuffles-social-services-jobs' ),
+						__( 'The dashboard reveals only the sections matching the ticked hats, so an employer who also contracts manages both from one place without confusion (members with no hats yet fall back to capability detection, so nothing disappears).', 'shuffles-social-services-jobs' ),
+						__( 'Each hat grants the matching abilities: employer/provider → post jobs + an organisation; supplier → an organisation; contractor/candidate → a worker profile; participant/representative → support requests (participants may also post their own roles, free).', 'shuffles-social-services-jobs' ),
+						__( '“Provider” is not the same as “Organisation”, and an employer is not necessarily an NDIS provider. A provider can also be an individual sole trader (a worker profile with an ABN), not only a company.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(

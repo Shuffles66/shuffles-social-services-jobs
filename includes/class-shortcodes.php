@@ -799,15 +799,28 @@ class Shuffles_SSJ_Shortcodes {
 			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Your roles were saved.', 'shuffles-social-services-jobs' ) . '</p>';
 		}
 		echo '<h2 style="margin-top:0">' . esc_html__( 'How do you use the marketplace?', 'shuffles-social-services-jobs' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Tick all that apply — this sets what you can post and tailors your dashboard. You can change it any time. Participants post free; providers may need a subscription to advertise or list.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Tick all that apply — one account can wear several hats. This sets what you can post and tailors your dashboard so you only see what’s relevant. You can change it any time. Participants post free; employers and providers may need a subscription to advertise or list.', 'shuffles-social-services-jobs' ) . '</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-stack">';
 		echo '<input type="hidden" name="action" value="sssj_save_roles" />';
 		wp_nonce_field( 'sssj_save_roles', 'sssj_roles_nonce' );
-		foreach ( Shuffles_SSJ_Roles::member_role_options() as $key => $label ) {
-			$on = in_array( $key, $current, true );
-			echo '<label class="sssj-chip ' . ( $on ? 'is-on' : '' ) . '" style="display:block;margin:4px 0"><input type="checkbox" name="sssj_roles[]" value="' . esc_attr( $key ) . '" ' . checked( $on, true, false ) . ' /> ' . esc_html( $label ) . '</label>';
+		$hats   = Shuffles_SSJ_Roles::hats();
+		$groups = Shuffles_SSJ_Roles::hat_groups();
+		foreach ( $groups as $gkey => $glabel ) {
+			echo '<h3 class="sssj-hats__group">' . esc_html( $glabel ) . '</h3>';
+			echo '<div class="sssj-hats">';
+			foreach ( $hats as $key => $h ) {
+				if ( $h['group'] !== $gkey ) {
+					continue;
+				}
+				$on = in_array( $key, $current, true );
+				echo '<label class="sssj-hat' . ( $on ? ' is-on' : '' ) . '">';
+				echo '<input type="checkbox" name="sssj_roles[]" value="' . esc_attr( $key ) . '" ' . checked( $on, true, false ) . ' />';
+				echo '<span class="sssj-hat__body"><span class="sssj-hat__label">' . esc_html( $h['label'] ) . '</span><span class="sssj-hat__desc">' . esc_html( $h['desc'] ) . '</span></span>';
+				echo '</label>';
+			}
+			echo '</div>';
 		}
-		echo '<div><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Save my roles', 'shuffles-social-services-jobs' ) . '</button></div>';
+		echo '<div style="margin-top:14px"><button class="sssj-btn sssj-btn--primary" type="submit">' . esc_html__( 'Save my hats', 'shuffles-social-services-jobs' ) . '</button></div>';
 		echo '</form></div></div>';
 		return ob_get_clean();
 	}
@@ -832,20 +845,29 @@ class Shuffles_SSJ_Shortcodes {
 		$is_adv     = current_user_can( 'sssj_post_job' ) || $has_org || (bool) get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) );
 		$is_worker  = $has_worker || current_user_can( 'sssj_post_worker' );
 
+		// Hat-driven reveal: if the member has declared hats, show only the matching sections;
+		// otherwise (legacy / not yet onboarded) fall back to capability detection so nothing vanishes.
+		$has_hats      = class_exists( 'Shuffles_SSJ_Roles' ) && Shuffles_SSJ_Roles::has_any_hat( $uid );
+		$rev           = $has_hats ? Shuffles_SSJ_Roles::reveals_for( $uid ) : array();
+		$want_listings = $has_hats ? in_array( 'listings', $rev, true ) : $is_adv;
+		$want_worker   = $has_hats ? in_array( 'profile', $rev, true ) : $is_worker;
+		$want_matches  = $has_hats ? in_array( 'matches', $rev, true ) : $is_worker;
+		$want_creds    = $has_hats ? in_array( 'credentials', $rev, true ) : $is_worker;
+		$want_org      = $has_hats ? in_array( 'org', $rev, true ) : ( $is_adv || $has_org );
+		$want_needs    = $has_hats ? in_array( 'needs', $rev, true ) : current_user_can( 'sssj_post_need' );
+
 		// Quick counts.
 		$n_apps = class_exists( 'Shuffles_SSJ_Applications' ) ? count( (array) Shuffles_SSJ_Applications::for_applicant( $uid ) ) : 0;
 		$n_jobs = (int) count( get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'publish', 'posts_per_page' => 100, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) ) );
 		$saved  = get_user_meta( $uid, '_sssj_saved_searches', true );
 		$n_saved = is_array( $saved ) ? count( $saved ) : 0;
 
-		// Tabs (slug => label), built per capability.
+		// Tabs (slug => label), revealed by the member's hats (cap fallback for legacy users).
 		$tabs = array( 'overview' => __( 'Overview', 'shuffles-social-services-jobs' ) );
-		$tabs['profile'] = __( 'My profile', 'shuffles-social-services-jobs' );
-		if ( $is_adv ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
-		if ( $is_worker ) {
-			$tabs['matches']     = __( 'Matched jobs', 'shuffles-social-services-jobs' );
-			$tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' );
-		}
+		if ( $want_worker ) { $tabs['profile'] = __( 'My profile', 'shuffles-social-services-jobs' ); }
+		if ( $want_listings ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
+		if ( $want_matches ) { $tabs['matches'] = __( 'Matched jobs', 'shuffles-social-services-jobs' ); }
+		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
 		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
 		$tabs['roles']    = __( 'My roles', 'shuffles-social-services-jobs' );
@@ -868,36 +890,43 @@ class Shuffles_SSJ_Shortcodes {
 		echo '<section class="sssj-dash__panel is-active" data-dash-panel="overview">';
 		echo '<div class="sssj-panel"><div class="sssj-dash__stats">';
 		$tiles = array();
-		if ( $is_worker ) { $tiles[] = array( $n_apps, __( 'Applications sent', 'shuffles-social-services-jobs' ) ); }
-		if ( $is_adv ) { $tiles[] = array( $n_jobs, __( 'Active job listings', 'shuffles-social-services-jobs' ) ); }
+		if ( $want_worker ) { $tiles[] = array( $n_apps, __( 'Applications sent', 'shuffles-social-services-jobs' ) ); }
+		if ( $want_listings ) { $tiles[] = array( $n_jobs, __( 'Active job listings', 'shuffles-social-services-jobs' ) ); }
 		$tiles[] = array( $n_saved, __( 'Saved searches', 'shuffles-social-services-jobs' ) );
 		foreach ( $tiles as $t ) {
 			echo '<div class="sssj-dash__stat"><span class="sssj-dash__num">' . esc_html( (string) $t[0] ) . '</span><span class="sssj-dash__lbl">' . esc_html( $t[1] ) . '</span></div>';
 		}
 		echo '</div><div class="sssj-row" style="margin-top:14px;flex-wrap:wrap">';
-		if ( $is_adv ) { echo '<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) ) . '">' . esc_html__( 'Post a job', 'shuffles-social-services-jobs' ) . '</a>'; }
-		if ( $is_worker ) { echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) ) . '">' . esc_html( $has_worker ? __( 'Edit my profile', 'shuffles-social-services-jobs' ) : __( 'Create my profile', 'shuffles-social-services-jobs' ) ) . '</a>'; }
-		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>';
-		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a>';
-		echo '</div></div></section>';
+		if ( $want_listings ) { echo '<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_job', '[sssj_post_job]' ) ) . '">' . esc_html__( 'Post a job', 'shuffles-social-services-jobs' ) . '</a>'; }
+		if ( $want_worker ) { echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) ) . '">' . esc_html( $has_worker ? __( 'Edit my profile', 'shuffles-social-services-jobs' ) : __( 'Create my profile', 'shuffles-social-services-jobs' ) ) . '</a>'; }
+		if ( $want_org ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>'; }
+		if ( $want_needs ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a>'; }
+		echo '</div><p class="description" style="margin:8px 0 0">' . esc_html__( 'Use the “My roles” tab to add or change your hats — your dashboard updates to match.', 'shuffles-social-services-jobs' ) . '</p></div></section>';
 
-		// My profile — edit the personal profile inline; link out to the entity editors.
-		echo '<section class="sssj-dash__panel" data-dash-panel="profile">';
-		echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'My profile', 'shuffles-social-services-jobs' ) . '</h3>';
-		echo '<p class="description">' . esc_html__( 'Edit your personal worker / candidate profile here. To manage an organisation or a participant support request, use the buttons below.', 'shuffles-social-services-jobs' ) . '</p>';
-		echo '<div class="sssj-row" style="flex-wrap:wrap;margin-bottom:10px">';
-		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>';
-		echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Participant support request', 'shuffles-social-services-jobs' ) . '</a>';
-		echo '</div><p class="description">' . esc_html__( 'Tip: use the “My roles” tab to set what you are (worker, participant, provider, …) — that controls what you can post.', 'shuffles-social-services-jobs' ) . '</p></div>';
-		echo do_shortcode( '[sssj_post_worker]' );
-		echo '</section>';
+		// My profile — edit the personal (worker/contractor) profile inline. Only for those hats.
+		if ( $want_worker ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="profile">';
+			echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'My profile', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<p class="description">' . esc_html__( 'Edit your personal worker / contractor profile here.', 'shuffles-social-services-jobs' ) . '</p>';
+			if ( $want_org || $want_needs ) {
+				echo '<div class="sssj-row" style="flex-wrap:wrap;margin-bottom:10px">';
+				if ( $want_org ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>'; }
+				if ( $want_needs ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Participant support request', 'shuffles-social-services-jobs' ) . '</a>'; }
+				echo '</div>';
+			}
+			echo '</div>';
+			echo do_shortcode( '[sssj_post_worker]' );
+			echo '</section>';
+		}
 
 		// Composed sections.
-		if ( $is_adv ) {
+		if ( $want_listings ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="listings">' . do_shortcode( '[sssj_my_listings]' ) . '</section>';
 		}
-		if ( $is_worker ) {
+		if ( $want_matches ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="matches">' . do_shortcode( '[sssj_matches]' ) . '</section>';
+		}
+		if ( $want_creds ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="credentials">' . do_shortcode( '[sssj_credentials]' ) . '</section>';
 		}
 		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';

@@ -65,6 +65,47 @@ Living backlog. Keep current as items ship or priorities change. (Companion to
 A2/A3 (basis‑aware apply + screening) → B2/B3 (mode fields + legislation). Ships incrementally, one phase
 per version.
 
+## New requests (2026-06-07) — to scope
+1. **Onboarding wizard** — a guided first‑run that asks "what do you want to do?", sets the right **hats**
+   (B1) and routes to the matching profile setup. Builds on B1; lives at first login / a `[sssj_onboard]`.
+2. **Employer can seek BOTH ABN and TFN** — already supported (every job has an `engagement_basis`; the
+   employer hat grants posting). Make the basis choice explicit/clear in onboarding + the job form.
+3. **Contractor (sole trader) presence in the PROVIDERS directory** — a contractor may also peruse
+   employment, but most will want to appear in the providers directory. → opt‑in: a contractor can list
+   in the Organisations/Providers directory, tagged **Sole trader**.
+4. **Provider size/type for filtering** — new field on orgs (and the sole‑trader case) → a directory
+   filter. Values TBD (e.g. Sole trader / Small / Medium / Large, or by structure).
+5. **AI search** — a natural‑language box ("type what you're looking for") that interprets + best‑matches
+   /triages across workers, providers, jobs, needs. Member‑safe wording only ("our AI", never the vendor).
+   Likely powered via the **shuffles‑growth AI engine** (the 4 documented filter hooks) — mirrors the SPF
+   finder. Powering approach TBD.
+6. **Per‑field masking** — members can hide individual fields (e.g. Phone, email) from public display while
+   still storing them. A "hide from public" toggle per field; participant contact stays relay‑only always.
+7. **Employment job syndication (STANDING DIRECTIVE — all employment-capable projects/plugins):**
+   - **Push OUT** — for *employment* (TFN) jobs, an option (later) to **publish to other platforms / job
+     boards**, **gated by a purchase** (per‑post or subscription). Architecture: a pluggable
+     "destinations" layer (e.g. Indeed/Seek/Google‑for‑Jobs feed, social) behind a paywall.
+   - **Pull IN** — the opportunity to **receive jobs from other sources** (external feeds/APIs) into the
+     board. Architecture: an import/ingest layer (XML/JSON/CSV feed adapters) → `sssj_job` (likely as
+     drafts/flagged source). Applies to ABN/TFN as appropriate; primarily employment.
+
+### Decisions (2026-06-07, locked)
+- **Onboarding:** build a guided first‑run **wizard** (sets hats → routes to setup; uses B1).
+- **Employer ABN+TFN:** already supported; make the basis choice explicit in onboarding + job form.
+- **Sole trader in providers directory:** **opt‑in**, tagged **"Sole trader."**
+- **Provider size filter:** capture **BOTH** a **size band** (Sole trader / Small 2–10 / Medium 11–50 /
+  Large 50+) **and a structure** (Sole trader / Partnership / Company / Not‑for‑profit / Government) →
+  both become directory filters.
+- **AI search:** **smart synonym/keyword matcher now** (free, interprets the query against the existing
+  matcher), **real AI layer later** (via the shuffles‑growth bridge). Member‑safe wording always.
+- **Per‑field masking:** a "hide from public" toggle on **contact + sensitive fields** (phone, email,
+  exact address, social links, …); stored but not shown. Participant contact stays relay‑only regardless.
+
+**Build order (locked):** C1 **Onboarding wizard** → C2 **Provider size band + structure** (+ filters) →
+C3 **Sole‑trader opt‑in in providers directory** → C4 **Per‑field masking** → C5 **Smart search** (AI‑ready)
+— interleaved with application‑process A1→A3 and legislation B2/B3 as you prioritise. (Syndication push/pull
+= later, see #7.)
+
 ## Later / optional
 - shuffles‑growth AI bridge (the 4 filters); real‑time matching panels; FluentCart Pro product for live
   licensing/billing; full i18n native review; keyless Leaflet/OSM map tiles; richer AU suburb dataset.

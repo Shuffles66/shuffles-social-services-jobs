@@ -5,7 +5,7 @@ gating, visibility, verification, segregation, privacy and the automated checks.
 on every change (it is the "why" companion to the code; the "what/where" lives in CLAUDE.md and
 `docs/JOBS-BOARD-PLAN.md`).
 
-- **Last updated:** v0.56.0 (2026-06-07)
+- **Last updated:** v0.60.0 (2026-06-07)
 - **Scope:** business logic only. UI/markup, deploy mechanics and naming conventions live elsewhere.
 - **In-app view:** Settings → **Business Logic** tab renders a plain-English version from `Shuffles_SSJ_Business_Rules::sections()`/`invariants()`. Keep that class and this doc in sync.
 
@@ -31,8 +31,8 @@ on every change (it is the "why" companion to the code; the "what/where" lives i
 
 ## 1. Actors & roles
 
-- A **member is one account that can wear many hats**: worker, candidate (TFN job-seeker), participant, **sole-trader provider** (individual with an ABN, possibly NDIS-registered in their own right), provider **representative**, employee of an organisation, or **supplier**.
-- Roles are **additive** and self-declared via `[sssj_roles]` (`Shuffles_SSJ_Roles`). Declaring a role **grants capabilities** (`role_caps()`) and is **never auto-revoked** — adding a role only adds caps.
+- A **member is one account that wears many "hats"**, declared via `[sssj_roles]` (`Shuffles_SSJ_Roles::hats()`): **Employer/company**, **NDIS/service provider**, **Supplier**, **Available for contracting (sole trader/ABN)**, **Looking for employee work (PAYG/TFN)**, **Participant**, **Participant representative/nominee** — any combination.
+- Hats are **additive** and self-declared. Declaring a hat **grants capabilities** (`role_caps()`) and is **never auto-revoked**, and it **reveals the matching dashboard sections** (`reveals_for()`) so the dashboard only shows what's relevant. Members who haven't picked hats yet fall back to capability detection (nothing disappears). Legacy keys (`worker`) are still recognised.
 - Role → capability map (`Shuffles_SSJ_Roles::role_caps()`):
   - participant → `sssj_post_need` + `sssj_post_job`
   - provider / representative → `sssj_post_job` + `sssj_post_org`
