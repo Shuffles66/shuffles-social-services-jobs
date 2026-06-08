@@ -100,6 +100,42 @@
 		} catch ( e ) { msg( root, 'Could not build the image. Use Download PDF.' ); }
 	}
 
+	/* Phase 2: ask the server to render a print-quality PDF (Gotenberg). Falls back to the browser
+	 * path on any error. Sends the asset type + the member's edited wording; the server rebuilds the
+	 * locked template so output is pixel-identical for everyone. */
+	function serverPdf( root ) {
+		var cfg = window.SSSJ_AssetRender || {};
+		if ( ! cfg.url || ! cfg.nonce ) { msg( root, 'High-quality rendering is not available. Use Quick PDF.' ); return; }
+		var type = root.getAttribute( 'data-asset-type' ) || 'resume';
+		msg( root, 'Building your print-quality PDF…' );
+
+		var fd = new FormData();
+		fd.append( 'action', 'sssj_asset_render' );
+		fd.append( '_wpnonce', cfg.nonce );
+		fd.append( 'type', type );
+		var job = root.getAttribute( 'data-asset-job' );
+		if ( job ) { fd.append( 'job_id', job ); }
+		var tg = root.querySelector( '[data-edit="tagline"]' );
+		if ( tg ) { fd.append( 'tagline', tg.value ); }
+		var bl = root.querySelector( '[data-edit="blurb"]' );
+		if ( bl ) { fd.append( 'blurb', bl.value ); }
+
+		fetch( cfg.url, { method: 'POST', body: fd, credentials: 'same-origin' } )
+			.then( function ( r ) {
+				if ( ! r.ok ) { return r.text().then( function ( t ) { throw new Error( t || ( 'HTTP ' + r.status ) ); } ); }
+				return r.blob();
+			} )
+			.then( function ( blob ) {
+				var url = URL.createObjectURL( blob );
+				var a   = document.createElement( 'a' );
+				a.href = url; a.download = type + '.pdf';
+				document.body.appendChild( a ); a.click(); document.body.removeChild( a );
+				URL.revokeObjectURL( url );
+				msg( root, 'Saved a print-quality PDF.' );
+			} )
+			.catch( function ( e ) { msg( root, 'Could not build the print-quality PDF (' + ( e.message || 'error' ) + '). You can still use Quick PDF.' ); } );
+	}
+
 	function copyCaption( root ) {
 		var text = root.getAttribute( 'data-caption' ) || '';
 		if ( navigator.clipboard && navigator.clipboard.writeText ) {
@@ -117,6 +153,7 @@
 			e.preventDefault();
 			var act = btn.getAttribute( 'data-action' );
 			if ( 'pdf' === act ) { window.print(); }
+			else if ( 'server-pdf' === act ) { serverPdf( root ); }
 			else if ( 'png' === act ) { savePng( root ); }
 			else if ( 'caption' === act ) { copyCaption( root ); }
 		} );

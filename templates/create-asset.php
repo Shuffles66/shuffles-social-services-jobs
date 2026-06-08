@@ -46,7 +46,7 @@ if ( 'job' === $type ) {
 	$jd     = ( $job_id && in_array( $job_id, $ids, true ) ) ? Shuffles_SSJ_Assets::job_data( $job_id ) : null;
 	$post_job_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_post_job', '[sssj_post_job]' ) : '';
 	?>
-	<div class="sssj sssj--create-asset"<?php if ( $jd ) { echo ' data-sssj-asset-wizard data-caption="' . esc_attr( Shuffles_SSJ_Assets::job_caption( $jd ) ) . '"'; } ?>>
+	<div class="sssj sssj--create-asset"<?php if ( $jd ) { echo ' data-sssj-asset-wizard data-asset-type="job" data-asset-job="' . esc_attr( (int) $jd['job_id'] ) . '" data-caption="' . esc_attr( Shuffles_SSJ_Assets::job_caption( $jd ) ) . '"'; } ?>>
 		<div class="sssj-panel">
 			<h2 style="margin-top:0"><?php esc_html_e( 'Create an asset', 'shuffles-social-services-jobs' ); ?></h2>
 			<p class="description"><?php esc_html_e( 'Make a clean, shareable flyer for one of your job ads, with the location and pay leading.', 'shuffles-social-services-jobs' ); ?></p>
@@ -85,7 +85,12 @@ if ( 'job' === $type ) {
 					<div class="sssj-panel">
 						<h3 style="margin-top:0"><?php esc_html_e( 'Download and share', 'shuffles-social-services-jobs' ); ?></h3>
 						<div class="sssj-row" style="flex-wrap:wrap;gap:8px">
-							<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Download PDF', 'shuffles-social-services-jobs' ); ?></button>
+							<?php if ( class_exists( 'Shuffles_SSJ_Asset_Renderer' ) && Shuffles_SSJ_Asset_Renderer::enabled() ) : ?>
+								<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="server-pdf"><?php esc_html_e( 'Print-quality PDF', 'shuffles-social-services-jobs' ); ?></button>
+								<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Quick PDF (browser)', 'shuffles-social-services-jobs' ); ?></button>
+							<?php else : ?>
+								<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Download PDF', 'shuffles-social-services-jobs' ); ?></button>
+							<?php endif; ?>
 							<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-action="png"><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
 							<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="caption"><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
 						</div>
@@ -122,7 +127,7 @@ $caption     = Shuffles_SSJ_Assets::caption( $data );
 $profile_url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' ) : '';
 $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 ?>
-<div class="sssj sssj--create-asset" data-sssj-asset-wizard data-caption="<?php echo esc_attr( $caption ); ?>">
+<div class="sssj sssj--create-asset" data-sssj-asset-wizard data-asset-type="<?php echo esc_attr( $type ); ?>" data-caption="<?php echo esc_attr( $caption ); ?>">
 	<div class="sssj-panel">
 		<h2 style="margin-top:0"><?php esc_html_e( 'Create an asset', 'shuffles-social-services-jobs' ); ?></h2>
 		<p class="description"><?php esc_html_e( 'Built from your profile in a clean, easy-to-read layout, with your location leading so people see where you work at a glance. Pick what to make, polish the wording, then download or copy a caption.', 'shuffles-social-services-jobs' ); ?></p>
@@ -169,12 +174,17 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 			<div class="sssj-panel">
 				<h3 style="margin-top:0"><?php esc_html_e( 'Download and share', 'shuffles-social-services-jobs' ); ?></h3>
 				<div class="sssj-row" style="flex-wrap:wrap;gap:8px">
-					<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Download PDF', 'shuffles-social-services-jobs' ); ?></button>
+					<?php if ( class_exists( 'Shuffles_SSJ_Asset_Renderer' ) && Shuffles_SSJ_Asset_Renderer::enabled() && in_array( $type, array( 'resume', 'flyer' ), true ) ) : ?>
+						<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="server-pdf"><?php esc_html_e( 'Print-quality PDF', 'shuffles-social-services-jobs' ); ?></button>
+						<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Quick PDF (browser)', 'shuffles-social-services-jobs' ); ?></button>
+					<?php else : ?>
+						<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Download PDF', 'shuffles-social-services-jobs' ); ?></button>
+					<?php endif; ?>
 					<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-action="png"><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
 					<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="caption"><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
 				</div>
 				<p class="description" data-asset-msg style="margin-top:8px"></p>
-				<p class="description"><?php esc_html_e( 'PDF uses your browser print dialog (choose “Save as PDF”). Save image downloads a picture, ideal for the social post.', 'shuffles-social-services-jobs' ); ?></p>
+				<p class="description"><?php echo esc_html( ( class_exists( 'Shuffles_SSJ_Asset_Renderer' ) && Shuffles_SSJ_Asset_Renderer::enabled() && in_array( $type, array( 'resume', 'flyer' ), true ) ) ? __( '“Print-quality PDF” builds a crisp, identical PDF on the server. “Quick PDF” uses your browser print dialog. Save image downloads a picture, ideal for the social post.', 'shuffles-social-services-jobs' ) : __( 'PDF uses your browser print dialog (choose “Save as PDF”). Save image downloads a picture, ideal for the social post.', 'shuffles-social-services-jobs' ) ); ?></p>
 			</div>
 		</div>
 

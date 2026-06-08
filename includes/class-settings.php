@@ -51,6 +51,9 @@ class Shuffles_SSJ_Settings {
 			'cald_custom_langs'         => '',
 			'cald_lang_overrides'       => '',
 			'why_us_points'             => '',
+			'asset_render_mode'         => 'browser',
+			'asset_render_endpoint'     => '',
+			'asset_render_self_hosted'  => '0',
 			'licence_key'               => '',
 			'license_item_id'           => '',
 			'vendor_url'                => 'https://shuffles.com.au',
@@ -137,7 +140,7 @@ class Shuffles_SSJ_Settings {
 
 		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family', 'font_size', 'heading_weight', 'focus_programs', 'ad_slot_board_top', 'ad_slot_board_bottom', 'ad_slot_single', 'affiliate_url', 'hero_heading', 'hero_blurb' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key', 'abr_guid' );
-		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled', 'ndis_scan_enabled', 'reviews_enabled', 'ads_enabled', 'affiliate_enabled' );
+		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled', 'ndis_scan_enabled', 'reviews_enabled', 'ads_enabled', 'affiliate_enabled', 'asset_render_self_hosted' );
 		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_volunteer_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'page_onboard', 'page_dashboard', 'page_swipe', 'page_tests', 'page_why_us', 'page_join', 'page_workflows', 'page_policies', 'page_marketing', 'page_create_asset', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
 
 		foreach ( $text_keys as $k ) {
@@ -168,10 +171,14 @@ class Shuffles_SSJ_Settings {
 				$out[ $k ] = absint( $input[ $k ] );
 			}
 		}
-		foreach ( array( 'vendor_url', 'brand_url' ) as $k ) {
+		foreach ( array( 'vendor_url', 'brand_url', 'asset_render_endpoint' ) as $k ) {
 			if ( isset( $input[ $k ] ) ) {
 				$out[ $k ] = esc_url_raw( trim( (string) wp_unslash( $input[ $k ] ) ) );
 			}
+		}
+		if ( isset( $input['asset_render_mode'] ) ) {
+			$m = sanitize_key( wp_unslash( (string) $input['asset_render_mode'] ) );
+			$out['asset_render_mode'] = in_array( $m, array( 'browser', 'server' ), true ) ? $m : 'browser';
 		}
 		foreach ( array( 'color_primary', 'color_primary_deep', 'color_ink', 'color_text', 'color_line', 'color_bg', 'color_bg_soft', 'color_abn', 'color_tfn', 'color_need' ) as $k ) {
 			if ( isset( $input[ $k ] ) ) {
@@ -239,6 +246,7 @@ class Shuffles_SSJ_Settings {
 	private static function tab_owns( $tab, $key ) {
 		$owner = array(
 			'cald_enabled'             => 'cald',
+			'asset_render_self_hosted' => 'rendering',
 			'seo_enabled'              => 'seo',
 			'monetisation_enabled'     => 'monetisation',
 			'delete_data_on_uninstall' => 'privacy',

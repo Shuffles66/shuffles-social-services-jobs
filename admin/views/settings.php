@@ -409,6 +409,43 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</form>';
 			break;
 
+		case 'rendering':
+			$rt = isset( $_GET['sssj_render_test'] ) ? sanitize_key( wp_unslash( $_GET['sssj_render_test'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( 'ok' === $rt ) {
+				echo '<div class="notice notice-success inline"><p>' . esc_html__( 'Render service reachable — a test PDF was generated successfully. High-quality PDFs are ready to use.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'fail' === $rt ) {
+				echo '<div class="notice notice-error inline"><p>' . esc_html__( 'Could not reach the render service, or it did not return a PDF. Check the URL is correct and reachable from this web server, then test again.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			} elseif ( 'noendpoint' === $rt ) {
+				echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Enter and save a render service URL first, then test.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			}
+			echo '<h2 style="margin-top:0">' . esc_html__( 'Asset rendering (PDF quality)', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'The “Create an asset” résumé/flyer builder always works for free using the member’s browser to make a PDF (the “Download PDF” button). That is fine for most people. If you want <strong>print-quality, pixel-perfect PDFs</strong> — identical for everyone, regardless of their browser — you can connect your own HTML-to-PDF render service and the builder will offer a “Print-quality PDF” button as well.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( '<strong>Recommended service: Gotenberg</strong> (free, open source, self-hosted — a single container). On a server you control, run:<br><code>docker run --rm -p 3000:3000 gotenberg/gotenberg:8</code><br>then set the URL below to <code>http://YOUR-SERVER-ADDRESS:3000</code>. Keep it on your own infrastructure (a private network address or localhost is ideal) — your members’ asset content is sent to it for rendering, so it should never be a third-party service. Leave the mode on “Browser” to keep everything on the free path.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			$open_form( 'rendering' );
+			echo '<table class="form-table" role="presentation">';
+			$this->select_field(
+				'asset_render_mode',
+				__( 'Render quality', 'shuffles-social-services-jobs' ),
+				array(
+					'browser' => __( 'Browser — free, no setup (default)', 'shuffles-social-services-jobs' ),
+					'server'  => __( 'Server — print-quality PDF via your own render service', 'shuffles-social-services-jobs' ),
+				),
+				__( '“Browser” uses the visitor’s own browser to make the PDF (always available, $0). “Server” adds a “Print-quality PDF” button that renders on your render service for identical, high-fidelity output. If “Server” is chosen but no URL is set, it quietly falls back to the browser path.', 'shuffles-social-services-jobs' ),
+				'browser'
+			);
+			$this->text_field( 'asset_render_endpoint', __( 'Render service URL', 'shuffles-social-services-jobs' ), __( 'The base URL of your Gotenberg (or compatible) service, e.g. http://127.0.0.1:3000 or http://10.0.0.5:3000. The plugin appends the conversion path automatically. Must be reachable from this web server.', 'shuffles-social-services-jobs' ), 'url' );
+			$this->checkbox_field( 'asset_render_self_hosted', __( 'This render service is self-hosted / private', 'shuffles-social-services-jobs' ), __( 'Tick to confirm the service runs on your own infrastructure. This is required before any participant-derived asset could ever be rendered on it (participant content is never sent to a third party). Leave OFF if you are unsure.', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin-top:6px">';
+			wp_nonce_field( 'sssj_asset_render_test' );
+			echo '<input type="hidden" name="action" value="sssj_asset_render_test" />';
+			echo '<button type="submit" class="button">' . esc_html__( 'Test connection', 'shuffles-social-services-jobs' ) . '</button>';
+			echo ' <span class="description">' . esc_html__( 'Save your settings first, then test — this generates a one-line test PDF through the service.', 'shuffles-social-services-jobs' ) . '</span>';
+			echo '</form>';
+			break;
+
 		case 'cald':
 			$open_form( 'cald' );
 			echo '<table class="form-table" role="presentation">';
@@ -1147,6 +1184,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.6.0 · 2026-06-08 · print-quality asset PDFs (Phase 2 renderer)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “Create an asset” builder can now produce true print-quality, pixel-identical PDFs of a résumé, service flyer or job flyer via your own render service — optional, and off by default (the free browser PDF/PNG path is unchanged).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Settings → Asset Rendering tab: choose Browser (free) or Server, set your render service URL, confirm it is self-hosted, and “Test connection”. Recommended service is the free, self-hosted Gotenberg (one Docker container) — full how-to on the tab and in docs/ASSET-RENDERER.md.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'When server rendering is on, the builder shows a “Print-quality PDF” button alongside “Quick PDF (browser)”. The server rebuilds the locked template from your profile/job data (with your edited wording) and inlines the styling + images, so everyone gets identical output. Any failure falls back to the browser path.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Built as a pluggable renderer seam (Shuffles_SSJ_Asset_Renderer) with a login + nonce + ownership-checked endpoint, and a privacy guard: participant-derived assets can never be sent to a renderer that is not affirmed self-hosted.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.5.0 · 2026-06-08 · self-promotion studio (Workstream G)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New [sssj_promo] “Promote the platform” studio (admin/marketer only): turns real, privacy-safe platform highlights into an on-brand square social graphic plus a ready-to-paste caption, one at a time, for posting to your own channels.', 'shuffles-social-services-jobs' ); ?></li>

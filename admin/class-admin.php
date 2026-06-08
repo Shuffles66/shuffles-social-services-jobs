@@ -223,6 +223,7 @@ class Shuffles_SSJ_Admin {
 			'ads'          => array( 'T31', __( 'Ads (Advanced Ads)', 'shuffles-social-services-jobs' ), 'orange' ),
 			'licensing'    => array( 'T11', __( 'Licensing', 'shuffles-social-services-jobs' ), 'orange' ),
 			'integrations' => array( 'T12', __( 'Integrations', 'shuffles-social-services-jobs' ), 'blue' ),
+			'rendering'    => array( 'T34', __( 'Asset Rendering', 'shuffles-social-services-jobs' ), 'blue' ),
 			'fields'       => array( 'T21', __( 'Profile Fields', 'shuffles-social-services-jobs' ), 'indigo' ),
 			'crm'          => array( 'T22', __( 'CRM Sync', 'shuffles-social-services-jobs' ), 'blue' ),
 			'alerts'       => array( 'T23', __( 'Email Alerts', 'shuffles-social-services-jobs' ), 'orange' ),
