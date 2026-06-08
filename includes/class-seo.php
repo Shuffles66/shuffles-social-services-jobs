@@ -252,13 +252,22 @@ class Shuffles_SSJ_SEO {
 		}
 		$id = $post->ID;
 
+		$desc = trim( wp_strip_all_tags( (string) $post->post_content ) );
+		if ( '' === $desc ) {
+			$desc = wp_strip_all_tags( get_the_title( $id ) ); // Google requires a non-empty description.
+		}
 		$data = array(
 			'@context'    => 'https://schema.org/',
 			'@type'       => 'JobPosting',
 			'title'       => wp_strip_all_tags( get_the_title( $id ) ),
-			'description' => wp_strip_all_tags( (string) $post->post_content ),
+			'description' => $desc,
 			'datePosted'  => get_post_time( 'Y-m-d', true, $id ),
 			'directApply' => true,
+			'identifier'  => array(
+				'@type' => 'PropertyValue',
+				'name'  => get_bloginfo( 'name' ),
+				'value' => (string) $id,
+			),
 		);
 
 		$expires = (string) get_post_meta( $id, 'expires_at', true );
@@ -298,6 +307,16 @@ class Shuffles_SSJ_SEO {
 						'addressCountry'  => 'AU',
 					)
 				),
+			);
+		}
+
+		// Remote / hybrid roles: Google for Jobs wants jobLocationType + applicantLocationRequirements.
+		$mode = strtolower( (string) get_post_meta( $id, 'work_mode', true ) );
+		if ( false !== strpos( $mode, 'remote' ) || false !== strpos( $mode, 'hybrid' ) ) {
+			$data['jobLocationType']               = 'TELECOMMUTE';
+			$data['applicantLocationRequirements'] = array(
+				'@type' => 'Country',
+				'name'  => 'Australia',
 			);
 		}
 

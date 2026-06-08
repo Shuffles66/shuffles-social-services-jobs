@@ -474,10 +474,29 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'seo':
 			$open_form( 'seo' );
 			echo '<table class="form-table" role="presentation">';
-			$this->checkbox_field( 'seo_enabled', __( 'Strong SEO for jobs', 'shuffles-social-services-jobs' ), __( 'JobPosting structured data + indexable job/category pages (Phase 1). Participant needs always stay noindex.', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'seo_enabled', __( 'Strong SEO for jobs', 'shuffles-social-services-jobs' ), __( 'JobPosting structured data + indexable job/category pages. Participant needs always stay noindex. This is what makes your jobs eligible for Google for Jobs — free, no setup.', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'syndication_feed_enabled', __( 'Publish a job feed for aggregators', 'shuffles-social-services-jobs' ), __( 'Exposes a standard job XML feed that aggregators like Jora and Adzuna can ingest, so your jobs reach a wider audience for free. Anonymous ads appear as “Private advertiser”; participant requests are never included.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
+
+			if ( class_exists( 'Shuffles_SSJ_Syndication' ) && Shuffles_SSJ_Syndication::enabled() ) {
+				$feed   = Shuffles_SSJ_Syndication::feed_url();
+				$pretty = Shuffles_SSJ_Syndication::pretty_feed_url();
+				echo '<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2563eb;border-radius:8px;padding:16px 20px;margin:14px 0;max-width:900px">';
+				echo '<h2 style="margin-top:0">' . esc_html__( 'Job syndication (free reach)', 'shuffles-social-services-jobs' ) . '</h2>';
+				echo '<p>' . esc_html__( 'Two free ways your jobs reach people beyond this site:', 'shuffles-social-services-jobs' ) . '</p>';
+				echo '<ol style="margin:6px 0 10px 18px">';
+				echo '<li>' . wp_kses_post( __( '<strong>Google for Jobs</strong> — automatic. Each public job page carries JobPosting structured data (keep “Strong SEO for jobs” on), so Google can show your roles in its jobs experience. Nothing else to do.', 'shuffles-social-services-jobs' ) ) . '</li>';
+				echo '<li>' . wp_kses_post( __( '<strong>Aggregator feed</strong> — give the feed URL below to a job aggregator and they will pull your jobs in.', 'shuffles-social-services-jobs' ) ) . '</li>';
+				echo '</ol>';
+				echo '<p><strong>' . esc_html__( 'Your job feed URL:', 'shuffles-social-services-jobs' ) . '</strong><br>';
+				echo '<input type="text" class="large-text code" readonly onclick="this.select()" value="' . esc_attr( $feed ) . '" />';
+				echo '<br><span class="description">' . esc_html__( 'A tidier URL also works once permalinks refresh:', 'shuffles-social-services-jobs' ) . ' <code>' . esc_html( $pretty ) . '</code> &nbsp; ';
+				echo '<a href="' . esc_url( $feed ) . '" target="_blank" rel="noopener">' . esc_html__( 'Open the feed', 'shuffles-social-services-jobs' ) . '</a></span></p>';
+				echo '<p class="description">' . wp_kses_post( __( '<strong>Jora</strong> (free, Australia): submit this URL at <code>au.jora.com/cms/get-your-feed-included-on-jora</code>. <strong>Adzuna</strong>: ask them to ingest this feed. <strong>EthicalJobs</strong> (paid, sector-specific) is a separate per-ad arrangement. Indeed and SEEK no longer accept a free feed like this.', 'shuffles-social-services-jobs' ) ) . '</p>';
+				echo '</div>';
+			}
 			break;
 
 		case 'monetisation':
@@ -1406,6 +1425,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.9.0 · 2026-06-08 · job syndication Phase A (free reach)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New standard job XML feed for aggregators (Jora, Adzuna, …). Find the feed URL in Settings → SEO and submit it to an aggregator to reach a wider audience for free. Anonymous ads appear as “Private advertiser”; participant requests are never included; expired jobs are excluded.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Hardened the Google for Jobs (JobPosting) structured data: added a job identifier, a description fallback, and remote/hybrid handling (jobLocationType TELECOMMUTE + Australia applicant requirements) — so more of your jobs are eligible to appear in Google’s jobs experience. This is free and automatic.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Two scope documents added to the repo (docs/JOB-SYNDICATION-SCOPE.md, docs/CANVA-ASSETS-SCOPE.md) capturing the real, researched syndication channels (and why Indeed/SEEK/Facebook are not free options) and the Canva templated-assets option.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Note: free reach is Google for Jobs + Jora/Adzuna. Indeed (since 31 Mar 2026) and SEEK require paid/partner access; pull-in of external jobs (Adzuna/Jooble/Careerjet APIs) is a later phase and must link back to the source per their terms.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.8.1 · 2026-06-08 · asset-rendering setup help</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Settings → Asset Rendering now includes step-by-step Gotenberg setup instructions, and the “Render service URL” field offers common defaults (start typing) plus a placeholder, so it is easier to configure.', 'shuffles-social-services-jobs' ); ?></li>
