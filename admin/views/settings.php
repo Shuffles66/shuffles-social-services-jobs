@@ -1425,6 +1425,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.9.2 · 2026-06-08 · self-promo studio: reliable “Save image” + style picker</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Fixed “Save image” failing (“Could not build the image”) in the Promote-the-platform studio. The graphic is now drawn straight to a canvas and saved as a crisp 1080×1080 PNG, instead of the old browser trick that some browsers (notably Chrome) refuse to export.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Style picker: choose from six colour styles (Ocean, Forest, Grape, Sunrise, Midnight, Rose). The preview and the saved image both update.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.9.1 · 2026-06-08 · fix: “Promote the platform” page mapping wouldn’t save</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Fixed Settings → Pages → “Promote the platform (self-promo studio)” reverting to blank on save. The page mapping (page_promote) was missing from the settings sanitiser’s integer-keys list, so it was dropped when saving. It now saves and sticks like every other page mapping.', 'shuffles-social-services-jobs' ); ?></li>

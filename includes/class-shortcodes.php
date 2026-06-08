@@ -1812,8 +1812,7 @@ class Shuffles_SSJ_Shortcodes {
 		$today = Shuffles_SSJ_Promo::today_index( count( $positives ) );
 
 		wp_enqueue_style( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/css/sssj-assets.css', array( 'sssj' ), SHUFFLES_SSJ_VERSION );
-		wp_enqueue_script( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-assets.js', array(), SHUFFLES_SSJ_VERSION, true );
-		wp_enqueue_script( 'sssj-promo', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-promo.js', array( 'sssj-assets' ), SHUFFLES_SSJ_VERSION, true );
+		wp_enqueue_script( 'sssj-promo', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-promo.js', array(), SHUFFLES_SSJ_VERSION, true );
 
 		$items = array();
 		foreach ( $positives as $p ) {
@@ -1821,11 +1820,23 @@ class Shuffles_SSJ_Shortcodes {
 				'body'     => Shuffles_SSJ_Promo::body_html( $p ),
 				'caption'  => (string) $p['caption'],
 				'accent'   => (int) $p['accent'],
+				'kind'     => (string) $p['kind'],
+				'emoji'    => (string) $p['emoji'],
+				'eyebrow'  => (string) $p['eyebrow'],
+				'big'      => (string) $p['big'],
+				'headline' => (string) $p['headline'],
+				'sub'      => (string) $p['sub'],
 				'filename' => 'shuffles-promo-' . preg_replace( '/[^a-z0-9]+/', '-', strtolower( (string) $p['key'] ) ) . '.png',
 				'label'    => (string) $p['label'],
 			);
 		}
-		wp_localize_script( 'sssj-promo', 'SSSJ_Promo', array( 'items' => $items, 'start' => $today ) );
+		wp_localize_script( 'sssj-promo', 'SSSJ_Promo', array(
+			'items'  => $items,
+			'start'  => $today,
+			'brand'  => Shuffles_SSJ_Promo::site_name(),
+			'host'   => Shuffles_SSJ_Promo::site_host(),
+			'safety' => __( 'Safety, built in', 'shuffles-social-services-jobs' ),
+		) );
 
 		ob_start();
 		$this->load_template( 'promo-tool.php', array( 'positives' => $positives, 'today' => $today ) );

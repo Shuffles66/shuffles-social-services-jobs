@@ -18,9 +18,7 @@ $cur  = $positives[ $today ];
 $site = Shuffles_SSJ_Promo::site_name();
 $host = Shuffles_SSJ_Promo::site_host();
 ?>
-<div class="sssj sssj--promo" data-sssj-asset-wizard data-sssj-promo
-	data-caption="<?php echo esc_attr( $cur['caption'] ); ?>"
-	data-filename="shuffles-promo.png">
+<div class="sssj sssj--promo" data-sssj-promo>
 	<div class="sssj-panel">
 		<h2><?php esc_html_e( 'Promote the platform', 'shuffles-social-services-jobs' ); ?></h2>
 		<p class="description"><?php echo esc_html( sprintf( __( 'One positive at a time, straight from real %s activity. Pick a highlight, save the square image and copy the caption, then post it to your channels. Nothing here ever shows a participant or any private detail.', 'shuffles-social-services-jobs' ), $site ) ); ?></p>
@@ -53,14 +51,24 @@ $host = Shuffles_SSJ_Promo::site_host();
 					<?php endforeach; ?>
 				</select>
 
+				<p class="description" style="margin:12px 0 4px"><strong><?php esc_html_e( 'Style', 'shuffles-social-services-jobs' ); ?></strong></p>
+				<select class="sssj-select" data-promo-style>
+					<option value="0"><?php esc_html_e( 'Ocean (blue)', 'shuffles-social-services-jobs' ); ?></option>
+					<option value="1"><?php esc_html_e( 'Forest (green)', 'shuffles-social-services-jobs' ); ?></option>
+					<option value="2"><?php esc_html_e( 'Grape (purple)', 'shuffles-social-services-jobs' ); ?></option>
+					<option value="3"><?php esc_html_e( 'Sunrise (amber)', 'shuffles-social-services-jobs' ); ?></option>
+					<option value="4"><?php esc_html_e( 'Midnight (slate)', 'shuffles-social-services-jobs' ); ?></option>
+					<option value="5"><?php esc_html_e( 'Rose (pink)', 'shuffles-social-services-jobs' ); ?></option>
+				</select>
+
 				<p class="description" style="margin:12px 0 4px"><strong><?php esc_html_e( 'Caption (copy and paste)', 'shuffles-social-services-jobs' ); ?></strong></p>
 				<textarea class="sssj-textarea" rows="5" data-promo-caption readonly><?php echo esc_textarea( $cur['caption'] ); ?></textarea>
 
 				<div class="sssj-row" style="margin-top:10px">
-					<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="png"><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
-					<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="caption"><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
+					<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-promo-save><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
+					<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-promo-copy><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
 				</div>
-				<p class="description" data-asset-msg style="margin-top:8px"></p>
+				<p class="description" data-promo-msg style="margin-top:8px"></p>
 			</div>
 
 		</div>
