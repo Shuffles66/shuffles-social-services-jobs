@@ -67,6 +67,8 @@ class Shuffles_SSJ_Shortcodes {
 		add_filter( 'the_content', array( $this, 'maybe_worker_matches' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_reviews' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_reviews' ) );
+		add_filter( 'the_content', array( $this, 'maybe_worker_testimonials' ) );
+		add_filter( 'the_content', array( $this, 'maybe_org_testimonials' ) );
 		add_filter( 'the_content', array( $this, 'maybe_listing_video' ) );
 		add_filter( 'the_content', array( $this, 'maybe_listing_ad' ) );
 
@@ -2153,6 +2155,30 @@ class Shuffles_SSJ_Shortcodes {
 		if ( is_singular( 'sssj_org' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Reviews' ) ) {
 			wp_enqueue_style( 'sssj' );
 			$html = Shuffles_SSJ_Reviews::render_for( 'org', get_the_ID() );
+			if ( $html ) {
+				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Append owner-curated testimonials to a single worker (contractor) profile. */
+	public function maybe_worker_testimonials( $content ) {
+		if ( is_singular( 'sssj_worker' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Testimonials' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Testimonials::render_for( 'worker', get_the_ID() );
+			if ( $html ) {
+				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Append owner-curated testimonials to a single organisation (provider) profile. */
+	public function maybe_org_testimonials( $content ) {
+		if ( is_singular( 'sssj_org' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Testimonials' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Testimonials::render_for( 'org', get_the_ID() );
 			if ( $html ) {
 				return $content . $html;
 			}

@@ -37,6 +37,7 @@ class Shuffles_SSJ_Admin {
 		add_action( 'admin_post_sssj_license_activate', array( $this, 'handle_license' ) );
 		add_action( 'admin_post_sssj_license_deactivate', array( $this, 'handle_license' ) );
 		add_action( 'admin_post_sssj_review_moderate', array( $this, 'handle_review_moderate' ) );
+		add_action( 'admin_post_sssj_testimonial_moderate', array( $this, 'handle_testimonial_moderate' ) );
 	}
 
 	/**
@@ -56,6 +57,27 @@ class Shuffles_SSJ_Admin {
 			}
 		}
 		$back = wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=shuffles-ssj&tab=reviews' );
+		wp_safe_redirect( $back );
+		exit;
+	}
+
+	/** Approve / reject a testimonial (admin moderation). */
+	public function handle_testimonial_moderate() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_testimonial_moderate' );
+		$id = isset( $_POST['testi_id'] ) ? absint( $_POST['testi_id'] ) : 0;
+		$op = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
+		if ( $id && class_exists( 'Shuffles_SSJ_Testimonials' ) ) {
+			$map = array( 'approve' => 'approved', 'reject' => 'rejected', 'pending' => 'pending' );
+			if ( isset( $map[ $op ] ) ) {
+				Shuffles_SSJ_Testimonials::set_status( $id, $map[ $op ], get_current_user_id() );
+			} elseif ( 'delete' === $op ) {
+				Shuffles_SSJ_Testimonials::delete( $id, get_current_user_id() );
+			}
+		}
+		$back = wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=shuffles-ssj&tab=testimonials' );
 		wp_safe_redirect( $back );
 		exit;
 	}
@@ -229,6 +251,7 @@ class Shuffles_SSJ_Admin {
 			'alerts'       => array( 'T23', __( 'Email Alerts', 'shuffles-social-services-jobs' ), 'orange' ),
 			'privacy'      => array( 'T13', __( 'Privacy & Moderation', 'shuffles-social-services-jobs' ), 'amber' ),
 			'reviews'      => array( 'T29', __( 'Reviews & Ratings', 'shuffles-social-services-jobs' ), 'amber' ),
+			'testimonials' => array( 'T35', __( 'Testimonials', 'shuffles-social-services-jobs' ), 'amber' ),
 			'guides'       => array( 'T20', __( 'Guides', 'shuffles-social-services-jobs' ), 'orange' ),
 			'workflows'    => array( 'T28', __( 'How-to Workflows', 'shuffles-social-services-jobs' ), 'orange' ),
 			'policies'     => array( 'T30', __( 'Policies', 'shuffles-social-services-jobs' ), 'amber' ),

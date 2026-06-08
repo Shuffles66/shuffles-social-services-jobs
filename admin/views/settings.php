@@ -700,6 +700,81 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			}
 			break;
 
+		case 'testimonials':
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #d97706;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'Testimonials', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php esc_html_e( 'Testimonials are short, qualitative endorsements shown on a contractor’s or provider’s profile under “What people say”. They are separate from star Reviews — the profile owner curates which testimonials appear.', 'shuffles-social-services-jobs' ); ?></p>
+				<ol>
+					<li><strong><?php esc_html_e( 'Two sources', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'a member can submit an endorsement about someone, and the owner can add a quote they received elsewhere.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Pre-moderated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'every testimonial is held as Pending and only becomes available once you Approve it below. Nothing shows publicly until then.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Owner-curated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'once approved, the owner chooses which ones to Feature on their profile. Only Approved + Featured testimonials are public.', 'shuffles-social-services-jobs' ); ?></li>
+				</ol>
+				<p class="description"><?php esc_html_e( 'The submitter chooses how they are credited, so a participant never has to reveal their identity. Testimonials only attach to worker/provider profiles, never to participant requests.', 'shuffles-social-services-jobs' ); ?></p>
+			</div>
+			<?php
+			$open_form( 'testimonials' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'testimonials_enabled', __( 'Enable testimonials', 'shuffles-social-services-jobs' ), __( 'Master switch. Off = the “What people say” section disappears from all profiles and no new testimonials can be left (existing ones are kept).', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+
+			if ( class_exists( 'Shuffles_SSJ_Testimonials' ) ) {
+				$tnonce = wp_create_nonce( 'sssj_testimonial_moderate' );
+				$tap    = esc_url( admin_url( 'admin-post.php' ) );
+				$t_rows = function ( $rows ) use ( $tap, $tnonce ) {
+					if ( empty( $rows ) ) {
+						echo '<p class="description">' . esc_html__( 'Nothing here.', 'shuffles-social-services-jobs' ) . '</p>';
+						return;
+					}
+					echo '<table class="widefat striped"><thead><tr>'
+						. '<th>' . esc_html__( 'Testimonial', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Credited as', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'About', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Source', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Status', 'shuffles-social-services-jobs' ) . '</th>'
+						. '<th>' . esc_html__( 'Actions', 'shuffles-social-services-jobs' ) . '</th>'
+						. '</tr></thead><tbody>';
+					foreach ( $rows as $t ) {
+						$slbl = Shuffles_SSJ_Testimonials::type_label( $t->subject_type );
+						$stit = get_the_title( (int) $t->subject_id );
+						$surl = get_permalink( (int) $t->subject_id );
+						$cred = trim( (string) $t->author_name . ( $t->author_role ? ', ' . $t->author_role : '' ) );
+						echo '<tr>';
+						echo '<td>' . esc_html( wp_trim_words( wp_strip_all_tags( (string) $t->body ), 40 ) ) . '</td>';
+						echo '<td>' . esc_html( '' !== $cred ? $cred : '—' ) . '</td>';
+						echo '<td>' . esc_html( $slbl ) . ': ' . ( $surl ? '<a href="' . esc_url( $surl ) . '" target="_blank" rel="noopener">' . esc_html( $stit ) . '</a>' : esc_html( $stit ) ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '<td>' . esc_html( 'owner' === $t->source ? __( 'Owner-added', 'shuffles-social-services-jobs' ) : __( 'Submitted', 'shuffles-social-services-jobs' ) ) . '</td>';
+						echo '<td><span class="sssj-badge">' . esc_html( ucfirst( (string) $t->status ) ) . ( $t->featured ? ' · ' . esc_html__( 'Featured', 'shuffles-social-services-jobs' ) : '' ) . '</span></td>';
+						echo '<td>';
+						$tbtn = function ( $op, $label ) use ( $tap, $tnonce, $t ) {
+							echo '<form method="post" action="' . $tap . '" style="display:inline-block;margin:0 4px 4px 0">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+							echo '<input type="hidden" name="action" value="sssj_testimonial_moderate" />';
+							echo '<input type="hidden" name="_wpnonce" value="' . esc_attr( $tnonce ) . '" />';
+							echo '<input type="hidden" name="testi_id" value="' . esc_attr( $t->id ) . '" />';
+							echo '<input type="hidden" name="op" value="' . esc_attr( $op ) . '" />';
+							echo '<button class="button button-small">' . esc_html( $label ) . '</button>';
+							echo '</form>';
+						};
+						if ( 'approved' !== $t->status ) {
+							$tbtn( 'approve', __( 'Approve', 'shuffles-social-services-jobs' ) );
+						}
+						if ( 'rejected' !== $t->status ) {
+							$tbtn( 'reject', __( 'Reject', 'shuffles-social-services-jobs' ) );
+						}
+						$tbtn( 'delete', __( 'Delete', 'shuffles-social-services-jobs' ) );
+						echo '</td></tr>';
+					}
+					echo '</tbody></table>';
+				};
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Awaiting moderation', 'shuffles-social-services-jobs' ) . '</h2>';
+				$t_rows( Shuffles_SSJ_Testimonials::pending( 100 ) );
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Recent testimonials', 'shuffles-social-services-jobs' ) . '</h2>';
+				$t_rows( Shuffles_SSJ_Testimonials::recent( 50 ) );
+			}
+			break;
+
 		case 'privacy':
 			$open_form( 'privacy' );
 			echo '<p>' . esc_html__( 'Participant needs are pseudonymous, suburb-only, contact-gated, noindex, and require admin approval before publish. These protections are structural and cannot be switched off.', 'shuffles-social-services-jobs' ) . '</p>';
@@ -1184,6 +1259,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.7.0 · 2026-06-08 · testimonials (Workstream F)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New “What people say” testimonials section on contractor (worker) and provider (organisation) profiles — separate from star Reviews. Endorsements are qualitative quotes the profile owner curates.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Two sources: any logged-in member can submit an endorsement about someone, and the profile owner can add a quote they received elsewhere (via “Manage my testimonials” on their own profile).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Everything is pre-moderated: a new Settings → Testimonials tab holds them as Pending until you Approve. Then the owner chooses which approved ones to Feature — only Approved + Featured testimonials show publicly.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Privacy-safe by design: the submitter chooses how they are credited (no full name required, ideal for participants), and testimonials only attach to worker/provider profiles — never to participant requests. Switchable off globally without losing existing ones.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Adds a new database table (sssj_testimonial). Loading wp-admin once after updating applies the table upgrade.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.6.0 · 2026-06-08 · print-quality asset PDFs (Phase 2 renderer)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “Create an asset” builder can now produce true print-quality, pixel-identical PDFs of a résumé, service flyer or job flyer via your own render service — optional, and off by default (the free browser PDF/PNG path is unchanged).', 'shuffles-social-services-jobs' ); ?></li>

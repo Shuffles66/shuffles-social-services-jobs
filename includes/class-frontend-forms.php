@@ -25,6 +25,9 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_sssj_review_submit', array( $this, 'handle_review_submit' ) );
 		add_action( 'admin_post_nopriv_sssj_review_submit', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_review_respond', array( $this, 'handle_review_respond' ) );
+		add_action( 'admin_post_sssj_testimonial_submit', array( $this, 'handle_testimonial_submit' ) );
+		add_action( 'admin_post_nopriv_sssj_testimonial_submit', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_testimonial_curate', array( $this, 'handle_testimonial_curate' ) );
 		add_action( 'admin_post_nopriv_sssj_review_respond', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_listing_reactivate', array( $this, 'handle_listing_reactivate' ) );
 		add_action( 'admin_post_nopriv_sssj_listing_reactivate', array( $this, 'deny' ) );
@@ -836,6 +839,64 @@ class Shuffles_SSJ_Frontend_Forms {
 		Shuffles_SSJ_Reviews::add_response( $review_id, get_current_user_id(), $text );
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 		wp_safe_redirect( remove_query_arg( 'sssj_review', (string) $redirect ) . '#sssj-reviews' );
+		exit;
+	}
+
+	/** A member submits a testimonial (endorsement) about a worker/org. Held pending for moderation. */
+	public function handle_testimonial_submit() {
+		$nonce = isset( $_POST['sssj_testi_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_testi_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_testimonial_submit' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$type = isset( $_POST['subject_type'] ) ? sanitize_key( wp_unslash( $_POST['subject_type'] ) ) : '';
+		$sid  = isset( $_POST['subject_id'] ) ? absint( $_POST['subject_id'] ) : 0;
+		$body = isset( $_POST['body'] ) ? wp_kses_post( wp_unslash( $_POST['body'] ) ) : '';
+		$name = isset( $_POST['author_name'] ) ? sanitize_text_field( wp_unslash( $_POST['author_name'] ) ) : '';
+		$role = isset( $_POST['author_role'] ) ? sanitize_text_field( wp_unslash( $_POST['author_role'] ) ) : '';
+
+		$ok       = Shuffles_SSJ_Testimonials::submit( get_current_user_id(), $type, $sid, $body, $name, $role );
+		$redirect = $sid ? get_permalink( $sid ) : ( wp_get_referer() ? wp_get_referer() : home_url( '/' ) );
+		wp_safe_redirect( add_query_arg( 'sssj_testi', $ok ? 'pending' : 'error', remove_query_arg( 'sssj_testi', (string) $redirect ) ) . '#sssj-testimonials' );
+		exit;
+	}
+
+	/** Owner curates testimonials about their own profile: feature / hide / delete / add a quote. */
+	public function handle_testimonial_curate() {
+		$nonce = isset( $_POST['sssj_testi_curate_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_testi_curate_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_testimonial_curate' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$uid = get_current_user_id();
+		$op  = isset( $_POST['op'] ) ? sanitize_key( wp_unslash( $_POST['op'] ) ) : '';
+
+		if ( 'add' === $op ) {
+			$type = isset( $_POST['subject_type'] ) ? sanitize_key( wp_unslash( $_POST['subject_type'] ) ) : '';
+			$sid  = isset( $_POST['subject_id'] ) ? absint( $_POST['subject_id'] ) : 0;
+			$body = isset( $_POST['body'] ) ? wp_kses_post( wp_unslash( $_POST['body'] ) ) : '';
+			$name = isset( $_POST['author_name'] ) ? sanitize_text_field( wp_unslash( $_POST['author_name'] ) ) : '';
+			$role = isset( $_POST['author_role'] ) ? sanitize_text_field( wp_unslash( $_POST['author_role'] ) ) : '';
+			Shuffles_SSJ_Testimonials::owner_add( $uid, $type, $sid, $body, $name, $role );
+			$redirect = $sid ? get_permalink( $sid ) : wp_get_referer();
+		} else {
+			$id = isset( $_POST['testi_id'] ) ? absint( $_POST['testi_id'] ) : 0;
+			if ( 'feature' === $op ) {
+				Shuffles_SSJ_Testimonials::set_featured( $id, true, $uid );
+			} elseif ( 'unfeature' === $op ) {
+				Shuffles_SSJ_Testimonials::set_featured( $id, false, $uid );
+			} elseif ( 'delete' === $op ) {
+				Shuffles_SSJ_Testimonials::delete( $id, $uid );
+			}
+			$row      = $id ? Shuffles_SSJ_Testimonials::get( $id ) : null;
+			$redirect = ( $row && $row->subject_id ) ? get_permalink( (int) $row->subject_id ) : wp_get_referer();
+		}
+		$redirect = $redirect ? $redirect : home_url( '/' );
+		wp_safe_redirect( remove_query_arg( 'sssj_testi', (string) $redirect ) . '#sssj-testimonials' );
 		exit;
 	}
 

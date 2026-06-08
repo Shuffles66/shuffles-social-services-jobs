@@ -780,3 +780,17 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 
 /* Testing worksheet — per-group objective line */
 .sssj .sssj-tests__obj{ margin:0 0 10px; color:var(--sssj-text); background:var(--sssj-bg-soft); border-left:4px solid var(--sssj-info); border-radius:var(--sssj-radius); padding:8px 12px; font-size:var(--sssj-fs-sm); }
+
+/* Testimonials (Workstream F) — "What people say" */
+.sssj .sssj-testi-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:var(--sssj-s3); }
+.sssj .sssj-testi{ margin:0; padding:var(--sssj-s4); background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-left:4px solid var(--sssj-blue); border-radius:var(--sssj-radius); position:relative; }
+.sssj .sssj-testi__quote{ margin:0; font-size:1.02em; line-height:1.5; color:var(--sssj-text); }
+.sssj .sssj-testi__quote p{ margin:0 0 .5em; }
+.sssj .sssj-testi__quote p:last-child{ margin-bottom:0; }
+.sssj .sssj-testi__by{ margin-top:var(--sssj-s2); font-weight:var(--sssj-weight-strong); color:var(--sssj-blue-deep); font-size:var(--sssj-fs-sm); }
+.sssj .sssj-testi-form summary,
+.sssj .sssj-testi-manage summary{ cursor:pointer; font-weight:var(--sssj-weight-strong); padding:4px 0; }
+.sssj .sssj-testi-list{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.sssj .sssj-testi-list__item{ display:flex; gap:10px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; padding:10px 12px; background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); }
+.sssj .sssj-testi-list__text{ flex:1 1 240px; }
+.sssj .sssj-testi-list__actions{ display:flex; gap:4px; align-items:center; flex-wrap:wrap; }

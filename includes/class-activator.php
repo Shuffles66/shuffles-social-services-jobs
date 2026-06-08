@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 8;
+	const DB_VERSION = 9;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -204,6 +204,29 @@ class Shuffles_SSJ_Activator {
   PRIMARY KEY  (id),
   UNIQUE KEY uniq_review (reviewer_user_id,subject_type,subject_id),
   KEY subject_status (subject_type,subject_id,status),
+  KEY status (status),
+  KEY created (created_at)
+) $charset_collate;";
+
+		$statements[] = "CREATE TABLE {$p}testimonial (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  subject_type VARCHAR(10) NOT NULL DEFAULT '',
+  subject_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  author_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
+  author_name VARCHAR(160) NULL,
+  author_role VARCHAR(160) NULL,
+  body LONGTEXT NULL,
+  source VARCHAR(20) NOT NULL DEFAULT 'submitted',
+  status VARCHAR(20) NOT NULL DEFAULT 'pending',
+  featured TINYINT(1) NOT NULL DEFAULT 0,
+  sort_order INT NOT NULL DEFAULT 0,
+  moderated_by BIGINT UNSIGNED NULL,
+  moderated_at DATETIME NULL DEFAULT NULL,
+  created_at DATETIME NULL DEFAULT NULL,
+  updated_at DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY  (id),
+  KEY subject_status (subject_type,subject_id,status),
+  KEY subject_featured (subject_type,subject_id,featured),
   KEY status (status),
   KEY created (created_at)
 ) $charset_collate;";
