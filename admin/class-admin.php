@@ -415,10 +415,30 @@ class Shuffles_SSJ_Admin {
 		return Shuffles_SSJ_Settings::OPTION_KEY . '[' . $key . ']';
 	}
 
-	public function text_field( $key, $label, $help = '', $type = 'text' ) {
-		$val = (string) $this->settings->get( $key, '' );
+	/**
+	 * Text field. $opts: 'placeholder' (string), 'suggest' (string[] → a <datalist> of suggested values).
+	 */
+	public function text_field( $key, $label, $help = '', $type = 'text', $opts = array() ) {
+		$val         = (string) $this->settings->get( $key, '' );
+		$placeholder = isset( $opts['placeholder'] ) ? (string) $opts['placeholder'] : '';
+		$suggest     = ( isset( $opts['suggest'] ) && is_array( $opts['suggest'] ) ) ? $opts['suggest'] : array();
+		$list_id     = 'sssj-' . $key . '-list';
 		echo '<tr><th scope="row"><label for="sssj-' . esc_attr( $key ) . '">' . esc_html( $label ) . '</label></th><td>';
-		echo '<input type="' . esc_attr( $type ) . '" class="regular-text" id="sssj-' . esc_attr( $key ) . '" name="' . esc_attr( $this->field_name( $key ) ) . '" value="' . esc_attr( $val ) . '" />';
+		echo '<input type="' . esc_attr( $type ) . '" class="regular-text" id="sssj-' . esc_attr( $key ) . '" name="' . esc_attr( $this->field_name( $key ) ) . '" value="' . esc_attr( $val ) . '"';
+		if ( '' !== $placeholder ) {
+			echo ' placeholder="' . esc_attr( $placeholder ) . '"';
+		}
+		if ( ! empty( $suggest ) ) {
+			echo ' list="' . esc_attr( $list_id ) . '"';
+		}
+		echo ' />';
+		if ( ! empty( $suggest ) ) {
+			echo '<datalist id="' . esc_attr( $list_id ) . '">';
+			foreach ( $suggest as $s ) {
+				echo '<option value="' . esc_attr( $s ) . '"></option>';
+			}
+			echo '</datalist>';
+		}
 		if ( $help ) {
 			echo '<p class="description">' . esc_html( $help ) . '</p>';
 		}

@@ -420,7 +420,17 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			}
 			echo '<h2 style="margin-top:0">' . esc_html__( 'Asset rendering (PDF quality)', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'The “Create an asset” résumé/flyer builder always works for free using the member’s browser to make a PDF (the “Download PDF” button). That is fine for most people. If you want <strong>print-quality, pixel-perfect PDFs</strong> — identical for everyone, regardless of their browser — you can connect your own HTML-to-PDF render service and the builder will offer a “Print-quality PDF” button as well.', 'shuffles-social-services-jobs' ) ) . '</p>';
-			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( '<strong>Recommended service: Gotenberg</strong> (free, open source, self-hosted — a single container). On a server you control, run:<br><code>docker run --rm -p 3000:3000 gotenberg/gotenberg:8</code><br>then set the URL below to <code>http://YOUR-SERVER-ADDRESS:3000</code>. Keep it on your own infrastructure (a private network address or localhost is ideal) — your members’ asset content is sent to it for rendering, so it should never be a third-party service. Leave the mode on “Browser” to keep everything on the free path.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2563eb;border-radius:8px;padding:14px 18px;margin:0 0 16px;max-width:840px">';
+			echo '<h3 style="margin-top:0">' . esc_html__( 'How to set up Gotenberg (the recommended renderer)', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<p class="description">' . esc_html__( 'Gotenberg is free, open-source, self-hosted software — there is no sign-up; you run it yourself on a server you control. It is not pre-installed here, and this managed host generally cannot run it on the same server, so use a small separate server you control (e.g. a low-cost cloud VPS with Docker).', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<ol style="margin:6px 0 6px 18px">';
+			echo '<li>' . wp_kses_post( __( 'On a server you control with Docker installed, run: <code>docker run -d --restart unless-stopped -p 3000:3000 gotenberg/gotenberg:8</code>', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( 'Make sure port <code>3000</code> is reachable from THIS website’s web server (open the firewall — ideally restricted to this server’s IP only).', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( 'Set <strong>Render service URL</strong> below to <code>http://YOUR-SERVER-ADDRESS:3000</code> (base URL only — the plugin adds the rest).', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . esc_html__( 'Set Render quality to “Server”, tick “self-hosted / private”, click Save Changes, then click “Test connection” below.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '</ol>';
+			echo '<p class="description">' . esc_html__( 'Privacy: members’ asset content is sent to this service to be rendered, so keep it on your own infrastructure — never a third-party service. No server yet? Leave Render quality on “Browser”; the free in-browser PDF works for everyone.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '</div>';
 			$open_form( 'rendering' );
 			echo '<table class="form-table" role="presentation">';
 			$this->select_field(
@@ -433,7 +443,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				__( '“Browser” uses the visitor’s own browser to make the PDF (always available, $0). “Server” adds a “Print-quality PDF” button that renders on your render service for identical, high-fidelity output. If “Server” is chosen but no URL is set, it quietly falls back to the browser path.', 'shuffles-social-services-jobs' ),
 				'browser'
 			);
-			$this->text_field( 'asset_render_endpoint', __( 'Render service URL', 'shuffles-social-services-jobs' ), __( 'The base URL of your Gotenberg (or compatible) service, e.g. http://127.0.0.1:3000 or http://10.0.0.5:3000. The plugin appends the conversion path automatically. Must be reachable from this web server.', 'shuffles-social-services-jobs' ), 'url' );
+			$this->text_field( 'asset_render_endpoint', __( 'Render service URL', 'shuffles-social-services-jobs' ), __( 'The base URL of your Gotenberg (or compatible) service, e.g. http://127.0.0.1:3000 or http://10.0.0.5:3000. Start typing to pick a common default. The plugin appends the conversion path automatically. Must be reachable from this web server.', 'shuffles-social-services-jobs' ), 'url', array(
+				'placeholder' => 'http://YOUR-SERVER-ADDRESS:3000',
+				'suggest'     => array( 'http://127.0.0.1:3000', 'http://localhost:3000', 'http://gotenberg:3000' ),
+			) );
 			$this->checkbox_field( 'asset_render_self_hosted', __( 'This render service is self-hosted / private', 'shuffles-social-services-jobs' ), __( 'Tick to confirm the service runs on your own infrastructure. This is required before any participant-derived asset could ever be rendered on it (participant content is never sent to a third party). Leave OFF if you are unsure.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
 			submit_button();
@@ -1393,6 +1406,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.8.1 · 2026-06-08 · asset-rendering setup help</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Settings → Asset Rendering now includes step-by-step Gotenberg setup instructions, and the “Render service URL” field offers common defaults (start typing) plus a placeholder, so it is easier to configure.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.8.0 · 2026-06-08 · banned-provider register + ABN cross-match (safety)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New Settings → Safety Register: keep a private register of banned/sanctioned ABNs and cross-match it whenever an ABN is recorded on a job, worker or organisation. Standalone — no dependency on any other plugin or live API.', 'shuffles-social-services-jobs' ); ?></li>
