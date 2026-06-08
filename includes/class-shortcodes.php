@@ -57,6 +57,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_feature_today', array( 'Shuffles_SSJ_Spotlight', 'shortcode' ) );
 		add_shortcode( 'sssj_marketing', array( 'Shuffles_SSJ_Marketing', 'shortcode' ) );
 		add_shortcode( 'sssj_create_asset', array( $this, 'create_asset' ) );
+		add_shortcode( 'sssj_promo', array( $this, 'promo' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -349,6 +350,15 @@ class Shuffles_SSJ_Shortcodes {
 				'where'  => __( 'A “Create my résumé” page, and the “Create an asset” tab in My dashboard.', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_promo',
+				'title'  => __( 'Promote the platform (self-promo studio)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'An admin/marketer studio that turns real, privacy-safe platform highlights into an on-brand square social graphic plus a ready-to-paste caption, one at a time. Highlights come from live numbers (open jobs, available workers, verified workers, providers, people placed, new this week, states covered) that only show once they are big enough to impress, plus the same brand messages as the daily feature spotlight. Save the image and copy the caption, then post it yourself. Never uses participant data or any private detail. Visible to administrators/marketers only.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A private/internal “Promote” admin page, or the Marketing area of your dashboard.', 'shuffles-social-services-jobs' ),
+				'access' => 'admin',
+				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
 			),
 			array(
@@ -1770,6 +1780,45 @@ class Shuffles_SSJ_Shortcodes {
 		$a = shortcode_atts( array( 'asset' => '' ), is_array( $atts ) ? $atts : array(), 'sssj_create_asset' );
 		ob_start();
 		$this->load_template( 'create-asset.php', array( 'atts' => $a ) );
+		return ob_get_clean();
+	}
+
+	/**
+	 * [sssj_promo] — the site self-promotion studio (admin / marketer). Turns real, privacy-safe
+	 * platform positives into an on-brand square graphic + caption, one at a time, for manual posting.
+	 */
+	public function promo( $atts ) {
+		if ( ! class_exists( 'Shuffles_SSJ_Promo' ) ) {
+			return '';
+		}
+		wp_enqueue_style( 'sssj' );
+		if ( ! Shuffles_SSJ_Promo::can_use() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'The self-promotion studio is available to site administrators and marketers.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+		}
+		$positives = Shuffles_SSJ_Promo::positives();
+		if ( empty( $positives ) ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'No promotable highlights yet — once there are jobs, workers and providers on the platform, branded graphics will appear here.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+		}
+		$today = Shuffles_SSJ_Promo::today_index( count( $positives ) );
+
+		wp_enqueue_style( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/css/sssj-assets.css', array( 'sssj' ), SHUFFLES_SSJ_VERSION );
+		wp_enqueue_script( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-assets.js', array(), SHUFFLES_SSJ_VERSION, true );
+		wp_enqueue_script( 'sssj-promo', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-promo.js', array( 'sssj-assets' ), SHUFFLES_SSJ_VERSION, true );
+
+		$items = array();
+		foreach ( $positives as $p ) {
+			$items[] = array(
+				'body'     => Shuffles_SSJ_Promo::body_html( $p ),
+				'caption'  => (string) $p['caption'],
+				'accent'   => (int) $p['accent'],
+				'filename' => 'shuffles-promo-' . preg_replace( '/[^a-z0-9]+/', '-', strtolower( (string) $p['key'] ) ) . '.png',
+				'label'    => (string) $p['label'],
+			);
+		}
+		wp_localize_script( 'sssj-promo', 'SSSJ_Promo', array( 'items' => $items, 'start' => $today ) );
+
+		ob_start();
+		$this->load_template( 'promo-tool.php', array( 'positives' => $positives, 'today' => $today ) );
 		return ob_get_clean();
 	}
 

@@ -89,7 +89,7 @@
 					canvas.toBlob( function ( out ) {
 						if ( ! out ) { msg( root, 'Could not build the image. Use Download PDF.' ); return; }
 						var a = document.createElement( 'a' );
-						a.href = URL.createObjectURL( out ); a.download = 'resume.png';
+						a.href = URL.createObjectURL( out ); a.download = ( root.getAttribute( 'data-filename' ) || 'resume.png' );
 						document.body.appendChild( a ); a.click(); document.body.removeChild( a );
 						msg( root, 'Image saved.' );
 					}, 'image/png' );

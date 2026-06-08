@@ -879,6 +879,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_workflows', __( 'How it works (step-by-step)', 'shuffles-social-services-jobs' ), '[sssj_workflows]', __( 'Plain-English explainer workflows for end users — set up, advertise, apply, quote, manage applicants, request support, store a résumé, join an org, alerts, volunteer, stay safe. Also at Settings → How-to Workflows; the “Guides” advice content lives at Settings → Guides ([sssj_guides]).', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_policies', __( 'Policies (safety & privacy)', 'shuffles-social-services-jobs' ), '[sssj_policies]', __( 'Plain-English summaries of all platform policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion, Advertising. Also at Settings → Policies. Link it in your footer.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_marketing', __( 'Marketing master', 'shuffles-social-services-jobs' ), '[sssj_marketing]', __( 'The living marketing + product master (business logic, functional spec, audience analysis) as a readable page. Often partner-facing or internal. Also at Settings → Marketing.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_promote', __( 'Promote the platform (self-promo studio)', 'shuffles-social-services-jobs' ), '[sssj_promo]', __( 'An admin/marketer-only studio that turns real, privacy-safe platform highlights (open jobs, available + verified workers, providers, people placed, new this week, states covered — shown only once they are big enough to impress) and your brand messages into a square social graphic + a ready-to-paste caption, one at a time. Save the image, copy the caption, post it yourself. Never uses participant data. Keep this page private/internal (members of the public should not see it).', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
 			submit_button();
@@ -1146,6 +1147,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.5.0 · 2026-06-08 · self-promotion studio (Workstream G)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New [sssj_promo] “Promote the platform” studio (admin/marketer only): turns real, privacy-safe platform highlights into an on-brand square social graphic plus a ready-to-paste caption, one at a time, for posting to your own channels.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Highlights come from live numbers — open jobs, available workers, verified workers, providers, people placed, new jobs this week, states covered — and only appear once each number is big enough to impress. It also rotates the same brand messages as the daily feature spotlight (single source).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Never uses participant data or any private detail — only public, aggregate figures and brand messaging.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( '“Show another” and the dropdown swap the graphic and its caption together; “Save image” downloads a square PNG (Instagram/Facebook/LinkedIn ready); “Copy caption” copies the matching words and hashtags. Reuses the résumé builder’s $0 browser image export.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Add it via Settings → Pages → “Promote the platform” (keep that page private/internal). Automatic posting can follow later via syndication.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.4.0 · 2026-06-08 · board filter layout + mobile menu</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Desktop: the location controls (Near a suburb, Within radius, Use my location) now sit on the same row to the right of the search box, instead of on their own row below it. The category / funding filters drop to a tidy second row. Applies to the Jobs, Employee (TFN), Contractor (ABN), Volunteer, Worker and Organisation boards.', 'shuffles-social-services-jobs' ); ?></li>

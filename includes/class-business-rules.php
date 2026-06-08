@@ -136,6 +136,7 @@ class Shuffles_SSJ_Business_Rules {
 						__( 'The hero banner carries a “Safety, built in” strip summarising the privacy & verification guardrails.', 'shuffles-social-services-jobs' ),
 						__( 'Counters can be set to stay hidden until each total reaches a chosen minimum — so small early numbers don’t show until the marketplace has grown.', 'shuffles-social-services-jobs' ),
 						__( 'Any lookup that takes a few seconds shows the branded Shuffles spinner.', 'shuffles-social-services-jobs' ),
+						__( 'Self-promotion graphics (the admin-only “Promote the platform” studio) are built only from public, aggregate numbers and brand messaging — never from participant data or any private detail — and a counter is only ever shown once it is big enough to impress.', 'shuffles-social-services-jobs' ),
 					),
 				),
 			)
