@@ -39,6 +39,8 @@ class Shuffles_SSJ_Settings {
 			'alerts_enabled'            => '1',
 			'reviews_enabled'           => '1',
 			'testimonials_enabled'      => '1',
+			'ban_register_enabled'      => '1',
+			'ban_alert_email'           => '',
 			'ads_enabled'               => '1',
 			'affiliate_enabled'         => '1',
 			'monetisation_enabled'      => '0',
@@ -141,7 +143,7 @@ class Shuffles_SSJ_Settings {
 
 		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family', 'font_size', 'heading_weight', 'focus_programs', 'ad_slot_board_top', 'ad_slot_board_bottom', 'ad_slot_single', 'affiliate_url', 'hero_heading', 'hero_blurb' );
 		$secret_keys = array( 'google_maps_api_key', 'licence_key', 'abr_guid' );
-		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled', 'ndis_scan_enabled', 'reviews_enabled', 'testimonials_enabled', 'ads_enabled', 'affiliate_enabled', 'asset_render_self_hosted' );
+		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled', 'ndis_scan_enabled', 'reviews_enabled', 'testimonials_enabled', 'ban_register_enabled', 'ads_enabled', 'affiliate_enabled', 'asset_render_self_hosted' );
 		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_volunteer_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'page_onboard', 'page_dashboard', 'page_swipe', 'page_tests', 'page_why_us', 'page_join', 'page_workflows', 'page_policies', 'page_marketing', 'page_create_asset', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
 
 		foreach ( $text_keys as $k ) {
@@ -221,6 +223,10 @@ class Shuffles_SSJ_Settings {
 			$em = sanitize_email( wp_unslash( (string) $input['ndis_alert_email'] ) );
 			$out['ndis_alert_email'] = $em ? $em : '';
 		}
+		if ( isset( $input['ban_alert_email'] ) ) {
+			$em = sanitize_email( wp_unslash( (string) $input['ban_alert_email'] ) );
+			$out['ban_alert_email'] = $em ? $em : '';
+		}
 
 		// CALD: enabled language codes — normalise to a comma-separated list of sanitized keys.
 		if ( isset( $input['cald_languages'] ) ) {
@@ -248,6 +254,7 @@ class Shuffles_SSJ_Settings {
 		$owner = array(
 			'cald_enabled'             => 'cald',
 			'testimonials_enabled'     => 'testimonials',
+			'ban_register_enabled'     => 'safety',
 			'asset_render_self_hosted' => 'rendering',
 			'seo_enabled'              => 'seo',
 			'monetisation_enabled'     => 'monetisation',

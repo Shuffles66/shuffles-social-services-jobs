@@ -794,3 +794,8 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-testi-list__item{ display:flex; gap:10px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; padding:10px 12px; background:var(--sssj-bg-soft); border:1px solid var(--sssj-line); border-radius:var(--sssj-radius); }
 .sssj .sssj-testi-list__text{ flex:1 1 240px; }
 .sssj .sssj-testi-list__actions{ display:flex; gap:4px; align-items:center; flex-wrap:wrap; }
+
+/* Staff-only banned-register safety banner (admins only) */
+.sssj .sssj-banflag{ margin:0 0 var(--sssj-s4); padding:var(--sssj-s3) var(--sssj-s4); background:#fef2f2; border:1px solid #fecaca; border-left:5px solid #dc2626; border-radius:var(--sssj-radius); color:#7f1d1d; }
+.sssj .sssj-banflag strong{ display:block; margin-bottom:4px; color:#b91c1c; }
+.sssj .sssj-banflag p{ margin:0; font-size:var(--sssj-fs-sm); }

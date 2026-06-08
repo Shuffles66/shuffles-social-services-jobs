@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Shuffles Social Services Jobs and Engagements
  * Description:       A four-sided work marketplace for disability, aged care and social services — ABN & TFN engagements, participant-safe, accessible. Phase 0 scaffold.
- * Version:           1.7.0
+ * Version:           1.8.0
  * Author:            Shuffles
  * Author URI:        https://shuffles.com.au
  * Plugin URI:        https://github.com/Shuffles66/shuffles-social-services-jobs
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SHUFFLES_SSJ_VERSION', '1.7.0' );
+define( 'SHUFFLES_SSJ_VERSION', '1.8.0' );
 define( 'SHUFFLES_SSJ_FILE', __FILE__ );
 define( 'SHUFFLES_SSJ_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SHUFFLES_SSJ_URL', plugin_dir_url( __FILE__ ) );
@@ -36,6 +36,7 @@ require_once SHUFFLES_SSJ_DIR . 'includes/class-abn.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-org.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-org-team.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-ndis-register.php';
+require_once SHUFFLES_SSJ_DIR . 'includes/class-ban-register.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-roles.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-privacy-mask.php';
 require_once SHUFFLES_SSJ_DIR . 'includes/class-taxonomy-registrar.php';
@@ -115,3 +116,6 @@ Shuffles_SSJ_Cache::register();
 
 // Phase 2 asset rendering: the admin-post endpoint that streams a print-quality PDF (server backend).
 Shuffles_SSJ_Asset_Renderer::register();
+
+// Safety: cross-match recorded ABNs against the banned/sanctioned provider register (flag-only).
+Shuffles_SSJ_Ban_Register::register();

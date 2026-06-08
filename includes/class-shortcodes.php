@@ -69,6 +69,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_filter( 'the_content', array( $this, 'maybe_org_reviews' ) );
 		add_filter( 'the_content', array( $this, 'maybe_worker_testimonials' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_testimonials' ) );
+		add_filter( 'the_content', array( $this, 'maybe_ban_flag' ) );
 		add_filter( 'the_content', array( $this, 'maybe_listing_video' ) );
 		add_filter( 'the_content', array( $this, 'maybe_listing_ad' ) );
 
@@ -2181,6 +2182,19 @@ class Shuffles_SSJ_Shortcodes {
 			$html = Shuffles_SSJ_Testimonials::render_for( 'org', get_the_ID() );
 			if ( $html ) {
 				return $content . $html;
+			}
+		}
+		return $content;
+	}
+
+	/** Staff-only banned-register safety banner on a flagged listing (administrators only — never public). */
+	public function maybe_ban_flag( $content ) {
+		if ( is_singular( array( 'sssj_worker', 'sssj_org', 'sssj_job' ) ) && in_the_loop() && is_main_query()
+			&& current_user_can( 'manage_options' ) && class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {
+			wp_enqueue_style( 'sssj' );
+			$html = Shuffles_SSJ_Ban_Register::staff_banner_html( get_the_ID() );
+			if ( $html ) {
+				return $html . $content; // warning sits above the listing for staff
 			}
 		}
 		return $content;

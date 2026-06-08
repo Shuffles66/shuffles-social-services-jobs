@@ -775,6 +775,140 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			}
 			break;
 
+		case 'safety':
+			$bf = isset( $_GET['sssj_ban'] ) ? sanitize_key( wp_unslash( $_GET['sssj_ban'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$bmsg = array(
+				'added'     => array( 'success', __( 'Register entry added.', 'shuffles-social-services-jobs' ) ),
+				'dupe'      => array( 'warning', __( 'That entry is already on the register.', 'shuffles-social-services-jobs' ) ),
+				'badabn'    => array( 'error', __( 'That ABN is not 11 digits — nothing was added.', 'shuffles-social-services-jobs' ) ),
+				'deleted'   => array( 'success', __( 'Register entry removed.', 'shuffles-social-services-jobs' ) ),
+				'imported'  => array( 'success', __( 'Import complete.', 'shuffles-social-services-jobs' ) ),
+				'importerr' => array( 'error', __( 'Import failed.', 'shuffles-social-services-jobs' ) ),
+				'nofile'    => array( 'warning', __( 'Choose a CSV file first.', 'shuffles-social-services-jobs' ) ),
+				'badfile'   => array( 'warning', __( 'That does not look like a .csv file.', 'shuffles-social-services-jobs' ) ),
+				'rescanned' => array( 'success', __( 'Re-scan complete.', 'shuffles-social-services-jobs' ) ),
+				'cleared'   => array( 'success', __( 'Safety flag dismissed.', 'shuffles-social-services-jobs' ) ),
+			);
+			if ( isset( $bmsg[ $bf ] ) ) {
+				echo '<div class="notice notice-' . esc_attr( $bmsg[ $bf ][0] ) . ' inline"><p>' . esc_html( $bmsg[ $bf ][1] );
+				$imp = get_transient( 'sssj_ban_import_' . get_current_user_id() );
+				$rsc = get_transient( 'sssj_ban_rescan_' . get_current_user_id() );
+				if ( 'imported' === $bf && is_array( $imp ) ) {
+					echo ' ' . esc_html( sprintf( __( 'Imported %1$d, skipped %2$d of %3$d rows.', 'shuffles-social-services-jobs' ), (int) $imp['imported'], (int) $imp['skipped'], (int) $imp['rows'] ) );
+					delete_transient( 'sssj_ban_import_' . get_current_user_id() );
+				} elseif ( 'importerr' === $bf && is_array( $imp ) && ! empty( $imp['error'] ) ) {
+					echo ' ' . esc_html( (string) $imp['error'] );
+				} elseif ( 'rescanned' === $bf && is_array( $rsc ) ) {
+					echo ' ' . esc_html( sprintf( __( 'Scanned %1$d listings, %2$d flagged.', 'shuffles-social-services-jobs' ), (int) $rsc['scanned'], (int) $rsc['flagged'] ) );
+					delete_transient( 'sssj_ban_rescan_' . get_current_user_id() );
+				}
+				echo '</p></div>';
+			}
+			?>
+			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #d97706;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
+				<h2 style="margin-top:0"><?php esc_html_e( 'Banned / sanctioned provider register', 'shuffles-social-services-jobs' ); ?></h2>
+				<p><?php esc_html_e( 'Keep a private register of ABNs that have been banned or sanctioned (e.g. from the NDIS Commission’s published compliance and enforcement actions). Whenever an ABN is recorded on a job, worker or organisation, it is cross-matched against this register.', 'shuffles-social-services-jobs' ); ?></p>
+				<p><strong><?php esc_html_e( 'This is a safety aid, not an automatic gate:', 'shuffles-social-services-jobs' ); ?></strong></p>
+				<ul>
+					<li><?php esc_html_e( 'Flag only — a match never blocks posting, never auto-rejects, and never changes a listing.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Staff only — a match is shown to administrators and emailed to staff. It is never shown to the public or to the provider.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'A human reviews every flag. Register data can be stale or about a different entity that shares an ABN, so confirm before acting.', 'shuffles-social-services-jobs' ); ?></li>
+				</ul>
+			</div>
+			<?php
+			$open_form( 'safety' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'ban_register_enabled', __( 'Enable ABN cross-matching', 'shuffles-social-services-jobs' ), __( 'Master switch. Off = recorded ABNs are no longer cross-matched and no new flags are raised (the register and existing flags are kept).', 'shuffles-social-services-jobs' ) );
+			$this->text_field( 'ban_alert_email', __( 'Staff alert email', 'shuffles-social-services-jobs' ), __( 'Where to send a staff-only email when a new match is found. Leave blank to use the site admin email. Never sent to the provider.', 'shuffles-social-services-jobs' ), 'email' );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+
+			if ( class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {
+				$bap = esc_url( admin_url( 'admin-post.php' ) );
+
+				// --- Flagged listings ---
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Flagged listings (needs review)', 'shuffles-social-services-jobs' ) . '</h2>';
+				$flagged = Shuffles_SSJ_Ban_Register::flagged_entities( 200 );
+				if ( empty( $flagged ) ) {
+					echo '<p class="description">' . esc_html__( 'No listings are currently flagged. ', 'shuffles-social-services-jobs' ) . '</p>';
+				} else {
+					echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Listing', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Type', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Matched', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Actions', 'shuffles-social-services-jobs' ) . '</th></tr></thead><tbody>';
+					foreach ( $flagged as $fp ) {
+						$info = Shuffles_SSJ_Ban_Register::flag_info( $fp->ID );
+						$edit = get_edit_post_link( $fp->ID, '' );
+						$view = get_permalink( $fp->ID );
+						echo '<tr>';
+						echo '<td>' . ( $edit ? '<a href="' . esc_url( $edit ) . '">' . esc_html( get_the_title( $fp ) ) . '</a>' : esc_html( get_the_title( $fp ) ) ) . ( $view ? ' <a href="' . esc_url( $view ) . '" target="_blank" rel="noopener" class="description">' . esc_html__( '(view)', 'shuffles-social-services-jobs' ) . '</a>' : '' ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '<td>' . esc_html( str_replace( 'sssj_', '', (string) $fp->post_type ) ) . '</td>';
+						echo '<td>' . esc_html( is_array( $info ) ? ( ( isset( $info['abn'] ) ? $info['abn'] : '' ) . ' · ' . ( isset( $info['action'] ) ? $info['action'] : '' ) ) : '' ) . '</td>';
+						echo '<td><form method="post" action="' . $bap . '" style="display:inline-block">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						wp_nonce_field( 'sssj_ban_clear' );
+						echo '<input type="hidden" name="action" value="sssj_ban_clear" /><input type="hidden" name="entity_id" value="' . esc_attr( $fp->ID ) . '" />';
+						echo '<button class="button button-small">' . esc_html__( 'Dismiss flag', 'shuffles-social-services-jobs' ) . '</button></form></td>';
+						echo '</tr>';
+					}
+					echo '</tbody></table>';
+				}
+
+				// --- Tools: rescan + import + manual add ---
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Update the register', 'shuffles-social-services-jobs' ) . '</h2>';
+				echo '<p class="description">' . esc_html( sprintf( __( 'The register currently holds %d entr%s.', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Ban_Register::count(), 1 === Shuffles_SSJ_Ban_Register::count() ? 'y' : 'ies' ) ) . '</p>';
+
+				echo '<form method="post" action="' . $bap . '" enctype="multipart/form-data" style="margin:8px 0 16px;padding:14px;border:1px solid #dcdcde;border-radius:8px;max-width:760px">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				wp_nonce_field( 'sssj_ban_import' );
+				echo '<input type="hidden" name="action" value="sssj_ban_import" />';
+				echo '<h3 style="margin-top:0">' . esc_html__( 'Import a CSV', 'shuffles-social-services-jobs' ) . '</h3>';
+				echo '<p class="description">' . esc_html__( 'Upload the NDIS Commission compliance / enforcement-actions CSV (from data.gov.au), or any CSV with an ABN column. Columns are auto-detected (ABN, provider name, action/outcome, dates). Re-importing is safe — duplicates are skipped.', 'shuffles-social-services-jobs' ) . '</p>';
+				echo '<p><input type="file" name="csv" accept=".csv,.txt" required /></p>';
+				echo '<p><label>' . esc_html__( 'Source label', 'shuffles-social-services-jobs' ) . ' <input type="text" name="source" value="NDIS Commission" class="regular-text" /></label></p>';
+				echo '<button class="button button-primary">' . esc_html__( 'Import register', 'shuffles-social-services-jobs' ) . '</button>';
+				echo '</form>';
+
+				echo '<form method="post" action="' . $bap . '" style="margin:8px 0 16px;padding:14px;border:1px solid #dcdcde;border-radius:8px;max-width:760px">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				wp_nonce_field( 'sssj_ban_add' );
+				echo '<input type="hidden" name="action" value="sssj_ban_add" />';
+				echo '<h3 style="margin-top:0">' . esc_html__( 'Add one entry', 'shuffles-social-services-jobs' ) . '</h3>';
+				echo '<p><label>' . esc_html__( 'ABN (11 digits)', 'shuffles-social-services-jobs' ) . ' <input type="text" name="abn" class="regular-text" required /></label></p>';
+				echo '<p><label>' . esc_html__( 'Provider name', 'shuffles-social-services-jobs' ) . ' <input type="text" name="provider_name" class="regular-text" /></label></p>';
+				echo '<p><label>' . esc_html__( 'Action / outcome', 'shuffles-social-services-jobs' ) . ' <input type="text" name="action_type" class="regular-text" placeholder="' . esc_attr__( 'e.g. Banning order, Registration revoked', 'shuffles-social-services-jobs' ) . '" /></label></p>';
+				echo '<p><label>' . esc_html__( 'Effective date', 'shuffles-social-services-jobs' ) . ' <input type="date" name="effective_date" /></label> &nbsp; <label>' . esc_html__( 'Expiry (optional)', 'shuffles-social-services-jobs' ) . ' <input type="date" name="expiry_date" /></label></p>';
+				echo '<button class="button">' . esc_html__( 'Add to register', 'shuffles-social-services-jobs' ) . '</button>';
+				echo '</form>';
+
+				echo '<form method="post" action="' . $bap . '" style="display:inline-block;margin-bottom:16px">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				wp_nonce_field( 'sssj_ban_rescan' );
+				echo '<input type="hidden" name="action" value="sssj_ban_rescan" />';
+				echo '<button class="button">' . esc_html__( 'Re-scan all listings now', 'shuffles-social-services-jobs' ) . '</button>';
+				echo ' <span class="description">' . esc_html__( 'Re-check every worker and organisation ABN against the current register.', 'shuffles-social-services-jobs' ) . '</span>';
+				echo '</form>';
+
+				// --- Register list ---
+				echo '<h2 style="margin-top:22px">' . esc_html__( 'Register entries', 'shuffles-social-services-jobs' ) . '</h2>';
+				$rows = Shuffles_SSJ_Ban_Register::all( '', 200 );
+				if ( empty( $rows ) ) {
+					echo '<p class="description">' . esc_html__( 'The register is empty. Import a CSV or add an entry above.', 'shuffles-social-services-jobs' ) . '</p>';
+				} else {
+					echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'ABN', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Provider', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Action', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Effective', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Source', 'shuffles-social-services-jobs' ) . '</th><th></th></tr></thead><tbody>';
+					foreach ( $rows as $br ) {
+						echo '<tr>';
+						echo '<td><code>' . esc_html( (string) $br->abn_norm ) . '</code></td>';
+						echo '<td>' . esc_html( (string) $br->provider_name ) . '</td>';
+						echo '<td>' . esc_html( (string) $br->action_type ) . '</td>';
+						echo '<td>' . esc_html( $br->effective_date ? (string) $br->effective_date : '—' ) . '</td>';
+						echo '<td>' . esc_html( (string) $br->source ) . '</td>';
+						echo '<td><form method="post" action="' . $bap . '" style="display:inline-block">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						wp_nonce_field( 'sssj_ban_delete' );
+						echo '<input type="hidden" name="action" value="sssj_ban_delete" /><input type="hidden" name="ban_id" value="' . esc_attr( $br->id ) . '" />';
+						echo '<button class="button button-small">' . esc_html__( 'Delete', 'shuffles-social-services-jobs' ) . '</button></form></td>';
+						echo '</tr>';
+					}
+					echo '</tbody></table>';
+					echo '<p class="description">' . esc_html__( 'Showing the 200 most recent entries.', 'shuffles-social-services-jobs' ) . '</p>';
+				}
+			}
+			break;
+
 		case 'privacy':
 			$open_form( 'privacy' );
 			echo '<p>' . esc_html__( 'Participant needs are pseudonymous, suburb-only, contact-gated, noindex, and require admin approval before publish. These protections are structural and cannot be switched off.', 'shuffles-social-services-jobs' ) . '</p>';
@@ -1259,6 +1393,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.8.0 · 2026-06-08 · banned-provider register + ABN cross-match (safety)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New Settings → Safety Register: keep a private register of banned/sanctioned ABNs and cross-match it whenever an ABN is recorded on a job, worker or organisation. Standalone — no dependency on any other plugin or live API.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Flag-only and staff-only by design: a match never blocks posting, never auto-rejects, and is never shown to the public or the provider. Administrators see a red “Staff only — safety flag” banner on the listing, the flag appears in a “Flagged listings” queue, and staff get an alert email. A human reviews every flag.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Populate the register by importing the NDIS Commission’s published compliance / enforcement-actions CSV (columns auto-detected; duplicates skipped on re-import), or add entries by hand. A “Re-scan all listings” button re-checks everyone after an update.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Reminder built into every alert: register data can be stale or about a different entity sharing an ABN — confirm before acting, and never contact the provider on the basis of the flag alone.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Adds a database table (sssj_ban_register). Loading wp-admin once after updating applies the table upgrade.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.7.0 · 2026-06-08 · testimonials (Workstream F)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New “What people say” testimonials section on contractor (worker) and provider (organisation) profiles — separate from star Reviews. Endorsements are qualitative quotes the profile owner curates.', 'shuffles-social-services-jobs' ); ?></li>

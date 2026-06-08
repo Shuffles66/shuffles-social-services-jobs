@@ -38,6 +38,11 @@ class Shuffles_SSJ_Admin {
 		add_action( 'admin_post_sssj_license_deactivate', array( $this, 'handle_license' ) );
 		add_action( 'admin_post_sssj_review_moderate', array( $this, 'handle_review_moderate' ) );
 		add_action( 'admin_post_sssj_testimonial_moderate', array( $this, 'handle_testimonial_moderate' ) );
+		add_action( 'admin_post_sssj_ban_add', array( $this, 'handle_ban_add' ) );
+		add_action( 'admin_post_sssj_ban_delete', array( $this, 'handle_ban_delete' ) );
+		add_action( 'admin_post_sssj_ban_import', array( $this, 'handle_ban_import' ) );
+		add_action( 'admin_post_sssj_ban_rescan', array( $this, 'handle_ban_rescan' ) );
+		add_action( 'admin_post_sssj_ban_clear', array( $this, 'handle_ban_clear' ) );
 	}
 
 	/**
@@ -79,6 +84,104 @@ class Shuffles_SSJ_Admin {
 		}
 		$back = wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=shuffles-ssj&tab=testimonials' );
 		wp_safe_redirect( $back );
+		exit;
+	}
+
+	/* ------------------------------------------------------- Banned-provider register (safety) */
+
+	private function ban_back( $flag = '' ) {
+		$back = wp_get_referer() ? wp_get_referer() : admin_url( 'admin.php?page=shuffles-ssj&tab=safety' );
+		return $flag ? add_query_arg( 'sssj_ban', $flag, remove_query_arg( 'sssj_ban', $back ) ) : $back;
+	}
+
+	/** Add a single entry to the banned register. */
+	public function handle_ban_add() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_ban_add' );
+		$res = class_exists( 'Shuffles_SSJ_Ban_Register' ) ? Shuffles_SSJ_Ban_Register::add( array(
+			'abn'            => isset( $_POST['abn'] ) ? wp_unslash( $_POST['abn'] ) : '',
+			'provider_name'  => isset( $_POST['provider_name'] ) ? wp_unslash( $_POST['provider_name'] ) : '',
+			'action_type'    => isset( $_POST['action_type'] ) ? wp_unslash( $_POST['action_type'] ) : '',
+			'details'        => isset( $_POST['details'] ) ? wp_unslash( $_POST['details'] ) : '',
+			'source'         => isset( $_POST['source'] ) ? wp_unslash( $_POST['source'] ) : 'Manual',
+			'reference'      => isset( $_POST['reference'] ) ? wp_unslash( $_POST['reference'] ) : '',
+			'effective_date' => isset( $_POST['effective_date'] ) ? wp_unslash( $_POST['effective_date'] ) : '',
+			'expiry_date'    => isset( $_POST['expiry_date'] ) ? wp_unslash( $_POST['expiry_date'] ) : '',
+		) ) : false;
+		// Re-scan so an existing matching listing gets flagged straight away.
+		if ( $res && class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {
+			Shuffles_SSJ_Ban_Register::rescan_all();
+		}
+		wp_safe_redirect( $this->ban_back( false === $res ? 'badabn' : ( 0 === $res ? 'dupe' : 'added' ) ) );
+		exit;
+	}
+
+	public function handle_ban_delete() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_ban_delete' );
+		$id = isset( $_POST['ban_id'] ) ? absint( $_POST['ban_id'] ) : 0;
+		if ( $id && class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {
+			Shuffles_SSJ_Ban_Register::delete( $id );
+			Shuffles_SSJ_Ban_Register::rescan_all(); // clears any flag that no longer matches
+		}
+		wp_safe_redirect( $this->ban_back( 'deleted' ) );
+		exit;
+	}
+
+	/** Import the NDIS Commission compliance CSV into the register. */
+	public function handle_ban_import() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_ban_import' );
+		if ( ! class_exists( 'Shuffles_SSJ_Ban_Register' ) || empty( $_FILES['csv']['tmp_name'] ) || ! is_uploaded_file( $_FILES['csv']['tmp_name'] ) ) {
+			wp_safe_redirect( $this->ban_back( 'nofile' ) );
+			exit;
+		}
+		$name = isset( $_FILES['csv']['name'] ) ? sanitize_file_name( wp_unslash( $_FILES['csv']['name'] ) ) : '';
+		$ext  = strtolower( pathinfo( $name, PATHINFO_EXTENSION ) );
+		if ( ! in_array( $ext, array( 'csv', 'txt' ), true ) ) {
+			wp_safe_redirect( $this->ban_back( 'badfile' ) );
+			exit;
+		}
+		$src    = isset( $_POST['source'] ) ? sanitize_text_field( wp_unslash( $_POST['source'] ) ) : 'NDIS Commission';
+		$report = Shuffles_SSJ_Ban_Register::import_csv( $_FILES['csv']['tmp_name'], '' !== $src ? $src : 'NDIS Commission' );
+		set_transient( 'sssj_ban_import_' . get_current_user_id(), $report, 5 * MINUTE_IN_SECONDS );
+		if ( empty( $report['error'] ) ) {
+			Shuffles_SSJ_Ban_Register::rescan_all();
+		}
+		wp_safe_redirect( $this->ban_back( empty( $report['error'] ) ? 'imported' : 'importerr' ) );
+		exit;
+	}
+
+	public function handle_ban_rescan() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_ban_rescan' );
+		if ( class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {
+			list( $scanned, $flagged ) = Shuffles_SSJ_Ban_Register::rescan_all();
+			set_transient( 'sssj_ban_rescan_' . get_current_user_id(), array( 'scanned' => $scanned, 'flagged' => $flagged ), 5 * MINUTE_IN_SECONDS );
+		}
+		wp_safe_redirect( $this->ban_back( 'rescanned' ) );
+		exit;
+	}
+
+	/** Dismiss a safety flag on a specific listing (admin reviewed it). */
+	public function handle_ban_clear() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to do that.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_ban_clear' );
+		$eid = isset( $_POST['entity_id'] ) ? absint( $_POST['entity_id'] ) : 0;
+		if ( $eid && class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {
+			Shuffles_SSJ_Ban_Register::clear_flag( $eid );
+		}
+		wp_safe_redirect( $this->ban_back( 'cleared' ) );
 		exit;
 	}
 
@@ -252,6 +355,7 @@ class Shuffles_SSJ_Admin {
 			'privacy'      => array( 'T13', __( 'Privacy & Moderation', 'shuffles-social-services-jobs' ), 'amber' ),
 			'reviews'      => array( 'T29', __( 'Reviews & Ratings', 'shuffles-social-services-jobs' ), 'amber' ),
 			'testimonials' => array( 'T35', __( 'Testimonials', 'shuffles-social-services-jobs' ), 'amber' ),
+			'safety'       => array( 'T36', __( 'Safety Register', 'shuffles-social-services-jobs' ), 'amber' ),
 			'guides'       => array( 'T20', __( 'Guides', 'shuffles-social-services-jobs' ), 'orange' ),
 			'workflows'    => array( 'T28', __( 'How-to Workflows', 'shuffles-social-services-jobs' ), 'orange' ),
 			'policies'     => array( 'T30', __( 'Policies', 'shuffles-social-services-jobs' ), 'amber' ),

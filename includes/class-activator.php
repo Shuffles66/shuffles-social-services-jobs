@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 class Shuffles_SSJ_Activator {
 
 	/** Bump when the schema changes so maybe_upgrade() re-runs dbDelta. */
-	const DB_VERSION = 9;
+	const DB_VERSION = 10;
 
 	public static function activate() {
 		$cpt = new Shuffles_SSJ_CPT_Registrar();
@@ -228,6 +228,22 @@ class Shuffles_SSJ_Activator {
   KEY subject_status (subject_type,subject_id,status),
   KEY subject_featured (subject_type,subject_id,featured),
   KEY status (status),
+  KEY created (created_at)
+) $charset_collate;";
+
+		$statements[] = "CREATE TABLE {$p}ban_register (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  abn_norm VARCHAR(14) NOT NULL DEFAULT '',
+  provider_name VARCHAR(255) NULL,
+  action_type VARCHAR(160) NULL,
+  details TEXT NULL,
+  source VARCHAR(120) NULL,
+  reference VARCHAR(255) NULL,
+  effective_date DATE NULL DEFAULT NULL,
+  expiry_date DATE NULL DEFAULT NULL,
+  created_at DATETIME NULL DEFAULT NULL,
+  PRIMARY KEY  (id),
+  KEY abn (abn_norm),
   KEY created (created_at)
 ) $charset_collate;";
 

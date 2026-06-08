@@ -102,6 +102,7 @@ class Shuffles_SSJ_Business_Rules {
 					__( 'A “Revoked” or “Banned” status is shown on a red background (never green).', 'shuffles-social-services-jobs' ),
 						__( 'A monthly check re-reads every registered org and sole trader and alerts staff (never the provider) if the status, groups, or expiry change.', 'shuffles-social-services-jobs' ),
 						__( 'Safe-by-design: if a check fails, stored details are kept (never wiped) and staff are alerted — a register-page change can’t silently look like “still approved”.', 'shuffles-social-services-jobs' ),
+							__( 'Banned-register cross-match: a private register of banned/sanctioned ABNs (imported from the NDIS Commission’s published enforcement actions, or added by hand) is cross-checked whenever an ABN is recorded on a job, worker or organisation. A match is flag-only and staff-only — it never blocks posting, never auto-rejects, and is never shown to the public or the provider; staff get an email and a human reviews it (Settings → Safety Register).', 'shuffles-social-services-jobs' ),
 					),
 				),
 				array(
@@ -155,6 +156,7 @@ class Shuffles_SSJ_Business_Rules {
 				__( 'Never mix contractor (ABN) and employee (TFN) results outside a clearly labelled tab.', 'shuffles-social-services-jobs' ),
 				__( 'Never let funding filter results down to zero — it’s a signal, not a gate.', 'shuffles-social-services-jobs' ),
 				__( 'Never email a provider about an NDIS-registration change — that alert goes to staff only.', 'shuffles-social-services-jobs' ),
+				__( 'Never block, auto-reject, or publicly reveal a banned-register ABN match — it is a staff-only flag for human review (the data can be stale or about a different entity sharing an ABN). Never contact the provider on the basis of the flag alone.', 'shuffles-social-services-jobs' ),
 				__( 'Never overwrite stored NDIS details when a check fails — keep them and alert staff.', 'shuffles-social-services-jobs' ),
 				__( 'Never let a member edit the details read from the NDIS register (status, groups, ABN, outlets, phone, …) — they are the Commission’s data, shown read-only.', 'shuffles-social-services-jobs' ),
 				__( 'Never rely on hiding a private profile from the directory alone — enforce its visibility at the page link and in the sitemap too, so it can’t be reached by guessing the URL.', 'shuffles-social-services-jobs' ),
