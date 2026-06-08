@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Shuffles Social Services Jobs and Engagements
  * Description:       A four-sided work marketplace for disability, aged care and social services — ABN & TFN engagements, participant-safe, accessible. Phase 0 scaffold.
- * Version:           1.9.0
+ * Version:           1.9.1
  * Author:            Shuffles
  * Author URI:        https://shuffles.com.au
  * Plugin URI:        https://github.com/Shuffles66/shuffles-social-services-jobs
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'SHUFFLES_SSJ_VERSION', '1.9.0' );
+define( 'SHUFFLES_SSJ_VERSION', '1.9.1' );
 define( 'SHUFFLES_SSJ_FILE', __FILE__ );
 define( 'SHUFFLES_SSJ_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SHUFFLES_SSJ_URL', plugin_dir_url( __FILE__ ) );

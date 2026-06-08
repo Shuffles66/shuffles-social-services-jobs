@@ -1425,6 +1425,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.9.1 · 2026-06-08 · fix: “Promote the platform” page mapping wouldn’t save</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Fixed Settings → Pages → “Promote the platform (self-promo studio)” reverting to blank on save. The page mapping (page_promote) was missing from the settings sanitiser’s integer-keys list, so it was dropped when saving. It now saves and sticks like every other page mapping.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.9.0 · 2026-06-08 · job syndication Phase A (free reach)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New standard job XML feed for aggregators (Jora, Adzuna, …). Find the feed URL in Settings → SEO and submit it to an aggregator to reach a wider audience for free. Anonymous ads appear as “Private advertiser”; participant requests are never included; expired jobs are excluded.', 'shuffles-social-services-jobs' ); ?></li>
