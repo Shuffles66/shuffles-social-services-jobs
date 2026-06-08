@@ -2,6 +2,9 @@
  * Cycles the platform "positives", swaps the on-screen card + caption, lets you pick a colour style,
  * and saves a 1080x1080 PNG by drawing it straight to a <canvas> (reliable across browsers — no
  * SVG/foreignObject trick that Chrome refuses to export).
+ *
+ * Robustness: clicks/changes are delegated on `document`, and the current highlight + style are read
+ * from the DOM each time, so the buttons work no matter when the studio markup appears.
  */
 ( function () {
 	'use strict';
@@ -24,8 +27,18 @@
 		var el = root.querySelector( '[data-promo-msg]' );
 		if ( el ) { el.textContent = t; }
 	}
+	function itemAt( idx ) {
+		return ( data.items && data.items[ idx ] ) ? data.items[ idx ] : null;
+	}
+	function curIdx( root ) {
+		var p = root.querySelector( '[data-promo-pick]' );
+		return p ? ( parseInt( p.value, 10 ) || 0 ) : 0;
+	}
+	function curStyle( root ) {
+		var s = root.querySelector( '[data-promo-style]' );
+		return s ? ( parseInt( s.value, 10 ) || 0 ) : 0;
+	}
 
-	/* Word-wrap text; returns the y after the last line. */
 	function wrap( ctx, text, x, y, maxW, lineH ) {
 		var words = String( text || '' ).split( /\s+/ );
 		var line  = '';
@@ -72,11 +85,9 @@
 		ctx.fillStyle = fg;
 		ctx.textBaseline = 'alphabetic';
 
-		// Brand (top-left)
 		ctx.font = '800 50px ' + FONT;
 		ctx.fillText( data.brand || '', pad, pad + 44 );
 
-		// Body block
 		var x = pad, y = 360;
 		if ( item.emoji ) {
 			ctx.font = '92px ' + EMOJI_FONT;
@@ -86,7 +97,7 @@
 		if ( item.eyebrow ) {
 			ctx.globalAlpha = 0.9;
 			ctx.font = '700 30px ' + FONT;
-			y = wrap( ctx, item.eyebrow.toUpperCase(), x, y + 34, W - pad * 2, 40 );
+			y = wrap( ctx, String( item.eyebrow ).toUpperCase(), x, y + 34, W - pad * 2, 40 );
 			ctx.globalAlpha = 1;
 		}
 		if ( 'stat' === item.kind && item.big ) {
@@ -104,7 +115,6 @@
 			ctx.globalAlpha = 1;
 		}
 
-		// Footer: URL pill (left) + safety (right)
 		var fy = H - pad + 6;
 		ctx.font = '700 30px ' + FONT;
 		var url = data.host || '';
@@ -123,87 +133,104 @@
 		c.toBlob( function ( b ) { cb( b ); }, 'image/png' );
 	}
 
-	function init() {
+	function show( root, idx, styleIdx ) {
+		var it = itemAt( idx );
+		if ( ! it ) { return; }
+		var body = root.querySelector( '[data-promo-body]' );
+		if ( body ) { body.innerHTML = it.body; }
+		var card = root.querySelector( '#sssj-asset' );
+		if ( card ) { card.setAttribute( 'data-accent', String( styleIdx ) ); }
+		var cap = root.querySelector( '[data-promo-caption]' );
+		if ( cap ) { cap.value = it.caption || ''; }
+		var pick = root.querySelector( '[data-promo-pick]' );
+		if ( pick ) { pick.value = String( idx ); }
+	}
+
+	function saveImage( root ) {
+		var it = itemAt( curIdx( root ) );
+		if ( ! it ) { msg( root, 'Nothing to save yet.' ); return; }
+		msg( root, 'Building image…' );
+		try {
+			draw( it, curStyle( root ), function ( blob ) {
+				if ( ! blob ) { msg( root, 'Sorry, the image could not be built in this browser.' ); return; }
+				var u = URL.createObjectURL( blob );
+				var a = document.createElement( 'a' );
+				a.href = u;
+				a.download = it.filename || 'shuffles-promo.png';
+				document.body.appendChild( a ); a.click(); document.body.removeChild( a );
+				URL.revokeObjectURL( u );
+				msg( root, 'Image saved (1080×1080).' );
+			} );
+		} catch ( err ) {
+			msg( root, 'Sorry, the image could not be built in this browser.' );
+		}
+	}
+
+	function copyCaption( root ) {
+		var cap = root.querySelector( '[data-promo-caption]' );
+		var text = cap ? cap.value : '';
+		if ( navigator.clipboard && navigator.clipboard.writeText ) {
+			navigator.clipboard.writeText( text ).then(
+				function () { msg( root, 'Caption copied. Paste it into your post.' ); },
+				function () { msg( root, 'Could not copy automatically — select the caption and copy it.' ); }
+			);
+		} else {
+			msg( root, 'Select the caption above and copy it.' );
+		}
+	}
+
+	function onClick( e ) {
+		var el  = e.target;
+		var hit = el.closest ? el.closest( '[data-promo-nav],[data-promo-save],[data-promo-copy]' ) : null;
+		if ( ! hit ) { return; }
+		var root = hit.closest( '[data-sssj-promo]' );
+		if ( ! root ) { return; }
+		e.preventDefault();
+		if ( hit.hasAttribute( 'data-promo-nav' ) ) {
+			var len = ( data.items || [] ).length;
+			if ( ! len ) { return; }
+			var step = ( 'next' === hit.getAttribute( 'data-promo-nav' ) ) ? 1 : -1;
+			var idx  = ( ( curIdx( root ) + step ) % len + len ) % len;
+			show( root, idx, curStyle( root ) );
+		} else if ( hit.hasAttribute( 'data-promo-save' ) ) {
+			saveImage( root );
+		} else if ( hit.hasAttribute( 'data-promo-copy' ) ) {
+			copyCaption( root );
+		}
+	}
+
+	function onChange( e ) {
+		var el   = e.target;
+		var root = el.closest ? el.closest( '[data-sssj-promo]' ) : null;
+		if ( ! root ) { return; }
+		if ( el.hasAttribute( 'data-promo-pick' ) ) {
+			show( root, parseInt( el.value, 10 ) || 0, curStyle( root ) );
+		} else if ( el.hasAttribute( 'data-promo-style' ) ) {
+			var card = root.querySelector( '#sssj-asset' );
+			if ( card ) { card.setAttribute( 'data-accent', String( parseInt( el.value, 10 ) || 0 ) ); }
+		}
+	}
+
+	function boot() {
+		if ( ! data.items || ! data.items.length ) {
+			if ( window.console && console.warn ) { console.warn( 'SSSJ_Promo: no data — self-promo studio inactive.' ); }
+			return;
+		}
+		document.addEventListener( 'click', onClick );
+		document.addEventListener( 'change', onChange );
 		var root = document.querySelector( '[data-sssj-promo]' );
-		if ( ! root || ! data.items || ! data.items.length ) { return; }
-
-		var bodyEl    = root.querySelector( '[data-promo-body]' );
-		var card      = root.querySelector( '#sssj-asset' );
-		var cap       = root.querySelector( '[data-promo-caption]' );
-		var pick      = root.querySelector( '[data-promo-pick]' );
-		var stylePick = root.querySelector( '[data-promo-style]' );
-		var i         = ( typeof data.start === 'number' ) ? data.start : 0;
-		var styleIdx  = ( data.items[ i ] && typeof data.items[ i ].accent !== 'undefined' ) ? data.items[ i ].accent : 0;
-
-		function show( n ) {
-			var len = data.items.length;
-			i = ( ( n % len ) + len ) % len;
-			var it = data.items[ i ];
-			if ( bodyEl ) { bodyEl.innerHTML = it.body; }
-			if ( card ) { card.setAttribute( 'data-accent', String( styleIdx ) ); }
-			if ( cap ) { cap.value = it.caption || ''; }
-			if ( pick ) { pick.value = String( i ); }
+		if ( root ) {
+			var i  = ( typeof data.start === 'number' ) ? data.start : 0;
+			var st = ( data.items[ i ] && typeof data.items[ i ].accent !== 'undefined' ) ? data.items[ i ].accent : 0;
+			var sp = root.querySelector( '[data-promo-style]' );
+			if ( sp ) { sp.value = String( st ); }
+			show( root, i, st );
 		}
-
-		function setStyle( s ) {
-			var len = STYLES.length;
-			styleIdx = ( ( s % len ) + len ) % len;
-			if ( card ) { card.setAttribute( 'data-accent', String( styleIdx ) ); }
-			if ( stylePick ) { stylePick.value = String( styleIdx ); }
-		}
-
-		root.addEventListener( 'click', function ( e ) {
-			var nav = e.target.closest && e.target.closest( '[data-promo-nav]' );
-			if ( nav ) {
-				e.preventDefault();
-				show( i + ( 'next' === nav.getAttribute( 'data-promo-nav' ) ? 1 : -1 ) );
-				return;
-			}
-			var save = e.target.closest && e.target.closest( '[data-promo-save]' );
-			if ( save ) {
-				e.preventDefault();
-				msg( root, 'Building image…' );
-				try {
-					draw( data.items[ i ], styleIdx, function ( blob ) {
-						if ( ! blob ) { msg( root, 'Sorry, the image could not be built in this browser.' ); return; }
-						var u = URL.createObjectURL( blob );
-						var a = document.createElement( 'a' );
-						a.href = u;
-						a.download = data.items[ i ].filename || 'shuffles-promo.png';
-						document.body.appendChild( a ); a.click(); document.body.removeChild( a );
-						URL.revokeObjectURL( u );
-						msg( root, 'Image saved (1080×1080).' );
-					} );
-				} catch ( err ) {
-					msg( root, 'Sorry, the image could not be built in this browser.' );
-				}
-				return;
-			}
-			var copy = e.target.closest && e.target.closest( '[data-promo-copy]' );
-			if ( copy ) {
-				e.preventDefault();
-				var text = cap ? cap.value : ( data.items[ i ].caption || '' );
-				if ( navigator.clipboard && navigator.clipboard.writeText ) {
-					navigator.clipboard.writeText( text ).then(
-						function () { msg( root, 'Caption copied. Paste it into your post.' ); },
-						function () { msg( root, 'Could not copy automatically — select the caption and copy it.' ); }
-					);
-				} else {
-					msg( root, 'Select the caption above and copy it.' );
-				}
-			}
-		} );
-
-		if ( pick ) { pick.addEventListener( 'change', function () { show( parseInt( pick.value, 10 ) || 0 ); } ); }
-		if ( stylePick ) { stylePick.addEventListener( 'change', function () { setStyle( parseInt( stylePick.value, 10 ) || 0 ); } ); }
-
-		setStyle( styleIdx );
-		show( i );
 	}
 
 	if ( 'loading' === document.readyState ) {
-		document.addEventListener( 'DOMContentLoaded', init );
+		document.addEventListener( 'DOMContentLoaded', boot );
 	} else {
-		init();
+		boot();
 	}
 }() );

@@ -1425,6 +1425,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.9.3 · 2026-06-08 · self-promo studio: bulletproof buttons</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Made the Promote-the-platform buttons (Save image, Copy caption, Show another, Style) robust: clicks are now handled at the page level and the current highlight/style are read live from the form, so the buttons respond regardless of how/when the studio loads. Fixes the case where the buttons appeared to do nothing.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Version bumped to force browsers to fetch the new script (assets were being served from a stale cache). Purge the site cache once after updating.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.9.2 · 2026-06-08 · self-promo studio: reliable “Save image” + style picker</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Fixed “Save image” failing (“Could not build the image”) in the Promote-the-platform studio. The graphic is now drawn straight to a canvas and saved as a crisp 1080×1080 PNG, instead of the old browser trick that some browsers (notably Chrome) refuse to export.', 'shuffles-social-services-jobs' ); ?></li>
