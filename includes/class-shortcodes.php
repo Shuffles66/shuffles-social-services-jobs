@@ -2044,44 +2044,61 @@ class Shuffles_SSJ_Shortcodes {
 	 */
 	public function menu_items() {
 		$logged_in = is_user_logged_in();
-		$items     = array();
 
-		// Browse, everyone.
-		$this->add_nav_item( $items, __( 'Home', 'shuffles-social-services-jobs' ), home_url( '/' ) );
-		$this->add_nav_item( $items, __( 'Jobs', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_job_board', '[sssj_job_board]' ) );
-		$this->add_nav_item( $items, __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) );
-		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
-		$this->add_nav_item( $items, __( 'How it works', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_workflows', '[sssj_workflows]' ) );
-		$this->add_nav_item( $items, __( 'Policies', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_policies', '[sssj_policies]' ) );
-		$this->add_nav_item( $items, __( 'Take a tour', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_demo_tour', '[sssj_demo_tour]' ) );
+		// A leaf returns an item, or null when its destination page is not configured (so it drops out).
+		$leaf = function ( $label, $url, $cta = false, $roles = array() ) {
+			return ( '' !== (string) $url ) ? array( 'label' => $label, 'url' => (string) $url, 'cta' => (bool) $cta, 'roles' => (array) $roles ) : null;
+		};
+		// A group becomes a dropdown heading; it is dropped entirely if it has no resolvable children.
+		$group = function ( $label, $children ) {
+			$children = array_values( array_filter( $children ) );
+			return $children ? array( 'label' => $label, 'url' => '#', 'cta' => false, 'children' => $children ) : null;
+		};
+
+		$items   = array();
+		$items[] = array( 'label' => __( 'Home', 'shuffles-social-services-jobs' ), 'url' => home_url( '/' ), 'cta' => false );
+
+		// Find / browse.
+		$items[] = $group( __( 'Find', 'shuffles-social-services-jobs' ), array(
+			$leaf( __( 'Jobs', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_job_board', '[sssj_job_board]' ) ),
+			$leaf( __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) ),
+			$leaf( __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) ),
+			( $logged_in ? $leaf( __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ), false, array( 'contractor', 'provider' ) ) : null ),
+		) );
+
+		// About / help.
+		$items[] = $group( __( 'About', 'shuffles-social-services-jobs' ), array(
+			$leaf( __( 'How it works', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_workflows', '[sssj_workflows]' ) ),
+			$leaf( __( 'Take a tour', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_demo_tour', '[sssj_demo_tour]' ) ),
+			$leaf( __( 'Policies', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_policies', '[sssj_policies]' ) ),
+		) );
 
 		if ( $logged_in ) {
-			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ), false, array( 'contractor', 'provider' ) );
-			if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
-				$this->add_nav_item( $items, __( 'Post a job', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_job', '[sssj_post_job]' ), false, array( 'employer', 'provider', 'supplier', 'participant', 'representative' ) );
-			}
-			if ( current_user_can( 'sssj_post_worker' ) || current_user_can( 'manage_options' ) ) {
-				$this->add_nav_item( $items, __( 'My credentials', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_credentials', '[sssj_credentials]' ), false, array( 'contractor', 'candidate' ) );
-			}
-			if ( current_user_can( 'sssj_post_need' ) || current_user_can( 'manage_options' ) ) {
-				$this->add_nav_item( $items, __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ), false, array( 'participant', 'representative' ) );
-			}
-			$this->add_nav_item( $items, __( 'Edit my profile', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ), false, array( 'contractor', 'candidate' ) );
-			$this->add_nav_item( $items, __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
 			$dash = $this->resolve_page( 'page_my_listings', '[sssj_dashboard]' );
 			$dash = $dash ? $dash : $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' );
+
+			$acct = array();
 			if ( '' !== (string) $dash ) {
-				$dash_item = array( 'label' => __( 'My dashboard', 'shuffles-social-services-jobs' ), 'url' => $dash, 'cta' => false );
-				// Admin-only sub-level: jump to the plugin settings (uses the literal page slug -
-				// the admin class isn't loaded on the front end where this menu renders).
-				if ( current_user_can( 'manage_options' ) ) {
-					$dash_item['children'] = array(
-						array( 'label' => __( 'Settings', 'shuffles-social-services-jobs' ), 'url' => admin_url( 'admin.php?page=shuffles-ssj' ), 'cta' => false ),
-					);
-				}
-				$items[] = $dash_item;
+				$acct[] = array( 'label' => __( 'My dashboard', 'shuffles-social-services-jobs' ), 'url' => $dash, 'cta' => false );
 			}
-			$items[] = array( 'label' => __( 'Log out', 'shuffles-social-services-jobs' ), 'url' => wp_logout_url( home_url( '/' ) ), 'cta' => false );
+			$acct[] = $leaf( __( 'Edit my profile', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ), false, array( 'contractor', 'candidate' ) );
+			if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
+				$acct[] = $leaf( __( 'Post a job', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_job', '[sssj_post_job]' ), false, array( 'employer', 'provider', 'supplier', 'participant', 'representative' ) );
+			}
+			if ( current_user_can( 'sssj_post_worker' ) || current_user_can( 'manage_options' ) ) {
+				$acct[] = $leaf( __( 'My credentials', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_credentials', '[sssj_credentials]' ), false, array( 'contractor', 'candidate' ) );
+			}
+			if ( current_user_can( 'sssj_post_need' ) || current_user_can( 'manage_options' ) ) {
+				$acct[] = $leaf( __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ), false, array( 'participant', 'representative' ) );
+			}
+			$acct[] = $leaf( __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
+			if ( current_user_can( 'manage_options' ) ) {
+				$acct[] = array( 'label' => __( 'Settings', 'shuffles-social-services-jobs' ), 'url' => admin_url( 'admin.php?page=shuffles-ssj' ), 'cta' => false );
+			}
+			$acct[] = array( 'label' => __( 'Log out', 'shuffles-social-services-jobs' ), 'url' => wp_logout_url( home_url( '/' ) ), 'cta' => false );
+
+			$account = $group( __( 'My account', 'shuffles-social-services-jobs' ), $acct );
+			if ( $account ) { $items[] = $account; }
 		} else {
 			$here    = esc_url_raw( home_url( add_query_arg( array() ) ) );
 			$items[] = array( 'label' => __( 'Log in', 'shuffles-social-services-jobs' ), 'url' => Shuffles_SSJ_Shortcodes::login_url( $here ), 'cta' => false );
@@ -2090,6 +2107,7 @@ class Shuffles_SSJ_Shortcodes {
 			}
 		}
 
+		$items = array_values( array_filter( $items ) ); // drop empty groups
 		return apply_filters( 'shuffles_ssj_menu_items', $items, $logged_in );
 	}
 

@@ -1589,7 +1589,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.18 · 2026-06-09 · Tour live listings: show even when the title sits in the slug</h3>
+				<h3>v1.10.19 · 2026-06-09 · Grouped navigation menu (Find / About / My account)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The navigation is now grouped into a few clear headings with dropdowns, Find (Jobs, Find a worker, Organisations, Participants seeking workers), About (How it works, Take a tour, Policies) and My account (dashboard, profile, post a job, credentials, messages, settings, log out), instead of a long row of items spread across the bar. Applies to both the [sssj_menu] shortcode and the synced “Jobs & Engagements” Appearance menu (it re-groups automatically on this update). Empty groups are hidden.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.18 · 2026-06-09 · Tour live listings: show even when the title sits in the slug</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Fixed the inline live listing on the tour so it appears for jobs and organisations whose name is stored in the slug rather than the post title (it now falls back to a tidy, readable name). Previously such listings were skipped and no card showed.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

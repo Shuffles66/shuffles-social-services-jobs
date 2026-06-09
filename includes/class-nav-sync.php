@@ -45,18 +45,25 @@ class Shuffles_SSJ_Nav_Sync {
 		return apply_filters(
 			'shuffles_ssj_nav_menu_defs',
 			array(
-				array( 'key' => 'home',     'label' => __( 'Home', 'shuffles-social-services-jobs' ),                 'kind' => 'home' ),
-				array( 'key' => 'jobs',     'label' => __( 'Jobs', 'shuffles-social-services-jobs' ),                 'page' => 'page_job_board',         'sc' => '[sssj_job_board]' ),
-				array( 'key' => 'workers',  'label' => __( 'Find a worker', 'shuffles-social-services-jobs' ),        'page' => 'page_worker_directory',  'sc' => '[sssj_worker_directory]' ),
-				array( 'key' => 'orgs',     'label' => __( 'Organisations', 'shuffles-social-services-jobs' ),        'page' => 'page_org_directory',     'sc' => '[sssj_org_directory]' ),
-				array( 'key' => 'howto',    'label' => __( 'How it works', 'shuffles-social-services-jobs' ),        'page' => 'page_workflows',         'sc' => '[sssj_workflows]' ),
-				array( 'key' => 'policies', 'label' => __( 'Policies', 'shuffles-social-services-jobs' ),            'page' => 'page_policies',          'sc' => '[sssj_policies]' ),
-				array( 'key' => 'tour',     'label' => __( 'Take a tour', 'shuffles-social-services-jobs' ),         'page' => 'page_demo_tour',         'sc' => '[sssj_demo_tour]' ),
-				array( 'key' => 'needs',    'label' => __( 'Participant requests', 'shuffles-social-services-jobs' ), 'page' => 'page_need_board',        'sc' => '[sssj_need_board]' ),
-				array( 'key' => 'post_job', 'label' => __( 'Post a job', 'shuffles-social-services-jobs' ),           'page' => 'page_post_job',          'sc' => '[sssj_post_job]' ),
-				array( 'key' => 'dashboard','label' => __( 'My dashboard', 'shuffles-social-services-jobs' ),         'page' => 'page_my_listings',       'sc' => '[sssj_dashboard]' ),
-				array( 'key' => 'login',    'label' => __( 'Log in', 'shuffles-social-services-jobs' ),               'kind' => 'login' ),
-				array( 'key' => 'register', 'label' => __( 'Register', 'shuffles-social-services-jobs' ),             'kind' => 'register' ),
+				array( 'key' => 'home',     'label' => __( 'Home', 'shuffles-social-services-jobs' ), 'kind' => 'home' ),
+
+				array( 'key' => 'find',     'label' => __( 'Find', 'shuffles-social-services-jobs' ), 'kind' => 'group' ),
+				array( 'key' => 'jobs',     'label' => __( 'Jobs', 'shuffles-social-services-jobs' ),                 'page' => 'page_job_board',         'sc' => '[sssj_job_board]',        'parent' => 'find' ),
+				array( 'key' => 'workers',  'label' => __( 'Find a worker', 'shuffles-social-services-jobs' ),        'page' => 'page_worker_directory',  'sc' => '[sssj_worker_directory]', 'parent' => 'find' ),
+				array( 'key' => 'orgs',     'label' => __( 'Organisations', 'shuffles-social-services-jobs' ),        'page' => 'page_org_directory',     'sc' => '[sssj_org_directory]',    'parent' => 'find' ),
+				array( 'key' => 'needs',    'label' => __( 'Participant requests', 'shuffles-social-services-jobs' ), 'page' => 'page_need_board',        'sc' => '[sssj_need_board]',       'parent' => 'find' ),
+
+				array( 'key' => 'about',    'label' => __( 'About', 'shuffles-social-services-jobs' ), 'kind' => 'group' ),
+				array( 'key' => 'howto',    'label' => __( 'How it works', 'shuffles-social-services-jobs' ),         'page' => 'page_workflows',         'sc' => '[sssj_workflows]',        'parent' => 'about' ),
+				array( 'key' => 'tour',     'label' => __( 'Take a tour', 'shuffles-social-services-jobs' ),          'page' => 'page_demo_tour',         'sc' => '[sssj_demo_tour]',        'parent' => 'about' ),
+				array( 'key' => 'policies', 'label' => __( 'Policies', 'shuffles-social-services-jobs' ),             'page' => 'page_policies',          'sc' => '[sssj_policies]',         'parent' => 'about' ),
+
+				array( 'key' => 'account',  'label' => __( 'My account', 'shuffles-social-services-jobs' ), 'kind' => 'group' ),
+				array( 'key' => 'post_job', 'label' => __( 'Post a job', 'shuffles-social-services-jobs' ),           'page' => 'page_post_job',          'sc' => '[sssj_post_job]',         'parent' => 'account' ),
+				array( 'key' => 'dashboard','label' => __( 'My dashboard', 'shuffles-social-services-jobs' ),         'page' => 'page_my_listings',       'sc' => '[sssj_dashboard]',        'parent' => 'account' ),
+
+				array( 'key' => 'login',    'label' => __( 'Log in', 'shuffles-social-services-jobs' ),   'kind' => 'login' ),
+				array( 'key' => 'register', 'label' => __( 'Register', 'shuffles-social-services-jobs' ), 'kind' => 'register' ),
 			)
 		);
 	}
@@ -66,6 +73,9 @@ class Shuffles_SSJ_Nav_Sync {
 		if ( ! empty( $def['kind'] ) ) {
 			if ( 'home' === $def['kind'] ) {
 				return home_url( '/' );
+			}
+			if ( 'group' === $def['kind'] ) {
+				return '#';
 			}
 			if ( 'login' === $def['kind'] ) {
 				return Shuffles_SSJ_Shortcodes::login_url( home_url( '/' ) );
@@ -118,30 +128,59 @@ class Shuffles_SSJ_Nav_Sync {
 			}
 		}
 
-		$seen  = array();
-		$pos   = 0;
-		$count = 0;
-		foreach ( self::definitions() as $def ) {
-			$url = self::url_for( $def );
-			if ( '' === $url ) {
-				continue; // unresolved page / registration closed → skip
+		$defs = self::definitions();
+
+		// Resolve every URL up front and count resolvable children per group, so a group heading with
+		// no available children is dropped rather than left as an empty dropdown.
+		$resolved    = array();
+		$child_count = array();
+		foreach ( $defs as $def ) {
+			$resolved[ $def['key'] ] = self::url_for( $def );
+			if ( ! empty( $def['parent'] ) && '' !== $resolved[ $def['key'] ] ) {
+				$child_count[ $def['parent'] ] = ( isset( $child_count[ $def['parent'] ] ) ? $child_count[ $def['parent'] ] : 0 ) + 1;
+			}
+		}
+
+		$seen       = array();
+		$ids_by_key = array();
+		$pos        = 0;
+		$count      = 0;
+		foreach ( $defs as $def ) {
+			$key      = $def['key'];
+			$is_group = ( ! empty( $def['kind'] ) && 'group' === $def['kind'] );
+			if ( $is_group ) {
+				if ( empty( $child_count[ $key ] ) ) {
+					continue;
+				}
+				$url = '#';
+			} else {
+				$url = $resolved[ $key ];
+				if ( '' === $url ) {
+					continue;
+				}
+				if ( ! empty( $def['parent'] ) && empty( $child_count[ $def['parent'] ] ) ) {
+					continue;
+				}
 			}
 			$pos++;
-			$item_id = isset( $managed[ $def['key'] ] ) ? $managed[ $def['key'] ] : 0;
-			$new_id  = wp_update_nav_menu_item(
+			$parent_id = ( ! empty( $def['parent'] ) && isset( $ids_by_key[ $def['parent'] ] ) ) ? (int) $ids_by_key[ $def['parent'] ] : 0;
+			$item_id   = isset( $managed[ $key ] ) ? $managed[ $key ] : 0;
+			$new_id    = wp_update_nav_menu_item(
 				$menu_id,
 				$item_id,
 				array(
-					'menu-item-title'    => $def['label'],
-					'menu-item-url'      => $url,
-					'menu-item-type'     => 'custom',
-					'menu-item-status'   => 'publish',
-					'menu-item-position' => $pos,
+					'menu-item-title'     => $def['label'],
+					'menu-item-url'       => $url,
+					'menu-item-type'      => 'custom',
+					'menu-item-status'    => 'publish',
+					'menu-item-position'  => $pos,
+					'menu-item-parent-id' => $parent_id,
 				)
 			);
 			if ( ! is_wp_error( $new_id ) ) {
-				update_post_meta( $new_id, self::META_KEY, $def['key'] );
-				$seen[ $def['key'] ] = true;
+				update_post_meta( $new_id, self::META_KEY, $key );
+				$seen[ $key ]       = true;
+				$ids_by_key[ $key ] = (int) $new_id;
 				$count++;
 			}
 		}
