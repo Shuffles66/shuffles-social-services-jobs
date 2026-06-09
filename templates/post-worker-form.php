@@ -229,6 +229,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 				<details class="sssj-resume-details" <?php echo $existing ? "" : "open"; ?>>
 						<summary><strong><?php esc_html_e( 'Résumé details (private)', 'shuffles-social-services-jobs' ); ?></strong></summary>
 						<p class="description"><?php esc_html_e( 'These fields are used only to build your downloadable résumé. Your phone, email and employment history are never shown on your public profile or listings.', 'shuffles-social-services-jobs' ); ?></p>
+						<p class="description">🛡️ <?php echo wp_kses_post( sprintf( __( 'Your résumé downloads in an ATS-friendly layout (plain, and easy for recruitment systems to read) by default. Match your wording to the job ad. <a href="%s" target="_blank" rel="noopener noreferrer">What is an ATS?</a>', 'shuffles-social-services-jobs' ), esc_url( apply_filters( 'shuffles_ssj_ats_guide_url', 'https://au.indeed.com/career-advice/resumes-cover-letters/applicant-tracking-systems' ) ) ) ); ?></p>
 
 						<div class="sssj-field"><label><?php esc_html_e( 'Professional summary (3 to 5 lines)', 'shuffles-social-services-jobs' ); ?></label>
 							<textarea class="sssj-textarea" name="resume_summary" rows="4" maxlength="600" placeholder="<?php esc_attr_e( 'e.g. Compassionate support worker experienced in community access, personal care and psychosocial support, known for calm communication and reliable documentation.', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_textarea( (string) $gm( 'resume_summary' ) ); ?></textarea></div>
