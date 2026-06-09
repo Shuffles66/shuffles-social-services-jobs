@@ -1596,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.21 · 2026-06-09 · Long outlet lists collapse to the first 5</h3>
+				<h3>v1.10.22 · 2026-06-09 · Demo seeder: proper titles + Australian stock images</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The demo seeder (Settings → Demo Users → Run now) now attaches an Australian stock photo to each demo organisation and worker (when a stock-photo key is set), and tags a stable key so re-runs repair rather than duplicate. Jobs inherit their organisation’s logo; participant requests stay imageless for privacy.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'For the cleanest result on a site that already has demo data, click “Purge demo” then “Run now”. Purge now also removes the demo images it created.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.21 · 2026-06-09 · Long outlet lists collapse to the first 5</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'When a provider lists many NDIS outlets, only the first 5 are shown with a “Show all N outlets” toggle that expands the rest, so a register record with hundreds of outlets no longer floods the page. Applies to both the saved provider record and the live “Scan now” preview. The data is unchanged, read-only register data, just tidier to read.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

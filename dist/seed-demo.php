@@ -1,16 +1,16 @@
 <?php
 /**
- * Demo seeder — one user per functional requirement (hat) + a representative listing each.
+ * Demo seeder, one user per functional requirement (hat) + a representative listing each.
  *
  * Creates demo accounts so every side of the marketplace has a working example. Idempotent:
  * re-running updates rather than duplicating (matched by username). Everything created is tagged
  * with meta `_sssj_demo = 1` so it can be removed in one pass (see the cleanup snippet at the end).
  *
- * RUN (recommended — WP-CLI, from the plugin folder on the server):
+ * RUN (recommended, WP-CLI, from the plugin folder on the server):
  *     wp eval-file dist/seed-demo.php
  *
  * Or drop a tiny loader next to wp-load.php that require()s this file. Best run on staging/local
- * first. Generated passwords are printed once — copy them somewhere safe.
+ * first. Generated passwords are printed once, copy them somewhere safe.
  *
  * NOTE: this is a developer tool, not part of the plugin runtime. It is not loaded by the plugin.
  *
@@ -91,7 +91,7 @@ $mk_post = function ( $type, $title, $author, $content, $meta ) {
 
 echo "Seeding Shuffles SSJ demo data…\n";
 
-// 1) Employer — org + TFN, ABN, anonymous and volunteer jobs.
+// 1) Employer, org + TFN, ABN, anonymous and volunteer jobs.
 $emp = $mk_user( 'demo_employer', 'demo_employer@example.com', 'Demo Employer Co', array( 'employer' ) );
 if ( $emp ) {
 	$org = $mk_post( 'sssj_org', 'Demo Employer Co', $emp, 'A demo employer organisation.', array(
@@ -99,27 +99,27 @@ if ( $emp ) {
 		'org_website' => 'https://example.com', 'org_type' => 'employer', 'org_category' => 'support',
 		'org_size' => 'medium', 'location_suburb' => 'Parramatta', 'location_state' => 'NSW',
 	) );
-	$mk_post( 'sssj_job', 'Support Worker (employee) — Parramatta', $emp, 'A demo TFN employee role.', array(
+	$mk_post( 'sssj_job', 'Support Worker (employee), Parramatta', $emp, 'A demo TFN employee role.', array(
 		'engagement_basis' => 'tfn', 'organisation_id' => $org, 'location_suburb' => 'Parramatta',
 		'location_state' => 'NSW', 'rate_min' => 35, 'rate_unit' => 'hour', 'application_mode' => 'full',
 		'screening_questions' => array( 'Do you hold a current WWCC?', 'Years of experience?' ),
 		'offers_sponsorship' => '1',
 	) );
-	$mk_post( 'sssj_job', 'Cleaning contractor (ABN) — Parramatta', $emp, 'A demo ABN contractor engagement.', array(
+	$mk_post( 'sssj_job', 'Cleaning contractor (ABN), Parramatta', $emp, 'A demo ABN contractor engagement.', array(
 		'engagement_basis' => 'abn', 'advertiser_abn' => '51824753556', 'organisation_id' => $org,
 		'location_suburb' => 'Parramatta', 'location_state' => 'NSW', 'rate_min' => 45, 'rate_unit' => 'hour',
 	) );
-	$mk_post( 'sssj_job', 'Confidential role — Western Sydney', $emp, 'A demo anonymous job ad.', array(
+	$mk_post( 'sssj_job', 'Confidential role, Western Sydney', $emp, 'A demo anonymous job ad.', array(
 		'engagement_basis' => 'tfn', 'organisation_id' => $org, 'location_suburb' => 'Blacktown',
 		'location_state' => 'NSW', 'is_anonymous' => '1',
 	) );
-	$mk_post( 'sssj_job', 'Community outing volunteer — Parramatta', $emp, 'A demo volunteer opportunity.', array(
+	$mk_post( 'sssj_job', 'Community outing volunteer, Parramatta', $emp, 'A demo volunteer opportunity.', array(
 		'engagement_basis' => 'vol', 'organisation_id' => $org, 'location_suburb' => 'Parramatta',
 		'location_state' => 'NSW',
 	) );
 }
 
-// 2) NDIS / service provider — registered org.
+// 2) NDIS / service provider, registered org.
 $prov = $mk_user( 'demo_provider', 'demo_provider@example.com', 'Demo Care Provider', array( 'provider' ) );
 if ( $prov ) {
 	$mk_post( 'sssj_org', 'Demo Care Provider', $prov, 'A demo NDIS-registered provider.', array(
@@ -138,7 +138,7 @@ if ( $sup ) {
 	) );
 }
 
-// 4) Contractor (sole trader / ABN) — worker profile + sole-trader org listing.
+// 4) Contractor (sole trader / ABN), worker profile + sole-trader org listing.
 $con = $mk_user( 'demo_contractor', 'demo_contractor@example.com', 'Demo Contractor', array( 'contractor' ) );
 if ( $con ) {
 	$mk_post( 'sssj_worker', 'Demo Contractor', $con, 'A demo ABN sole-trader support worker.', array(
@@ -148,7 +148,7 @@ if ( $con ) {
 	) );
 }
 
-// 5) Candidate (employee / TFN seeker) — worker profile, no ABN.
+// 5) Candidate (employee / TFN seeker), worker profile, no ABN.
 $cand = $mk_user( 'demo_candidate', 'demo_candidate@example.com', 'Demo Candidate', array( 'candidate' ) );
 if ( $cand ) {
 	$mk_post( 'sssj_worker', 'Demo Candidate', $cand, 'A demo employee job-seeker (TFN).', array(
@@ -158,7 +158,7 @@ if ( $cand ) {
 	) );
 }
 
-// 6) Participant — a support request (pseudonymous, moderated).
+// 6) Participant, a support request (pseudonymous, moderated).
 $par = $mk_user( 'demo_participant', 'demo_participant@example.com', 'Demo Participant', array( 'participant' ) );
 if ( $par ) {
 	$mk_post( 'sssj_need', 'Weekend community support', $par, 'A demo participant support request.', array(
@@ -167,7 +167,7 @@ if ( $par ) {
 	) );
 }
 
-// 7) Participant representative / nominee — a request on behalf.
+// 7) Participant representative / nominee, a request on behalf.
 $rep = $mk_user( 'demo_representative', 'demo_representative@example.com', 'Demo Representative', array( 'representative' ) );
 if ( $rep ) {
 	$mk_post( 'sssj_need', 'After-school support (via nominee)', $rep, 'A demo request from a representative.', array(
@@ -176,10 +176,22 @@ if ( $rep ) {
 	) );
 }
 
-echo "Done. (Participant requests are created as 'pending' — approve them in wp-admin to publish.)\n";
+// Attach Australian stock imagery to demo orgs + workers (idempotent; needs the stock-photo key).
+if ( class_exists( 'Shuffles_SSJ_Stock' ) && Shuffles_SSJ_Stock::enabled() ) {
+	foreach ( get_posts( array( 'post_type' => 'sssj_org', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => '_sssj_demo' ) ) as $oid ) {
+		$cat = (string) get_post_meta( (int) $oid, 'org_type', true );
+		$q   = ( 'supplier' === $cat ) ? 'medical mobility equipment' : ( 'provider' === $cat ? 'aged care support worker' : 'disability support team' );
+		Shuffles_SSJ_Stock::attach_to_post( (int) $oid, $q );
+	}
+	foreach ( get_posts( array( 'post_type' => 'sssj_worker', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => '_sssj_demo' ) ) as $wid ) {
+		Shuffles_SSJ_Stock::attach_to_post( (int) $wid, 'support worker portrait' );
+	}
+	echo "  + attached demo images where missing\n";
+}
+echo "Done. (Participant requests are created as 'pending', approve them in wp-admin to publish.)\n";
 
 /*
- * CLEANUP — remove everything this seeder created:
+ * CLEANUP, remove everything this seeder created:
  *
  * wp eval '
  *   foreach ( get_users( array( "meta_key" => "_sssj_demo", "fields" => "ids" ) ) as $u ) { wp_delete_user( $u ); }

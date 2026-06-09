@@ -78,6 +78,7 @@ class Shuffles_SSJ_Demo_Seeder {
 			return 0;
 		}
 		$meta['_sssj_demo'] = 1;
+		$meta['_sssj_demo_key'] = sanitize_title( $type . '-' . $title );
 		foreach ( $meta as $k => $v ) {
 			update_post_meta( $pid, $k, $v );
 		}
@@ -178,6 +179,19 @@ class Shuffles_SSJ_Demo_Seeder {
 			), $r );
 		}
 
+		// Attach Australian stock imagery to demo orgs + workers (idempotent: skips any that already have
+		// an image, and is a no-op when no stock-photo key is configured). Jobs inherit their org logo;
+		// participant needs are never given an image (privacy).
+		if ( class_exists( 'Shuffles_SSJ_Stock' ) && Shuffles_SSJ_Stock::enabled() ) {
+			foreach ( get_posts( array( 'post_type' => 'sssj_org', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => '_sssj_demo' ) ) as $oid ) {
+				$cat = (string) get_post_meta( (int) $oid, 'org_type', true );
+				$q   = ( 'supplier' === $cat ) ? 'medical mobility equipment' : ( 'provider' === $cat ? 'aged care support worker' : 'disability support team' );
+				Shuffles_SSJ_Stock::attach_to_post( (int) $oid, $q );
+			}
+			foreach ( get_posts( array( 'post_type' => 'sssj_worker', 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => '_sssj_demo' ) ) as $wid ) {
+				Shuffles_SSJ_Stock::attach_to_post( (int) $wid, 'support worker portrait' );
+			}
+		}
 		return $r;
 	}
 
@@ -190,7 +204,7 @@ class Shuffles_SSJ_Demo_Seeder {
 				$r['users_deleted']++;
 			}
 		}
-		foreach ( array( 'sssj_job', 'sssj_worker', 'sssj_org', 'sssj_need' ) as $type ) {
+		foreach ( array( 'sssj_job', 'sssj_worker', 'sssj_org', 'sssj_need', 'attachment' ) as $type ) {
 			$ids = get_posts( array( 'post_type' => $type, 'post_status' => 'any', 'posts_per_page' => -1, 'fields' => 'ids', 'meta_key' => '_sssj_demo' ) );
 			foreach ( $ids as $pid ) {
 				if ( wp_delete_post( (int) $pid, true ) ) {
