@@ -75,7 +75,7 @@ if ( 'job' === $type ) {
 			<p class="description"><?php esc_html_e( 'Make a clean, shareable flyer for one of your job ads, with the location and pay leading.', 'shuffles-social-services-jobs' ); ?></p>
 			<div class="sssj-asset-types">
 				<?php foreach ( $types as $key => $meta ) : ?>
-					<a class="sssj-btn sssj-btn--sm <?php echo $key === $type ? 'sssj-btn--primary' : 'sssj-btn--ghost'; ?>" href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', $key ) ) ); ?>"><?php echo esc_html( $meta[1] ); ?></a>
+					<a class="sssj-btn sssj-btn--sm <?php echo $key === $type ? 'sssj-btn--primary' : 'sssj-btn--ghost'; ?>" href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', $key ) ) ) . '#dash-create-asset'; ?>"><?php echo esc_html( $meta[1] ); ?></a>
 				<?php endforeach; ?>
 			</div>
 		</div>
@@ -86,7 +86,7 @@ if ( 'job' === $type ) {
 			<div class="sssj-panel"><h3 style="margin-top:0"><?php esc_html_e( 'Pick a job to make a flyer for', 'shuffles-social-services-jobs' ); ?></h3>
 				<ul class="sssj-asset-joblist">
 					<?php foreach ( $jobs as $j ) : ?>
-						<li><a href="<?php echo esc_url( add_query_arg( array( 'sssj_asset' => 'job', 'sssj_job_id' => (int) $j->ID ) ) ); ?>"><?php echo esc_html( get_the_title( $j ) ); ?></a></li>
+						<li><a href="<?php echo esc_url( add_query_arg( array( 'sssj_asset' => 'job', 'sssj_job_id' => (int) $j->ID ) ) ) . '#dash-create-asset'; ?>"><?php echo esc_html( get_the_title( $j ) ); ?></a></li>
 					<?php endforeach; ?>
 				</ul></div>
 		<?php else : $jcheck = Shuffles_SSJ_Assets::job_readability( $jd ); ?>
@@ -95,7 +95,7 @@ if ( 'job' === $type ) {
 					<div class="sssj-panel">
 						<h3 style="margin-top:0"><?php echo esc_html( $jd['title'] ); ?></h3>
 						<p class="description"><?php esc_html_e( 'This flyer is built from the job ad. To change the wording, pay or location, edit the job.', 'shuffles-social-services-jobs' ); ?>
-							<a href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', 'job' ) ) ); ?>"><?php esc_html_e( 'Pick another job', 'shuffles-social-services-jobs' ); ?></a></p>
+							<a href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', 'job' ) ) ) . '#dash-create-asset'; ?>"><?php esc_html_e( 'Pick another job', 'shuffles-social-services-jobs' ); ?></a></p>
 					</div>
 						<?php $theme_picker(); ?>
 					<div class="sssj-panel">
@@ -179,7 +179,7 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 		<p class="description"><?php esc_html_e( 'Built from your profile in a clean, easy-to-read layout, with your location leading so people see where you work at a glance. Pick what to make, polish the wording, then download or copy a caption.', 'shuffles-social-services-jobs' ); ?></p>
 		<div class="sssj-asset-types">
 			<?php foreach ( $types as $key => $meta ) : ?>
-				<a class="sssj-btn sssj-btn--sm <?php echo $key === $type ? 'sssj-btn--primary' : 'sssj-btn--ghost'; ?>" href="<?php echo esc_url( add_query_arg( 'sssj_asset', $key ) ); ?>"><?php echo esc_html( $meta[1] ); ?></a>
+				<a class="sssj-btn sssj-btn--sm <?php echo $key === $type ? 'sssj-btn--primary' : 'sssj-btn--ghost'; ?>" href="<?php echo esc_url( add_query_arg( 'sssj_asset', $key ) ) . '#dash-create-asset'; ?>"><?php echo esc_html( $meta[1] ); ?></a>
 			<?php endforeach; ?>
 		</div>
 	</div>

@@ -58,6 +58,11 @@
 			if ( s === def ) { defValid = true; }
 		} );
 		show( hashValid ? hash : ( defValid ? def : ( tabs.length ? tabs[ 0 ].getAttribute( 'data-dash-tab' ) : '' ) ) );
+		// When arriving via a deep-link (e.g. after the Create-an-asset type switch reloads the page),
+		// bring the dashboard into view so the member lands on the tool, not the top of the page.
+		if ( hashValid ) {
+			try { root.scrollIntoView( { block: 'start' } ); } catch ( e ) {}
+		}
 	}
 
 	function boot() {
