@@ -104,7 +104,7 @@ $has_profile = (bool) Shuffles_SSJ_Credentials::worker_post_id( $uid );
 
 			<div class="sssj-field">
 				<label for="sssj-cred-file"><?php esc_html_e( 'Evidence (PDF, JPG or PNG, max 8 MB)', 'shuffles-social-services-jobs' ); ?></label>
-				<input id="sssj-cred-file" type="file" name="evidence" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+				<input id="sssj-cred-file" type="file" name="evidence" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" data-sssj-photo />
 				<p class="description"><?php esc_html_e( 'Stored privately. Only you and the verifying administrator can open it.', 'shuffles-social-services-jobs' ); ?></p>
 			</div>
 

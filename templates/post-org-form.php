@@ -82,7 +82,7 @@ if ( $existing ) {
 					<?php if ( $existing && has_post_thumbnail( $existing->ID ) ) : ?>
 						<div style="margin-bottom:6px"><?php echo get_the_post_thumbnail( $existing->ID, 'thumbnail', array( 'class' => 'sssj-org-logo' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
 					<?php endif; ?>
-					<input id="sssj-ologo" type="file" name="org_logo" accept="image/png,image/jpeg,image/webp,image/svg+xml,.png,.jpg,.jpeg,.webp,.svg" />
+					<input id="sssj-ologo" type="file" name="org_logo" accept="image/png,image/jpeg,image/webp,image/svg+xml,.png,.jpg,.jpeg,.webp,.svg" data-sssj-photo />
 					<?php echo Shuffles_SSJ_Media::image_guidance( 'logo' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
 

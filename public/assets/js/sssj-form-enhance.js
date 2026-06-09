@@ -178,7 +178,8 @@
 	function fileInputs( form ) {
 		var inputs = form.querySelectorAll( 'input[type="file"]' );
 		Array.prototype.forEach.call( inputs, function ( inp, idx ) {
-			if ( inp.dataset.sssjFile ) { return; }
+			// Photo inputs are owned by sssj-capture.js (camera + compress + preview); leave them be.
+			if ( inp.dataset.sssjFile || inp.hasAttribute( 'data-sssj-photo' ) ) { return; }
 			inp.dataset.sssjFile = '1';
 			if ( ! inp.id ) { inp.id = 'sssj-file-' + idx; }
 			inp.style.display = 'none';

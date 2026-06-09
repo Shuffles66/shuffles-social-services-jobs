@@ -923,3 +923,14 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-banflag{ margin:0 0 var(--sssj-s4); padding:var(--sssj-s3) var(--sssj-s4); background:#fef2f2; border:1px solid #fecaca; border-left:5px solid #dc2626; border-radius:var(--sssj-radius); color:#7f1d1d; }
 .sssj .sssj-banflag strong{ display:block; margin-bottom:4px; color:#b91c1c; }
 .sssj .sssj-banflag p{ margin:0; font-size:var(--sssj-fs-sm); }
+
+/* Photo capture (camera + compress + preview) for file inputs tagged data-sssj-photo */
+.sssj-capture{ margin-top:8px; }
+.sssj-capture__cam{ display:none; }
+.sssj-capture__btn{ margin:0 0 6px; }
+.sssj-capture__status{ margin:4px 0; }
+.sssj-capture__preview{ display:flex; flex-direction:column; gap:6px; }
+.sssj-capture__item{ display:flex; align-items:center; gap:10px; padding:6px; border:1px solid var(--sssj-line,#e2e8f0); border-radius:10px; background:#fff; }
+.sssj-capture__thumb{ width:54px; height:54px; object-fit:cover; border-radius:8px; flex:0 0 auto; }
+.sssj-capture__doc{ width:54px; height:54px; display:flex; align-items:center; justify-content:center; font-size:24px; background:#f1f5f9; border-radius:8px; flex:0 0 auto; }
+.sssj-capture__meta{ flex:1 1 auto; font-size:.9em; word-break:break-word; }

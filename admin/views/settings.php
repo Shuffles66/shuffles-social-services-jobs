@@ -1597,7 +1597,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.36 · 2026-06-10 · “My support requests” gets its own page + menu item</h3>
+				<h3>v1.10.37 · 2026-06-10 · “Take a photo” option on uploads (camera + auto-shrink)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Image upload fields now offer a “Take a photo” button on phones and tablets (opens the camera), alongside the usual Choose file. Applies to credential evidence, your profile photo and gallery, and employer/job logos.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Photos are automatically shrunk in your browser before upload, so large phone photos fit the 8 MB limit and upload quickly. iPhone HEIC photos are converted to JPEG so they are accepted. PNG logos keep their transparency; PDFs are left as-is.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Each chosen file now shows a thumbnail, its name and size, and a Remove button. Nothing changes about how files are stored (still private). Older browsers keep the standard file picker.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.36 · 2026-06-10 · “My support requests” gets its own page + menu item</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'New “My support requests (seeking workers)” page mapping under Settings → Pages: one-click create/find/edit a dedicated page for the [sssj_my_needs] list.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Added a “My support requests” item to the participant/representative menu (in [sssj_menu]), so members reach their requests in one click from the header.', 'shuffles-social-services-jobs' ); ?></li>

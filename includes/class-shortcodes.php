@@ -504,6 +504,20 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! wp_script_is( 'sssj-form-enhance', 'registered' ) ) {
 			wp_register_script( 'sssj-form-enhance', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-form-enhance.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
+		// Photo capture: "Take a photo" (mobile camera) + client-side downscale-to-JPEG + preview,
+		// for any file input tagged data-sssj-photo (credential evidence, profile photo, logos, gallery).
+		if ( ! wp_script_is( 'sssj-capture', 'registered' ) ) {
+			wp_register_script( 'sssj-capture', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-capture.js', array(), SHUFFLES_SSJ_VERSION, true );
+			wp_localize_script( 'sssj-capture', 'SSSJ_Capture', array(
+				'maxEdge'    => 2000,
+				'quality'    => 0.85,
+				'maxBytes'   => 8 * 1024 * 1024,
+				'i18nTake'   => __( 'Take a photo', 'shuffles-social-services-jobs' ),
+				'i18nRemove' => __( 'Remove', 'shuffles-social-services-jobs' ),
+				'i18nBusy'   => __( 'Preparing photo…', 'shuffles-social-services-jobs' ),
+				'i18nBig'    => __( 'That image is still over 8 MB after shrinking. Please try a smaller one.', 'shuffles-social-services-jobs' ),
+			) );
+		}
 		// Provider swipe deck (Tinder-style browse).
 		if ( ! wp_script_is( 'sssj-swipe', 'registered' ) ) {
 			wp_register_script( 'sssj-swipe', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-swipe.js', array( 'sssj-form-enhance' ), SHUFFLES_SSJ_VERSION, true );
@@ -878,6 +892,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function post_job_form( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-capture' );
 		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-job-form.php', array( 'settings' => $this->settings ) );
@@ -928,6 +943,7 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_script( 'sssj-spinner' );
 		wp_enqueue_script( 'sssj-ndis-scan' );
 		wp_enqueue_script( 'sssj-form-enhance' );
+		wp_enqueue_script( 'sssj-capture' );
 		$this->enqueue_maps(); // place autocomplete on the location field → fills suburb/state/postcode + lat/lng
 		ob_start();
 		$this->load_template( 'post-worker-form.php', array( 'settings' => $this->settings ) );
@@ -1815,6 +1831,7 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_script( 'sssj-spinner' );
 		wp_enqueue_script( 'sssj-ndis-scan' );
 		wp_enqueue_script( 'sssj-form-enhance' );
+		wp_enqueue_script( 'sssj-capture' );
 		$this->enqueue_maps();
 		wp_enqueue_script( 'sssj-autofill', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-autofill.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
 		wp_localize_script( 'sssj-autofill', 'SSJ_Autofill', array( 'ajax' => admin_url( 'admin-ajax.php' ), 'nonce' => wp_create_nonce( 'sssj_autofill' ) ) );
@@ -1826,6 +1843,7 @@ class Shuffles_SSJ_Shortcodes {
 	/** Worker credential manager: list + add (with secure evidence upload) + delete. */
 	public function credentials_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-capture' );
 		ob_start();
 		$this->load_template( 'credentials-panel.php', array() );
 		return ob_get_clean();

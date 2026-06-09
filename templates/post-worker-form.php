@@ -79,13 +79,13 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<label for="sssj-wphoto"><?php esc_html_e( 'Profile photo', 'shuffles-social-services-jobs' ); ?></label>
 					<?php $cur_photo = $existing ? get_the_post_thumbnail_url( $existing->ID, 'thumbnail' ) : ''; ?>
 					<?php if ( $cur_photo ) : ?><img src="<?php echo esc_url( $cur_photo ); ?>" alt="" class="sssj-worker-photo" style="width:72px;height:72px;margin-bottom:6px" /><?php endif; ?>
-					<input id="sssj-wphoto" type="file" name="worker_photo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" />
+					<input id="sssj-wphoto" type="file" name="worker_photo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" data-sssj-photo />
 					<?php echo Shuffles_SSJ_Media::image_guidance( 'photo' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
 
 				<div class="sssj-field">
 					<label for="sssj-wgallery"><?php esc_html_e( 'More photos (optional gallery)', 'shuffles-social-services-jobs' ); ?></label>
-					<input id="sssj-wgallery" type="file" name="worker_gallery[]" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple />
+					<input id="sssj-wgallery" type="file" name="worker_gallery[]" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" multiple data-sssj-photo />
 					<?php echo Shuffles_SSJ_Media::image_guidance( 'gallery' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
 

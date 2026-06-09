@@ -55,7 +55,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 
 				<div class="sssj-field">
 					<label for="sssj-joblogo"><?php esc_html_e( 'Logo (optional)', 'shuffles-social-services-jobs' ); ?></label>
-					<input id="sssj-joblogo" type="file" name="job_logo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" />
+					<input id="sssj-joblogo" type="file" name="job_logo" accept="image/png,image/jpeg,image/webp,.png,.jpg,.jpeg,.webp" data-sssj-photo />
 					<?php echo Shuffles_SSJ_Media::image_guidance( 'job_logo' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				</div>
 
