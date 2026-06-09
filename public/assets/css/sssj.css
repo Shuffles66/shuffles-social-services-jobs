@@ -109,6 +109,13 @@
 .sssj .ts-dropdown .option{ padding:9px 12px; }
 .sssj .ts-dropdown .active{ background:#eaf3fb; color:var(--sssj-blue-deep); }
 .sssj .ts-dropdown .ts-dropdown-content{ border-radius:var(--sssj-radius); }
+/* body-parented Tom Select dropdown (dropdownParent:'body') floats above section cards + sticky bar.
+   These rules are NOT scoped under .sssj because the dropdown is appended to <body>; literal values
+   are used (the --sssj-* vars are not in scope on body). */
+.ts-dropdown{ z-index:100000; border:1px solid #e2e8f0; border-radius:10px; box-shadow:0 10px 30px rgba(2,6,23,.12); margin-top:4px; background:#fff; color:#0f172a; }
+.ts-dropdown .option{ padding:9px 12px; }
+.ts-dropdown .active{ background:#eaf3fb; color:#1e5d9c; }
+.ts-dropdown .ts-dropdown-content{ border-radius:10px; }
 
 /* Filter banners, compact + tidy (the location field was far too wide) */
 .sssj form.sssj-row{ gap:8px; align-items:center; }
@@ -540,6 +547,14 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-section__title{ display:flex; align-items:center; gap:8px; margin:0 0 16px; padding-bottom:8px; border-bottom:2px solid #e0f0fb; color:var(--sssj-blue-deep,#1e5d9c); font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
 .sssj .sssj-section__title svg{ width:16px; height:16px; flex:0 0 auto; }
 @media (max-width:600px){ .sssj .sssj-section{ padding:16px 14px; } }
+/* Desktop: lay section cards two-up to use horizontal space (ergonomics). Non-card direct children
+   (completeness meter, intros, messages) span the full width; cards flow into the two columns.
+   Below 980px the form stays a single column (mobile/tablet friendly). */
+@media (min-width:980px){
+	.sssj form.sssj-stack{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 18px; align-items:start; }
+	.sssj form.sssj-stack > :not(.sssj-section){ grid-column:1 / -1; }
+	.sssj form.sssj-stack > .sssj-section{ margin:0; }
+}
 /* Completeness meter */
 .sssj .sssj-compl{ display:flex; flex-direction:column; gap:8px; padding:16px 18px; margin:0 0 16px; border:1.5px solid var(--sssj-blue,#3897e0); border-radius:var(--sssj-radius,10px); background:linear-gradient(135deg,#eaf3fb,#e6faf6); }
 .sssj .sssj-compl__head{ display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:700; color:var(--sssj-blue-deep,#1e5d9c); }

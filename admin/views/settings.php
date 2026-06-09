@@ -1597,7 +1597,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.37 · 2026-06-10 · “Take a photo” option on uploads (camera + auto-shrink)</h3>
+				<h3>v1.10.38 · 2026-06-10 · Form ergonomics: dropdowns float, cards two-up, clearer sole-trader note</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Fixed: searchable dropdowns (services, languages, cultural focus, etc.) no longer disappear behind the next section, they now float above everything.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Desktop: profile and posting forms now lay their section cards two-up to make better use of the screen, and stay a clean single column on phones and tablets.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Added a plain-English note under “I’m an NDIS-registered sole trader”: tick it only if the registration is in your own name; if a company or larger organisation holds it, that entity is the provider and should be set up as its own organisation profile.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.37 · 2026-06-10 · “Take a photo” option on uploads (camera + auto-shrink)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Image upload fields now offer a “Take a photo” button on phones and tablets (opens the camera), alongside the usual Choose file. Applies to credential evidence, your profile photo and gallery, and employer/job logos.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Photos are automatically shrunk in your browser before upload, so large phone photos fit the 8 MB limit and upload quickly. iPhone HEIC photos are converted to JPEG so they are accepted. PNG logos keep their transparency; PDFs are left as-is.', 'shuffles-social-services-jobs' ); ?></li>

@@ -186,6 +186,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 
 				<div class="sssj-field">
 					<label><input type="checkbox" name="ndis_registered" value="1" <?php checked( '1', (string) $gm( 'ndis_registered' ) ); ?> /> <?php esc_html_e( 'I’m an NDIS-registered sole trader (registered in my own right)', 'shuffles-social-services-jobs' ); ?></label>
+					<p class="description"><?php esc_html_e( 'Why this matters: tick this only if the NDIS registration is held in your own name as an individual / sole trader. If you work under a company or a larger organisation that holds the registration, leave this unticked, that entity is the registered provider (not you) and should be set up as its own organisation profile instead.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 				<div class="sssj-field">
 					<label for="sssj-wndisid"><?php esc_html_e( 'NDIS Registration No', 'shuffles-social-services-jobs' ); ?></label>

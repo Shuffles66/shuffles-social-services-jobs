@@ -21,7 +21,10 @@
 					maxItems: multiple ? null : 1,
 					allowEmptyOption: true,
 					placeholder: sel.getAttribute( 'data-placeholder' ) || firstEmpty || '',
-					hidePlaceholder: false
+					hidePlaceholder: false,
+					// Render the dropdown on <body> so it floats above the next section card / sticky bar
+					// instead of being painted underneath it (the .sssj theme for it is global, see sssj.css).
+					dropdownParent: 'body'
 				} );
 			} catch ( e ) { /* leave the native select as-is on any error */ }
 		} );
