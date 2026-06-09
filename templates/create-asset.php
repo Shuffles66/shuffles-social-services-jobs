@@ -58,7 +58,7 @@ $format_picker = function () {
 	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--primary" data-asset-format-pick="ats">' . esc_html__( 'ATS-friendly (recommended)', 'shuffles-social-services-jobs' ) . '</button>';
 	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--ghost" data-asset-format-pick="styled">' . esc_html__( 'Styled', 'shuffles-social-services-jobs' ) . '</button>';
 	echo '</div>';
-	echo '<p class="description">' . esc_html__( 'ATS-friendly is plain, single-column and photo-free, what health, disability and aged-care employers and their recruitment systems prefer. Styled adds your photo and colour, nicer on screen but not ATS-safe.', 'shuffles-social-services-jobs' ) . '</p></div>';
+	echo '<p class="description">' . esc_html__( 'ATS-friendly is plain, single-column and photo-free, what health, disability and aged-care employers and their recruitment systems prefer. Styled adds your photo and colour, nicer on screen but not ATS-safe.', 'shuffles-social-services-jobs' ) . ' <a href="' . esc_url( apply_filters( 'shuffles_ssj_ats_guide_url', 'https://au.indeed.com/career-advice/resumes-cover-letters/applicant-tracking-systems' ) ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'What is an ATS? (guide)', 'shuffles-social-services-jobs' ) . '</a></p></div>';
 };
 
 $type = isset( $_GET['sssj_asset'] ) ? sanitize_key( wp_unslash( $_GET['sssj_asset'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended

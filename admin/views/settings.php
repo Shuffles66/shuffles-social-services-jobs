@@ -1596,7 +1596,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.29 · 2026-06-09 · Health-sector résumé: structured fields + ATS layout</h3>
+				<h3>v1.10.30 · 2026-06-09 · Résumé tool: link to an ATS guide</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Added a “What is an ATS? (guide)” link next to the résumé Layout toggle, pointing to a credible, plain-English explanation (Indeed Australia’s Career Guide) so members understand why the ATS-friendly layout is recommended. The link is editable via the shuffles_ssj_ats_guide_url filter.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.29 · 2026-06-09 · Health-sector résumé: structured fields + ATS layout</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The résumé builder now follows health, disability and aged-care best practice. A new “Résumé details (private)” section on your worker profile captures a professional summary, compliance & credentials (qualifications, registration, screening, training, licences, work rights), core skills, employment history (add as many roles as you like, newest first, with bullet points) and education & training. These are used only for your downloadable résumé, never shown on your public profile.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'The résumé now renders in the proper structure (Name & contact, Professional summary, Compliance & credentials, Core skills, Employment history, Education & training, Referees) and you can switch between an ATS-friendly layout (plain, single-column, no photo, what employers and recruitment systems prefer) and a Styled layout, from the Layout toggle on the résumé tab. Save as PDF to send.', 'shuffles-social-services-jobs' ); ?></li>
