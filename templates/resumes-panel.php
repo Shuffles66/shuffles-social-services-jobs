@@ -32,6 +32,22 @@ $notices = array(
 	<div class="sssj-panel">
 		<h3 style="margin-top:0">📄 <?php esc_html_e( 'My résumés', 'shuffles-social-services-jobs' ); ?></h3>
 		<p class="description"><?php esc_html_e( 'Store one or more résumés here and pick which to send when you apply for an employee (TFN) job. They are private, shared only with employers you apply to, and our admins.', 'shuffles-social-services-jobs' ); ?></p>
+		<?php
+		// Bridge to the résumé builder (Create an asset → Résumé). Resolve a standalone create-asset page,
+		// else the dashboard, so members with no file can generate an ATS-friendly one from their profile.
+		$sssj_builder = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_create_asset', '[sssj_create_asset]' ) : '';
+		if ( '' === $sssj_builder && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) {
+			$sssj_builder = Shuffles_SSJ_Shortcodes::page_link( 'page_dashboard', '[sssj_dashboard]' );
+			if ( '' === $sssj_builder ) { $sssj_builder = Shuffles_SSJ_Shortcodes::page_link( 'page_my_listings', '[sssj_my_listings]' ); }
+		}
+		if ( '' !== $sssj_builder ) :
+			$sssj_builder_url = add_query_arg( 'sssj_asset', 'resume', $sssj_builder ) . '#dash-create-asset';
+			?>
+			<div class="sssj-note sssj-note--ok" style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;justify-content:space-between">
+				<span>🛠️ <?php esc_html_e( 'No résumé yet, or want a fresh one? Build a clean, ATS-friendly résumé from your profile in minutes, then download it and upload it here to send with applications.', 'shuffles-social-services-jobs' ); ?></span>
+				<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( $sssj_builder_url ); ?>"><?php esc_html_e( 'Build a résumé', 'shuffles-social-services-jobs' ); ?></a>
+			</div>
+		<?php endif; ?>
 
 		<?php if ( $notice && isset( $notices[ $notice ] ) ) : ?>
 			<div class="sssj-note <?php echo esc_attr( 'error' === $notice ? 'sssj-note--warn' : 'sssj-note--ok' ); ?>"><?php echo esc_html( $notices[ $notice ] ); ?></div>

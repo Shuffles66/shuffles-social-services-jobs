@@ -1596,7 +1596,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.32 · 2026-06-09 · ATS reminder on the profile + feature documented</h3>
+				<h3>v1.10.33 · 2026-06-09 · Link “My résumés” to the résumé builder</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The “My résumés” file store now has a “Build a résumé” prompt linking to the résumé builder (Create an asset → Résumé), so members with no résumé file can generate a clean, ATS-friendly one from their profile, then download it and upload it here to send with applications. (My résumés stores files you attach to applications; the builder generates a résumé from your profile, two separate tools, now connected.)', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.32 · 2026-06-09 · ATS reminder on the profile + feature documented</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Added a one-line ATS reminder at the top of the worker profile’s “Résumé details” section (your résumé downloads ATS-friendly by default; match your wording to the job ad), with the “What is an ATS?” guide link. Recorded the ATS-friendly résumé builder in the platform’s features document.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>
