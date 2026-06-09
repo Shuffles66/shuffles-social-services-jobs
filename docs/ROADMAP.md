@@ -6,30 +6,39 @@ Living backlog. Keep current as items ship or priorities change. (Companion to
 - **Last updated:** 2026-06-10
 
 ## Status (2026-06-10)
-- **Live:** v1.10.33 (My resumes -> builder bridge).
-- **Built, lint-clean, awaiting deploy (one SFTP push covers both):**
-  - **v1.10.34** "Save to My resumes": a button in the resume builder (Create an asset -> Resume) that
-    server-renders the resume in the chosen layout (ATS-friendly or Styled) and files it straight into the
-    "My resumes" store. Only shows when the server renderer is switched on (Settings -> Assets).
-    Adds `Shuffles_SSJ_Resumes::add_bytes()` + AJAX `sssj_asset_save_resume`.
-  - **v1.10.35** Manage several support requests: a filterable **"Your support requests"** list (Open /
-    Closed / All, with counts) under the Request-support form, with a friendly **Open / Filled / Closed**
-    status, response counts, closing dates, and **Mark-as-filled / Close / Reopen** controls. Dashboard
-    "My listings" now shows the same friendly status. New dedicated **`[sssj_my_needs]`** shortcode (a
-    "seeking workers" list, placeable on its own page/menu). Sticky save-bar bug fixed (it now appears only
-    when the visible profile form is actually edited, not across the whole dashboard). Simpler need-details
-    placeholder ("Describe what you wish.").
-  - Lifecycle model lives in `Shuffles_SSJ_Shortcodes::listing_state()` / `listing_actions_html()` /
-    `render_my_needs()`; close/filled handler `sssj_listing_close` (reopen clears the filled flag).
-  -> **Action:** deploy v1.10.35 (blocked once by the deploy classifier; needs explicit per-action OK),
-     then git commit + `gh release`.
+- **Live:** v1.10.42. This session shipped v1.10.34 -> v1.10.42 (each deployed + committed + released):
+  - v1.10.34 "Save to My resumes" (server-render the resume straight into the My resumes store; the button
+    shows only when the server renderer is on). Browser-only chosen for now (no Gotenberg), so the button
+    stays hidden until a renderer is configured.
+  - v1.10.35 Manage multiple support requests: filterable "Your support requests" list (Open/Closed/All +
+    counts), Open/Filled/Closed status, Mark-as-filled/Close/Reopen; dashboard "My listings" matches; new
+    [sssj_my_needs] shortcode; sticky save-bar fix; simpler placeholder.
+  - v1.10.36 "My support requests" page mapping + participant menu item.
+  - v1.10.37 "Take a photo" on image uploads (mobile camera + client-side downscale-to-JPEG + preview;
+    credential evidence, worker photo + gallery, org/job logos).
+  - v1.10.38 Form ergonomics: TomSelect dropdowns float (dropdownParent:body); section cards two-up on
+    desktop; clearer NDIS sole-trader note. NEW STANDING DIRECTIVE: consider ergonomics everywhere.
+  - v1.10.39 Public Jobs board upgrade: sticky filter bar, engagement-type toggle (All/TFN/ABN/Vol), sort,
+    removable filter chips, aria-live count, grid/list toggle, loading skeletons, empty-state, SVG icons.
+  - v1.10.40 Fix: saving "My profile" could 404 (absolutise the path-only referer to the canonical host).
+  - v1.10.41 Attach to organisation (matching email domain): org sets an email domain; matching workers
+    request to attach; org admin approves in their Team tab.
+  - v1.10.42 Fix: "Create page" for the My support requests mapping (it was missing from the allow-list).
+
+## Open / to confirm
+- **Retire the OLD public Jobs board** (admin-side, cannot be done over SFTP): create the Jobs page from
+  [sssj_job_board] (Settings -> Pages -> Jobs -> Create), set page_job_board + the menu, then delete the old
+  all-jobs-board page and deactivate WP Job Manager. Optional: a 301 from the old slug (give the slug to wire).
+- **Re-test the My-profile save 404 fix** (v1.10.40). If it recurs, apply the same absolutise-referer fix to
+  handle_post_org + handle_post_need (they share the identical pattern).
+- **Server renderer** for Save-to-resumes stays OFF (browser-only) until a Gotenberg endpoint is configured.
 
 ## Where we are going (near-term)
-1. **Deploy + commit + release v1.10.35.**
-2. **Compliance / HR / Verification integrations** (NEW workstream, below).
-3. Continue the already-agreed workstreams in this doc: application pipeline (A), hats + dashboard reveal (B),
-   the C-series, the E/F/G asset/testimonial/self-promo set, and #7 employment syndication.
-
+1. **Compliance / HR / Verification integrations** (workstream below) + the two cheap precursors
+   (self-declared "training completed" field feeding the trust badges; an employer "hire -> onboarding" link).
+2. **Employment syndication #7** (push-out purchase-gated + pull-in feeds).
+3. Continue the already-agreed workstreams: application pipeline (A), hats + dashboard reveal (B), the
+   C-series, and the E/F/G asset / testimonial / self-promo set.
 ## Workstream: Compliance / HR / Verification integrations (NEW, 2026-06-10)
 Triggered by the question "is connecting with products like Sentrient a consideration?".
 **Principle:** standalone-first. Build **vendor-neutral seams** (one adapter per category) through the
