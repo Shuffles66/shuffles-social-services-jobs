@@ -331,8 +331,11 @@ class Shuffles_SSJ_Demo_Tour {
 			return '';
 		}
 		$post  = $q->posts[0];
-		$title = get_the_title( $post );
+		$title = trim( wp_strip_all_tags( get_the_title( $post ) ) );
 		$link  = get_permalink( $post );
+		if ( '' === $title && ! empty( $post->post_name ) ) {
+			$title = ucwords( str_replace( array( '-', '_' ), ' ', $post->post_name ) ); // some listings keep their name in meta; humanise the slug
+		}
 		if ( '' === $title || ! $link ) {
 			return '';
 		}
