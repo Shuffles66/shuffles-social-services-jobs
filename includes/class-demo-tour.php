@@ -217,6 +217,19 @@ class Shuffles_SSJ_Demo_Tour {
 		echo '<section class="sssj-demo-intro sssj-reveal" data-sssj-reveal><h1 class="sssj-demo-intro__title">' . esc_html__( 'Take Just Tasks for a test drive', 'shuffles-social-services-jobs' ) . '</h1>';
 		echo '<p class="sssj-demo-intro__sub">' . esc_html__( 'See the marketplace through the people who use it. Pick a role to explore their story and the features they rely on. Every example below is fictional.', 'shuffles-social-services-jobs' ) . '</p></section>';
 
+		// Phase 3: trust + on-brand band: safety guardrails, accessibility note, and live stats.
+		echo '<section class="sssj-demo-trust sssj-reveal" data-sssj-reveal>';
+		echo '<div class="sssj-demo-trust__safety"><h2 class="sssj-demo-trust__title">🛡️ ' . esc_html__( 'Safety, built in', 'shuffles-social-services-jobs' ) . '</h2><ul class="sssj-demo-trust__list">';
+		if ( class_exists( 'Shuffles_SSJ_Display' ) ) {
+			foreach ( Shuffles_SSJ_Display::safety_guardrails() as $sssj_g ) {
+				echo '<li>' . esc_html( $sssj_g ) . '</li>';
+			}
+		}
+		echo '</ul>';
+		echo '<p class="sssj-demo-trust__a11y">🌐 ' . esc_html__( 'This whole tour is multilingual and accessible: use the bar to switch language, read the page aloud, enlarge the text or turn on high contrast. Nothing extra is sent anywhere to make it work.', 'shuffles-social-services-jobs' ) . '</p></div>';
+		echo '<div class="sssj-demo-trust__stats">' . do_shortcode( '[sssj_stats min="10"]' ) . '</div>';
+		echo '</section>';
+
 		echo '<div class="sssj-demo-filter" data-demo-filterbar>';
 			echo '<span class="sssj-demo-filter__lbl">' . esc_html__( 'Which are you?', 'shuffles-social-services-jobs' ) . '</span>';
 			echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--primary is-active" data-demo-filter="all">' . esc_html__( 'Everyone', 'shuffles-social-services-jobs' ) . '</button>';
@@ -237,6 +250,13 @@ class Shuffles_SSJ_Demo_Tour {
 			echo '</a>';
 		}
 		echo '</div>';
+
+		// Phase 3: sticky persona nav (scroll-spy highlights the persona in view; respects the filter).
+		echo '<nav class="sssj-demo-stickynav" data-demo-stickynav aria-label="' . esc_attr__( 'Jump to a persona', 'shuffles-social-services-jobs' ) . '">';
+		foreach ( $people as $key => $p ) {
+			echo '<a class="sssj-demo-stickynav__item" data-demo-group="' . esc_attr( isset( $group_of[ $key ] ) ? $group_of[ $key ] : 'offer' ) . '" data-demo-target="sssj-demo-' . esc_attr( $key ) . '" href="#sssj-demo-' . esc_attr( $key ) . '"><span aria-hidden="true">' . esc_html( $p['icon'] ) . '</span> ' . esc_html( $p['name'] ) . '</a>';
+		}
+		echo '</nav>';
 
 		// One story section per persona.
 		foreach ( $people as $key => $p ) {

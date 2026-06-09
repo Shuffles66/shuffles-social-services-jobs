@@ -116,7 +116,27 @@
 		} );
 	}
 
-	function start() { boot(); carousels(); demoFilter(); }
+	// Demo tour sticky-nav scroll-spy: highlight the persona whose story is in view.
+	function demoSpy() {
+		var nav = document.querySelector( '[data-demo-stickynav]' );
+		if ( ! nav || ! ( 'IntersectionObserver' in window ) ) { return; }
+		var links = {};
+		Array.prototype.forEach.call( nav.querySelectorAll( '[data-demo-target]' ), function ( a ) {
+			links[ a.getAttribute( 'data-demo-target' ) ] = a;
+		} );
+		var sections = document.querySelectorAll( '.sssj-demo-story[id]' );
+		if ( ! sections.length ) { return; }
+		var spy = new IntersectionObserver( function ( entries ) {
+			entries.forEach( function ( e ) {
+				if ( e.isIntersecting && links[ e.target.id ] ) {
+					Object.keys( links ).forEach( function ( k ) { links[ k ].classList.toggle( 'is-active', k === e.target.id ); } );
+				}
+			} );
+		}, { rootMargin: '-40% 0px -55% 0px', threshold: 0 } );
+		Array.prototype.forEach.call( sections, function ( s ) { spy.observe( s ); } );
+	}
+
+	function start() { boot(); carousels(); demoFilter(); demoSpy(); }
 
 	if ( 'loading' === document.readyState ) {
 		document.addEventListener( 'DOMContentLoaded', start );

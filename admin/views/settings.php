@@ -1596,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.22 · 2026-06-09 · Demo seeder: proper titles + Australian stock images</h3>
+				<h3>v1.10.23 · 2026-06-09 · Menu dropdown z-index fix + demo tour Phase 3 (trust)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Fixed the navigation dropdowns appearing behind the page banner: the menu now sits above page content so the “Find / About / My account” submenus are fully visible.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Demo tour Phase 3: a “Safety, built in” trust band (privacy, verified checks, safe relay) with an accessibility note and live counters near the top, plus a sticky persona bar that follows you down the page and highlights whoever you are reading about. The trust band and sticky bar respect the “Which are you?” filter.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.22 · 2026-06-09 · Demo seeder: proper titles + Australian stock images</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The demo seeder (Settings → Demo Users → Run now) now attaches an Australian stock photo to each demo organisation and worker (when a stock-photo key is set), and tags a stable key so re-runs repair rather than duplicate. Jobs inherit their organisation’s logo; participant requests stay imageless for privacy.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'For the cleanest result on a site that already has demo data, click “Purge demo” then “Run now”. Purge now also removes the demo images it created.', 'shuffles-social-services-jobs' ); ?></li>
