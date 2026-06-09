@@ -51,6 +51,16 @@ $theme_picker = function () use ( $asset_themes ) {
 	echo '<p class="description">' . esc_html__( 'Changes the colours of your asset. It applies to the live preview, the PDF and the saved image.', 'shuffles-social-services-jobs' ) . '</p></div>';
 };
 
+/** Render the ATS vs styled layout toggle (résumé only). */
+$format_picker = function () {
+	echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'Layout', 'shuffles-social-services-jobs' ) . '</h3>';
+	echo '<div class="sssj-row" data-asset-format>';
+	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--primary" data-asset-format-pick="ats">' . esc_html__( 'ATS-friendly (recommended)', 'shuffles-social-services-jobs' ) . '</button>';
+	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--ghost" data-asset-format-pick="styled">' . esc_html__( 'Styled', 'shuffles-social-services-jobs' ) . '</button>';
+	echo '</div>';
+	echo '<p class="description">' . esc_html__( 'ATS-friendly is plain, single-column and photo-free, what health, disability and aged-care employers and their recruitment systems prefer. Styled adds your photo and colour, nicer on screen but not ATS-safe.', 'shuffles-social-services-jobs' ) . '</p></div>';
+};
+
 $type = isset( $_GET['sssj_asset'] ) ? sanitize_key( wp_unslash( $_GET['sssj_asset'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 if ( '' === $type && ! empty( $atts['asset'] ) ) {
 	$type = sanitize_key( (string) $atts['asset'] );
@@ -97,7 +107,7 @@ if ( 'job' === $type ) {
 						<p class="description"><?php esc_html_e( 'This flyer is built from the job ad. To change the wording, pay or location, edit the job.', 'shuffles-social-services-jobs' ); ?>
 							<a href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', 'job' ) ) ) . '#dash-create-asset'; ?>"><?php esc_html_e( 'Pick another job', 'shuffles-social-services-jobs' ); ?></a></p>
 					</div>
-						<?php $theme_picker(); ?>
+						<?php $theme_picker(); if ( 'resume' === $type ) { $format_picker(); } ?>
 					<div class="sssj-panel">
 						<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>
 						<ul class="sssj-asset-check">
@@ -205,7 +215,7 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 				</p>
 			</div>
 
-			<?php $theme_picker(); ?>
+			<?php $theme_picker(); if ( 'resume' === $type ) { $format_picker(); } ?>
 
 			<div class="sssj-panel">
 				<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>

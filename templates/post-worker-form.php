@@ -226,7 +226,100 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<label><input type="checkbox" name="alert_jobs" value="1" <?php checked( '1', (string) get_user_meta( get_current_user_id(), 'sssj_alert_jobs', true ) ); ?> /> <?php esc_html_e( 'Email me when new jobs match my profile', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
-				<?php if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) { Shuffles_SSJ_Privacy::fields_html( 'worker', $existing ? $existing->ID : 0 ); } ?>
+				<details class="sssj-resume-details" <?php echo $existing ? "" : "open"; ?>>
+						<summary><strong><?php esc_html_e( 'Résumé details (private)', 'shuffles-social-services-jobs' ); ?></strong></summary>
+						<p class="description"><?php esc_html_e( 'These fields are used only to build your downloadable résumé. Your phone, email and employment history are never shown on your public profile or listings.', 'shuffles-social-services-jobs' ); ?></p>
+
+						<div class="sssj-field"><label><?php esc_html_e( 'Professional summary (3 to 5 lines)', 'shuffles-social-services-jobs' ); ?></label>
+							<textarea class="sssj-textarea" name="resume_summary" rows="4" maxlength="600" placeholder="<?php esc_attr_e( 'e.g. Compassionate support worker experienced in community access, personal care and psychosocial support, known for calm communication and reliable documentation.', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_textarea( (string) $gm( 'resume_summary' ) ); ?></textarea></div>
+
+						<div class="sssj-row">
+							<div class="sssj-field"><label><?php esc_html_e( 'Phone (résumé only)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="resume_phone" value="<?php echo esc_attr( (string) $gm( 'resume_phone' ) ); ?>" /></div>
+							<div class="sssj-field"><label><?php esc_html_e( 'Email (résumé only)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="email" name="resume_email" value="<?php echo esc_attr( (string) $gm( 'resume_email' ) ); ?>" /></div>
+							<div class="sssj-field"><label><?php esc_html_e( 'LinkedIn (optional)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="url" name="resume_linkedin" value="<?php echo esc_attr( (string) $gm( 'resume_linkedin' ) ); ?>" placeholder="https://www.linkedin.com/in/" /></div>
+						</div>
+
+						<h4 style="margin:14px 0 4px"><?php esc_html_e( 'Compliance & credentials', 'shuffles-social-services-jobs' ); ?></h4>
+						<p class="description"><?php esc_html_e( 'Verified screening checks (NDIS, WWCC, police) come from My credentials. Add your other details here.', 'shuffles-social-services-jobs' ); ?></p>
+						<div class="sssj-field"><label><?php esc_html_e( 'Qualifications (one per line)', 'shuffles-social-services-jobs' ); ?></label>
+							<textarea class="sssj-textarea" name="resume_qualifications" rows="3" placeholder="Cert III Individual Support&#10;Diploma of Nursing"><?php echo esc_textarea( (string) $gm( 'resume_qualifications' ) ); ?></textarea></div>
+						<div class="sssj-row">
+							<div class="sssj-field"><label><?php esc_html_e( 'Registration (e.g. AHPRA)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="resume_registration" value="<?php echo esc_attr( (string) $gm( 'resume_registration' ) ); ?>" /></div>
+							<div class="sssj-field"><label><?php esc_html_e( 'Work rights', 'shuffles-social-services-jobs' ); ?></label>
+								<select class="sssj-select" name="work_rights">
+									<?php $wrk = (string) $gm( 'work_rights' ); foreach ( array( '' => __( 'Prefer not to say', 'shuffles-social-services-jobs' ), 'citizen' => __( 'Australian citizen', 'shuffles-social-services-jobs' ), 'pr' => __( 'Permanent resident', 'shuffles-social-services-jobs' ), 'visa' => __( 'Valid working visa', 'shuffles-social-services-jobs' ), 'other' => __( 'Other', 'shuffles-social-services-jobs' ) ) as $wv => $wl ) { echo '<option value="' . esc_attr( $wv ) . '" ' . selected( $wrk, $wv, false ) . '>' . esc_html( $wl ) . '</option>'; } ?>
+								</select></div>
+						</div>
+						<div class="sssj-field"><label><?php esc_html_e( 'Training (First Aid, CPR, manual handling, medication assistance)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="resume_training" value="<?php echo esc_attr( (string) $gm( 'resume_training' ) ); ?>" /></div>
+						<div class="sssj-field"><label><?php esc_html_e( 'Licences (driver licence, reliable vehicle, insurance)', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="resume_licences" value="<?php echo esc_attr( (string) $gm( 'resume_licences' ) ); ?>" /></div>
+						<div class="sssj-field"><label><?php esc_html_e( 'Visa details, if relevant', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="work_rights_note" value="<?php echo esc_attr( (string) $gm( 'work_rights_note' ) ); ?>" /></div>
+
+						<div class="sssj-field"><label><?php esc_html_e( 'Core skills (keywords, comma or line separated)', 'shuffles-social-services-jobs' ); ?></label>
+							<textarea class="sssj-textarea" name="resume_skills" rows="3" placeholder="<?php esc_attr_e( 'Personal care, community access, behaviour support, progress notes, manual handling, mental health support', 'shuffles-social-services-jobs' ); ?>"><?php echo esc_textarea( (string) $gm( 'resume_skills' ) ); ?></textarea>
+							<p class="description"><?php esc_html_e( 'Match these to the job ad. Leave blank to use the services you offer.', 'shuffles-social-services-jobs' ); ?></p></div>
+
+						<h4 style="margin:14px 0 4px"><?php esc_html_e( 'Employment history (newest first)', 'shuffles-social-services-jobs' ); ?></h4>
+						<div data-sssj-repeater="emp">
+							<?php
+							$rep_emp = $existing ? json_decode( (string) get_post_meta( $existing->ID, 'resume_employment', true ), true ) : array();
+							$rep_emp = is_array( $rep_emp ) ? $rep_emp : array();
+							$emp_row = function ( $j = array() ) {
+								$bb = ! empty( $j['bullets'] ) ? implode( "\n", (array) $j['bullets'] ) : '';
+								?>
+								<div class="sssj-rep-row sssj-panel" style="padding:12px;margin:8px 0">
+									<div class="sssj-row">
+										<div class="sssj-field"><label><?php esc_html_e( 'Job title', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="emp_title[]" value="<?php echo esc_attr( isset( $j['title'] ) ? $j['title'] : '' ); ?>" /></div>
+										<div class="sssj-field"><label><?php esc_html_e( 'Employer', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="emp_employer[]" value="<?php echo esc_attr( isset( $j['employer'] ) ? $j['employer'] : '' ); ?>" /></div>
+									</div>
+									<div class="sssj-row">
+										<div class="sssj-field"><label><?php esc_html_e( 'Location', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="emp_location[]" value="<?php echo esc_attr( isset( $j['location'] ) ? $j['location'] : '' ); ?>" /></div>
+										<div class="sssj-field"><label><?php esc_html_e( 'Dates', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="emp_dates[]" placeholder="2022 to present" value="<?php echo esc_attr( isset( $j['dates'] ) ? $j['dates'] : '' ); ?>" /></div>
+									</div>
+									<div class="sssj-field"><label><?php esc_html_e( 'What you did (one bullet per line, 4 to 6)', 'shuffles-social-services-jobs' ); ?></label><textarea class="sssj-textarea" name="emp_bullets[]" rows="4"><?php echo esc_textarea( $bb ); ?></textarea></div>
+									<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-sssj-rep-remove><?php esc_html_e( 'Remove this role', 'shuffles-social-services-jobs' ); ?></button>
+								</div>
+								<?php
+							};
+							if ( $rep_emp ) { foreach ( $rep_emp as $j ) { $emp_row( $j ); } } else { $emp_row(); }
+							?>
+							<template data-sssj-rep-tpl><?php $emp_row(); ?></template>
+							<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-sssj-rep-add><?php esc_html_e( '+ Add another role', 'shuffles-social-services-jobs' ); ?></button>
+						</div>
+
+						<h4 style="margin:14px 0 4px"><?php esc_html_e( 'Education & training (newest first)', 'shuffles-social-services-jobs' ); ?></h4>
+						<div data-sssj-repeater="edu">
+							<?php
+							$rep_edu = $existing ? json_decode( (string) get_post_meta( $existing->ID, 'resume_education', true ), true ) : array();
+							$rep_edu = is_array( $rep_edu ) ? $rep_edu : array();
+							$edu_row = function ( $e = array() ) {
+								?>
+								<div class="sssj-rep-row sssj-panel" style="padding:12px;margin:8px 0">
+									<div class="sssj-row">
+										<div class="sssj-field"><label><?php esc_html_e( 'Qualification / course', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="edu_qual[]" value="<?php echo esc_attr( isset( $e['qualification'] ) ? $e['qualification'] : '' ); ?>" /></div>
+										<div class="sssj-field"><label><?php esc_html_e( 'Institution', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="edu_inst[]" value="<?php echo esc_attr( isset( $e['institution'] ) ? $e['institution'] : '' ); ?>" /></div>
+										<div class="sssj-field"><label><?php esc_html_e( 'Year', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="edu_year[]" value="<?php echo esc_attr( isset( $e['year'] ) ? $e['year'] : '' ); ?>" /></div>
+									</div>
+									<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-sssj-rep-remove><?php esc_html_e( 'Remove', 'shuffles-social-services-jobs' ); ?></button>
+								</div>
+								<?php
+							};
+							if ( $rep_edu ) { foreach ( $rep_edu as $e ) { $edu_row( $e ); } } else { $edu_row(); }
+							?>
+							<template data-sssj-rep-tpl><?php $edu_row(); ?></template>
+							<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-sssj-rep-add><?php esc_html_e( '+ Add education', 'shuffles-social-services-jobs' ); ?></button>
+						</div>
+
+						<div class="sssj-field"><label><?php esc_html_e( 'Referees', 'shuffles-social-services-jobs' ); ?></label>
+							<?php $rm = (string) $gm( 'resume_referees_mode', 'request' ); ?>
+							<select class="sssj-select" name="resume_referees_mode">
+								<option value="request" <?php selected( $rm, 'request' ); ?>><?php esc_html_e( 'Available on request (recommended)', 'shuffles-social-services-jobs' ); ?></option>
+								<option value="upfront" <?php selected( $rm, 'upfront' ); ?>><?php esc_html_e( 'List referees on the résumé', 'shuffles-social-services-jobs' ); ?></option>
+							</select>
+							<textarea class="sssj-textarea" name="resume_referees" rows="3" placeholder="<?php esc_attr_e( 'Name, role, organisation, phone, email, one per line (only used if you choose to list them).', 'shuffles-social-services-jobs' ); ?>" style="margin-top:6px"><?php echo esc_textarea( (string) $gm( 'resume_referees' ) ); ?></textarea>
+						</div>
+					</details>
+
+					<?php if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) { Shuffles_SSJ_Privacy::fields_html( 'worker', $existing ? $existing->ID : 0 ); } ?>
 				<div><button class="sssj-btn sssj-btn--primary" type="submit"><?php echo $existing ? esc_html__( 'Save profile', 'shuffles-social-services-jobs' ) : esc_html__( 'Create profile', 'shuffles-social-services-jobs' ); ?></button></div>
 			</form>
 		<?php endif; ?>

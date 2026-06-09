@@ -107,6 +107,38 @@ class Shuffles_SSJ_Assets {
 		$available = '1' === (string) get_post_meta( $wid, 'is_available', true );
 		$years     = (int) get_post_meta( $wid, 'years_experience', true );
 
+		// Résumé details (private fields, used only for the downloadable résumé).
+		$emp_json = json_decode( (string) get_post_meta( $wid, 'resume_employment', true ), true );
+		$edu_json = json_decode( (string) get_post_meta( $wid, 'resume_education', true ), true );
+		$sk_raw   = (string) get_post_meta( $wid, 'resume_skills', true );
+		$skills   = array();
+		foreach ( preg_split( '/[\r\n,]+/', $sk_raw ) as $sk ) {
+			$sk = trim( $sk );
+			if ( '' !== $sk ) {
+				$skills[] = $sk;
+			}
+		}
+		if ( empty( $skills ) ) {
+			$skills = $services;
+		}
+		$wr_map  = array(
+			'citizen' => __( 'Australian citizen', 'shuffles-social-services-jobs' ),
+			'pr'      => __( 'Permanent resident', 'shuffles-social-services-jobs' ),
+			'visa'    => __( 'Valid working visa', 'shuffles-social-services-jobs' ),
+		);
+		$wr_key      = (string) get_post_meta( $wid, 'work_rights', true );
+		$wr_note     = (string) get_post_meta( $wid, 'work_rights_note', true );
+		$work_rights = trim( ( isset( $wr_map[ $wr_key ] ) ? $wr_map[ $wr_key ] : '' ) . ( $wr_note ? ' ' . $wr_note : '' ) );
+		$u_obj   = get_userdata( $uid );
+		$summary = (string) get_post_meta( $wid, 'resume_summary', true );
+		if ( '' === $summary ) {
+			$summary = $post ? wp_strip_all_tags( (string) $post->post_content ) : '';
+		}
+		$r_email = (string) get_post_meta( $wid, 'resume_email', true );
+		if ( '' === $r_email && $u_obj ) {
+			$r_email = $u_obj->user_email;
+		}
+
 		return array(
 			'worker_id'  => $wid,
 			'name'       => $post ? $post->post_title : '',
@@ -121,6 +153,22 @@ class Shuffles_SSJ_Assets {
 			'photo'      => (string) get_the_post_thumbnail_url( $wid, 'medium' ),
 			'checks'     => self::verified_checks( $wid ),
 			'abn'        => (string) get_post_meta( $wid, 'worker_abn', true ),
+			'summary'        => $summary,
+			'contact'        => array(
+				'phone'    => (string) get_post_meta( $wid, 'resume_phone', true ),
+				'email'    => $r_email,
+				'linkedin' => (string) get_post_meta( $wid, 'resume_linkedin', true ),
+			),
+			'skills'         => $skills,
+			'employment'     => is_array( $emp_json ) ? $emp_json : array(),
+			'education'      => is_array( $edu_json ) ? $edu_json : array(),
+			'qualifications' => (string) get_post_meta( $wid, 'resume_qualifications', true ),
+			'registration'   => (string) get_post_meta( $wid, 'resume_registration', true ),
+			'training'       => (string) get_post_meta( $wid, 'resume_training', true ),
+			'licences'       => (string) get_post_meta( $wid, 'resume_licences', true ),
+			'work_rights'    => $work_rights,
+			'referees_mode'  => ( 'upfront' === (string) get_post_meta( $wid, 'resume_referees_mode', true ) ) ? 'upfront' : 'request',
+			'referees'       => (string) get_post_meta( $wid, 'resume_referees', true ),
 		);
 	}
 

@@ -416,9 +416,36 @@
 		} ).catch( function () { current.style.opacity = ''; current.removeAttribute( 'aria-busy' ); } );
 	}
 
+	// Résumé layout toggle (ATS vs styled): a CSS skin on the same DOM, remembered per browser.
+	function initFormat( root ) {
+		var picks = root.querySelectorAll( '[data-asset-format-pick]' );
+		if ( ! picks.length ) { return; }
+		var asset = root.querySelector( '#sssj-asset' );
+		var saved = 'ats';
+		try { saved = window.localStorage.getItem( 'sssj_resume_format' ) || 'ats'; } catch ( e ) {}
+		function apply( fmt ) {
+			if ( asset ) {
+				asset.classList.toggle( 'sssj-asset--ats', 'ats' === fmt );
+				asset.classList.toggle( 'sssj-asset--styled', 'styled' === fmt );
+				asset.setAttribute( 'data-asset-format', fmt );
+			}
+			Array.prototype.forEach.call( picks, function ( b ) {
+				var on = b.getAttribute( 'data-asset-format-pick' ) === fmt;
+				b.classList.toggle( 'sssj-btn--primary', on );
+				b.classList.toggle( 'sssj-btn--ghost', ! on );
+			} );
+			try { window.localStorage.setItem( 'sssj_resume_format', fmt ); } catch ( e ) {}
+		}
+		Array.prototype.forEach.call( picks, function ( b ) {
+			b.addEventListener( 'click', function () { apply( b.getAttribute( 'data-asset-format-pick' ) ); } );
+		} );
+		apply( 'styled' === saved ? 'styled' : 'ats' );
+	}
+
 	function init( root ) {
 		bindEditing( root );
 		initTheme( root );
+		initFormat( root );
 		root.addEventListener( 'click', function ( e ) {
 			// Asset-type tabs + job pick-list links: swap in place instead of reloading the whole page.
 			var link = e.target.closest ? e.target.closest( 'a[href*="sssj_asset="]' ) : null;

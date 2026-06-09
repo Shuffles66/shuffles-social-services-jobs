@@ -1596,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.28 · 2026-06-09 · Instant asset-type switching + faster maps</h3>
+				<h3>v1.10.29 · 2026-06-09 · Health-sector résumé: structured fields + ATS layout</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The résumé builder now follows health, disability and aged-care best practice. A new “Résumé details (private)” section on your worker profile captures a professional summary, compliance & credentials (qualifications, registration, screening, training, licences, work rights), core skills, employment history (add as many roles as you like, newest first, with bullet points) and education & training. These are used only for your downloadable résumé, never shown on your public profile.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'The résumé now renders in the proper structure (Name & contact, Professional summary, Compliance & credentials, Core skills, Employment history, Education & training, Referees) and you can switch between an ATS-friendly layout (plain, single-column, no photo, what employers and recruitment systems prefer) and a Styled layout, from the Layout toggle on the résumé tab. Save as PDF to send.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.28 · 2026-06-09 · Instant asset-type switching + faster maps</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Create-an-asset now switches type (Résumé / Service flyer / Social post / Job flyer) instantly in place, with no page reload, so you keep your spot and your colour-theme choice. It falls back to normal navigation if scripting is unavailable.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Faster maps: the map on a single job page now loads only when you tap “Show map”, instead of pulling a full Google map on every page view. This keeps listing pages quick to open. (The board maps already load in the background without blocking the page.)', 'shuffles-social-services-jobs' ); ?></li>

@@ -266,4 +266,31 @@
 	};
 
 	function esc( s ) { var d = document.createElement( 'div' ); d.textContent = String( s == null ? '' : s ); return d.innerHTML; }
+
+	// Repeatable field rows (résumé employment history + education): add clones the <template> row,
+	// remove deletes it (or clears the last remaining row). [data-sssj-repeater] / -rep-add / -rep-remove / -rep-tpl.
+	document.addEventListener( 'click', function ( e ) {
+		var add = e.target.closest ? e.target.closest( '[data-sssj-rep-add]' ) : null;
+		if ( add ) {
+			var rep = add.closest( '[data-sssj-repeater]' );
+			var tpl = rep ? rep.querySelector( '[data-sssj-rep-tpl]' ) : null;
+			if ( tpl && tpl.content && tpl.content.firstElementChild ) {
+				var node = tpl.content.firstElementChild.cloneNode( true );
+				rep.insertBefore( node, tpl );
+				var first = node.querySelector( 'input, textarea' );
+				if ( first ) { first.focus(); }
+			}
+			return;
+		}
+		var rem = e.target.closest ? e.target.closest( '[data-sssj-rep-remove]' ) : null;
+		if ( rem ) {
+			var row  = rem.closest( '.sssj-rep-row' );
+			var repc = rem.closest( '[data-sssj-repeater]' );
+			if ( row && repc && repc.querySelectorAll( '.sssj-rep-row' ).length > 1 ) {
+				row.parentNode.removeChild( row );
+			} else if ( row ) {
+				Array.prototype.forEach.call( row.querySelectorAll( 'input, textarea' ), function ( i ) { i.value = ''; } );
+			}
+		}
+	} );
 }() );

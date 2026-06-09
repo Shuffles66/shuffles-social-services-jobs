@@ -477,7 +477,75 @@ class Shuffles_SSJ_Frontend_Forms {
 			update_post_meta( $post_id, $k, $v );
 		}
 
-		// Per-field privacy masking (C4), "members only" toggles for sensitive fields.
+		// Résumé details (private: used only for the member's downloadable résumé, never shown on the public profile).
+			$res_meta = array(
+				'resume_summary'        => isset( $_POST['resume_summary'] ) ? sanitize_textarea_field( wp_unslash( $_POST['resume_summary'] ) ) : '',
+				'resume_phone'          => isset( $_POST['resume_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['resume_phone'] ) ) : '',
+				'resume_email'          => isset( $_POST['resume_email'] ) ? sanitize_email( wp_unslash( $_POST['resume_email'] ) ) : '',
+				'resume_linkedin'       => isset( $_POST['resume_linkedin'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['resume_linkedin'] ) ) ) : '',
+				'resume_skills'         => isset( $_POST['resume_skills'] ) ? sanitize_textarea_field( wp_unslash( $_POST['resume_skills'] ) ) : '',
+				'resume_qualifications' => isset( $_POST['resume_qualifications'] ) ? sanitize_textarea_field( wp_unslash( $_POST['resume_qualifications'] ) ) : '',
+				'resume_registration'   => isset( $_POST['resume_registration'] ) ? sanitize_text_field( wp_unslash( $_POST['resume_registration'] ) ) : '',
+				'resume_training'       => isset( $_POST['resume_training'] ) ? sanitize_textarea_field( wp_unslash( $_POST['resume_training'] ) ) : '',
+				'resume_licences'       => isset( $_POST['resume_licences'] ) ? sanitize_text_field( wp_unslash( $_POST['resume_licences'] ) ) : '',
+				'work_rights'           => isset( $_POST['work_rights'] ) ? sanitize_key( wp_unslash( $_POST['work_rights'] ) ) : '',
+				'work_rights_note'      => isset( $_POST['work_rights_note'] ) ? sanitize_text_field( wp_unslash( $_POST['work_rights_note'] ) ) : '',
+				'resume_referees_mode'  => ( isset( $_POST['resume_referees_mode'] ) && 'upfront' === $_POST['resume_referees_mode'] ) ? 'upfront' : 'request',
+				'resume_referees'       => isset( $_POST['resume_referees'] ) ? sanitize_textarea_field( wp_unslash( $_POST['resume_referees'] ) ) : '',
+			);
+			foreach ( $res_meta as $rk => $rv ) {
+				update_post_meta( $post_id, $rk, $rv );
+			}
+			// Employment history (newest first as entered); each row keeps a few responsibility bullets. Empty rows dropped.
+			$emp = array();
+			$et  = isset( $_POST['emp_title'] ) ? (array) wp_unslash( $_POST['emp_title'] ) : array();      // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$ee  = isset( $_POST['emp_employer'] ) ? (array) wp_unslash( $_POST['emp_employer'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$el2 = isset( $_POST['emp_location'] ) ? (array) wp_unslash( $_POST['emp_location'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$ed2 = isset( $_POST['emp_dates'] ) ? (array) wp_unslash( $_POST['emp_dates'] ) : array();       // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$eb  = isset( $_POST['emp_bullets'] ) ? (array) wp_unslash( $_POST['emp_bullets'] ) : array();   // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$en  = max( count( $et ), count( $ee ) );
+			for ( $i = 0; $i < $en; $i++ ) {
+				$title = sanitize_text_field( isset( $et[ $i ] ) ? $et[ $i ] : '' );
+				$empn  = sanitize_text_field( isset( $ee[ $i ] ) ? $ee[ $i ] : '' );
+				if ( '' === $title && '' === $empn ) {
+					continue;
+				}
+				$bullets = array();
+				foreach ( preg_split( '/\r\n|\r|\n/', isset( $eb[ $i ] ) ? (string) $eb[ $i ] : '' ) as $line ) {
+					$line = sanitize_text_field( ltrim( trim( $line ), "-*\xe2\x80\xa2 " ) );
+					if ( '' !== $line ) {
+						$bullets[] = $line;
+					}
+				}
+				$emp[] = array(
+					'title'    => $title,
+					'employer' => $empn,
+					'location' => sanitize_text_field( isset( $el2[ $i ] ) ? $el2[ $i ] : '' ),
+					'dates'    => sanitize_text_field( isset( $ed2[ $i ] ) ? $ed2[ $i ] : '' ),
+					'bullets'  => array_slice( $bullets, 0, 8 ),
+				);
+			}
+			update_post_meta( $post_id, 'resume_employment', wp_json_encode( array_slice( $emp, 0, 12 ) ) );
+			// Education & training (newest first).
+			$edu = array();
+			$qq  = isset( $_POST['edu_qual'] ) ? (array) wp_unslash( $_POST['edu_qual'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$iq  = isset( $_POST['edu_inst'] ) ? (array) wp_unslash( $_POST['edu_inst'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$yq  = isset( $_POST['edu_year'] ) ? (array) wp_unslash( $_POST['edu_year'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			$dn  = max( count( $qq ), count( $iq ) );
+			for ( $i = 0; $i < $dn; $i++ ) {
+				$qual = sanitize_text_field( isset( $qq[ $i ] ) ? $qq[ $i ] : '' );
+				if ( '' === $qual ) {
+					continue;
+				}
+				$edu[] = array(
+					'qualification' => $qual,
+					'institution'   => sanitize_text_field( isset( $iq[ $i ] ) ? $iq[ $i ] : '' ),
+					'year'          => sanitize_text_field( isset( $yq[ $i ] ) ? $yq[ $i ] : '' ),
+				);
+			}
+			update_post_meta( $post_id, 'resume_education', wp_json_encode( array_slice( $edu, 0, 20 ) ) );
+
+			// Per-field privacy masking (C4), "members only" toggles for sensitive fields.
 		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
 			Shuffles_SSJ_Privacy::save( $post_id, 'worker', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}

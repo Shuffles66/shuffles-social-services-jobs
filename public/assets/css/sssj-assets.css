@@ -113,3 +113,41 @@
 .sssj .sssj-promo__foot{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-size:13px; font-weight:700; opacity:.97; }
 .sssj .sssj-promo__url{ background:rgba(255,255,255,.18); padding:5px 10px; border-radius:999px; }
 .sssj .sssj-promo__safe{ display:inline-flex; align-items:center; gap:4px; white-space:nowrap; }
+
+/* --- Résumé v3: structured sections + ATS / styled skins --- */
+.sssj-asset--resume .sssj-asset__sec{ margin-top:14px; }
+.sssj-asset--resume .sssj-asset__contact{ margin:4px 0 0; color:var(--sssj-text,#334155); font-size:.92rem; }
+.sssj-asset--resume .sssj-asset__facts2{ list-style:none; margin:6px 0 0; padding:0; display:grid; gap:5px; }
+.sssj-asset--resume .sssj-asset__facts2 li{ display:flex; gap:10px; align-items:baseline; }
+.sssj-asset--resume .sssj-asset__facts2 b{ min-width:150px; color:var(--sssj-muted,#64748b); font-weight:600; }
+.sssj-asset--resume .sssj-asset__role{ margin:8px 0; }
+.sssj-asset--resume .sssj-asset__role-head strong{ display:block; }
+.sssj-asset--resume .sssj-asset__role-meta{ color:var(--sssj-muted,#64748b); font-size:.88rem; }
+.sssj-asset--resume .sssj-asset__bullets{ margin:4px 0 0; padding-left:20px; }
+.sssj-asset--resume .sssj-asset__bullets li{ margin:2px 0; }
+.sssj-asset--resume .sssj-asset__edu{ list-style:none; margin:6px 0 0; padding:0; }
+.sssj-asset--resume .sssj-asset__edu li{ margin:4px 0; }
+.sssj-asset--resume .sssj-asset__edu span{ color:var(--sssj-muted,#64748b); font-size:.9rem; }
+.sssj-asset--resume .sssj-asset__ref{ margin:6px 0 0; }
+
+/* ATS skin: plain, single column, no photo, minimal colour (applicant-tracking-system friendly). */
+.sssj-asset--ats{ background:#fff; color:#1a1a1a; font-family:Arial,Helvetica,sans-serif; }
+.sssj-asset--ats .sssj-asset__avatar{ display:none; }
+.sssj-asset--ats .sssj-asset__head{ display:block; border-bottom:2px solid #333; padding-bottom:8px; margin-bottom:4px; }
+.sssj-asset--ats .sssj-asset__name{ font-size:1.5rem; margin:0; color:#111; }
+.sssj-asset--ats .sssj-asset__role{ font-weight:600; margin:2px 0; color:#333; }
+.sssj-asset--ats .sssj-asset__h{ font-size:1rem; text-transform:uppercase; letter-spacing:.04em; border-bottom:1px solid #999; padding:0 0 3px; margin:14px 0 6px; color:#222; background:none; }
+.sssj-asset--ats .sssj-asset__chips{ list-style:none; margin:6px 0 0; padding:0; display:block; }
+.sssj-asset--ats .sssj-asset__chips li{ display:inline; padding:0; margin:0; background:none; border:0; color:#1a1a1a; font-size:1rem; }
+.sssj-asset--ats .sssj-asset__chips li::after{ content:" \00b7 "; color:#999; }
+.sssj-asset--ats .sssj-asset__chips li:last-child::after{ content:""; }
+.sssj-asset--ats .sssj-asset__facts,
+.sssj-asset--ats .sssj-asset__cta{ display:none; }
+
+/* Styled skin keeps the photo + colour from the base résumé styles. */
+.sssj-asset--styled .sssj-asset__avatar{ display:block; }
+
+/* Worker-form repeater rows (employment history / education). */
+.sssj-resume-details{ border:1px solid var(--sssj-line,#e2e8f0); border-radius:var(--sssj-radius,10px); padding:12px 14px; margin:6px 0; }
+.sssj-resume-details > summary{ cursor:pointer; font-size:1.02rem; }
+.sssj-rep-row{ position:relative; }
