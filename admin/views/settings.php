@@ -630,6 +630,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<table class="form-table" role="presentation">';
 			$this->checkbox_field( 'seo_enabled', __( 'Strong SEO for jobs', 'shuffles-social-services-jobs' ), __( 'JobPosting structured data + indexable job/category pages. Participant needs always stay noindex. This is what makes your jobs eligible for Google for Jobs, free, no setup.', 'shuffles-social-services-jobs' ) );
 			$this->checkbox_field( 'syndication_feed_enabled', __( 'Publish a job feed for aggregators', 'shuffles-social-services-jobs' ), __( 'Exposes a standard job XML feed that aggregators like Jora and Adzuna can ingest, so your jobs reach a wider audience for free. Anonymous ads appear as “Private advertiser”; participant requests are never included.', 'shuffles-social-services-jobs' ) );
+			$this->select_field(
+				'job_url_format',
+				__( 'Job URL format', 'shuffles-social-services-jobs' ),
+				class_exists( 'Shuffles_SSJ_Permalinks' ) ? Shuffles_SSJ_Permalinks::format_labels() : array(),
+				__( 'Controls the web address of each job listing (this is a plugin setting because WordPress’s own Settings → Permalinks only covers standard posts and pages, not custom listings). <strong>ID + title</strong> is recommended: it can never clash, so you never get messy “-2”/“-3” addresses. Changing this rewrites every job address and automatically 301-redirects the old ones, so existing links keep working. Your Google-for-Jobs data (date posted, closing date) lives in the listing’s structured data, not the address, so freshness is unaffected.', 'shuffles-social-services-jobs' ),
+				'id_title'
+			);
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -1589,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.19 · 2026-06-09 · Grouped navigation menu (Find / About / My account)</h3>
+				<h3>v1.10.20 · 2026-06-09 · Selectable job URL format (default: ID + title)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Job listing web addresses now include the listing ID by default, e.g. /jobs/1378/community-outing-volunteer-parramatta/, so they can never clash or produce messy “-2”/“-3” addresses. Choose a different structure (title only, date + title, year-month + title, or ID + date + title) under Settings → SEO → “Job URL format”.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'This is a plugin setting because WordPress’s own Settings → Permalinks only covers standard posts and pages, not custom listings. Changing the format automatically rewrites every job address and 301-redirects the previous ones, so existing links keep working, and your Google-for-Jobs data is unaffected (date posted / closing date live in the structured data, not the address).', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.19 · 2026-06-09 · Grouped navigation menu (Find / About / My account)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The navigation is now grouped into a few clear headings with dropdowns, Find (Jobs, Find a worker, Organisations, Participants seeking workers), About (How it works, Take a tour, Policies) and My account (dashboard, profile, post a job, credentials, messages, settings, log out), instead of a long row of items spread across the bar. Applies to both the [sssj_menu] shortcode and the synced “Jobs & Engagements” Appearance menu (it re-groups automatically on this update). Empty groups are hidden.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

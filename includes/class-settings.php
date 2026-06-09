@@ -37,6 +37,7 @@ class Shuffles_SSJ_Settings {
 			'cald_enabled'              => '1',
 			'cald_bar_open'             => '1',
 			'deepl_api_key'             => '',
+			'job_url_format'            => 'id_title',
 			'seo_enabled'               => '1',
 			'syndication_feed_enabled'  => '1',
 			'crm_sync_enabled'          => '0',
@@ -198,6 +199,10 @@ class Shuffles_SSJ_Settings {
 		if ( isset( $input['asset_render_mode'] ) ) {
 			$m = sanitize_key( wp_unslash( (string) $input['asset_render_mode'] ) );
 			$out['asset_render_mode'] = in_array( $m, array( 'browser', 'server' ), true ) ? $m : 'browser';
+		}
+		if ( isset( $input['job_url_format'] ) ) {
+			$f = sanitize_key( wp_unslash( (string) $input['job_url_format'] ) );
+			$out['job_url_format'] = in_array( $f, array( 'title', 'id_title', 'date_title', 'ym_title', 'id_date_title' ), true ) ? $f : 'id_title';
 		}
 		foreach ( array( 'color_primary', 'color_primary_deep', 'color_ink', 'color_text', 'color_line', 'color_bg', 'color_bg_soft', 'color_abn', 'color_tfn', 'color_need' ) as $k ) {
 			if ( isset( $input[ $k ] ) ) {
