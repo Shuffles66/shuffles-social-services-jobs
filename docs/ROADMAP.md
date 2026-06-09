@@ -3,15 +3,57 @@
 Living backlog. Keep current as items ship or priorities change. (Companion to
 `docs/business_rules_and_logic.md` and the in‑app Changelog.)
 
-- **Last updated:** 2026-06-07
+- **Last updated:** 2026-06-10
 
-## Status
-- **Live:** v0.55.4 (committed `25bab52`).
-- **Deployed, awaiting commit:** v0.56.0 (Provider Import preview), v0.57.0 (header menu sync).
-- **Built, not yet deployed:** v0.58.0 (form section cards / completeness / sticky save / toggle / toast),
-  v0.59.0 (provider **swipe deck** `[sssj_swipe]` + section left accent borders).
-  → **Action:** deploy + commit v0.56.0 → v0.59.0 when authorised.
+## Status (2026-06-10)
+- **Live:** v1.10.33 (My resumes -> builder bridge).
+- **Built, lint-clean, awaiting deploy (one SFTP push covers both):**
+  - **v1.10.34** "Save to My resumes": a button in the resume builder (Create an asset -> Resume) that
+    server-renders the resume in the chosen layout (ATS-friendly or Styled) and files it straight into the
+    "My resumes" store. Only shows when the server renderer is switched on (Settings -> Assets).
+    Adds `Shuffles_SSJ_Resumes::add_bytes()` + AJAX `sssj_asset_save_resume`.
+  - **v1.10.35** Manage several support requests: a filterable **"Your support requests"** list (Open /
+    Closed / All, with counts) under the Request-support form, with a friendly **Open / Filled / Closed**
+    status, response counts, closing dates, and **Mark-as-filled / Close / Reopen** controls. Dashboard
+    "My listings" now shows the same friendly status. New dedicated **`[sssj_my_needs]`** shortcode (a
+    "seeking workers" list, placeable on its own page/menu). Sticky save-bar bug fixed (it now appears only
+    when the visible profile form is actually edited, not across the whole dashboard). Simpler need-details
+    placeholder ("Describe what you wish.").
+  - Lifecycle model lives in `Shuffles_SSJ_Shortcodes::listing_state()` / `listing_actions_html()` /
+    `render_my_needs()`; close/filled handler `sssj_listing_close` (reopen clears the filled flag).
+  -> **Action:** deploy v1.10.35 (blocked once by the deploy classifier; needs explicit per-action OK),
+     then git commit + `gh release`.
 
+## Where we are going (near-term)
+1. **Deploy + commit + release v1.10.35.**
+2. **Compliance / HR / Verification integrations** (NEW workstream, below).
+3. Continue the already-agreed workstreams in this doc: application pipeline (A), hats + dashboard reveal (B),
+   the C-series, the E/F/G asset/testimonial/self-promo set, and #7 employment syndication.
+
+## Workstream: Compliance / HR / Verification integrations (NEW, 2026-06-10)
+Triggered by the question "is connecting with products like Sentrient a consideration?".
+**Principle:** standalone-first. Build **vendor-neutral seams** (one adapter per category) through the
+`Shuffles_SSJ_Integrations` registry. Never a hard dependency; never a third-party vendor name on
+member-facing pages (admin-configured + generic wording, consistent with the "internally curated tech stack"
+rule). "Integrate, don't replicate" (do not build our own LMS/compliance engine).
+
+**Seams to define (each optional, admin-configured):**
+- **Compliance / training / onboarding** (Sentrient, GO1, ELMO, Litmos): a "training completed" trust signal
+  on worker profiles (like the verified-credential badge) + a "hire -> onboarding handoff" at the Hired step.
+- **Employer HR / rostering** (Employment Hero, Deputy, Tanda; Xero/MYOB payroll): push a new hire into the
+  employer's onboarding/rostering system.
+- **Verification / screening** (CVCheck, National Crime Check, Fit2Work): automate the admin-verified
+  credential pipeline. Government sources (NDIS Worker Screening, WWCC, USI, ABN Lookup) stay manual: no open
+  third-party API.
+- **Care-management** (Lumary, ShiftCare, Brevity): exchange shifts/roles at the workforce layer, not the
+  matching layer (avoid overlap with our own matching).
+- **Sole-trader finance** (Hnry, Rounded): a light link for the ABN contractor side.
+
+**Cheap precursors (no partner needed):** a self-declared "training completed" field feeding the trust badges;
+a "hire -> onboarding" link field on the employer side for a specific adapter to fill later.
+**Gated on:** confirming each vendor's API/SSO, a partnership decision, and real demand.
+**Out of scope:** competing care marketplaces (Mable, Hireup, Kynd).
+**Shortlist (real APIs + closest fit):** GO1, Employment Hero, Deputy, CVCheck / National Crime Check, Hnry.
 ## Next up (prioritised)
 1. **Deploy + commit** the pending versions (v0.56–v0.59).
 2. **Swipe deck follow‑ups** (NEW):

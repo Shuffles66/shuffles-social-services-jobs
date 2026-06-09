@@ -33,6 +33,8 @@ class Shuffles_SSJ_Asset_Renderer {
 	public static function register() {
 		add_action( 'admin_post_sssj_asset_render', array( __CLASS__, 'handle_render' ) );
 		add_action( 'admin_post_sssj_asset_render_test', array( __CLASS__, 'handle_test' ) );
+		// AJAX: render the résumé server-side and save it straight into "My résumés".
+		add_action( 'wp_ajax_sssj_asset_save_resume', array( __CLASS__, 'handle_save_resume' ) );
 	}
 
 	/* --------------------------------------------------------------- settings */
@@ -309,6 +311,84 @@ class Shuffles_SSJ_Asset_Renderer {
 		header( 'X-Content-Type-Options: nosniff' );
 		echo $result['body']; // phpcs:ignore WordPress.Security.EscapeOutput
 		exit;
+	}
+
+	/**
+	 * AJAX: build the member's résumé server-side and store it in "My résumés" (the file store).
+	 * Login + nonce + renderer-enabled enforced. Returns JSON so the builder can confirm in place.
+	 */
+	public static function handle_save_resume() {
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'msg' => __( 'Please log in.', 'shuffles-social-services-jobs' ) ), 401 );
+		}
+		if ( ! check_ajax_referer( 'sssj_asset_render', 'nonce', false ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Security check failed. Reload the page and try again.', 'shuffles-social-services-jobs' ) ), 403 );
+		}
+		if ( ! self::enabled() ) {
+			wp_send_json_error( array( 'msg' => __( 'High-quality saving is not switched on yet. You can still download a PDF from the buttons above.', 'shuffles-social-services-jobs' ) ), 400 );
+		}
+		if ( ! class_exists( 'Shuffles_SSJ_Resumes' ) || ! class_exists( 'Shuffles_SSJ_Assets' ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Résumé storage is unavailable right now.', 'shuffles-social-services-jobs' ) ), 400 );
+		}
+
+		$uid  = get_current_user_id();
+		$data = Shuffles_SSJ_Assets::resume_data( $uid );
+		if ( ! is_array( $data ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Create your worker profile first, then build your résumé.', 'shuffles-social-services-jobs' ) ), 400 );
+		}
+
+		// Apply the member's polished wording from the builder (same fields as the live preview).
+		if ( isset( $_POST['tagline'] ) ) {
+			$tag = sanitize_text_field( wp_unslash( $_POST['tagline'] ) );
+			if ( '' !== $tag ) {
+				$data['tagline'] = $tag;
+			}
+		}
+		if ( isset( $_POST['blurb'] ) ) {
+			$blurb = sanitize_textarea_field( wp_unslash( $_POST['blurb'] ) );
+			if ( '' !== $blurb ) {
+				$data['blurb']   = $blurb;
+				$data['summary'] = $blurb;
+			}
+		}
+		// Honour the layout choice (ATS-friendly vs Styled) so the saved PDF matches the preview.
+		$fmt            = ( isset( $_POST['format'] ) && 'styled' === sanitize_key( wp_unslash( $_POST['format'] ) ) ) ? 'styled' : 'ats';
+		$data['format'] = $fmt;
+		$data['photo']  = self::inline_url( isset( $data['photo'] ) ? $data['photo'] : '' );
+
+		// Render the locked résumé template to HTML, then to a print-quality PDF.
+		$inner = '';
+		if ( class_exists( 'Shuffles_SSJ_Plugin' ) ) {
+			ob_start();
+			Shuffles_SSJ_Plugin::instance()->shortcodes->load_template( 'assets/resume.php', array( 'data' => $data ) );
+			$inner = (string) ob_get_clean();
+		}
+		if ( '' === trim( $inner ) ) {
+			wp_send_json_error( array( 'msg' => __( 'Could not build the résumé. Please try again.', 'shuffles-social-services-jobs' ) ), 500 );
+		}
+
+		$html   = self::standalone_html( $inner, 'resume' );
+		$result = self::render( $html, array( 'format' => 'pdf', 'paper' => 'a4' ) );
+		if ( empty( $result['ok'] ) || empty( $result['body'] ) ) {
+			wp_send_json_error( array( 'msg' => __( 'The résumé could not be generated right now. Please try again shortly.', 'shuffles-social-services-jobs' ) ), 502 );
+		}
+
+		$label = isset( $_POST['label'] ) ? sanitize_text_field( wp_unslash( $_POST['label'] ) ) : '';
+		if ( '' === $label ) {
+			/* translators: %s: date the résumé was built. */
+			$label = sprintf( __( 'My résumé (%s)', 'shuffles-social-services-jobs' ), wp_date( 'j M Y' ) );
+		}
+
+		$saved = Shuffles_SSJ_Resumes::add_bytes( $uid, $label, $result['body'], 'application/pdf', 'resume.pdf', false );
+		if ( is_wp_error( $saved ) ) {
+			wp_send_json_error( array( 'msg' => $saved->get_error_message() ), 400 );
+		}
+
+		wp_send_json_success( array(
+			'msg'   => __( 'Saved to “My résumés”. Open the My résumés tab to download or set it as default.', 'shuffles-social-services-jobs' ),
+			'id'    => (int) $saved,
+			'label' => $label,
+		) );
 	}
 
 	/** admin-post: a connectivity test for the configured renderer (admin only). Redirects back. */

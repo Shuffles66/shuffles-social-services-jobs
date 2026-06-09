@@ -34,6 +34,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_need_board', array( $this, 'need_board' ) );
 		add_shortcode( 'sssj_post_need', array( $this, 'post_need_form' ) );
 		add_shortcode( 'sssj_my_listings', array( $this, 'my_listings' ) );
+		add_shortcode( 'sssj_my_needs', array( $this, 'my_needs' ) );
 		add_shortcode( 'sssj_dashboard', array( $this, 'dashboard' ) );
 		add_shortcode( 'sssj_roles', array( $this, 'roles_panel' ) );
 		add_shortcode( 'sssj_onboard', array( $this, 'onboard' ) );
@@ -281,6 +282,15 @@ class Shuffles_SSJ_Shortcodes {
 				'title'  => __( 'My listings & applicants', 'shuffles-social-services-jobs' ),
 				'what'   => __( 'The member’s own applications, their job ads with applicants (and a status control), and their participant requests with responses. (Also shown inside the all-in-one dashboard.)', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "My listings" page (or just use [sssj_dashboard]).', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_my_needs',
+				'title'  => __( 'My support requests (seeking workers)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A dedicated list of just the member’s own participant support requests, with a clear status (Open / Filled / Closed), an Open/Closed/All filter, response counts, closing dates, and Mark-as-filled / Close / Reopen controls. Also shown under the "Request support" form.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "My support requests" page, a menu item, or anywhere participants manage their requests.', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
@@ -972,6 +982,158 @@ class Shuffles_SSJ_Shortcodes {
 		$this->enqueue_maps();
 		ob_start();
 		$this->load_template( 'post-need-form.php', array( 'settings' => $this->settings ) );
+		$out = ob_get_clean();
+		// Below the form: the member's existing requests with status + an Open/Closed/All filter,
+		// so several requests can be managed in one place.
+		$out .= self::render_my_needs( get_current_user_id() );
+		return $out;
+	}
+
+	/* --- Listing lifecycle (Open / Filled / Closed) shared by the dashboard + the request form --- */
+
+	/**
+	 * Friendly lifecycle state of a job/need the member owns.
+	 *
+	 * @param int|WP_Post $post
+	 * @return array { key: open|filled|closed, label, class }
+	 */
+	public static function listing_state( $post ) {
+		$post = get_post( $post );
+		if ( ! $post ) {
+			return array( 'key' => 'closed', 'label' => __( 'Closed', 'shuffles-social-services-jobs' ), 'class' => 'sssj-badge--muted' );
+		}
+		if ( get_post_meta( $post->ID, '_sssj_filled', true ) ) {
+			return array( 'key' => 'filled', 'label' => __( 'Filled', 'shuffles-social-services-jobs' ), 'class' => 'sssj-badge--verified' );
+		}
+		$status = get_post_status( $post );
+		if ( 'publish' === $status ) {
+			return array( 'key' => 'open', 'label' => __( 'Open', 'shuffles-social-services-jobs' ), 'class' => 'sssj-badge--open' );
+		}
+		if ( 'pending' === $status ) {
+			return array( 'key' => 'open', 'label' => __( 'Awaiting review', 'shuffles-social-services-jobs' ), 'class' => '' );
+		}
+		return array( 'key' => 'closed', 'label' => __( 'Closed', 'shuffles-social-services-jobs' ), 'class' => 'sssj-badge--muted' );
+	}
+
+	/** A tiny single-button admin-post form used by the listing lifecycle controls. */
+	private static function listing_mini_form( $action_url, $do, $nonce_field, $nonce_action, $listing_id, $label, $btn_class, $extra = array(), $confirm = '' ) {
+		$open = '<form method="post" action="' . esc_url( $action_url ) . '" style="display:inline-block;margin:0"';
+		if ( '' !== $confirm ) {
+			$open .= ' onsubmit="return confirm(\'' . esc_js( $confirm ) . '\');"';
+		}
+		$out  = $open . '>';
+		$out .= '<input type="hidden" name="action" value="' . esc_attr( $do ) . '" />';
+		$out .= '<input type="hidden" name="listing_id" value="' . esc_attr( $listing_id ) . '" />';
+		$out .= '<input type="hidden" name="' . esc_attr( $nonce_field ) . '" value="' . esc_attr( wp_create_nonce( $nonce_action ) ) . '" />';
+		foreach ( (array) $extra as $k => $v ) {
+			$out .= '<input type="hidden" name="' . esc_attr( $k ) . '" value="' . esc_attr( $v ) . '" />';
+		}
+		$out .= '<button type="submit" class="sssj-btn ' . esc_attr( $btn_class ) . ' sssj-btn--sm">' . esc_html( $label ) . '</button>';
+		$out .= '</form>';
+		return $out;
+	}
+
+	/**
+	 * Owner lifecycle controls for a job/need: View (when live), plus Reopen (when closed or filled)
+	 * or Mark as filled / Close (when open). Returns '' for non-owners.
+	 *
+	 * @param int|WP_Post $post
+	 */
+	public static function listing_actions_html( $post ) {
+		$post = get_post( $post );
+		if ( ! $post ) {
+			return '';
+		}
+		if ( (int) $post->post_author !== get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+			return '';
+		}
+		$action = admin_url( 'admin-post.php' );
+		$state  = self::listing_state( $post );
+		$out    = '<div class="sssj-life__actions sssj-row" style="gap:6px;flex-wrap:wrap;margin-top:6px">';
+		if ( 'publish' === get_post_status( $post ) ) {
+			$perma = get_permalink( $post );
+			if ( $perma ) {
+				$out .= '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $perma ) . '">' . esc_html__( 'View', 'shuffles-social-services-jobs' ) . '</a>';
+			}
+		}
+		if ( 'open' === $state['key'] ) {
+			$out .= self::listing_mini_form( $action, 'sssj_listing_close', 'sssj_close_nonce', 'sssj_listing_close', $post->ID, __( 'Mark as filled', 'shuffles-social-services-jobs' ), 'sssj-btn--secondary', array( 'mark' => 'filled' ) );
+			$out .= self::listing_mini_form( $action, 'sssj_listing_close', 'sssj_close_nonce', 'sssj_listing_close', $post->ID, __( 'Close', 'shuffles-social-services-jobs' ), 'sssj-btn--ghost', array( 'mark' => 'closed' ), __( 'Close this request? You can reopen it any time.', 'shuffles-social-services-jobs' ) );
+		} else {
+			$out .= self::listing_mini_form( $action, 'sssj_listing_reactivate', 'sssj_react_nonce', 'sssj_listing_reactivate', $post->ID, __( 'Reopen', 'shuffles-social-services-jobs' ), 'sssj-btn--secondary' );
+		}
+		$out .= '</div>';
+		return $out;
+	}
+
+	/**
+	 * A compact list of the member's own participant support requests, with an Open / Closed / All
+	 * filter, a clear status (Open / Filled / Closed), the close date, the number of responses, and
+	 * the lifecycle controls. Shown under the "Request support" form so a member can manage several
+	 * requests at once. Returns '' when the member has none.
+	 *
+	 * @param int $uid
+	 */
+	public static function render_my_needs( $uid = 0 ) {
+		static $script_done = false;
+		$uid = $uid ? (int) $uid : get_current_user_id();
+		if ( ! $uid ) {
+			return '';
+		}
+		$needs = get_posts( array( 'post_type' => 'sssj_need', 'post_status' => 'any', 'author' => $uid, 'posts_per_page' => 100, 'orderby' => 'date', 'order' => 'DESC' ) );
+		if ( empty( $needs ) ) {
+			return '';
+		}
+		$counts      = array( 'open' => 0, 'closed' => 0, 'all' => 0 );
+		foreach ( $needs as $n ) {
+			$st = self::listing_state( $n );
+			$counts['all']++;
+			$counts[ 'open' === $st['key'] ? 'open' : 'closed' ]++;
+		}
+		$can_respond = class_exists( 'Shuffles_SSJ_Applications' );
+		$datef       = get_option( 'date_format' );
+		$note        = isset( $_GET['sssj_close'] ) ? sanitize_key( wp_unslash( $_GET['sssj_close'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		ob_start();
+		echo '<div class="sssj sssj--myneeds" id="sssj-my-requests">';
+		echo '<div class="sssj-panel">';
+		if ( 'filled' === $note ) {
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Marked as filled. It is closed now and you can reopen it any time.', 'shuffles-social-services-jobs' ) . '</p>';
+		} elseif ( 'closed' === $note ) {
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Request closed. You can reopen it any time.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		echo '<h2 style="margin-top:0">' . esc_html__( 'Your support requests', 'shuffles-social-services-jobs' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Every request you have posted. You can have several open at once. Mark one as filled when you have found someone, close it, or reopen it later.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<div class="sssj-segmented sssj-row" role="group" aria-label="' . esc_attr__( 'Filter your requests', 'shuffles-social-services-jobs' ) . '" style="gap:6px;flex-wrap:wrap;margin-bottom:8px">';
+		echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--primary" data-needs-filter="all" aria-pressed="true">' . esc_html( sprintf( __( 'All (%d)', 'shuffles-social-services-jobs' ), $counts['all'] ) ) . '</button>';
+		echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--ghost" data-needs-filter="open" aria-pressed="false">' . esc_html( sprintf( __( 'Open (%d)', 'shuffles-social-services-jobs' ), $counts['open'] ) ) . '</button>';
+		echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--ghost" data-needs-filter="closed" aria-pressed="false">' . esc_html( sprintf( __( 'Closed (%d)', 'shuffles-social-services-jobs' ), $counts['closed'] ) ) . '</button>';
+		echo '</div>';
+		echo '<div class="sssj-myneeds__list" data-needs-list>';
+		foreach ( $needs as $n ) {
+			$state  = self::listing_state( $n );
+			$bucket = ( 'open' === $state['key'] ) ? 'open' : 'closed';
+			$ends   = (string) get_post_meta( $n->ID, 'expires_at', true );
+			$resp   = $can_respond ? count( (array) Shuffles_SSJ_Applications::for_entity( 'need', $n->ID ) ) : 0;
+			echo '<div class="sssj-card sssj-myneeds__item" data-needs-state="' . esc_attr( $bucket ) . '" style="margin:8px 0">';
+			echo '<div class="sssj-row" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">';
+			echo '<strong>' . esc_html( get_the_title( $n ) ? get_the_title( $n ) : ( '#' . $n->ID ) ) . '</strong>';
+			echo '<span class="sssj-badge ' . esc_attr( $state['class'] ) . '">' . esc_html( $state['label'] ) . '</span>';
+			echo '</div>';
+			echo '<div class="sssj-row description" style="gap:12px;flex-wrap:wrap;margin-top:4px">';
+			echo '<span>' . esc_html( sprintf( _n( '%d response', '%d responses', $resp, 'shuffles-social-services-jobs' ), $resp ) ) . '</span>';
+			if ( '' !== $ends ) {
+				echo '<span>' . esc_html( 'open' === $bucket ? sprintf( __( 'Closes on %s', 'shuffles-social-services-jobs' ), mysql2date( $datef, $ends ) ) : sprintf( __( 'Was due %s', 'shuffles-social-services-jobs' ), mysql2date( $datef, $ends ) ) ) . '</span>';
+			}
+			echo '</div>';
+			echo self::listing_actions_html( $n ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			echo '</div>';
+		}
+		echo '</div>';
+		echo '</div></div>';
+		if ( ! $script_done ) {
+			$script_done = true;
+			echo '<script>(function(){function wire(scope){var btns=scope.querySelectorAll("[data-needs-filter]");var items=scope.querySelectorAll("[data-needs-state]");Array.prototype.forEach.call(btns,function(b){b.addEventListener("click",function(){var v=b.getAttribute("data-needs-filter");Array.prototype.forEach.call(btns,function(x){var on=x===b;x.classList.toggle("sssj-btn--primary",on);x.classList.toggle("sssj-btn--ghost",!on);x.setAttribute("aria-pressed",on?"true":"false");});Array.prototype.forEach.call(items,function(it){var s=it.getAttribute("data-needs-state");it.style.display=(v==="all"||v===s)?"":"none";});});});}Array.prototype.forEach.call(document.querySelectorAll(".sssj--myneeds"),wire);})();</script>';
+		}
 		return ob_get_clean();
 	}
 
@@ -1006,6 +1168,26 @@ class Shuffles_SSJ_Shortcodes {
 		ob_start();
 		$this->load_template( 'my-listings.php', array() );
 		return ob_get_clean();
+	}
+
+	/**
+	 * [sssj_my_needs], a member's own participant support requests ("seeking workers") with a clear
+	 * Open / Filled / Closed status, an Open/Closed/All filter, response counts and lifecycle controls.
+	 * A dedicated, placeable view of just the requests (the dashboard "My listings" tab is the combined hub).
+	 */
+	public function my_needs( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to see your support requests.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+		$html = self::render_my_needs( get_current_user_id() );
+		if ( '' === $html ) {
+			$post_need = $this->resolve_page( 'page_post_need', '[sssj_post_need]' );
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'You have not posted any support requests yet.', 'shuffles-social-services-jobs' )
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $post_need ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		}
+		return $html;
 	}
 
 	/** [sssj_roles], let a logged-in member declare their role(s); grants the matching capabilities. */

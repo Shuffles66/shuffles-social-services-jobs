@@ -366,6 +366,27 @@
 			.catch( function ( e ) { msg( root, 'Could not build the print-quality PDF (' + ( e.message || 'error' ) + '). You can still use Quick PDF.' ); } );
 	}
 
+	function saveResume( root ) {
+		var cfg = window.SSSJ_AssetRender || {};
+		if ( ! cfg.ajax || ! cfg.nonce ) { msg( root, 'Saving to My résumés is not available right now. You can still download a PDF.' ); return; }
+		var asset = root.querySelector( '#sssj-asset' );
+		var fmt = ( asset && asset.classList.contains( 'sssj-asset--styled' ) ) ? 'styled' : 'ats';
+		var tg = root.querySelector( '[data-edit="tagline"]' );
+		var bl = root.querySelector( '[data-edit="blurb"]' );
+		msg( root, 'Saving to My résumés' + String.fromCharCode(8230) );
+		var body = 'action=sssj_asset_save_resume&nonce=' + encodeURIComponent( cfg.nonce )
+			+ '&format=' + encodeURIComponent( fmt )
+			+ '&tagline=' + encodeURIComponent( tg ? tg.value : '' )
+			+ '&blurb=' + encodeURIComponent( bl ? bl.value : '' );
+		fetch( cfg.ajax, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: body } )
+			.then( function ( r ) { return r.json(); } )
+			.then( function ( d ) {
+				if ( d && d.success ) { msg( root, ( d.data && d.data.msg ) ? d.data.msg : 'Saved to My résumés.' ); }
+				else { msg( root, ( d && d.data && d.data.msg ) ? d.data.msg : 'Could not save to My résumés.' ); }
+			} )
+			.catch( function () { msg( root, 'Could not save right now. You can still download a PDF above.' ); } );
+	}
+
 	function copyCaption( root ) {
 		var text = root.getAttribute( 'data-caption' ) || '';
 		if ( navigator.clipboard && navigator.clipboard.writeText ) {
@@ -464,6 +485,7 @@
 			var act = btn.getAttribute( 'data-action' );
 			if ( 'pdf' === act ) { window.print(); }
 			else if ( 'server-pdf' === act ) { serverPdf( root ); }
+			else if ( 'save-resume' === act ) { saveResume( root ); }
 			else if ( 'png' === act ) { saveImage( root ); }
 			else if ( 'caption' === act ) { copyCaption( root ); }
 		} );

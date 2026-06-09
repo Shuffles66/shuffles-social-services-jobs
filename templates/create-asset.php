@@ -255,7 +255,10 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 					<?php else : ?>
 						<button type="button" class="sssj-btn sssj-btn--primary sssj-btn--sm" data-action="pdf"><?php esc_html_e( 'Download PDF', 'shuffles-social-services-jobs' ); ?></button>
 					<?php endif; ?>
-					<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-action="png"><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
+					<?php if ( 'resume' === $type && class_exists( 'Shuffles_SSJ_Asset_Renderer' ) && Shuffles_SSJ_Asset_Renderer::enabled() ) : ?>
+						<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-action="save-resume">&#128190; <?php esc_html_e( 'Save to My résumés', 'shuffles-social-services-jobs' ); ?></button>
+					<?php endif; ?>
+						<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-action="png"><?php esc_html_e( 'Save image', 'shuffles-social-services-jobs' ); ?></button>
 					<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-action="caption"><?php esc_html_e( 'Copy caption', 'shuffles-social-services-jobs' ); ?></button>
 				</div>
 				<p class="description" data-asset-msg style="margin-top:8px"></p>

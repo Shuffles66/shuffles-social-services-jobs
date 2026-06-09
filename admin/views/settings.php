@@ -1596,7 +1596,20 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.33 · 2026-06-09 · Link “My résumés” to the résumé builder</h3>
+				<h3>v1.10.35 · 2026-06-10 · Manage several support requests + status (Open / Filled / Closed)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The “Request support” page now shows “Your support requests” right under the form: every request you have posted, with an Open / Closed / All filter, a clear status (Open, Filled or Closed), the number of responses and the closing date. You can have several requests open at once and manage them in one place.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'New lifecycle controls on each request (and job ad): “Mark as filled” when you have found someone, “Close” to take it down, and “Reopen” to put it back live with a fresh closing date. Marked-as-filled shows a clear “Filled” badge; reopening clears it.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Your dashboard “My listings” tab now shows the same friendly status (Open / Filled / Closed) instead of the raw internal status. (My listings is the combined hub: applications, job ads, and support requests.)', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'New [sssj_my_needs] shortcode: a dedicated “My support requests (seeking workers)” list you can place on its own page or in the menu, separate from the combined My listings hub.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Fixed: the “unsaved changes” save bar no longer appears across the whole dashboard. It now shows only when you have actually edited the profile form in front of you, and hides after you save.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Simplified the support-request description prompt to “Describe what you wish.”', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.34 · 2026-06-10 · “Save to My résumés” from the résumé builder</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The résumé builder (Create an asset → Résumé) now has a “Save to My résumés” button that renders your résumé on the server and files it straight into your “My résumés” store, in the layout you chose (ATS-friendly or Styled), ready to attach to applications. No download-then-re-upload step. The button only appears when high-quality server rendering is switched on (Settings → Assets); otherwise the Download PDF buttons still work as before.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.33 · 2026-06-09 · Link “My résumés” to the résumé builder</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The “My résumés” file store now has a “Build a résumé” prompt linking to the résumé builder (Create an asset → Résumé), so members with no résumé file can generate a clean, ATS-friendly one from their profile, then download it and upload it here to send with applications. (My résumés stores files you attach to applications; the builder generates a résumé from your profile, two separate tools, now connected.)', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

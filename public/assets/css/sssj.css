@@ -894,6 +894,7 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 
 /* "Open to…" badges (visa sponsorship / work placements / volunteers) */
 .sssj .sssj-badge--open{ background:#ecfeff; color:#0e7490; border:1px solid #a5f3fc; }
+.sssj .sssj-badge--muted{ background:#f1f5f9; color:#64748b; border:1px solid #e2e8f0; }
 
 /* Volunteer engagement basis badge */
 .sssj .sssj-badge--vol{ background:#dcfce7; color:#166534; }

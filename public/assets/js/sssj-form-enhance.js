@@ -48,7 +48,11 @@
 		[ buildSections, completeness, availabilityToggle, charCounter, fileInputs, stickyBar, shortcuts, titleIndicator ].forEach( function ( fn ) {
 			try { fn( form ); } catch ( e ) { /* never let one feature break the rest */ }
 		} );
-		setTimeout( function () { window.sssjToast( 'Tip: press Ctrl+S to save at any time', 'info', 4000 ); }, 1200 );
+		setTimeout( function () {
+			if ( form.offsetParent || ( form.getClientRects && form.getClientRects().length ) ) {
+				window.sssjToast( 'Tip: press Ctrl+S to save at any time', 'info', 4000 );
+			}
+		}, 1200 );
 	} );
 
 	/* ---- Section cards: wrap existing top-level field blocks into labelled cards ---- */
@@ -223,9 +227,15 @@
 		bar.appendChild( btn );
 		document.body.appendChild( bar );
 		var touched = false;
-		function upd() { bar.classList.toggle( 'is-visible', touched || window.scrollY > 300 ); }
+		// Only nag about unsaved changes when this form is actually on screen AND the member edited it,
+		// so the bar never floats across other dashboard tabs that merely contain a hidden profile form.
+		function visible() { return !! ( form.offsetParent || ( form.getClientRects && form.getClientRects().length ) ); }
+		function upd() { bar.classList.toggle( 'is-visible', touched && visible() ); }
 		form.addEventListener( 'input', function () { touched = true; upd(); }, { once: false } );
+		form.addEventListener( 'change', function () { touched = true; upd(); } );
+		form.addEventListener( 'submit', function () { touched = false; upd(); } );
 		window.addEventListener( 'scroll', upd, { passive: true } );
+		window.addEventListener( 'resize', upd, { passive: true } );
 		upd();
 	}
 

@@ -31,6 +31,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_review_respond', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_listing_reactivate', array( $this, 'handle_listing_reactivate' ) );
 		add_action( 'admin_post_nopriv_sssj_listing_reactivate', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_listing_close', array( $this, 'handle_listing_close' ) );
+		add_action( 'admin_post_nopriv_sssj_listing_close', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
@@ -887,9 +889,44 @@ class Shuffles_SSJ_Frontend_Forms {
 		$days = max( 1, (int) apply_filters( 'shuffles_ssj_reactivate_days', 30 ) );
 		update_post_meta( $id, 'expires_at', gmdate( 'Y-m-d', strtotime( current_time( 'Y-m-d' ) . ' +' . $days . ' days' ) ) );
 		delete_post_meta( $id, '_sssj_pre_reminded' );
+		delete_post_meta( $id, '_sssj_filled' ); // Reopening clears the "filled" outcome.
 		wp_update_post( array( 'ID' => $id, 'post_status' => 'publish' ) );
 
-		wp_safe_redirect( add_query_arg( 'sssj_react', 'ok', remove_query_arg( 'sssj_react', $redirect ) ) );
+		wp_safe_redirect( add_query_arg( 'sssj_react', 'ok', remove_query_arg( array( 'sssj_react', 'sssj_close' ), $redirect ) ) . '#sssj-my-requests' );
+		exit;
+	}
+
+	/**
+	 * Owner closes one of their listings (job/need), optionally marking it "filled" (found someone).
+	 * Sets the post to draft so it leaves the public boards; the owner can reopen it later.
+	 */
+	public function handle_listing_close() {
+		$nonce = isset( $_POST['sssj_close_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_close_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_listing_close' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$id       = isset( $_POST['listing_id'] ) ? absint( $_POST['listing_id'] ) : 0;
+		$post     = $id ? get_post( $id ) : null;
+		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		if ( ! $post || ! in_array( $post->post_type, array( 'sssj_job', 'sssj_need' ), true ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_close', 'error', $redirect ) );
+			exit;
+		}
+		if ( (int) $post->post_author !== get_current_user_id() && ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You do not have permission to change this listing.', 'shuffles-social-services-jobs' ) );
+		}
+		$mark = ( isset( $_POST['mark'] ) && 'filled' === sanitize_key( wp_unslash( $_POST['mark'] ) ) ) ? 'filled' : 'closed';
+		if ( 'filled' === $mark ) {
+			update_post_meta( $id, '_sssj_filled', 1 );
+		} else {
+			delete_post_meta( $id, '_sssj_filled' );
+		}
+		wp_update_post( array( 'ID' => $id, 'post_status' => 'draft' ) );
+
+		wp_safe_redirect( add_query_arg( 'sssj_close', $mark, remove_query_arg( array( 'sssj_react', 'sssj_close' ), $redirect ) ) . '#sssj-my-requests' );
 		exit;
 	}
 

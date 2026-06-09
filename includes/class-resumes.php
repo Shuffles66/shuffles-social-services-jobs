@@ -137,6 +137,54 @@ class Shuffles_SSJ_Resumes {
 		return $id;
 	}
 
+	/**
+	 * Store a résumé from raw bytes (e.g. a server-rendered PDF from the résumé builder).
+	 *
+	 * @return int|WP_Error new id
+	 */
+	public static function add_bytes( $uid, $label, $bytes, $mime = 'application/pdf', $original = 'resume.pdf', $make_default = false ) {
+		global $wpdb;
+		$uid = (int) $uid;
+		if ( ! $uid ) {
+			return new WP_Error( 'auth', __( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( '' === (string) $bytes ) {
+			return new WP_Error( 'empty', __( 'There was nothing to save.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( strlen( $bytes ) > self::max_bytes() ) {
+			return new WP_Error( 'toobig', sprintf( __( 'The résumé is too large (max %d MB).', 'shuffles-social-services-jobs' ), (int) ( self::max_bytes() / 1048576 ) ) );
+		}
+		if ( self::count_for_user( $uid ) >= self::max_count() ) {
+			return new WP_Error( 'limit', sprintf( __( 'You can store up to %d résumés. Remove one first.', 'shuffles-social-services-jobs' ), self::max_count() ) );
+		}
+		$label = trim( wp_strip_all_tags( (string) $label ) );
+		if ( '' === $label ) {
+			$label = __( 'My résumé', 'shuffles-social-services-jobs' );
+		}
+		$first = ( 0 === self::count_for_user( $uid ) );
+		$ok    = $wpdb->insert( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			self::table(),
+			array(
+				'user_id'       => $uid,
+				'label'         => substr( $label, 0, 160 ),
+				'resume_data'   => base64_encode( $bytes ),
+				'resume_mime'   => $mime ? $mime : 'application/pdf',
+				'original_name' => sanitize_file_name( $original ? $original : 'resume.pdf' ),
+				'is_default'    => ( $make_default || $first ) ? 1 : 0,
+				'created_at'    => current_time( 'mysql' ),
+			),
+			array( '%d', '%s', '%s', '%s', '%s', '%d', '%s' )
+		);
+		if ( ! $ok ) {
+			return new WP_Error( 'db', __( 'Could not save the résumé.', 'shuffles-social-services-jobs' ) );
+		}
+		$id = (int) $wpdb->insert_id;
+		if ( $make_default || $first ) {
+			self::set_default( $id, $uid );
+		}
+		return $id;
+	}
+
 	/** A user's résumés, newest first (no blob loaded). Always an array (empty if table is new/missing). */
 	public static function for_user( $uid ) {
 		global $wpdb;

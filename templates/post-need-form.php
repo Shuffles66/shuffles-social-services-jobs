@@ -61,7 +61,7 @@ $def_end = gmdate( 'Y-m-d', strtotime( $min_end . ' +60 days' ) );
 
 				<div class="sssj-field">
 					<label for="sssj-ndetails"><?php esc_html_e( 'Details (what help is needed)', 'shuffles-social-services-jobs' ); ?></label>
-					<textarea class="sssj-textarea" id="sssj-ndetails" name="details" rows="5" placeholder="<?php esc_attr_e( 'Describe the support in everyday words. What does a good day look like, and what would help most?', 'shuffles-social-services-jobs' ); ?>"></textarea>
+					<textarea class="sssj-textarea" id="sssj-ndetails" name="details" rows="5" placeholder="<?php esc_attr_e( 'Describe what you wish.', 'shuffles-social-services-jobs' ); ?>"></textarea>
 				</div>
 			</div>
 
