@@ -636,17 +636,26 @@ class Shuffles_SSJ_NDIS_Register {
 			$out .= '<tr><th scope="row">' . esc_html__( 'Phone (register)', 'shuffles-social-services-jobs' ) . '</th><td><a href="tel:' . esc_attr( preg_replace( '/[^0-9+]/', '', $phone ) ) . '">' . esc_html( $phone ) . '</a></td></tr>';
 		}
 		if ( $outlets ) {
-			$rows = '';
+			$lis = array();
 			foreach ( $outlets as $o ) {
 				$nm = isset( $o['name'] ) ? (string) $o['name'] : '';
 				$ph = isset( $o['phone'] ) ? (string) $o['phone'] : '';
 				if ( '' === $nm && '' === $ph ) {
 					continue;
 				}
-				$rows .= '<li>' . esc_html( $nm ) . ( $ph ? ', ' . esc_html( $ph ) : '' ) . '</li>';
+				$lis[] = '<li>' . esc_html( $nm ) . ( $ph ? ', ' . esc_html( $ph ) : '' ) . '</li>';
 			}
-			if ( '' !== $rows ) {
-				$out .= '<tr><th scope="row">' . esc_html( sprintf( _n( 'Outlet', 'Outlets (%d)', count( $outlets ), 'shuffles-social-services-jobs' ), count( $outlets ) ) ) . '</th><td><ul class="sssj-ndis__outlets">' . $rows . '</ul></td></tr>';
+			if ( $lis ) {
+				$total = count( $lis );
+				$limit = 5;
+				// Show the first few outlets; collapse the rest behind a native (no-JS) "show all" toggle.
+				$cell = '<ul class="sssj-ndis__outlets">' . implode( '', array_slice( $lis, 0, $limit ) ) . '</ul>';
+				if ( $total > $limit ) {
+					$cell .= '<details class="sssj-ndis__outlets-more"><summary>'
+						. esc_html( sprintf( __( 'Show all %d outlets', 'shuffles-social-services-jobs' ), $total ) )
+						. '</summary><ul class="sssj-ndis__outlets">' . implode( '', array_slice( $lis, $limit ) ) . '</ul></details>';
+				}
+				$out .= '<tr><th scope="row">' . esc_html( sprintf( _n( 'Outlet', 'Outlets (%d)', $total, 'shuffles-social-services-jobs' ), $total ) ) . '</th><td>' . $cell . '</td></tr>';
 			}
 		}
 

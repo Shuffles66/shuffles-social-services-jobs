@@ -1596,7 +1596,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.20 · 2026-06-09 · Selectable job URL format (default: ID + title)</h3>
+				<h3>v1.10.21 · 2026-06-09 · Long outlet lists collapse to the first 5</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'When a provider lists many NDIS outlets, only the first 5 are shown with a “Show all N outlets” toggle that expands the rest, so a register record with hundreds of outlets no longer floods the page. Applies to both the saved provider record and the live “Scan now” preview. The data is unchanged, read-only register data, just tidier to read.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.20 · 2026-06-09 · Selectable job URL format (default: ID + title)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Job listing web addresses now include the listing ID by default, e.g. /jobs/1378/community-outing-volunteer-parramatta/, so they can never clash or produce messy “-2”/“-3” addresses. Choose a different structure (title only, date + title, year-month + title, or ID + date + title) under Settings → SEO → “Job URL format”.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'This is a plugin setting because WordPress’s own Settings → Permalinks only covers standard posts and pages, not custom listings. Changing the format automatically rewrites every job address and 301-redirects the previous ones, so existing links keep working, and your Google-for-Jobs data is unaffected (date posted / closing date live in the structured data, not the address).', 'shuffles-social-services-jobs' ); ?></li>

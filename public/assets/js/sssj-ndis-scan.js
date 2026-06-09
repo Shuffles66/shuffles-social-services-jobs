@@ -37,11 +37,20 @@
 		var addr = d.address ? '<div><strong>' + esc( cfg.i18n_addr || 'Head office (register)' ) + ':</strong> ' + esc( d.address ) + '</div>' : '';
 		var web  = d.website ? '<div><strong>' + esc( cfg.i18n_web || 'Website (register)' ) + ':</strong> <a href="' + esc( d.website ) + '" target="_blank" rel="noopener nofollow">' + esc( d.website.replace( /^https?:\/\//, '' ) ) + '</a></div>' : '';
 		var phone = d.phone ? '<div><strong>' + esc( cfg.i18n_phone || 'Phone (register)' ) + ':</strong> ' + esc( d.phone ) + '</div>' : '';
-		var outlets = ( d.outlets && d.outlets.length )
-			? '<div style="margin-top:4px"><strong>' + esc( cfg.i18n_outlets || 'Outlets' ) + '</strong><ul class="sssj-ndis__outlets">' + d.outlets.map( function ( o ) {
+		var outlets = '';
+		if ( d.outlets && d.outlets.length ) {
+			var oLi = d.outlets.map( function ( o ) {
 				return '<li>' + esc( o.name || '' ) + ( o.phone ? ', ' + esc( o.phone ) : '' ) + '</li>';
-			} ).join( '' ) + '</ul></div>'
-			: '';
+			} );
+			var oLimit = 5;
+			outlets = '<div style="margin-top:4px"><strong>' + esc( cfg.i18n_outlets || 'Outlets' ) + '</strong>'
+				+ '<ul class="sssj-ndis__outlets">' + oLi.slice( 0, oLimit ).join( '' ) + '</ul>';
+			if ( oLi.length > oLimit ) {
+				outlets += '<details class="sssj-ndis__outlets-more"><summary>Show all ' + oLi.length + ' outlets</summary>'
+					+ '<ul class="sssj-ndis__outlets">' + oLi.slice( oLimit ).join( '' ) + '</ul></details>';
+			}
+			outlets += '</div>';
+		}
 
 		// Status badge colour reflects the actual status (red for revoked/banned, green for approved).
 		var toneCls = d.tone === 'rejected' ? 'sssj-badge--rejected' : ( d.tone === 'verified' ? 'sssj-badge--verified' : '' );

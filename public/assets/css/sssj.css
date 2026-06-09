@@ -511,6 +511,12 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-ndis__abnwarn{ margin-top:4px; color:#b91c1c; font-weight:var(--sssj-weight-strong,600); font-size:var(--sssj-fs-sm,.85rem); }
 .sssj .sssj-ndis__outlets{ list-style:none; margin:2px 0 0; padding:0; }
 .sssj .sssj-ndis__outlets li{ font-size:var(--sssj-fs-sm,.9rem); padding:1px 0; }
+.sssj .sssj-ndis__outlets-more{ margin-top:4px; }
+.sssj .sssj-ndis__outlets-more > summary{ cursor:pointer; color:var(--sssj-blue,#3897e0); font-weight:600; font-size:var(--sssj-fs-sm,.9rem); list-style:none; display:inline-flex; align-items:center; gap:6px; }
+.sssj .sssj-ndis__outlets-more > summary::-webkit-details-marker{ display:none; }
+.sssj .sssj-ndis__outlets-more > summary::before{ content:'\25be'; font-size:.85em; }
+.sssj .sssj-ndis__outlets-more[open] > summary::before{ content:'\25b4'; }
+.sssj .sssj-ndis__outlets-more[open] > summary{ margin-bottom:3px; }
 
 /* ============================ Profile-form enhancements ============================ */
 @keyframes sssj-fadein{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
