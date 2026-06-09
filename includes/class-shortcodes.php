@@ -60,6 +60,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_promo', array( $this, 'promo' ) );
 		add_shortcode( 'sssj_profile_card', array( 'Shuffles_SSJ_Profile_Card', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
+		add_filter( 'the_content', array( $this, 'maybe_job_panel' ), 9 );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_org_panel' ) );
@@ -983,6 +984,17 @@ class Shuffles_SSJ_Shortcodes {
 			wp_enqueue_style( 'sssj' );
 			ob_start();
 			$this->load_template( 'apply-panel.php', array( 'job_id' => get_the_ID() ) );
+			return $content . ob_get_clean();
+		}
+		return $content;
+	}
+
+	/** Append the structured "Job details" panel (meta + taxonomies) to a single job page. */
+	public function maybe_job_panel( $content ) {
+		if ( is_singular( 'sssj_job' ) && in_the_loop() && is_main_query() ) {
+			wp_enqueue_style( 'sssj' );
+			ob_start();
+			$this->load_template( 'job-single-panel.php', array( 'job_id' => get_the_ID() ) );
 			return $content . ob_get_clean();
 		}
 		return $content;

@@ -1596,7 +1596,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.25 · 2026-06-09 · Whole-site translation: progressive + visible progress</h3>
+				<h3>v1.10.26 · 2026-06-09 · Single job page now shows the full job details</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'A “Job details” panel now appears on each job page, showing the structured information that was previously only on the board cards: the engagement basis (employee / contractor / volunteer), the organisation (or “Private advertiser” when anonymous), location, pay rate, hours per week, employment type, work mode, start and close dates, and any categories, role, required qualifications and funding tags. Only fields that have a value are shown.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.25 · 2026-06-09 · Whole-site translation: progressive + visible progress</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Whole-site translation now shows results as they arrive instead of waiting for the entire page, uses smaller/faster batches, and displays a “Translating…” indicator while it works. On long pages (like the policies page) this means text starts changing within a second or two rather than appearing to do nothing.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'If a page still does not translate after this: the most common cause is a security/firewall plugin blocking the site’s own REST endpoint (/wp-json/sssj/v1/translate) for visitors. Allow that route, and remember to purge the cache so the updated script loads.', 'shuffles-social-services-jobs' ); ?></li>
