@@ -57,6 +57,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_feature_today', array( 'Shuffles_SSJ_Spotlight', 'shortcode' ) );
 		add_shortcode( 'sssj_marketing', array( 'Shuffles_SSJ_Marketing', 'shortcode' ) );
 		add_shortcode( 'sssj_create_asset', array( $this, 'create_asset' ) );
+		add_action( 'wp_ajax_sssj_asset_panel', array( $this, 'ajax_asset_panel' ) );
 		add_shortcode( 'sssj_promo', array( $this, 'promo' ) );
 		add_shortcode( 'sssj_profile_card', array( 'Shuffles_SSJ_Profile_Card', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
@@ -1860,17 +1861,45 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_style( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/css/sssj-assets.css', array( 'sssj' ), SHUFFLES_SSJ_VERSION );
 		wp_enqueue_script( 'sssj-assets', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-assets.js', array(), SHUFFLES_SSJ_VERSION, true );
-		// Phase 2: hand the wizard the server-render endpoint + nonce when high-quality rendering is on.
+		// Always hand the wizard the AJAX endpoint + nonce so switching asset type swaps in place (no reload).
+		$asset_cfg = array(
+			'ajax'  => admin_url( 'admin-ajax.php' ),
+			'nonce' => wp_create_nonce( 'sssj_asset_render' ),
+		);
+		// Phase 2: also the server-render endpoint when high-quality PDF rendering is on.
 		if ( class_exists( 'Shuffles_SSJ_Asset_Renderer' ) && Shuffles_SSJ_Asset_Renderer::enabled() ) {
-			wp_localize_script( 'sssj-assets', 'SSSJ_AssetRender', array(
-				'url'   => admin_url( 'admin-post.php' ),
-				'nonce' => wp_create_nonce( 'sssj_asset_render' ),
-			) );
+			$asset_cfg['url'] = admin_url( 'admin-post.php' );
 		}
+		wp_localize_script( 'sssj-assets', 'SSSJ_AssetRender', $asset_cfg );
 		$a = shortcode_atts( array( 'asset' => '' ), is_array( $atts ) ? $atts : array(), 'sssj_create_asset' );
 		ob_start();
 		$this->load_template( 'create-asset.php', array( 'atts' => $a ) );
 		return ob_get_clean();
+	}
+
+	/**
+	 * AJAX: return the Create-an-asset tool rendered for a given type, so the type tabs swap in place
+	 * without a full page reload (which inside the dashboard would reset to the Overview tab).
+	 */
+	public function ajax_asset_panel() {
+		if ( ! is_user_logged_in() ) {
+			wp_send_json_error( array( 'msg' => 'auth' ), 403 );
+		}
+		check_ajax_referer( 'sssj_asset_render', 'nonce' );
+		$type = isset( $_POST['type'] ) ? sanitize_key( wp_unslash( $_POST['type'] ) ) : '';
+		$job  = isset( $_POST['job_id'] ) ? absint( $_POST['job_id'] ) : 0;
+		// The template reads these request vars; set them for this render only.
+		if ( '' !== $type ) {
+			$_GET['sssj_asset'] = $type;
+		}
+		if ( $job ) {
+			$_GET['sssj_job_id'] = $job;
+		} else {
+			unset( $_GET['sssj_job_id'] );
+		}
+		ob_start();
+		$this->load_template( 'create-asset.php', array( 'atts' => array( 'asset' => $type ) ) );
+		wp_send_json_success( array( 'html' => ob_get_clean() ) );
 	}
 
 	/**
@@ -2223,8 +2252,10 @@ class Shuffles_SSJ_Shortcodes {
 		<div class="sssj sssj--jobmap">
 			<div class="sssj-panel">
 				<h3 style="margin-top:0">📍 <?php echo esc_html( '' !== $label ? $label : __( 'Location', 'shuffles-social-services-jobs' ) ); ?></h3>
-				<div class="sssj-jobmap">
-					<iframe title="<?php echo esc_attr( sprintf( __( 'Map of %s', 'shuffles-social-services-jobs' ), $label ) ); ?>" src="<?php echo esc_url( $src ); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+				<div class="sssj-jobmap sssj-jobmap--facade" data-sssj-mapsrc="<?php echo esc_url( $src ); ?>">
+					<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-sssj-map-load>🗺️ <?php esc_html_e( 'Show map', 'shuffles-social-services-jobs' ); ?></button>
+						<span class="sssj-jobmap__hint"><?php esc_html_e( 'Loads from Google only when you tap it, so the page stays fast.', 'shuffles-social-services-jobs' ); ?></span>
+						<script>(function(){if(window.sssjMapFacadeBound)return;window.sssjMapFacadeBound=true;document.addEventListener('click',function(e){var b=e.target.closest?e.target.closest('[data-sssj-map-load]'):null;if(!b)return;var w=b.closest('.sssj-jobmap--facade');if(!w)return;var s=w.getAttribute('data-sssj-mapsrc');if(!s)return;var f=document.createElement('iframe');f.src=s;f.loading='lazy';f.referrerPolicy='no-referrer-when-downgrade';f.setAttribute('allowfullscreen','');f.title='Map';w.innerHTML='';w.classList.remove('sssj-jobmap--facade');w.appendChild(f);});})();</script>
 				</div>
 				<p class="description"><?php esc_html_e( 'Approximate location, shown at suburb level.', 'shuffles-social-services-jobs' ); ?></p>
 			</div>

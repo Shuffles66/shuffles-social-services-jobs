@@ -373,10 +373,64 @@
 		} else { msg( root, text ); }
 	}
 
+	function hrefParams( a ) {
+		var href = a.getAttribute( 'href' ) || '';
+		return {
+			type: ( /[?&]sssj_asset=([a-z]+)/.exec( href ) || [] )[ 1 ] || '',
+			job:  ( /[?&]sssj_job_id=([0-9]+)/.exec( href ) || [] )[ 1 ] || ''
+		};
+	}
+
+	// Swap the Create-an-asset tool to another type in place (no full reload), so it never bounces
+	// out of the dashboard tab and the controls (incl. the colour theme) stay put.
+	function swapPanel( type, job ) {
+		var cfg = window.SSSJ_AssetRender || {};
+		var current = document.querySelector( '.sssj--create-asset' );
+		if ( ! cfg.ajax || ! cfg.nonce || ! current ) { return; }
+		current.setAttribute( 'aria-busy', 'true' );
+		current.style.opacity = '0.55';
+		var body = 'action=sssj_asset_panel&nonce=' + encodeURIComponent( cfg.nonce )
+			+ '&type=' + encodeURIComponent( type ) + ( job ? '&job_id=' + encodeURIComponent( job ) : '' );
+		fetch( cfg.ajax, {
+			method: 'POST',
+			credentials: 'same-origin',
+			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			body: body
+		} ).then( function ( r ) { return r.json(); } ).then( function ( d ) {
+			if ( d && d.success && d.data && d.data.html ) {
+				var tmp = document.createElement( 'div' );
+				tmp.innerHTML = d.data.html;
+				var fresh = tmp.querySelector( '.sssj--create-asset' );
+				if ( fresh && current.parentNode ) {
+					current.parentNode.replaceChild( fresh, current );
+					init( fresh );
+					try {
+						if ( window.history && window.history.pushState ) {
+							window.history.pushState( null, '', '?sssj_asset=' + encodeURIComponent( type ) + ( job ? '&sssj_job_id=' + encodeURIComponent( job ) : '' ) + '#dash-create-asset' );
+						}
+					} catch ( e ) {}
+					return;
+				}
+			}
+			current.style.opacity = ''; current.removeAttribute( 'aria-busy' );
+		} ).catch( function () { current.style.opacity = ''; current.removeAttribute( 'aria-busy' ); } );
+	}
+
 	function init( root ) {
 		bindEditing( root );
 		initTheme( root );
 		root.addEventListener( 'click', function ( e ) {
+			// Asset-type tabs + job pick-list links: swap in place instead of reloading the whole page.
+			var link = e.target.closest ? e.target.closest( 'a[href*="sssj_asset="]' ) : null;
+			if ( link && root.contains( link ) ) {
+				var cfg = window.SSSJ_AssetRender || {};
+				if ( cfg.ajax && cfg.nonce ) {
+					e.preventDefault();
+					var p = hrefParams( link );
+					if ( p.type ) { swapPanel( p.type, p.job ); }
+					return;
+				}
+			}
 			var btn = e.target.closest ? e.target.closest( '[data-action]' ) : null;
 			if ( ! btn ) { return; }
 			e.preventDefault();

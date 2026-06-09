@@ -1596,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.27 · 2026-06-09 · Create-an-asset: stay on the tool when switching type</h3>
+				<h3>v1.10.28 · 2026-06-09 · Instant asset-type switching + faster maps</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Create-an-asset now switches type (Résumé / Service flyer / Social post / Job flyer) instantly in place, with no page reload, so you keep your spot and your colour-theme choice. It falls back to normal navigation if scripting is unavailable.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Faster maps: the map on a single job page now loads only when you tap “Show map”, instead of pulling a full Google map on every page view. This keeps listing pages quick to open. (The board maps already load in the background without blocking the page.)', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.27 · 2026-06-09 · Create-an-asset: stay on the tool when switching type</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Fixed switching asset type (Résumé / Service flyer / Social post / Job flyer) inside the dashboard bouncing you back to the Overview tab. The tabs now return you to the Create-an-asset tool, and the page scrolls back to it, so you no longer lose your place.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Because of that bounce, the “Colour theme” chooser (Ocean Teal, Indigo, Plum, Rose, Emerald, Sunset Amber, Slate) was being missed, it lives in the tool’s controls column and is now reachable on every asset type.', 'shuffles-social-services-jobs' ); ?></li>
