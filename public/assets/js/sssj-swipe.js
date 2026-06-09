@@ -1,5 +1,5 @@
 /**
- * Provider swipe deck — Tinder-style browsing for [sssj_swipe].
+ * Provider swipe deck, Tinder-style browsing for [sssj_swipe].
  * Right (♥ / → / drag right) = save to shortlist; Left (✕ / ← / drag left) = skip; ↺ / U = undo.
  * Pointer events → works with touch and mouse. Buttons + keyboard for accessibility.
  */

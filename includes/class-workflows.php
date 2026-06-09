@@ -1,8 +1,8 @@
 <?php
 /**
- * Workflows — step-by-step "how it works" explainers for END USERS (single source of truth).
+ * Workflows, step-by-step "how it works" explainers for END USERS (single source of truth).
  *
- * Distinct from Shuffles_SSJ_Guides (which is *advice* — "how to do it well"). Workflows are
+ * Distinct from Shuffles_SSJ_Guides (which is *advice*, "how to do it well"). Workflows are
  * *procedural*: the exact path through the app to finish a task, written in plain English for
  * members. Rendered by the [sssj_workflows] shortcode and the Settings → How-to Workflows tab.
  *
@@ -20,15 +20,15 @@ class Shuffles_SSJ_Workflows {
 
 	/**
 	 * Explainer workflows. Each:
-	 *   id       — stable slug
-	 *   roles    — hat keys this flow is most relevant to (for primary-role "For you" highlighting)
-	 *   audience — short audience label (badge)
-	 *   title    — the task, as the member would say it
-	 *   goal     — one line: what you will have achieved
-	 *   need     — prerequisites (array of strings)
-	 *   steps    — ordered steps; each: { do (action), where (where to find it, optional), note (tip/result, optional) }
-	 *   done     — how you know it worked
-	 *   start    — optional call-to-action: { label, page (settings key), sc (shortcode) }
+	 *   id      , stable slug
+	 *   roles   , hat keys this flow is most relevant to (for primary-role "For you" highlighting)
+	 *   audience, short audience label (badge)
+	 *   title   , the task, as the member would say it
+	 *   goal    , one line: what you will have achieved
+	 *   need    , prerequisites (array of strings)
+	 *   steps   , ordered steps; each: { do (action), where (where to find it, optional), note (tip/result, optional) }
+	 *   done    , how you know it worked
+	 *   start   , optional call-to-action: { label, page (settings key), sc (shortcode) }
 	 *
 	 * Filterable via `shuffles_ssj_workflows`.
 	 *
@@ -40,12 +40,12 @@ class Shuffles_SSJ_Workflows {
 			array(
 				'id'       => 'get-started',
 				'roles'    => array(),
-				'audience' => __( 'Everyone — start here', 'shuffles-social-services-jobs' ),
+				'audience' => __( 'Everyone, start here', 'shuffles-social-services-jobs' ),
 				'title'    => __( 'Set up your account', 'shuffles-social-services-jobs' ),
 				'goal'     => __( 'Get a working account and tell the marketplace how you want to use it, so the right tools and listings show up for you.', 'shuffles-social-services-jobs' ),
 				'need'     => array(
 					__( 'An email address.', 'shuffles-social-services-jobs' ),
-					__( 'A few minutes — you can finish your profile later.', 'shuffles-social-services-jobs' ),
+					__( 'A few minutes, you can finish your profile later.', 'shuffles-social-services-jobs' ),
 				),
 				'steps'    => array(
 					array(
@@ -60,11 +60,11 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'Pick a primary role.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'Your dashboard and menu focus on this role first — but nothing is hidden: a “See all” option always reveals everything.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'Your dashboard and menu focus on this role first, but nothing is hidden: a “See all” option always reveals everything.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'Complete the profile that matches your role.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'A worker profile, an organisation profile, or simply a saved résumé — the more complete it is, the more often you are found and matched.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'A worker profile, an organisation profile, or simply a saved résumé, the more complete it is, the more often you are found and matched.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				'done'     => __( 'You can see your dashboard, and the menu shows the tools for your role.', 'shuffles-social-services-jobs' ),
@@ -106,7 +106,7 @@ class Shuffles_SSJ_Workflows {
 						'do'    => __( 'Publish.', 'shuffles-social-services-jobs' ),
 					),
 				),
-				'done'     => __( 'The advert appears on the all-jobs board and on its own board (Employee, Contractor or Volunteer) — never on the wrong one.', 'shuffles-social-services-jobs' ),
+				'done'     => __( 'The advert appears on the all-jobs board and on its own board (Employee, Contractor or Volunteer), never on the wrong one.', 'shuffles-social-services-jobs' ),
 				'start'    => array( 'label' => __( 'Post a job', 'shuffles-social-services-jobs' ), 'page' => 'page_post_job', 'sc' => '[sssj_post_job]' ),
 			),
 
@@ -131,7 +131,7 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'Add your availability, earliest start date, and confirm your right to work in Australia.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'Right to work is required — the form will not submit without it.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'Right to work is required, the form will not submit without it.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'Answer any screening questions and submit.', 'shuffles-social-services-jobs' ),
@@ -154,7 +154,7 @@ class Shuffles_SSJ_Workflows {
 				'goal'     => __( 'Express interest in fee-for-service work and start a safe conversation with the advertiser or participant.', 'shuffles-social-services-jobs' ),
 				'need'     => array(
 					__( 'A logged-in account.', 'shuffles-social-services-jobs' ),
-					__( 'A valid 11-digit ABN recorded on your profile — you cannot respond to ABN work without it.', 'shuffles-social-services-jobs' ),
+					__( 'A valid 11-digit ABN recorded on your profile, you cannot respond to ABN work without it.', 'shuffles-social-services-jobs' ),
 				),
 				'steps'    => array(
 					array(
@@ -169,12 +169,12 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'Open a listing and send a short expression of interest with your rate.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'Say what is included. Funding (NDIS, aged care, privately funded…) is a guide to how you will invoice — never a barrier to making contact.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'Say what is included. Funding (NDIS, aged care, privately funded…) is a guide to how you will invoice, never a barrier to making contact.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'Continue the conversation inside the platform.', 'shuffles-social-services-jobs' ),
 						'where' => __( 'Messages.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'Participant requests show a pseudonym and suburb only — build trust before sharing details.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'Participant requests show a pseudonym and suburb only, build trust before sharing details.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				'done'     => __( 'Your expression of interest is sent and a private message thread is open.', 'shuffles-social-services-jobs' ),
@@ -186,7 +186,7 @@ class Shuffles_SSJ_Workflows {
 				'roles'    => array( 'employer', 'provider' ),
 				'audience' => __( 'For organisations & advertisers', 'shuffles-social-services-jobs' ),
 				'title'    => __( 'Review applicants and reach a decision', 'shuffles-social-services-jobs' ),
-				'goal'     => __( 'See who applied, review their details, and move each person through to hired or declined — keeping them informed automatically.', 'shuffles-social-services-jobs' ),
+				'goal'     => __( 'See who applied, review their details, and move each person through to hired or declined, keeping them informed automatically.', 'shuffles-social-services-jobs' ),
 				'need'     => array(
 					__( 'A job you posted that has applicants.', 'shuffles-social-services-jobs' ),
 				),
@@ -205,7 +205,7 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'Let the system notify them.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'The applicant is emailed automatically whenever you change their status — no need to send a separate message.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'The applicant is emailed automatically whenever you change their status, no need to send a separate message.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				'done'     => __( 'Every applicant has a clear status, a recorded history, and has been told where they stand.', 'shuffles-social-services-jobs' ),
@@ -228,7 +228,7 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'Describe the support, hours, and any preferences.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'Gender, language and cultural preferences help the right worker find you. Use general terms — never personal identifying details.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'Gender, language and cultural preferences help the right worker find you. Use general terms, never personal identifying details.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'Submit for review.', 'shuffles-social-services-jobs' ),
@@ -268,7 +268,7 @@ class Shuffles_SSJ_Workflows {
 						'note'  => __( 'The default is pre-selected when you apply; you can still pick a different one per job.', 'shuffles-social-services-jobs' ),
 					),
 				),
-				'done'     => __( 'Your résumés are stored privately — only you (and an employer you apply to) can open them.', 'shuffles-social-services-jobs' ),
+				'done'     => __( 'Your résumés are stored privately, only you (and an employer you apply to) can open them.', 'shuffles-social-services-jobs' ),
 				'start'    => array( 'label' => __( 'Manage my résumés', 'shuffles-social-services-jobs' ), 'page' => 'page_dashboard', 'sc' => '[sssj_dashboard]' ),
 			),
 
@@ -288,7 +288,7 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'If it exists, open its profile and request to join.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'An organisation admin must approve you — nobody joins automatically. You will see the request as pending until then.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'An organisation admin must approve you, nobody joins automatically. You will see the request as pending until then.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'If it does not exist, create it.', 'shuffles-social-services-jobs' ),
@@ -317,7 +317,7 @@ class Shuffles_SSJ_Workflows {
 				'steps'    => array(
 					array(
 						'do'    => __( 'Set up the search you want.', 'shuffles-social-services-jobs' ),
-						'where' => __( 'Any board or directory — set the keywords, filters, location and radius.', 'shuffles-social-services-jobs' ),
+						'where' => __( 'Any board or directory, set the keywords, filters, location and radius.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'Click “Save & alert me”.', 'shuffles-social-services-jobs' ),
@@ -348,7 +348,7 @@ class Shuffles_SSJ_Workflows {
 						'note'  => __( 'Volunteer roles carry a green “Volunteer” badge and never mix with employee or contractor work.', 'shuffles-social-services-jobs' ),
 					),
 					array(
-						'do'    => __( 'To volunteer: open a role and apply — any logged-in member can.', 'shuffles-social-services-jobs' ),
+						'do'    => __( 'To volunteer: open a role and apply, any logged-in member can.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'do'    => __( 'To recruit volunteers: post a job with the basis set to “Volunteer (unpaid)”.', 'shuffles-social-services-jobs' ),
@@ -386,7 +386,7 @@ class Shuffles_SSJ_Workflows {
 					),
 					array(
 						'do'    => __( 'Raise a concern if something is wrong.', 'shuffles-social-services-jobs' ),
-						'note'  => __( 'Use the complaints/feedback channel — concerns are handled in line with NDIS practice standards.', 'shuffles-social-services-jobs' ),
+						'note'  => __( 'Use the complaints/feedback channel, concerns are handled in line with NDIS practice standards.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				'done'     => __( 'You know how to contact people safely, read the trust signals, and get help if needed.', 'shuffles-social-services-jobs' ),

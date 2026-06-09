@@ -53,7 +53,7 @@ class Shuffles_SSJ_Roles {
 		return array(
 			'employer'       => array(
 				'label'   => __( 'Employer / company', 'shuffles-social-services-jobs' ),
-				'desc'    => __( 'I hire staff or post roles for a business — PAYG employment and/or ABN engagements.', 'shuffles-social-services-jobs' ),
+				'desc'    => __( 'I hire staff or post roles for a business, PAYG employment and/or ABN engagements.', 'shuffles-social-services-jobs' ),
 				'group'   => 'offer',
 				'caps'    => array( 'sssj_post_job', 'sssj_post_org' ),
 				'reveals' => array( 'org', 'listings' ),
@@ -74,28 +74,28 @@ class Shuffles_SSJ_Roles {
 			),
 			'contractor'     => array(
 				'label'   => __( 'Available for contracting (sole trader / ABN)', 'shuffles-social-services-jobs' ),
-				'desc'    => __( 'I work for myself under an ABN — sub-contracting / fee-for-service, including direct NDIS participant work. You can also list yourself in the providers directory as a sole trader.', 'shuffles-social-services-jobs' ),
+				'desc'    => __( 'I work for myself under an ABN, sub-contracting / fee-for-service, including direct NDIS participant work. You can also list yourself in the providers directory as a sole trader.', 'shuffles-social-services-jobs' ),
 				'group'   => 'seek',
 				'caps'    => array( 'sssj_post_worker', 'sssj_post_org' ),
 				'reveals' => array( 'profile', 'matches', 'credentials', 'org' ),
 			),
 			'candidate'      => array(
 				'label'   => __( 'Looking for employee work (PAYG / TFN)', 'shuffles-social-services-jobs' ),
-				'desc'    => __( 'I want to be hired as an employee — casual, part-time or full-time. No ABN needed.', 'shuffles-social-services-jobs' ),
+				'desc'    => __( 'I want to be hired as an employee, casual, part-time or full-time. No ABN needed.', 'shuffles-social-services-jobs' ),
 				'group'   => 'seek',
 				'caps'    => array( 'sssj_post_worker' ),
 				'reveals' => array( 'profile', 'matches', 'credentials' ),
 			),
 			'participant'    => array(
 				'label'   => __( 'Participant', 'shuffles-social-services-jobs' ),
-				'desc'    => __( 'I’m a participant seeking support — request workers/providers, or post my own roles (free).', 'shuffles-social-services-jobs' ),
+				'desc'    => __( 'I’m a participant seeking support, request workers/providers, or post my own roles (free).', 'shuffles-social-services-jobs' ),
 				'group'   => 'support',
 				'caps'    => array( 'sssj_post_need', 'sssj_post_job' ),
 				'reveals' => array( 'needs' ),
 			),
 			'representative' => array(
 				'label'   => __( 'Participant representative / nominee', 'shuffles-social-services-jobs' ),
-				'desc'    => __( 'I act for a participant — family member, nominee or support coordinator.', 'shuffles-social-services-jobs' ),
+				'desc'    => __( 'I act for a participant, family member, nominee or support coordinator.', 'shuffles-social-services-jobs' ),
 				'group'   => 'support',
 				'caps'    => array( 'sssj_post_need' ),
 				'reveals' => array( 'needs' ),
@@ -143,7 +143,7 @@ class Shuffles_SSJ_Roles {
 		return is_array( $r ) ? array_values( array_intersect( $r, self::all_role_keys() ) ) : array();
 	}
 
-	/** Save declared hats + grant matching caps (additive — never revokes). */
+	/** Save declared hats + grant matching caps (additive, never revokes). */
 	public static function set_member_roles( $user_id, $roles ) {
 		$user_id = (int) $user_id;
 		$valid   = array_values( array_intersect( (array) $roles, array_keys( self::hats() ) ) );
@@ -186,7 +186,7 @@ class Shuffles_SSJ_Roles {
 	}
 
 	/**
-	 * The member's primary (focus) role — one of their hats. Used to focus the dashboard + menu
+	 * The member's primary (focus) role, one of their hats. Used to focus the dashboard + menu
 	 * by default while keeping everything reachable via "See all". '' if no hats.
 	 */
 	public static function primary_role( $user_id ) {
@@ -218,7 +218,7 @@ class Shuffles_SSJ_Roles {
 		return self::has_hat( $user_id, 'contractor' );
 	}
 
-	/** Is this member a participant (consumer side — free to post)? Includes their nominee/rep. */
+	/** Is this member a participant (consumer side, free to post)? Includes their nominee/rep. */
 	public static function is_participant( $user_id ) {
 		return (bool) array_intersect( self::member_roles( $user_id ), array( 'participant', 'representative' ) ) || user_can( (int) $user_id, 'sssj_post_need' );
 	}

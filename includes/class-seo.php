@@ -1,7 +1,7 @@
 <?php
 /**
  * SEO: JobPosting JSON-LD on public job pages; noindex on participant needs and
- * non-public worker profiles (privacy beats discoverability — always).
+ * non-public worker profiles (privacy beats discoverability, always).
  *
  * @package Shuffles_SSJ
  */
@@ -47,7 +47,7 @@ class Shuffles_SSJ_SEO {
 				if ( is_user_logged_in() ) {
 					return; // members-only profile, viewer is a logged-in member
 				}
-				wp_safe_redirect( wp_login_url( get_permalink( $id ) ) );
+				wp_safe_redirect( Shuffles_SSJ_Shortcodes::login_url( get_permalink( $id ) ) );
 				exit;
 			}
 			// 'verified_only' (or any other non-public value): not shown to non-owners yet.
@@ -127,7 +127,7 @@ class Shuffles_SSJ_SEO {
 			return;
 		}
 
-		// Organisation profiles: Organization structured data (public, indexable) — unless hidden.
+		// Organisation profiles: Organization structured data (public, indexable), unless hidden.
 		if ( is_singular( 'sssj_org' ) ) {
 			if ( '1' === (string) get_post_meta( get_queried_object_id(), 'org_hidden', true ) ) {
 				echo "<meta name=\"robots\" content=\"noindex,nofollow\" />\n";

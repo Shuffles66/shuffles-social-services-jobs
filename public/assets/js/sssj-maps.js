@@ -1,4 +1,4 @@
-/* Shuffles Social Services Jobs and Engagements — Google Maps integration.
+/* Shuffles Social Services Jobs and Engagements, Google Maps integration.
  * Loaded before the Google Maps script, which calls window.sssjInitMaps when ready.
  * - Places autocomplete on inputs[data-sssj-place] → fills the sibling
  *   data-sssj-suburb/state/postcode/lat/lng fields within the [data-sssj-place-group] wrapper.

@@ -19,6 +19,7 @@ marketing material, partner/endorsement docs, and member-facing copy. Pairs with
 - NDIS provider registration is read live from the NDIS Commission's public register and re-checked monthly.
 - Credential documents are stored privately and shown only to you and our team — never on a public page.
 - Worker screening, WWCC, police checks and insurances are tracked with expiry reminders.
+- Listings live inside the platform, not on public social media, which protects members' privacy and dignity and avoids the unhealthy distraction of well-meaning resharing.
 
 *(This list is the `shuffles_ssj_hero_guardrails` filter's default — editable in one place.)*
 
@@ -70,6 +71,10 @@ The whole CALD/accessibility layer (high-contrast, larger text, read-aloud, voic
 GDPR / Australian Privacy Principles export & erase hooks cover every entity type; an admin can suspend or remove a profile; the platform owns its data in its own tables and works standalone.
 > **Sales angle:** "Built for Australian privacy obligations, with export and erase on tap."
 
+### 12. On-platform by design: privacy, dignity and no "post piracy"
+Listings, requests and profiles are designed to **live and be acted on inside the platform**, not to be copied out and splashed across public social media. This is a deliberate **core objective**: it **maintains privacy**, **increases dignity** for the people involved (especially participants and job-seekers), and **reduces the well-meaning copying or resharing of posts by members of the public** ("trolls" who mean well but cause harm). That kind of off-platform resharing can expose people, strip away the safeguards above, and become an unhealthy distraction for everyone. Participant requests are logged-in-only, pseudonymous and never indexed; anonymous advertising and per-field masking keep sensitive details off public view; and the safe internal relay means a connection can happen without anyone's contact details ever being broadcast.
+> **Sales angle:** "Your post does its job here, quietly and safely — it isn't turned into a public social-media spectacle. Privacy and dignity by design, not damage control after the fact."
+
 ---
 
 ## Future: credibility counters (when the population is sizeable)
@@ -96,5 +101,6 @@ big enough. No code change needed; just the population growing. (Set `min="0"` t
 | ABN / ABR | `class-abn.php` |
 | ABN/TFN segregation | `class-query.php::base_args()` |
 | Hero safety strip + counters | `[sssj_hero]` (`shuffles_ssj_hero_guardrails` filter) |
+| On-platform / no post-piracy | Pseudonymous `sssj_need`, anonymous advertising, per-field masking, internal relay, noindex |
 
 *Maintain this file whenever a guardrail is added or changed — it feeds both marketing and the hero strip.*

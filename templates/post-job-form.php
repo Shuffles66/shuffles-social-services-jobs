@@ -25,7 +25,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 		<?php elseif ( 'abn' === $status ) : ?>
 			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'That ABN failed validation. Please check the 11-digit ABN and try again.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php elseif ( 'error' === $status ) : ?>
-			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'Something was missing — a title and engagement type are required.', 'shuffles-social-services-jobs' ); ?></p>
+			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'Something was missing, a title and engagement type are required.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php elseif ( 'limit' === $status ) : ?>
 			<p class="sssj-badge" style="background:#fef3c7;color:#92400e"><?php echo esc_html( Shuffles_SSJ_Monetisation::post_job_block_reason() ); ?></p>
 		<?php endif; ?>
@@ -33,7 +33,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 		<?php if ( ! $can_post ) : ?>
 			<p>
 				<?php esc_html_e( 'You need an advertiser account to post a job.', 'shuffles-social-services-jobs' ); ?>
-				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a>
+				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a>
 			</p>
 		<?php elseif ( ! $can_quota ) : ?>
 			<p class="sssj-badge" style="background:#fef3c7;color:#92400e"><?php echo esc_html( Shuffles_SSJ_Monetisation::post_job_block_reason() ); ?></p>
@@ -63,9 +63,9 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 
 				<div class="sssj-field">
 					<label><?php esc_html_e( 'Engagement basis', 'shuffles-social-services-jobs' ); ?> *</label>
-					<label><input type="radio" name="engagement_basis" value="tfn" checked /> <?php esc_html_e( 'TFN — employee position (no ABN)', 'shuffles-social-services-jobs' ); ?></label>
-					<label><input type="radio" name="engagement_basis" value="abn" /> <?php esc_html_e( 'ABN — contractor / sole-trader (ABN required)', 'shuffles-social-services-jobs' ); ?></label>
-					<label><input type="radio" name="engagement_basis" value="vol" /> <?php esc_html_e( 'Volunteer — unpaid role (no ABN, no pay)', 'shuffles-social-services-jobs' ); ?></label>
+					<label><input type="radio" name="engagement_basis" value="tfn" checked /> <?php esc_html_e( 'TFN, employee position (no ABN)', 'shuffles-social-services-jobs' ); ?></label>
+					<label><input type="radio" name="engagement_basis" value="abn" /> <?php esc_html_e( 'ABN, contractor / sole-trader (ABN required)', 'shuffles-social-services-jobs' ); ?></label>
+					<label><input type="radio" name="engagement_basis" value="vol" /> <?php esc_html_e( 'Volunteer, unpaid role (no ABN, no pay)', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
 				<div class="sssj-field">
@@ -88,7 +88,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					<div class="sssj-field">
 						<label for="sssj-job-org"><?php esc_html_e( 'Organisation profile', 'shuffles-social-services-jobs' ); ?></label>
 						<select class="sssj-select" id="sssj-job-org" name="organisation_id">
-							<option value="0"><?php esc_html_e( '— None —', 'shuffles-social-services-jobs' ); ?></option>
+							<option value="0"><?php esc_html_e( '- None -', 'shuffles-social-services-jobs' ); ?></option>
 							<?php foreach ( $my_orgs as $o ) { echo '<option value="' . esc_attr( $o->ID ) . '">' . esc_html( get_the_title( $o ) ) . '</option>'; } ?>
 						</select>
 						<p class="description"><?php esc_html_e( 'Attach this job to your organisation profile so it appears on your company page.', 'shuffles-social-services-jobs' ); ?></p>
@@ -98,7 +98,7 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 				<div class="sssj-field">
 					<label for="sssj-cat"><?php esc_html_e( 'Category', 'shuffles-social-services-jobs' ); ?></label>
 					<select class="sssj-select" id="sssj-cat" name="category">
-						<option value=""><?php esc_html_e( '— Select —', 'shuffles-social-services-jobs' ); ?></option>
+						<option value=""><?php esc_html_e( '- Select -', 'shuffles-social-services-jobs' ); ?></option>
 						<?php
 						if ( ! is_wp_error( $cats ) ) {
 							foreach ( $cats as $t ) {
@@ -121,13 +121,13 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 						}
 						?>
 					</select>
-					<p class="description"><?php esc_html_e( 'How the role is funded — lets job-seekers filter by NDIS, Aged Care, DVA, etc.', 'shuffles-social-services-jobs' ); ?></p>
+					<p class="description"><?php esc_html_e( 'How the role is funded, lets job-seekers filter by NDIS, Aged Care, DVA, etc.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 
 				<div class="sssj-field">
 					<label for="sssj-emp"><?php esc_html_e( 'Employment type', 'shuffles-social-services-jobs' ); ?></label>
 					<select class="sssj-select" id="sssj-emp" name="employment_type">
-						<option value=""><?php esc_html_e( '— Select —', 'shuffles-social-services-jobs' ); ?></option>
+						<option value=""><?php esc_html_e( '- Select -', 'shuffles-social-services-jobs' ); ?></option>
 						<?php
 						if ( ! is_wp_error( $etypes ) ) {
 							foreach ( $etypes as $t ) {
@@ -178,25 +178,25 @@ $etypes   = get_terms( array( 'taxonomy' => 'sssjt_employment_type', 'hide_empty
 					<div class="sssj-field">
 						<label for="sssj-appmode"><?php esc_html_e( 'How do you want to handle applications?', 'shuffles-social-services-jobs' ); ?></label>
 						<select class="sssj-select" id="sssj-appmode" name="application_mode">
-							<option value="full"><?php esc_html_e( 'Full pipeline — track stages (shortlist, interview, offer, hired) with notifications', 'shuffles-social-services-jobs' ); ?></option>
-							<option value="simple"><?php esc_html_e( 'Simple — just receive applications', 'shuffles-social-services-jobs' ); ?></option>
+							<option value="full"><?php esc_html_e( 'Full pipeline, track stages (shortlist, interview, offer, hired) with notifications', 'shuffles-social-services-jobs' ); ?></option>
+							<option value="simple"><?php esc_html_e( 'Simple, just receive applications', 'shuffles-social-services-jobs' ); ?></option>
 						</select>
 						<p class="description"><?php esc_html_e( 'You can change this later. Employee (TFN) roles also ask applicants for availability, start date and right-to-work.', 'shuffles-social-services-jobs' ); ?></p>
 					</div>
 					<div class="sssj-field">
-						<label for="sssj-screening"><?php esc_html_e( 'Screening questions (optional — one per line)', 'shuffles-social-services-jobs' ); ?></label>
+						<label for="sssj-screening"><?php esc_html_e( 'Screening questions (optional, one per line)', 'shuffles-social-services-jobs' ); ?></label>
 						<textarea class="sssj-textarea" id="sssj-screening" name="screening_questions" rows="4" placeholder="<?php esc_attr_e( "e.g. Do you hold a current WWCC?\nHow many years of aged-care experience do you have?", 'shuffles-social-services-jobs' ); ?>"></textarea>
 						<p class="description"><?php esc_html_e( 'Applicants answer these when they apply (up to 12). Great for quick must-have checks.', 'shuffles-social-services-jobs' ); ?></p>
 					</div>
 				</fieldset>
 
 				<div class="sssj-field">
-					<label class="sssj-check"><input type="checkbox" name="is_anonymous" value="1" /> 🕶️ <?php esc_html_e( 'Advertise anonymously — hide our organisation / advertiser name (the listing shows “Anonymous”, and our name is kept out of search engines)', 'shuffles-social-services-jobs' ); ?></label>
+					<label class="sssj-check"><input type="checkbox" name="is_anonymous" value="1" /> 🕶️ <?php esc_html_e( 'Advertise anonymously, hide our organisation / advertiser name (the listing shows “Anonymous”, and our name is kept out of search engines)', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
 				<fieldset class="sssj-fieldset">
 					<legend><?php esc_html_e( 'Open to…', 'shuffles-social-services-jobs' ); ?></legend>
-					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" /> ✈️ <?php esc_html_e( 'Open to overseas applicants — visa sponsorship available', 'shuffles-social-services-jobs' ); ?></label></div>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" /> ✈️ <?php esc_html_e( 'Open to overseas applicants, visa sponsorship available', 'shuffles-social-services-jobs' ); ?></label></div>
 					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="accepts_placements" value="1" /> 🎓 <?php esc_html_e( 'Accepts work-placement / student-placement enquiries', 'shuffles-social-services-jobs' ); ?></label></div>
 				</fieldset>
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Guides — plain-language how-to content (single source of truth) for the four sides of the
+ * Guides, plain-language how-to content (single source of truth) for the four sides of the
  * marketplace. Rendered by the [sssj_guides] shortcode and the Settings → Guides tab.
  * Keep sections() CURRENT: when a flow changes, update its guide here so the help never drifts.
  *
@@ -32,7 +32,7 @@ class Shuffles_SSJ_Guides {
 					),
 					array(
 						'h' => __( 'Write a specific title', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Name the role and the setting: “Support Worker — evenings, Penrith” beats “Worker wanted”. Include the suburb so the location and radius search can find you.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Name the role and the setting: “Support Worker, evenings, Penrith” beats “Worker wanted”. Include the suburb so the location and radius search can find you.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Describe the work, not just the person', 'shuffles-social-services-jobs' ),
@@ -40,7 +40,7 @@ class Shuffles_SSJ_Guides {
 					),
 					array(
 						'h' => __( 'Set the rate and the credentials honestly', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Add a rate range and the real must-haves (WWCC, NDIS Worker Screening, First Aid). The matcher uses these — listing a credential you do not truly need will filter out good people.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Add a rate range and the real must-haves (WWCC, NDIS Worker Screening, First Aid). The matcher uses these, listing a credential you do not truly need will filter out good people.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Attach your organisation', 'shuffles-social-services-jobs' ),
@@ -52,8 +52,8 @@ class Shuffles_SSJ_Guides {
 					),
 				),
 				'tips'     => array(
-					__( 'Add languages and cultural focus (e.g. LGBTQIA+, Auslan, Arabic) when they matter — participants and workers filter on these.', 'shuffles-social-services-jobs' ),
-					__( 'Reply to applicants quickly through the internal messages — never ask for personal contact details up front.', 'shuffles-social-services-jobs' ),
+					__( 'Add languages and cultural focus (e.g. LGBTQIA+, Auslan, Arabic) when they matter, participants and workers filter on these.', 'shuffles-social-services-jobs' ),
+					__( 'Reply to applicants quickly through the internal messages, never ask for personal contact details up front.', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
@@ -80,7 +80,7 @@ class Shuffles_SSJ_Guides {
 					),
 				),
 				'tips'     => array(
-					__( 'Apply once per job — duplicate applications do not help and are not recorded twice.', 'shuffles-social-services-jobs' ),
+					__( 'Apply once per job, duplicate applications do not help and are not recorded twice.', 'shuffles-social-services-jobs' ),
 					__( 'If you do not hear back, it is fine to send one polite follow-up after a few days.', 'shuffles-social-services-jobs' ),
 				),
 			),
@@ -96,11 +96,11 @@ class Shuffles_SSJ_Guides {
 					),
 					array(
 						'h' => __( 'Find ABN work on the right board', 'shuffles-social-services-jobs' ),
-						'p' => __( 'ABN engagements and participant requests live on their own boards — they never mix with employee (TFN) positions. Filter by sector, funding and location to find a good fit.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'ABN engagements and participant requests live on their own boards, they never mix with employee (TFN) positions. Filter by sector, funding and location to find a good fit.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Understand funding', 'shuffles-social-services-jobs' ),
-						'p' => __( 'A participant may be NDIS self-managed, plan-managed, aged-care or privately funded. Funding is a guide to how you will be paid and invoice — it is never a barrier to making contact.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'A participant may be NDIS self-managed, plan-managed, aged-care or privately funded. Funding is a guide to how you will be paid and invoice, it is never a barrier to making contact.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Be clear about your service and rate', 'shuffles-social-services-jobs' ),
@@ -109,14 +109,14 @@ class Shuffles_SSJ_Guides {
 				),
 				'tips'     => array(
 					__( 'Respect participant privacy: requests show a pseudonym and a suburb only. Build trust through the platform before sharing details.', 'shuffles-social-services-jobs' ),
-					__( 'Get your credentials admin-verified — the ✓ Verified badge is the single biggest trust signal on your profile.', 'shuffles-social-services-jobs' ),
+					__( 'Get your credentials admin-verified, the ✓ Verified badge is the single biggest trust signal on your profile.', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
 				'id'       => 'standing-profile',
 				'audience' => __( 'For workers & contractors', 'shuffles-social-services-jobs' ),
 				'title'    => __( 'Building a standing profile that gets matched', 'shuffles-social-services-jobs' ),
-				'intro'    => __( 'Your profile works for you around the clock — it surfaces in searches and the matcher even when you are not applying. A complete profile gets found far more often.', 'shuffles-social-services-jobs' ),
+				'intro'    => __( 'Your profile works for you around the clock, it surfaces in searches and the matcher even when you are not applying. A complete profile gets found far more often.', 'shuffles-social-services-jobs' ),
 				'steps'    => array(
 					array(
 						'h' => __( 'Complete every field', 'shuffles-social-services-jobs' ),
@@ -124,7 +124,7 @@ class Shuffles_SSJ_Guides {
 					),
 					array(
 						'h' => __( 'Set your location and availability', 'shuffles-social-services-jobs' ),
-						'p' => __( 'A geocoded suburb lets employers find you by distance. Tick “available now” when you are open to work — only your suburb is shown publicly.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'A geocoded suburb lets employers find you by distance. Tick “available now” when you are open to work, only your suburb is shown publicly.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Add a photo and a gallery', 'shuffles-social-services-jobs' ),
@@ -140,15 +140,15 @@ class Shuffles_SSJ_Guides {
 					),
 				),
 				'tips'     => array(
-					__( 'Set your status to “employed — open to more” if you already work but want extra shifts; your current employer is never notified.', 'shuffles-social-services-jobs' ),
-					__( 'Mention cultural focus and languages — many participants search specifically for these.', 'shuffles-social-services-jobs' ),
+					__( 'Set your status to “employed, open to more” if you already work but want extra shifts; your current employer is never notified.', 'shuffles-social-services-jobs' ),
+					__( 'Mention cultural focus and languages, many participants search specifically for these.', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
 				'id'       => 'asset-best-practice',
 				'audience' => __( 'For workers, sole traders & organisations', 'shuffles-social-services-jobs' ),
 				'title'    => __( 'Best practice: creating a flyer or résumé (social services)', 'shuffles-social-services-jobs' ),
-				'intro'    => __( 'A flyer or résumé in the care-and-support sector is read by busy participants, families, coordinators and employers right across Australia — many with low vision, limited English, or little time. Clear, respectful, honest beats flashy every time. These are the rules we build into the asset creator.', 'shuffles-social-services-jobs' ),
+				'intro'    => __( 'A flyer or résumé in the care-and-support sector is read by busy participants, families, coordinators and employers right across Australia, many with low vision, limited English, or little time. Clear, respectful, honest beats flashy every time. These are the rules we build into the asset creator.', 'shuffles-social-services-jobs' ),
 				'steps'    => array(
 					array(
 						'h' => __( 'Put location and services at the very top', 'shuffles-social-services-jobs' ),
@@ -156,23 +156,23 @@ class Shuffles_SSJ_Guides {
 					),
 					array(
 						'h' => __( 'Write in plain, Easy-Read English', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Short sentences, one idea per line, everyday words, no acronyms or jargon. Aim for a reading age of about 12. This is a national, culturally diverse audience — many readers use translation or read-aloud tools, so simple text helps everyone.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Short sentences, one idea per line, everyday words, no acronyms or jargon. Aim for a reading age of about 12. This is a national, culturally diverse audience, many readers use translation or read-aloud tools, so simple text helps everyone.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Use person-centred, strengths-based language', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Say what you help people to do and achieve (“I support people to get out and about, cook, and stay independent”), not clinical labels. Lead with dignity and choice — that is the language the sector and participants expect.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Say what you help people to do and achieve (“I support people to get out and about, cook, and stay independent”), not clinical labels. Lead with dignity and choice, that is the language the sector and participants expect.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Show your safety credentials clearly', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Trust is the sector’s currency. State the checks you hold — WWCC / Blue Card, NDIS Worker Screening, Police Check, First Aid/CPR — and your ABN if you contract. On Shuffles these can show as a ✓ Verified badge once an admin confirms them.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Trust is the sector’s currency. State the checks you hold, WWCC / Blue Card, NDIS Worker Screening, Police Check, First Aid/CPR, and your ABN if you contract. On Shuffles these can show as a ✓ Verified badge once an admin confirms them.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Be specific about who you help and when', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Name your real availability (e.g. “evenings & weekends”), the supports you’re great at, and any specialisms — complex care, mental health, ageing, Auslan, LGBTQIA+ friendly, a language you speak. Specific beats generic for getting matched.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Name your real availability (e.g. “evenings & weekends”), the supports you’re great at, and any specialisms, complex care, mental health, ageing, Auslan, LGBTQIA+ friendly, a language you speak. Specific beats generic for getting matched.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Protect privacy and dignity', 'shuffles-social-services-jobs' ),
-						'p' => __( 'Never name or identify a participant on a flyer, and never use a photo of someone without their written consent. Participant-facing assets are private, relay-safe links — never public or search-indexed.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'Never name or identify a participant on a flyer, and never use a photo of someone without their written consent. Participant-facing assets are private, relay-safe links, never public or search-indexed.', 'shuffles-social-services-jobs' ),
 					),
 					array(
 						'h' => __( 'Make it accessible by design', 'shuffles-social-services-jobs' ),
@@ -180,14 +180,14 @@ class Shuffles_SSJ_Guides {
 					),
 					array(
 						'h' => __( 'Finish with one clear next step', 'shuffles-social-services-jobs' ),
-						'p' => __( 'End with a single, obvious call to action — how to get in touch or apply (through the safe Shuffles relay where privacy matters). One clear ask gets far more responses than several.', 'shuffles-social-services-jobs' ),
+						'p' => __( 'End with a single, obvious call to action, how to get in touch or apply (through the safe Shuffles relay where privacy matters). One clear ask gets far more responses than several.', 'shuffles-social-services-jobs' ),
 					),
 				),
 				'tips'     => array(
-					__( 'One page is plenty — white space and short lines make it readable, not empty.', 'shuffles-social-services-jobs' ),
+					__( 'One page is plenty, white space and short lines make it readable, not empty.', 'shuffles-social-services-jobs' ),
 					__( 'Use real, consented photos that reflect your actual work; avoid stock images that misrepresent.', 'shuffles-social-services-jobs' ),
 					__( 'Inclusive language and imagery (CALD, First Nations, disability dignity, LGBTQIA+) widen your reach across Australia.', 'shuffles-social-services-jobs' ),
-					__( 'Keep it current — update availability, rates and credentials so nothing reads as out of date.', 'shuffles-social-services-jobs' ),
+					__( 'Keep it current, update availability, rates and credentials so nothing reads as out of date.', 'shuffles-social-services-jobs' ),
 				),
 			),
 		);

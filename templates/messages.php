@@ -1,6 +1,6 @@
 <?php
 /**
- * Messages inbox + thread view. Relay only — no email addresses shown; participant identities
+ * Messages inbox + thread view. Relay only, no email addresses shown; participant identities
  * stay pseudonymous. Theme override: themes/<theme>/shuffles-jobs/messages.php
  *
  * @package Shuffles_SSJ
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! is_user_logged_in() ) {
 	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to view your messages.', 'shuffles-social-services-jobs' )
-		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 	return;
 }
 

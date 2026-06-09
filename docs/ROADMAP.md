@@ -186,6 +186,78 @@ can rate/review who they've worked with.
 - **Relation to F (testimonials):** F = owner-curated quotes; H = third-party star reviews. Likely share a
   moderation queue + display component; decide whether to merge or keep separate at build time.
 
+## Workstream I - SDA (Specialist Disability Accommodation) listings (NEW 2026-06-09, John request, to build)
+A FIFTH listing type: SDA vacancy / property listings, so SDA providers advertise vacant dwellings and
+participants / nominees find suitable housing. SDA is provider-side and about a dwelling (not participant
+PII), so listings are PUBLIC + SEO-indexable (unlike participant needs, which stay noindex).
+- **Entity:** new CPT `sssj_sda` (a vacancy listing) linked to an `sssj_org` (the SDA provider). Mirrors the
+  existing CPT pattern: registrar, meta, board shortcode, single page, SEO, A11y, design system.
+- **Key fields (meta):** `sda_design_category` (Improved Liveability | Fully Accessible | Robust | High
+  Physical Support), `building_type` (apartment | villa/duplex/townhouse | house | group home | other),
+  `bedrooms`, `bathrooms`, `total_residents`, `vacancies` (places available), `private_or_shared`,
+  `location_suburb/state/postcode` + lat/long, `ooa` (on-site overnight assistance: yes | shared | no),
+  `sil_arrangement` (named provider | participant's choice | flexible), `accessibility_features[]` (ceiling
+  hoist, accessible bathroom, wider doors, etc.), `available_from`, `status` (vacant | waitlist | filled),
+  `rrc_note` (reasonable rent contribution, plain text, not financial advice), `enquiry_mode` (internal
+  relay), `gallery` (photos + floorplan), `video_url` (YouTube/Vimeo embed).
+- **Shortcodes:** `[sssj_sda_board]` (browse/search: filter by design category, building type, bedrooms,
+  location + travel radius, OOA, status); `[sssj_post_sda]` (provider posts/edits a vacancy; gated by org
+  ownership + monetisation); single-listing page (gallery + map + features + "Enquire" button).
+- **Privacy/safety:** enquiries run through the internal relay (participant identity protected); listings
+  show the dwelling, never current residents' details.
+- **SEO:** public + indexable; emit `Accommodation` / `Residence` JSON-LD (contrast: `sssj_need` stays
+  noindex). Good organic-discovery surface.
+- **Maps:** reuse the shared maps + radius layer.
+- **Monetisation:** SDA posting gated/featured like job ads (provider advertising subscription); free tier =
+  N listings.
+- **Matching/alerts:** participants can save an SDA search + get email alerts (reuse the Alerts hub); later,
+  match participant needs to SDA design category + location.
+- **Media + video:** photos via the stock-photo pipeline (Australian-tuned), floorplan upload, and a
+  `video_url` embed field. Dovetails with the "snappy marketing videos" goal (listings + the demo tour are
+  built to screen-record cleanly).
+- **Compliance note:** SDA has specific NDIS rules (design-category enrolment, RRC). The plugin presents
+  listings + general info, NOT financial or eligibility advice; show a short disclaimer.
+- **Build phases:** (1) CPT + fields + provider post form; (2) board + filters + single page + maps; (3) SEO
+  schema + save-search alerts + matching; (4) monetisation gating + featured + video embed.
+
+## Workstream J - Demo tour: next iterations + deployment vision (NEW 2026-06-09, John request)
+The `[sssj_demo_tour]` showcase (v1.10.9, live) is a static persona tour. Vision: evolve it into a guided,
+interactive "test drive" that funnels visitors AND doubles as marketing-video source. Ship in small,
+independently deployable phases (each lint -> build -> deploy on its own) so value lands continuously.
+
+**Phase 1 - Convert (ship first):**
+- Role-specific CTAs per persona (participant -> Request support, worker -> Create profile, employer ->
+  Post a job), replacing the single "Try this yourself".
+- "Which are you?" filter at the top using the three hat groups (I need support / I am looking for work /
+  I offer work), so visitors see only the relevant stories.
+
+**Phase 2 - Real test drive (depends on the enriched demo seeder + Unsplash, both wired):**
+- Embed each persona's real seeded content inline (Jordan's worker card, Riverview's job ad, Aria's
+  pseudonymous request), refreshing as the seeder runs.
+- "Explore as this persona" links: admins use View-as; the public deep-links to the relevant board
+  pre-filtered to that persona's area.
+- One live mini-feature per persona (working mini map + radius slider, the real language toolbar, a sample
+  search) in place of a static callout. Show, don't tell.
+
+**Phase 3 - Trust + on-brand:**
+- A prominent "Safety, built in" strip (pseudonymity, verified checks, safe relay) and a real-stats band
+  (jobs / verified workers / providers, shown only once big enough, like the promo studio).
+- Demonstrate the accessibility layer on the tour itself (language switcher, read-aloud, easy-read); pairs
+  with the DeepL translation work. Diverse, authentic Australian imagery via Unsplash.
+- Sticky persona nav + scroll-spy for the long page; mobile polish (swipeable gallery).
+
+**Phase 4 - Marketing video / kiosk:**
+- An auto-play "kiosk" mode (`[sssj_demo_tour autoplay]`) that advances through personas with timed reveals,
+  clean 16:9 framing for screen-recording snappy promos or looping on a reception screen. Directly serves
+  the marketing-video goal.
+
+**Phase 5 - SDA persona:**
+- Add an 8th persona once Workstream I (SDA) ships: an SDA provider listing a dwelling and/or a participant
+  seeking SDA housing.
+
+**Deployment vision:** each phase is independently shippable and lint-gated; build order Phase 1 -> 2 -> 3 ->
+4, with Phase 5 after SDA. Phases 2+ assume the live site has been seeded (Run now) and demo photos loaded.
+
 ## Status (shipped, cont.)
 - ✅ **v0.67.0** location fixes: worker-form place **autocomplete + lat/long** (maps script now enqueued on
   the worker form); board **place-select recenters/zooms the map + fires the AJAX filter** with a default

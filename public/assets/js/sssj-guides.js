@@ -1,5 +1,5 @@
 /**
- * Guides — collapsible panels. Click a header to open/close. No dependencies.
+ * Guides, collapsible panels. Click a header to open/close. No dependencies.
  * The first guide renders open (is-open) server-side; this just wires the toggles.
  */
 ( function () {

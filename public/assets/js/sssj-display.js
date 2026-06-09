@@ -1,5 +1,5 @@
 /**
- * Shuffles Social Services Jobs — front-page display animations.
+ * Shuffles Social Services Jobs, front-page display animations.
  *
  * 1) Reveal-on-scroll: any [data-sssj-reveal] container (and its .sssj-reveal children) fades/slides
  *    in when it scrolls into view (adds .is-in).
@@ -93,7 +93,30 @@
 		} );
 	}
 
-	function start() { boot(); carousels(); }
+	// Demo tour "Which are you?" filter: show only personas in the chosen hat-group.
+	function demoFilter() {
+		var bar = document.querySelector( '[data-demo-filterbar]' );
+		if ( ! bar ) { return; }
+		var btns = bar.querySelectorAll( '[data-demo-filter]' );
+		var items = document.querySelectorAll( '[data-demo-group]' );
+		function apply( group ) {
+			Array.prototype.forEach.call( items, function ( el ) {
+				var show = ( 'all' === group || el.getAttribute( 'data-demo-group' ) === group );
+				el.style.display = show ? '' : 'none';
+			} );
+			Array.prototype.forEach.call( btns, function ( b ) {
+				var on = ( b.getAttribute( 'data-demo-filter' ) === group );
+				b.classList.toggle( 'is-active', on );
+				b.classList.toggle( 'sssj-btn--primary', on );
+				b.classList.toggle( 'sssj-btn--ghost', ! on );
+			} );
+		}
+		Array.prototype.forEach.call( btns, function ( b ) {
+			b.addEventListener( 'click', function () { apply( b.getAttribute( 'data-demo-filter' ) ); } );
+		} );
+	}
+
+	function start() { boot(); carousels(); demoFilter(); }
 
 	if ( 'loading' === document.readyState ) {
 		document.addEventListener( 'DOMContentLoaded', start );

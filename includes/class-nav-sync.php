@@ -1,18 +1,18 @@
 <?php
 /**
- * Header-menu sync — mirrors the plugin's [sssj_menu] into a real WordPress nav menu under
+ * Header-menu sync, mirrors the plugin's [sssj_menu] into a real WordPress nav menu under
  * Appearance → Menus, and keeps it maintained over the life of the project.
  *
  * A WordPress menu is static (it can't be login/capability-aware like the [sssj_menu] shortcode),
  * so this builds the sensible PUBLIC header set (Jobs, Find a worker, Organisations, Participant
  * requests, Post a job, My dashboard, Log in, Register). The dynamic, per-user version stays
  * available via [sssj_menu]. Admin-only items (e.g. Settings) are deliberately NOT placed in the
- * static menu — they'd show to everyone — they remain in the shortcode where they're gated.
+ * static menu, they'd show to everyone, they remain in the shortcode where they're gated.
  *
  * Maintenance model:
  *   - First time: an admin clicks "Create / sync header menu" (nothing is created until then).
  *   - After that: once our menu exists, it auto-re-syncs on each plugin version change, so new
- *     pages/items appear and removed ones disappear — without touching menu items the admin added
+ *     pages/items appear and removed ones disappear, without touching menu items the admin added
  *     manually (only items we created, tagged with _sssj_nav_key, are managed).
  *
  * @package Shuffles_SSJ
@@ -51,6 +51,7 @@ class Shuffles_SSJ_Nav_Sync {
 				array( 'key' => 'orgs',     'label' => __( 'Organisations', 'shuffles-social-services-jobs' ),        'page' => 'page_org_directory',     'sc' => '[sssj_org_directory]' ),
 				array( 'key' => 'howto',    'label' => __( 'How it works', 'shuffles-social-services-jobs' ),        'page' => 'page_workflows',         'sc' => '[sssj_workflows]' ),
 				array( 'key' => 'policies', 'label' => __( 'Policies', 'shuffles-social-services-jobs' ),            'page' => 'page_policies',          'sc' => '[sssj_policies]' ),
+				array( 'key' => 'tour',     'label' => __( 'Take a tour', 'shuffles-social-services-jobs' ),         'page' => 'page_demo_tour',         'sc' => '[sssj_demo_tour]' ),
 				array( 'key' => 'needs',    'label' => __( 'Participant requests', 'shuffles-social-services-jobs' ), 'page' => 'page_need_board',        'sc' => '[sssj_need_board]' ),
 				array( 'key' => 'post_job', 'label' => __( 'Post a job', 'shuffles-social-services-jobs' ),           'page' => 'page_post_job',          'sc' => '[sssj_post_job]' ),
 				array( 'key' => 'dashboard','label' => __( 'My dashboard', 'shuffles-social-services-jobs' ),         'page' => 'page_my_listings',       'sc' => '[sssj_dashboard]' ),
@@ -67,10 +68,10 @@ class Shuffles_SSJ_Nav_Sync {
 				return home_url( '/' );
 			}
 			if ( 'login' === $def['kind'] ) {
-				return wp_login_url( home_url( '/' ) );
+				return Shuffles_SSJ_Shortcodes::login_url( home_url( '/' ) );
 			}
 			if ( 'register' === $def['kind'] ) {
-				return get_option( 'users_can_register' ) ? wp_registration_url() : '';
+				return Shuffles_SSJ_Shortcodes::register_url();
 			}
 			return '';
 		}

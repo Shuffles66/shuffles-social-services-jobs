@@ -29,6 +29,24 @@
 			t.addEventListener( 'click', function () { show( t.getAttribute( 'data-dash-tab' ) ); } );
 		} );
 
+		// Modals (e.g. the "Edit my roles" hat picker). Open via [data-sssj-modal-open="name"],
+		// close via any [data-sssj-modal-close], the backdrop, or the Escape key.
+		function closeModals() {
+			Array.prototype.forEach.call( root.querySelectorAll( '[data-sssj-modal]' ), function ( m ) { m.hidden = true; } );
+			document.body.style.overflow = '';
+		}
+		root.addEventListener( 'click', function ( e ) {
+			var opener = e.target.closest ? e.target.closest( '[data-sssj-modal-open]' ) : null;
+			if ( opener ) {
+				e.preventDefault();
+				var m = root.querySelector( '[data-sssj-modal="' + opener.getAttribute( 'data-sssj-modal-open' ) + '"]' );
+				if ( m ) { m.hidden = false; document.body.style.overflow = 'hidden'; }
+				return;
+			}
+			if ( e.target.closest && e.target.closest( '[data-sssj-modal-close]' ) ) { e.preventDefault(); closeModals(); }
+		} );
+		document.addEventListener( 'keydown', function ( e ) { if ( 'Escape' === e.key ) { closeModals(); } } );
+
 		// Deep-link support: #dash-<slug>. Otherwise open the member's primary-role tab
 		// (data-sssj-dash-default), falling back to the first tab.
 		var hash = ( window.location.hash || '' ).replace( '#dash-', '' );

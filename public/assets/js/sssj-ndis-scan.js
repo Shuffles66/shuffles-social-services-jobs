@@ -1,5 +1,5 @@
 /**
- * "Scan now" on the NDIS Registration No field — looks the number up against the public NDIS
+ * "Scan now" on the NDIS Registration No field, looks the number up against the public NDIS
  * Commission register and shows the live status / groups / expiry inline, before saving.
  * Used on the organisation and worker (sole-trader) profile forms.
  */
@@ -30,7 +30,7 @@
 			var ownEl = form ? ( form.querySelector( '[name="org_abn"]' ) || form.querySelector( '[name="worker_abn"]' ) ) : null;
 			var own   = ownEl ? digits( ownEl.value ) : '';
 			if ( own && own !== digits( d.abn ) ) {
-				abnHtml += '<div class="sssj-ndis__abnwarn">' + esc( ( cfg.i18n_abnwarn || '⚠ This differs from the ABN you entered (%s) — please check.' ).replace( '%s', own ) ) + '</div>';
+				abnHtml += '<div class="sssj-ndis__abnwarn">' + esc( ( cfg.i18n_abnwarn || '⚠ This differs from the ABN you entered (%s), please check.' ).replace( '%s', own ) ) + '</div>';
 			}
 			abnHtml += '</div>';
 		}
@@ -39,7 +39,7 @@
 		var phone = d.phone ? '<div><strong>' + esc( cfg.i18n_phone || 'Phone (register)' ) + ':</strong> ' + esc( d.phone ) + '</div>' : '';
 		var outlets = ( d.outlets && d.outlets.length )
 			? '<div style="margin-top:4px"><strong>' + esc( cfg.i18n_outlets || 'Outlets' ) + '</strong><ul class="sssj-ndis__outlets">' + d.outlets.map( function ( o ) {
-				return '<li>' + esc( o.name || '' ) + ( o.phone ? ' — ' + esc( o.phone ) : '' ) + '</li>';
+				return '<li>' + esc( o.name || '' ) + ( o.phone ? ', ' + esc( o.phone ) : '' ) + '</li>';
 			} ).join( '' ) + '</ul></div>'
 			: '';
 

@@ -6,7 +6,7 @@
  * Tables are tuned for speed (composite indexes matching query patterns) and accuracy
  * (NOT NULL + defaults, and a UNIQUE key preventing duplicate applications).
  * create_tables() runs via dbDelta so it both CREATES and idempotently ADDS missing
- * indexes/columns to existing tables — maybe_upgrade() applies it to already-deployed sites.
+ * indexes/columns to existing tables, maybe_upgrade() applies it to already-deployed sites.
  *
  * @package Shuffles_SSJ
  */
@@ -51,7 +51,7 @@ class Shuffles_SSJ_Activator {
 
 	/**
 	 * Apply schema upgrades on already-installed sites (activation only fires on activate,
-	 * not on a plain file update). Cheap guard — runs dbDelta only when the version lags.
+	 * not on a plain file update). Cheap guard, runs dbDelta only when the version lags.
 	 */
 	public static function maybe_upgrade() {
 		if ( (int) get_option( 'shuffles_ssj_db_version', 0 ) < self::DB_VERSION ) {
@@ -70,7 +70,7 @@ class Shuffles_SSJ_Activator {
 		$p               = $wpdb->prefix . 'sssj_';
 		$statements      = array();
 
-		// Match scores — read by "matches for a source/target ordered by score".
+		// Match scores, read by "matches for a source/target ordered by score".
 		$statements[] = "CREATE TABLE {$p}match_score (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   source_type VARCHAR(10) NOT NULL DEFAULT '',
@@ -87,7 +87,7 @@ class Shuffles_SSJ_Activator {
   KEY computed (computed_at)
 ) $charset_collate;";
 
-		// Applications — UNIQUE(job,need,applicant) stops duplicate applications (accuracy);
+		// Applications, UNIQUE(job,need,applicant) stops duplicate applications (accuracy);
 		// composite (id,status) indexes serve "applicants for a job/need filtered by status".
 		$statements[] = "CREATE TABLE {$p}application (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -110,7 +110,7 @@ class Shuffles_SSJ_Activator {
   KEY created (created_at)
 ) $charset_collate;";
 
-		// Messages — thread view, recipient unread, sender, by-context.
+		// Messages, thread view, recipient unread, sender, by-context.
 		$statements[] = "CREATE TABLE {$p}message (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   thread_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -128,7 +128,7 @@ class Shuffles_SSJ_Activator {
   KEY context (context_entity_type,context_entity_id)
 ) $charset_collate;";
 
-		// Credentials — a worker's credentials, by-kind, and expiry/verification sweeps.
+		// Credentials, a worker's credentials, by-kind, and expiry/verification sweeps.
 		$statements[] = "CREATE TABLE {$p}credential (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   worker_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -152,7 +152,7 @@ class Shuffles_SSJ_Activator {
   KEY verified (verified_at)
 ) $charset_collate;";
 
-		// Résumés — a candidate's stored résumé files (bytes in DB; served only via auth handler).
+		// Résumés, a candidate's stored résumé files (bytes in DB; served only via auth handler).
 		$statements[] = "CREATE TABLE {$p}resume (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -167,7 +167,7 @@ class Shuffles_SSJ_Activator {
   KEY created (created_at)
 ) $charset_collate;";
 
-		// CRM sync log — per-user history of FluentCRM tag/list attach/detach + missing-target events.
+		// CRM sync log, per-user history of FluentCRM tag/list attach/detach + missing-target events.
 		$statements[] = "CREATE TABLE {$p}crm_log (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,
@@ -185,7 +185,7 @@ class Shuffles_SSJ_Activator {
   KEY created (created_at)
 ) $charset_collate;";
 
-		// Reviews & ratings — one (editable) review per reviewer per subject; moderation + averages.
+		// Reviews & ratings, one (editable) review per reviewer per subject; moderation + averages.
 		$statements[] = "CREATE TABLE {$p}review (
   id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   reviewer_user_id BIGINT UNSIGNED NOT NULL DEFAULT 0,

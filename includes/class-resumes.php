@@ -1,6 +1,6 @@
 <?php
 /**
- * Stored résumés — a candidate can keep one or more named résumé files against their profile and
+ * Stored résumés, a candidate can keep one or more named résumé files against their profile and
  * pick one when applying to a TFN (employee) vacancy.
  *
  * Privacy mirrors credentials: files are stored IN THE DATABASE (this host serves /uploads directly
@@ -29,7 +29,7 @@ class Shuffles_SSJ_Resumes {
 		return $wpdb->prefix . 'sssj_resume';
 	}
 
-	/** List columns — never load the (large) blob in list views. */
+	/** List columns, never load the (large) blob in list views. */
 	const LIST_COLS = 'id, user_id, label, original_name, resume_mime, is_default, created_at';
 
 	private static function allowed_mimes() {
@@ -148,7 +148,7 @@ class Shuffles_SSJ_Resumes {
 		return (int) $wpdb->get_var( $wpdb->prepare( 'SELECT COUNT(*) FROM ' . self::table() . ' WHERE user_id = %d', (int) $uid ) ); // phpcs:ignore WordPress.DB
 	}
 
-	/** Full row incl. blob — used only when serving a file. */
+	/** Full row incl. blob, used only when serving a file. */
 	public static function get( $id ) {
 		global $wpdb;
 		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . self::table() . ' WHERE id = %d', (int) $id ) ); // phpcs:ignore WordPress.DB

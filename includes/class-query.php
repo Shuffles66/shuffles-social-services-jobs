@@ -1,6 +1,6 @@
 <?php
 /**
- * Query helper — the ABN/TFN segregation gate.
+ * Query helper, the ABN/TFN segregation gate.
  *
  * CRITICAL: every board / list path routes through base_args(). The engagement_basis
  * meta clause is mandatory, enforced here in the query layer, never in templates.
@@ -89,7 +89,7 @@ class Shuffles_SSJ_Query {
 			);
 		}
 
-		// Funding tick-box filter (NDIS / Aged Care / DVA / …) — OR within the selected set.
+		// Funding tick-box filter (NDIS / Aged Care / DVA / …), OR within the selected set.
 		if ( ! empty( $extra['funding'] ) ) {
 			$args['tax_query'][] = array(
 				'taxonomy' => 'sssjt_funding_source',
@@ -118,7 +118,7 @@ class Shuffles_SSJ_Query {
 	}
 
 	/**
-	 * WP_Query args for the worker directory — visibility enforced in the query layer.
+	 * WP_Query args for the worker directory, visibility enforced in the query layer.
 	 *
 	 * Guests see only 'public'; logged-in users also see 'logged_in'. 'verified_only' is
 	 * deliberately excluded until verified-worker detection ships, so a profile is never
@@ -176,7 +176,7 @@ class Shuffles_SSJ_Query {
 	/**
 	 * WP_Query args for the participant-need board.
 	 *
-	 * Privacy: only PUBLISHED (admin-moderated) needs; never public — callers MUST gate on
+	 * Privacy: only PUBLISHED (admin-moderated) needs; never public, callers MUST gate on
 	 * is_user_logged_in() before querying. 'verified_workers_only' is excluded until
 	 * verified-worker detection ships, so a need is never shown more widely than intended.
 	 *
@@ -228,7 +228,7 @@ class Shuffles_SSJ_Query {
 
 	/**
 	 * Append bounding-box lat/lng clauses when a geocoded centre + radius are supplied.
-	 * Approximate (square, not circle) — cheap, index-friendly, good enough for board filtering.
+	 * Approximate (square, not circle), cheap, index-friendly, good enough for board filtering.
 	 *
 	 * @param array $args  WP_Query args (by reference).
 	 * @param array $extra lat, lng, radius (km).

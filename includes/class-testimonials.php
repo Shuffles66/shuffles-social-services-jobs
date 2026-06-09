@@ -1,6 +1,6 @@
 <?php
 /**
- * Testimonials (Workstream F) — owner-curated endorsements on CONTRACTOR (worker) and PROVIDER (org)
+ * Testimonials (Workstream F), owner-curated endorsements on CONTRACTOR (worker) and PROVIDER (org)
  * profiles.
  *
  * Distinct from Reviews:
@@ -73,7 +73,7 @@ class Shuffles_SSJ_Testimonials {
 		if ( ! $post || ( 'sssj_worker' !== $post->post_type && 'sssj_org' !== $post->post_type ) ) {
 			return false;
 		}
-		// You do not "submit" about yourself — owners add their own via the curate path.
+		// You do not "submit" about yourself, owners add their own via the curate path.
 		return ! self::user_owns_subject( $uid, $type, $subject_id );
 	}
 
@@ -203,7 +203,7 @@ class Shuffles_SSJ_Testimonials {
 		return $wpdb->get_results( $wpdb->prepare( 'SELECT * FROM ' . self::table() . ' ORDER BY created_at DESC LIMIT %d', (int) $limit ) ); // phpcs:ignore WordPress.DB
 	}
 
-	/** A credit line like "— Jane, Client". */
+	/** A credit line like "- Jane, Client". */
 	private static function credit( $row ) {
 		$name = trim( (string) $row->author_name );
 		$role = trim( (string) $row->author_role );
@@ -249,7 +249,7 @@ class Shuffles_SSJ_Testimonials {
 			<?php
 			$flag = isset( $_GET['sssj_testi'] ) ? sanitize_key( wp_unslash( $_GET['sssj_testi'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( 'pending' === $flag ) {
-				echo '<div class="sssj-panel"><p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Thank you — your testimonial was sent for moderation.', 'shuffles-social-services-jobs' ) . '</p></div>';
+				echo '<div class="sssj-panel"><p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Thank you, your testimonial was sent for moderation.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			} elseif ( 'error' === $flag ) {
 				echo '<div class="sssj-panel"><p class="sssj-badge" style="background:#fee2e2;color:#b91c1c">' . esc_html__( 'Sorry, your testimonial could not be saved. Please try again.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			}
@@ -261,12 +261,12 @@ class Shuffles_SSJ_Testimonials {
 						<?php foreach ( $featured as $t ) : ?>
 							<figure class="sssj-testi">
 								<blockquote class="sssj-testi__quote"><?php echo wp_kses_post( wpautop( $t->body ) ); ?></blockquote>
-								<figcaption class="sssj-testi__by">— <?php echo esc_html( self::credit( $t ) ); ?></figcaption>
+								<figcaption class="sssj-testi__by">- <?php echo esc_html( self::credit( $t ) ); ?></figcaption>
 							</figure>
 						<?php endforeach; ?>
 					</div>
 				<?php else : ?>
-					<p class="description"><?php echo esc_html( $is_owner ? __( 'No testimonials are showing yet. Add a quote you have received, or invite people to endorse you — then feature the best ones below.', 'shuffles-social-services-jobs' ) : __( 'No testimonials yet. Be the first to endorse them.', 'shuffles-social-services-jobs' ) ); ?></p>
+					<p class="description"><?php echo esc_html( $is_owner ? __( 'No testimonials are showing yet. Add a quote you have received, or invite people to endorse you, then feature the best ones below.', 'shuffles-social-services-jobs' ) : __( 'No testimonials yet. Be the first to endorse them.', 'shuffles-social-services-jobs' ) ); ?></p>
 				<?php endif; ?>
 			</div>
 
@@ -274,7 +274,7 @@ class Shuffles_SSJ_Testimonials {
 				<div class="sssj-panel">
 					<details class="sssj-testi-form">
 						<summary><?php esc_html_e( 'Leave a testimonial', 'shuffles-social-services-jobs' ); ?></summary>
-						<p class="description"><?php esc_html_e( 'Testimonials are checked by a moderator before they appear, and the person decides which to feature. Please be genuine and respectful. You choose how you are credited — you never have to use your full name.', 'shuffles-social-services-jobs' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Testimonials are checked by a moderator before they appear, and the person decides which to feature. Please be genuine and respectful. You choose how you are credited, you never have to use your full name.', 'shuffles-social-services-jobs' ); ?></p>
 						<form method="post" action="<?php echo $action; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>">
 							<input type="hidden" name="action" value="sssj_testimonial_submit" />
 							<input type="hidden" name="subject_type" value="<?php echo esc_attr( $type ); ?>" />
@@ -293,7 +293,7 @@ class Shuffles_SSJ_Testimonials {
 					</details>
 				</div>
 			<?php elseif ( ! $viewer && ! empty( $featured ) ) : ?>
-				<div class="sssj-panel"><p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink( $subject_id ) ) ); ?>"><?php esc_html_e( 'Log in to leave a testimonial', 'shuffles-social-services-jobs' ); ?></a></p></div>
+				<div class="sssj-panel"><p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink( $subject_id ) ) ); ?>"><?php esc_html_e( 'Log in to leave a testimonial', 'shuffles-social-services-jobs' ); ?></a></p></div>
 			<?php endif; ?>
 
 			<?php if ( $is_owner ) : echo self::owner_panel_html( $type, $subject_id, $action ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php endif; ?>
@@ -323,7 +323,7 @@ class Shuffles_SSJ_Testimonials {
 								<div class="sssj-testi-list__text">
 									<span class="sssj-badge"><?php echo esc_html( $badge ); ?></span>
 									“<?php echo esc_html( wp_trim_words( wp_strip_all_tags( (string) $t->body ), 30 ) ); ?>”
-									<span class="description">— <?php echo esc_html( self::credit( $t ) ); ?></span>
+									<span class="description">- <?php echo esc_html( self::credit( $t ) ); ?></span>
 								</div>
 								<div class="sssj-testi-list__actions">
 									<?php

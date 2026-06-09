@@ -34,8 +34,10 @@ Status key: ✅ live · 🟡 partial/phase · ⬜ roadmap/design.
 - **Pseudonymous** participant listings (private code, never a real name); **suburb-only** location.
 - **No public contact details**; first contact via the **internal messaging relay**.
 - **Pre-publish moderation** of every participant need; participant pages are **`noindex` + gated**.
+- **On-platform by design (core objective):** listings are meant to be acted on inside the platform, not copied out onto public social media. Anonymous advertising, per-field masking, pseudonymity and the relay keep posts off public feeds, **maintaining privacy, increasing dignity, and reducing the well-meaning copying or resharing of posts** by the public that can re-expose people and become an unhealthy distraction.
 - **Benefit:** the most vulnerable users can seek help without exposing themselves.
 - **Sales angle:** *Participant safety guaranteed by design — not left to settings.*
+- **Sales angle:** *Your post does its job here, quietly — it isn't turned into a public social-media spectacle.*
 
 ## E. Credential verification & pre-matching ⬜
 - **NDIS Worker Screening, WWCC / Blue Card, police check, First Aid, certifications, insurance.**

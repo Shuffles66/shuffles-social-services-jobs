@@ -1,4 +1,4 @@
-/* Shuffles Social Services Jobs and Engagements — accessibility / CALD toolbar.
+/* Shuffles Social Services Jobs and Engagements, accessibility / CALD toolbar.
  * Browser-side, $0 to run. Injects a toolbar into the first .sssj surface and provides:
  * larger text, high-contrast, no-colour, Easy-Read, read-aloud (SpeechSynthesis), and
  * voice input (Web Speech API) on search fields. Preferences persist in localStorage.
@@ -108,6 +108,74 @@
 		var sel = document.querySelector( '.sssj-a11y-lang' );
 		if ( sel && sel.value !== code ) { sel.value = code; }
 		updateEnglishBtn();
+
+		// Whole-site machine translation (Option 1). Only when configured and DeepL supports the language.
+		if ( cfg.translate && 'en' !== code && ( cfg.translate_langs || [] ).indexOf( code ) !== -1 ) {
+			translatePage( code );
+		} else if ( 'en' === code && pageTranslated ) {
+			window.location.reload(); // restore originals (they are English)
+		}
+	}
+
+	var pageTranslated = false, translatedLang = '';
+
+	function collectTextNodes() {
+		var nodes = [];
+		if ( ! document.body || ! document.createTreeWalker ) { return nodes; }
+		var walker = document.createTreeWalker( document.body, NodeFilter.SHOW_TEXT, {
+			acceptNode: function ( n ) {
+				if ( ! n.nodeValue || ! n.nodeValue.trim() ) { return NodeFilter.FILTER_REJECT; }
+				var p = n.parentNode;
+				if ( ! p || ! p.closest ) { return NodeFilter.FILTER_REJECT; }
+				if ( p.closest( 'script,style,noscript,textarea,code,pre,[translate="no"],[data-no-translate],.sssj-a11y' ) ) { return NodeFilter.FILTER_REJECT; }
+				return NodeFilter.FILTER_ACCEPT;
+			}
+		} );
+		var node;
+		while ( ( node = walker.nextNode() ) ) { nodes.push( node ); }
+		return nodes;
+	}
+
+	function chunkArr( arr, n ) { var out = []; for ( var i = 0; i < arr.length; i += n ) { out.push( arr.slice( i, i + n ) ); } return out; }
+
+	function applyMap( nodes, map ) {
+		nodes.forEach( function ( nd ) {
+			var t = nd.nodeValue, s = t.trim();
+			if ( s && map[ s ] ) { nd.nodeValue = t.replace( s, map[ s ] ); }
+		} );
+		document.querySelectorAll( 'input[placeholder],textarea[placeholder]' ).forEach( function ( el ) {
+			if ( el.closest( '.sssj-a11y' ) ) { return; }
+			var ph = ( el.getAttribute( 'placeholder' ) || '' ).trim();
+			if ( ph && map[ ph ] ) { el.setAttribute( 'placeholder', map[ ph ] ); }
+		} );
+	}
+
+	function translatePage( code ) {
+		if ( translatedLang === code ) { return; }
+		var nodes = collectTextNodes();
+		var uniq = {}, list = [];
+		nodes.forEach( function ( nd ) { var s = nd.nodeValue.trim(); if ( s && ! uniq[ s ] ) { uniq[ s ] = 1; list.push( s ); } } );
+		document.querySelectorAll( 'input[placeholder],textarea[placeholder]' ).forEach( function ( el ) {
+			if ( el.closest( '.sssj-a11y' ) ) { return; }
+			var ph = ( el.getAttribute( 'placeholder' ) || '' ).trim();
+			if ( ph && ! uniq[ ph ] ) { uniq[ ph ] = 1; list.push( ph ); }
+		} );
+		if ( ! list.length ) { return; }
+		list = list.slice( 0, 600 );
+		var map = {}, batches = chunkArr( list, 100 ), pending = batches.length;
+		batches.forEach( function ( b ) {
+			fetch( cfg.translate_url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': cfg.translate_nonce },
+				credentials: 'same-origin',
+				body: JSON.stringify( { texts: b, lang: code } )
+			} ).then( function ( r ) { return r.json(); } ).then( function ( d ) {
+				if ( d && d.map ) { Object.keys( d.map ).forEach( function ( k ) { map[ k ] = d.map[ k ]; } ); }
+			} ).catch( function () {} ).then( function () {
+				pending--;
+				if ( 0 === pending ) { applyMap( nodes, map ); translatedLang = code; pageTranslated = true; }
+			} );
+		} );
 	}
 
 	function buildToolbar() {
@@ -153,7 +221,7 @@
 			sel.addEventListener( 'change', function () { applyLang( sel.value ); } );
 			bar.appendChild( sel );
 
-			// Always-visible English escape — shown only when the UI is not English.
+			// Always-visible English escape, shown only when the UI is not English.
 			var engWrap = document.createElement( 'div' );
 			engWrap.className = 'sssj-a11y-english';
 			var eng = makeBtn( 'English Hot Key', 'Switch back to English' );
@@ -169,10 +237,12 @@
 		// Hide the toolbar behind a single "Accessibility" toggle, in the same position.
 		var outer = document.createElement( 'div' );
 		outer.className = 'sssj-a11y' + ( floating ? ' sssj-a11y--floating' : '' );
-		if ( prefs.a11yOpen ) { outer.classList.add( 'is-open' ); }
+		// Open by default (admin setting cfg.bar_open, default on); a saved user choice always wins.
+		var startOpen = ( 'boolean' === typeof prefs.a11yOpen ) ? prefs.a11yOpen : ( '0' !== cfg.bar_open );
+		if ( startOpen ) { outer.classList.add( 'is-open' ); }
 		var toggle = makeBtn( '♿ ' + ( L.region || 'Accessibility' ), L.region || 'Accessibility tools' );
 		toggle.className += ' sssj-a11y-toggle';
-		toggle.setAttribute( 'aria-expanded', prefs.a11yOpen ? 'true' : 'false' );
+		toggle.setAttribute( 'aria-expanded', startOpen ? 'true' : 'false' );
 		toggle.addEventListener( 'click', function () {
 			var open = ! outer.classList.contains( 'is-open' );
 			outer.classList.toggle( 'is-open', open );

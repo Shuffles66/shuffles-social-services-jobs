@@ -3,16 +3,16 @@
  * Smart, synonym-aware keyword search (C5).
  *
  * The plain WP `s=` search requires EVERY word to appear and knows nothing about sector
- * jargon — so "support work" misses "Disability Support Worker", "carer" or "DSW". This
+ * jargon, so "support work" misses "Disability Support Worker", "carer" or "DSW". This
  * class expands a search phrase into a set of related terms (the original phrase, its
  * individual words, and any matching synonym group) and OR-matches them against the post
  * title / excerpt / content via the `posts_search` SQL filter. OR-matching makes search
- * BROADER, not narrower — it never zeroes out a result the user clearly meant.
+ * BROADER, not narrower, it never zeroes out a result the user clearly meant.
  *
  * AI-ready: term expansion runs through the `shuffles_ssj_search_expand_terms` filter, so a
  * future AI expander can refine / add terms without touching any query code. The synonym
  * table itself is filterable via `shuffles_ssj_search_synonyms`. Deterministic today, swappable
- * tomorrow — no member-facing copy ever names the vendor (house rule).
+ * tomorrow, no member-facing copy ever names the vendor (house rule).
  *
  * Activation: a query opts in by setting the `sssj_smart_search` query var (done in
  * Shuffles_SSJ_Query). Queries without it are untouched.

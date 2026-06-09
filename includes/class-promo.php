@@ -1,6 +1,6 @@
 <?php
 /**
- * Workstream G — site self-promotion graphics.
+ * Workstream G, site self-promotion graphics.
  *
  * A small studio for the site owner / marketer: turn real, privacy-safe platform
  * positives into an on-brand square social graphic plus a ready-to-paste caption,
@@ -182,7 +182,7 @@ class Shuffles_SSJ_Promo {
 		foreach ( $stat_cards as $key => $meta ) {
 			$val = isset( $s[ $key ] ) ? (int) $s[ $key ] : 0;
 			if ( $val < (int) $meta[3] ) {
-				continue; // not impressive enough yet — hide it
+				continue; // not impressive enough yet, hide it
 			}
 			$num     = number_format_i18n( $val );
 			$caption = sprintf(
@@ -204,7 +204,7 @@ class Shuffles_SSJ_Promo {
 				'emoji'    => $meta[0],
 				'accent'   => $accent % 4,
 				'caption'  => $caption,
-				'label'    => sprintf( '%s — %s', $num, $meta[2] ),
+				'label'    => sprintf( '%s, %s', $num, $meta[2] ),
 			);
 			$accent++;
 		}
@@ -221,7 +221,7 @@ class Shuffles_SSJ_Promo {
 				}
 				$caption = sprintf(
 					/* translators: 1: headline, 2: text, 3: site name, 4: url, 5: hashtags */
-					__( '%1$s — %2$s See how %3$s works: %4$s %5$s', 'shuffles-social-services-jobs' ),
+					__( '%1$s, %2$s See how %3$s works: %4$s %5$s', 'shuffles-social-services-jobs' ),
 					$title,
 					$text,
 					$site,

@@ -1,13 +1,13 @@
 /**
- * Shuffles Social Services Jobs — dynamic directory filters.
+ * Shuffles Social Services Jobs, dynamic directory filters.
  *
  * Filters apply automatically (no "Filter" button). On boards that opt in (a form with
- * data-sssj-board + a [data-sssj-results] region), changes are applied via AJAX — the results
+ * data-sssj-board + a [data-sssj-results] region), changes are applied via AJAX, the results
  * tiles are swapped in place with the Shuffles spinner, the cursor stays in the search box, and the
  * URL is updated so it's still shareable. Boards that haven't opted in fall back to a GET reload.
  *
- *   • [data-sssj-clear] — "Clear all" (resets every filter)
- *   • [data-sssj-here]  — "Use my location" (browser geolocation → radius search)
+ *   • [data-sssj-clear], "Clear all" (resets every filter)
+ *   • [data-sssj-here] , "Use my location" (browser geolocation → radius search)
  */
 ( function () {
 	'use strict';
@@ -90,7 +90,7 @@
 		if ( typeof form.requestSubmit === 'function' ) { form.requestSubmit(); } else { form.submit(); }
 	}
 
-	/** Apply filters — AJAX if the board opts in, else a GET reload. */
+	/** Apply filters, AJAX if the board opts in, else a GET reload. */
 	function apply( form, resetPage ) {
 		if ( resultsFor( form ) ) { runAjax( form, resetPage !== false ); } else { submitForm( form ); }
 	}
@@ -144,7 +144,7 @@
 	}
 
 	function clearAll() {
-		// Clean reset — navigate to the bare path (works for both AJAX and non-AJAX boards).
+		// Clean reset, navigate to the bare path (works for both AJAX and non-AJAX boards).
 		window.location = window.location.pathname;
 	}
 

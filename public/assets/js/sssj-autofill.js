@@ -1,7 +1,7 @@
 /**
- * Organisation profile "Fetch details from my website" — reads the entered website URL and
+ * Organisation profile "Fetch details from my website", reads the entered website URL and
  * pre-fills empty fields (name, description, phone). Powered server-side; an AI/Tavily integration
- * can enrich the result. Only fills fields the user left blank — never clobbers their input.
+ * can enrich the result. Only fills fields the user left blank, never clobbers their input.
  */
 ( function () {
 	'use strict';

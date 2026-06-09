@@ -1,6 +1,6 @@
 <?php
 /**
- * Multi-user organisations (D) — org teams.
+ * Multi-user organisations (D), org teams.
  *
  * An organisation (`sssj_org`) has one owner (the creator, stored in `org_user_id`) and any
  * number of additional team members, stored as `_sssj_org_members` = [ user_id => role ] where
@@ -8,7 +8,7 @@
  * or demoted. Org admins (owner + 'admin' members, plus site admins) can add existing members,
  * change a member's role, and remove members.
  *
- * Privacy / safety: this never creates user accounts (a person must already have an account —
+ * Privacy / safety: this never creates user accounts (a person must already have an account -
  * we look them up by email or username). It links existing users to an org; it does not change
  * any WordPress role or site-wide capability. Removing a member only unlinks them from the org.
  *

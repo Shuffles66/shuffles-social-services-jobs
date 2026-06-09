@@ -1,4 +1,4 @@
-/* Shuffles Social Services Jobs and Engagements — admin settings JS.
+/* Shuffles Social Services Jobs and Engagements, admin settings JS.
  * Handles the page-picker "Create page" button (creates a page with the shortcode via AJAX).
  */
 ( function () {

@@ -2,7 +2,7 @@
 /**
  * Real-time matching engine (Phase 3). Scores workers against a job and jobs against a worker on
  * shared services, location proximity, availability, engagement basis (ABN/TFN), rate and trust.
- * No stored scores yet (that is Phase 8) — candidates are gathered with a shared-category WP_Query
+ * No stored scores yet (that is Phase 8), candidates are gathered with a shared-category WP_Query
  * then ranked in PHP. Renders "Best matches" panels on single job/worker pages + a [sssj_matches]
  * shortcode for a logged-in worker's dashboard.
  *

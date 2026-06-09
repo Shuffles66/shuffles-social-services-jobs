@@ -37,9 +37,95 @@ class Shuffles_SSJ_Alerts {
 		// Worker job-alert opt-in saved with the worker profile.
 		add_action( 'shuffles_ssj_profile_saved', array( $this, 'save_worker_optin' ), 15, 3 );
 		add_shortcode( 'sssj_saved_searches', array( $this, 'saved_searches_panel' ) );
+		add_shortcode( 'sssj_alerts', array( $this, 'alerts_hub_panel' ) );
 		add_action( 'admin_post_sssj_save_search', array( $this, 'handle_save_search' ) );
 		add_action( 'admin_post_sssj_del_search', array( $this, 'handle_del_search' ) );
 		add_action( 'admin_post_sssj_alerts_run_now', array( $this, 'handle_run_now' ) );
+		add_action( 'admin_post_sssj_save_alert_prefs', array( $this, 'handle_alert_prefs' ) );
+	}
+
+	/* --------------------------------------------------------------- Member alerts hub */
+
+	/**
+	 * [sssj_alerts], one place for a member to manage every alert they can receive:
+	 *   - new jobs that match their worker profile,
+	 *   - new candidates for each job they advertise,
+	 *   - their saved-search alerts.
+	 * One form saves the on/off toggles; saved searches reuse their own remove buttons.
+	 */
+	public function alerts_hub_panel( $atts ) {
+		wp_enqueue_style( 'sssj' );
+		if ( ! is_user_logged_in() ) {
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to manage your alerts.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+		}
+		$uid   = get_current_user_id();
+		$user  = wp_get_current_user();
+		$is_worker = (bool) get_posts( array( 'post_type' => 'sssj_worker', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'meta_key' => 'worker_user_id', 'meta_value' => $uid ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$jobs  = get_posts( array( 'post_type' => 'sssj_job', 'post_status' => array( 'publish', 'draft', 'pending' ), 'posts_per_page' => 100, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) );
+		$job_on = (string) get_user_meta( $uid, 'sssj_alert_jobs', true );
+		$redir  = ( is_ssl() ? 'https://' : 'http://' ) . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ); // phpcs:ignore
+
+		ob_start();
+		echo '<div class="sssj sssj--alerts"><div class="sssj-panel">';
+		echo '<h3 style="margin-top:0">🔔 ' . esc_html__( 'Your alerts', 'shuffles-social-services-jobs' ) . '</h3>';
+		echo '<p class="description">' . esc_html( sprintf( __( 'We email alerts to %s. Choose what you want to hear about, then Save.', 'shuffles-social-services-jobs' ), $user->user_email ) ) . '</p>';
+
+		if ( ! $this->available() ) {
+			echo '<div class="sssj-note sssj-note--warn">' . esc_html__( 'Email alerts are currently switched off for the whole site by the administrator.', 'shuffles-social-services-jobs' ) . '</div>';
+		}
+
+		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-stack">';
+		echo '<input type="hidden" name="action" value="sssj_save_alert_prefs" />';
+		echo '<input type="hidden" name="redirect" value="' . esc_attr( $redir ) . '" />';
+		wp_nonce_field( 'sssj_save_alert_prefs', '_sssj_alerts' );
+
+		if ( $is_worker ) {
+			echo '<div class="sssj-alert-row"><label class="sssj-check"><input type="checkbox" name="alert_jobs" value="1" ' . checked( '1', $job_on, false ) . ' /> <strong>' . esc_html__( 'New jobs that match my profile', 'shuffles-social-services-jobs' ) . '</strong></label>';
+			echo '<p class="description" style="margin:2px 0 0">' . esc_html__( 'A short digest when new roles match your services and area.', 'shuffles-social-services-jobs' ) . '</p></div>';
+		}
+
+		if ( $jobs ) {
+			echo '<div class="sssj-alert-row"><strong>' . esc_html__( 'New candidates for my jobs', 'shuffles-social-services-jobs' ) . '</strong>';
+			echo '<p class="description" style="margin:2px 0 6px">' . esc_html__( 'Get told when new worker profiles match a role you advertise.', 'shuffles-social-services-jobs' ) . '</p>';
+			foreach ( $jobs as $jid ) {
+				$on = (string) get_post_meta( $jid, 'sssj_alert_candidates', true );
+				echo '<label class="sssj-check" style="display:block;margin:3px 0"><input type="checkbox" name="alert_candidates[]" value="' . esc_attr( $jid ) . '" ' . checked( '1', $on, false ) . ' /> ' . esc_html( get_the_title( $jid ) ) . '</label>';
+			}
+			echo '</div>';
+		}
+
+		echo '<div style="margin-top:6px"><button type="submit" class="sssj-btn sssj-btn--primary">' . esc_html__( 'Save alert settings', 'shuffles-social-services-jobs' ) . '</button></div>';
+		echo '</form>';
+		echo '</div>';
+
+		// Saved-search alerts (each has its own remove button).
+		echo $this->saved_searches_panel( array() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo '</div>';
+		return ob_get_clean();
+	}
+
+	/** Save the alerts-hub toggles (job-match alert + per-job candidate alerts). */
+	public function handle_alert_prefs() {
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		check_admin_referer( 'sssj_save_alert_prefs', '_sssj_alerts' );
+		$uid = get_current_user_id();
+
+		// Job-match alert (only meaningful for workers, but harmless to store).
+		update_user_meta( $uid, 'sssj_alert_jobs', empty( $_POST['alert_jobs'] ) ? '0' : '1' );
+
+		// Per-job candidate alerts: set 1 for ticked jobs the member owns, 0 for the rest of their jobs.
+		$ticked = isset( $_POST['alert_candidates'] ) ? array_map( 'absint', (array) wp_unslash( $_POST['alert_candidates'] ) ) : array();
+		$mine   = get_posts( array( 'post_type' => 'sssj_job', 'post_status' => array( 'publish', 'draft', 'pending' ), 'posts_per_page' => 200, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) );
+		foreach ( $mine as $jid ) {
+			update_post_meta( (int) $jid, 'sssj_alert_candidates', in_array( (int) $jid, $ticked, true ) ? '1' : '0' );
+		}
+
+		$to = isset( $_POST['redirect'] ) ? esc_url_raw( wp_unslash( (string) $_POST['redirect'] ) ) : '';
+		$to = $to ? wp_validate_redirect( $to, home_url( '/' ) ) : home_url( '/' );
+		wp_safe_redirect( $to );
+		exit;
 	}
 
 	/** Master switch (default on) + a mailer present. */
@@ -205,7 +291,7 @@ class Shuffles_SSJ_Alerts {
 		}
 		$lines = array();
 		foreach ( $items as $it ) {
-			$lines[] = $it['url'] ? ( '• ' . $it['title'] . ' — ' . $it['url'] ) : ( '• ' . $it['title'] );
+			$lines[] = $it['url'] ? ( '• ' . $it['title'] . ', ' . $it['url'] ) : ( '• ' . $it['title'] );
 		}
 		$body = $intro . "\n\n" . implode( "\n", $lines ) . "\n\n"
 			/* translators: %s: site name */
@@ -236,10 +322,10 @@ class Shuffles_SSJ_Alerts {
 	/** "Save this search & alert me" button for a directory ($type: jobs|workers|orgs|needs). */
 	public static function save_search_button( $type ) {
 		$here = ( is_ssl() ? 'https://' : 'http://' ) . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
-		// Guests see the button (so they know the feature exists) but it isn't active — it sends them
+		// Guests see the button (so they know the feature exists) but it isn't active, it sends them
 		// to log in, returning to this exact search so they can save it once signed in.
 		if ( ! is_user_logged_in() ) {
-			echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-savesearch__guest" href="' . esc_url( wp_login_url( $here ) ) . '" title="' . esc_attr__( 'Log in to save this search and get email alerts', 'shuffles-social-services-jobs' ) . '">🔔 ' . esc_html__( 'Save & alert me', 'shuffles-social-services-jobs' ) . ' <span class="sssj-savesearch__hint">(' . esc_html__( 'log in', 'shuffles-social-services-jobs' ) . ')</span></a>';
+			echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm sssj-savesearch__guest" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( $here ) ) . '" title="' . esc_attr__( 'Log in to save this search and get email alerts', 'shuffles-social-services-jobs' ) . '">🔔 ' . esc_html__( 'Save & alert me', 'shuffles-social-services-jobs' ) . ' <span class="sssj-savesearch__hint">(' . esc_html__( 'log in', 'shuffles-social-services-jobs' ) . ')</span></a>';
 			return;
 		}
 		$params = self::capture_params();
@@ -304,7 +390,7 @@ class Shuffles_SSJ_Alerts {
 		return implode( ' · ', $bits );
 	}
 
-	/** [sssj_saved_searches] — manage saved searches (member dashboard). */
+	/** [sssj_saved_searches], manage saved searches (member dashboard). */
 	public function saved_searches_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		if ( ! is_user_logged_in() ) {

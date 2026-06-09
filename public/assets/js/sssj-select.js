@@ -1,4 +1,4 @@
-/* Shuffles SSJ — turn every plugin <select> into a searchable select2-style picker;
+/* Shuffles SSJ, turn every plugin <select> into a searchable select2-style picker;
  * multi-selects become removable pills. Powered by Tom Select, themed to the .sssj design system. */
 ( function () {
 	'use strict';

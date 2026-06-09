@@ -2,7 +2,7 @@
  * Form enhancements for the sssj profile forms (worker / org / need). Additive + idempotent +
  * defensive: it groups existing field blocks into section cards and adds a completeness meter,
  * availability toggle, character counter, styled file inputs + photo preview, a sticky save bar,
- * toast + Ctrl+S — WITHOUT changing any field names, and without disturbing Tom Select, the suburb
+ * toast + Ctrl+S, WITHOUT changing any field names, and without disturbing Tom Select, the suburb
  * autocomplete, the NDIS "Scan now" button or the existing submit spinner. Brand-aligned (uses the
  * sssj design tokens). Targets form.sssj-stack only (never the admin-bar search form).
  */
@@ -61,7 +61,7 @@
 				if ( starts( kids[ i ], sec.a ) ) { starts_.push( { sec: sec, el: kids[ i ], idx: i } ); break; }
 			}
 		} );
-		if ( starts_.length < 2 ) { return; } // not the expected form — leave it alone
+		if ( starts_.length < 2 ) { return; } // not the expected form, leave it alone
 		starts_.forEach( function ( s, n ) {
 			var stop = ( n + 1 < starts_.length ) ? starts_[ n + 1 ].el : null;
 			// collect blocks from s.el up to (not incl) stop
@@ -110,9 +110,9 @@
 			fill.style.width = p + '%';
 			pct.textContent = p + '%';
 			msg.textContent = p >= 100 ? 'Great profile! You’re ready to be found. ✓'
-				: p >= 75 ? 'Almost complete — just a few more fields!'
+				: p >= 75 ? 'Almost complete, just a few more fields!'
 				: p >= 50 ? 'Halfway there! Add location and rates.'
-				: p >= 25 ? 'Good start — add more details to stand out.'
+				: p >= 25 ? 'Good start, add more details to stand out.'
 				: 'Start filling in your profile to get found.';
 		}
 		form.addEventListener( 'input', recompute );

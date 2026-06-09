@@ -1,4 +1,4 @@
-/* Shuffles SSJ — Appearance "Style Studio": live preview + presets + saved looks.
+/* Shuffles SSJ, Appearance "Style Studio": live preview + presets + saved looks.
  * Binds to the existing Appearance controls by id; nothing here saves until the form is submitted. */
 ( function () {
 	'use strict';
@@ -97,7 +97,7 @@
 	function refreshList() {
 		if ( ! sel ) { return; }
 		var a = readThemes();
-		sel.innerHTML = '<option value="">— select —</option>';
+		sel.innerHTML = '<option value="">- select -</option>';
 		a.forEach( function ( t, i ) { var o = document.createElement( 'option' ); o.value = String( i ); o.textContent = t.name; sel.appendChild( o ); } );
 	}
 	function collect() { var v = {}; KEYS.forEach( function ( k ) { v[ k ] = getVal( k ); } ); return v; }

@@ -2,7 +2,7 @@
 /**
  * Participant-need board. Vars: $query (WP_Query), $atts.
  * Visibility + moderation enforced in Shuffles_SSJ_Query::need_args() (logged-in only; published only).
- * Privacy: shows the pseudonym + suburb only — NEVER a name or contact details.
+ * Privacy: shows the pseudonym + suburb only, NEVER a name or contact details.
  * Theme override: wp-content/themes/<theme>/shuffles-jobs/need-board.php
  *
  * @package Shuffles_SSJ
@@ -39,7 +39,7 @@ $cur_rad = isset( $_GET['sssj_radius'] ) ? (int) $_GET['sssj_radius'] : 0; // ph
 			echo '<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c">' . esc_html__( 'A recorded ABN is required to respond.', 'shuffles-social-services-jobs' ) . '</p>';
 		}
 		?>
-		<p class="description"><?php esc_html_e( 'These requests come from participants or their nominees. Identities are protected — first contact is made through the site, never by exposing personal details. Responding requires a recorded ABN.', 'shuffles-social-services-jobs' ); ?></p>
+		<p class="description"><?php esc_html_e( 'These requests come from participants or their nominees. Identities are protected, first contact is made through the site, never by exposing personal details. Responding requires a recorded ABN.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php Shuffles_SSJ_Shortcodes::render_readme( 'needs' ); ?>
 		<form class="sssj-row" method="get" data-sssj-place-group data-sssj-filter-form data-sssj-board="need">
 			<select class="sssj-select" name="sssj_support">

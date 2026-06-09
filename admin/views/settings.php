@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $current = $this->current_tab();
-$tabs    = $this->tabs();
+$tabs    = $this->sorted_tabs();
 $group   = Shuffles_SSJ_Settings::SETTINGS_GROUP;
 
 /** Open an options.php form bound to the current tab (so unchecked boxes save correctly). */
@@ -25,7 +25,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 	<h1><span class="dashicons dashicons-businessperson"></span> <?php esc_html_e( 'Shuffles Social Services Jobs and Engagements', 'shuffles-social-services-jobs' ); ?>
 		<span class="sssj-ver">v<?php echo esc_html( SHUFFLES_SSJ_VERSION ); ?></span>
 	</h1>
-	<p class="sssj-sub"><?php esc_html_e( 'Phase 0 scaffold — entities, seeded taxonomies and settings. Front-end boards, forms, matching and SEO arrive in later phases.', 'shuffles-social-services-jobs' ); ?></p>
+	<p class="sssj-sub"><?php esc_html_e( 'Phase 0 scaffold, entities, seeded taxonomies and settings. Front-end boards, forms, matching and SEO arrive in later phases.', 'shuffles-social-services-jobs' ); ?></p>
 
 	<h2 class="nav-tab-wrapper sssj-tabs">
 		<?php foreach ( $tabs as $slug => $def ) : ?>
@@ -46,8 +46,20 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->compliance_select();
 			$this->number_field( 'default_radius_km', __( 'Default search radius (km)', 'shuffles-social-services-jobs' ), __( 'Used when a user has not chosen a radius.', 'shuffles-social-services-jobs' ), 1, 500 );
 			$this->text_field( 'brand_url', __( 'Brand website URL', 'shuffles-social-services-jobs' ), __( 'Powers the "Shuffles website" link on the Plugins screen. Leave default to point at shuffles.com.au.', 'shuffles-social-services-jobs' ), 'url' );
-			$this->text_field( 'focus_programs', __( 'Focus programs (branding & SEO)', 'shuffles-social-services-jobs' ), __( 'A comma-separated list of the funding programs/sectors this site covers — e.g. NDIS, Aged Care, DVA, Foundational Supports, Thriving Kids. Used as SEO keywords on your job, worker and organisation pages, and as the default sub-text on the [sssj_hero] banner. Leave blank to omit.', 'shuffles-social-services-jobs' ) );
+			$this->text_field( 'focus_programs', __( 'Focus programs (branding & SEO)', 'shuffles-social-services-jobs' ), __( 'A comma-separated list of the funding programs/sectors this site covers, e.g. NDIS, Aged Care, DVA, Foundational Supports, Thriving Kids. Used as SEO keywords on your job, worker and organisation pages, and as the default sub-text on the [sssj_hero] banner. Leave blank to omit.', 'shuffles-social-services-jobs' ) );
 			$this->checkbox_field( 'auto_header_menu', __( 'Show navigation menu at the top of every page (for testing)', 'shuffles-social-services-jobs' ), __( 'Automatically outputs the [sssj_menu] navigation bar at the very top of every front-end page (via wp_body_open), so you can navigate the marketplace while testing without editing your theme header. Turn off once you place the menu where you want it. Requires a theme that supports wp_body_open (almost all modern themes do).', 'shuffles-social-services-jobs' ) );
+			$this->select_field( 'admin_tab_order', __( 'Settings tab order', 'shuffles-social-services-jobs' ), array(
+				'grouped' => __( 'Grouped by topic (default)', 'shuffles-social-services-jobs' ),
+				'tnum'    => __( 'By number (T1, T2, T3 …)', 'shuffles-social-services-jobs' ),
+				'alpha'   => __( 'Alphabetical (A to Z)', 'shuffles-social-services-jobs' ),
+			), __( 'How the tabs along the top of this Settings page are ordered. Save to apply.', 'shuffles-social-services-jobs' ), 'grouped' );
+			$this->checkbox_field( 'hero_show_tour', __( 'Show a “Take a tour” button in the hero', 'shuffles-social-services-jobs' ), __( 'When on (and a “Take a tour” / demo-tour page exists), the [sssj_hero] banner automatically shows an extra “Take a tour” button linking to it. Turn off to hide it.', 'shuffles-social-services-jobs' ) );
+			$this->key_field(
+				'unsplash_access_key',
+				__( 'Stock photo key (Unsplash)', 'shuffles-social-services-jobs' ),
+				__( 'Free: go to <a href="https://unsplash.com/developers" target="_blank" rel="noopener">unsplash.com/developers</a>, sign up, create a new application (accept the terms), and copy its <strong>Access Key</strong> here. Stored masked.', 'shuffles-social-services-jobs' ),
+				__( 'Lets the plugin pull royalty-free, Australian-tuned photos for the demo tour and demo posts (Settings → Demo Users → “Load demo photos”). Photographer credit is shown automatically, as Unsplash requires.', 'shuffles-social-services-jobs' )
+			);
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -86,7 +98,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 					if ( ! empty( $sc['atts'] ) ) {
 						echo '<p style="margin:6px 0 2px;color:#475569"><strong>' . esc_html__( 'Optional attributes:', 'shuffles-social-services-jobs' ) . '</strong></p><ul style="margin:0 0 2px 18px;list-style:disc">';
 						foreach ( $sc['atts'] as $a => $adesc ) {
-							echo '<li><code>' . esc_html( $a ) . '</code> — ' . esc_html( $adesc ) . '</li>';
+							echo '<li><code>' . esc_html( $a ) . '</code>, ' . esc_html( $adesc ) . '</li>';
 						}
 						echo '</ul>';
 					}
@@ -98,19 +110,19 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 		case 'guides':
 			echo '<h2>' . esc_html__( 'Guides', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Plain-language how-to guides for each side of the marketplace. The same content is available on the front end via the [sssj_guides] shortcode — put it on a public "Guides" or "Help" page. Keep the content current in includes/class-guides.php as flows change.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Plain-language how-to guides for each side of the marketplace. The same content is available on the front end via the [sssj_guides] shortcode, put it on a public "Guides" or "Help" page. Keep the content current in includes/class-guides.php as flows change.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo Shuffles_SSJ_Guides::render( array( 'title' => __( 'Guides', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
 		case 'workflows':
 			echo '<h2>' . esc_html__( 'How-to Workflows', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'Step-by-step <strong>explainer workflows for end users</strong> — the exact path through the app to finish each task. This is the same content members read via the <code>[sssj_workflows]</code> shortcode; put it on a public “How it works” / “Help” page and link it from the menu. Keep it current in <code>includes/class-workflows.php</code> as member-facing flows change.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'Step-by-step <strong>explainer workflows for end users</strong>, the exact path through the app to finish each task. This is the same content members read via the <code>[sssj_workflows]</code> shortcode; put it on a public “How it works” / “Help” page and link it from the menu. Keep it current in <code>includes/class-workflows.php</code> as member-facing flows change.', 'shuffles-social-services-jobs' ) ) . '</p>';
 			echo Shuffles_SSJ_Workflows::render( array( 'title' => __( 'How it works', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
 		case 'policies':
 			echo '<h2>' . esc_html__( 'Policies', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'These are the <strong>plain-English, member-facing</strong> policy summaries shown on the site via <code>[sssj_policies]</code> — publish them on a public “Policies” page and link it in the footer/menu. The full, formal templates live in <code>/docs/*.md</code> (e.g. Privacy, NDIS Code of Conduct, Incident Management) and must be reviewed and formally adopted by your organisation before you rely on them — they are starting templates, not legal advice. Keep both in sync; the source of the summaries is <code>includes/class-policies.php</code>.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'These are the <strong>plain-English, member-facing</strong> policy summaries shown on the site via <code>[sssj_policies]</code>, publish them on a public “Policies” page and link it in the footer/menu. The full, formal templates live in <code>/docs/*.md</code> (e.g. Privacy, NDIS Code of Conduct, Incident Management) and must be reviewed and formally adopted by your organisation before you rely on them, they are starting templates, not legal advice. Keep both in sync; the source of the summaries is <code>includes/class-policies.php</code>.', 'shuffles-social-services-jobs' ) ) . '</p>';
 			echo Shuffles_SSJ_Policies::render( array( 'title' => __( 'Our policies', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
 			break;
 
@@ -184,7 +196,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				}
 				echo '</tbody></table>';
 			} else {
-				echo '<p class="description">' . esc_html__( 'No custom fields yet — add one below.', 'shuffles-social-services-jobs' ) . '</p>';
+				echo '<p class="description">' . esc_html__( 'No custom fields yet, add one below.', 'shuffles-social-services-jobs' ) . '</p>';
 			}
 
 			echo '<h3 style="margin-top:20px">' . ( $editing ? esc_html__( 'Edit field', 'shuffles-social-services-jobs' ) : esc_html__( 'Add a field', 'shuffles-social-services-jobs' ) ) . '</h3>';
@@ -219,8 +231,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2563eb;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
 				<h2 style="margin-top:0"><?php esc_html_e( 'CRM Sync', 'shuffles-social-services-jobs' ); ?></h2>
-				<p><?php esc_html_e( 'Keep each member’s FluentCRM tags & lists in step with the choices on their profile. Map a value — a funding source like NDIS, a sector, a culture/language, or a custom-field option — to a FluentCRM tag and/or list. Then, whenever a worker, organisation or participant profile is saved, ticking that value adds the tag/list to that person’s contact, and un-ticking removes it. Every change is recorded in a per-user log.', 'shuffles-social-services-jobs' ); ?></p>
-				<p><?php esc_html_e( 'This syncs to the FluentCRM on THIS website. It only runs while the master switch below is on and FluentCRM is active. If a mapped tag/list is later deleted in FluentCRM, you’ll get an alert here so you can fix the mapping (the plugin maps to existing tags/lists — it never silently creates them).', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'Keep each member’s FluentCRM tags & lists in step with the choices on their profile. Map a value, a funding source like NDIS, a sector, a culture/language, or a custom-field option, to a FluentCRM tag and/or list. Then, whenever a worker, organisation or participant profile is saved, ticking that value adds the tag/list to that person’s contact, and un-ticking removes it. Every change is recorded in a per-user log.', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'This syncs to the FluentCRM on THIS website. It only runs while the master switch below is on and FluentCRM is active. If a mapped tag/list is later deleted in FluentCRM, you’ll get an alert here so you can fix the mapping (the plugin maps to existing tags/lists, it never silently creates them).', 'shuffles-social-services-jobs' ); ?></p>
 			</div>
 			<?php
 			if ( 'saved' === $cstatus ) {
@@ -246,7 +258,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			if ( $miss ) {
 				echo '<div class="notice notice-warning" style="max-width:920px"><p><strong>' . esc_html__( 'Some mapped tags/lists no longer exist in FluentCRM:', 'shuffles-social-services-jobs' ) . '</strong></p><ul style="list-style:disc;margin-left:22px">';
 				foreach ( $miss as $m ) {
-					echo '<li>' . esc_html( ucfirst( $m['type'] ) . ' #' . $m['id'] . ' — ' . __( 'last seen', 'shuffles-social-services-jobs' ) . ' ' . $m['last'] ) . '</li>';
+					echo '<li>' . esc_html( ucfirst( $m['type'] ) . ' #' . $m['id'] . ', ' . __( 'last seen', 'shuffles-social-services-jobs' ) . ' ' . $m['last'] ) . '</li>';
 				}
 				echo '</ul><p class="description">' . esc_html__( 'Fix the mapping below (point it at a tag/list that exists), then dismiss.', 'shuffles-social-services-jobs' ) . '</p>';
 				echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '"><input type="hidden" name="action" value="sssj_crm_clear_missing" />' . wp_nonce_field( 'sssj_crm_missing', '_wpnonce', true, false ) . '<button class="button">' . esc_html__( 'Dismiss alerts', 'shuffles-social-services-jobs' ) . '</button></form></div>';
@@ -314,11 +326,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #ea580c;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
 				<h2 style="margin-top:0"><?php esc_html_e( 'Email Alerts', 'shuffles-social-services-jobs' ); ?></h2>
-				<p><?php esc_html_e( 'A daily digest emails members about new matches. There are three opt-in alert types — nobody is emailed unless they opt in:', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'A daily digest emails members about new matches. There are three opt-in alert types, nobody is emailed unless they opt in:', 'shuffles-social-services-jobs' ); ?></p>
 				<ol>
-					<li><strong><?php esc_html_e( 'Workers → new matching jobs', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'a worker ticks “Email me when new jobs match my profile” on their profile. They get new roles matching their services/area.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Advertisers → new candidates', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'when posting a job, the advertiser ticks “Email me when new candidates match this job”. They get new worker profiles that match.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Saved searches', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'members click “Save & alert me” on any directory; they get new listings matching that search. Manage them with the [sssj_saved_searches] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Workers → new matching jobs', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'a worker ticks “Email me when new jobs match my profile” on their profile. They get new roles matching their services/area.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Advertisers → new candidates', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'when posting a job, the advertiser ticks “Email me when new candidates match this job”. They get new worker profiles that match.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Saved searches', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'members click “Save & alert me” on any directory; they get new listings matching that search. Manage them with the [sssj_saved_searches] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
 				</ol>
 				<p><?php echo wp_kses_post( __( 'Matching reuses the matching engine; “new” means published since the last alert. Email is sent via the site mailer (FluentSMTP/wp_mail) unless a FluentCRM automation claims it via the <code>shuffles_ssj_alert_sent</code> action / <code>shuffles_ssj_alert_suppress_default</code> filter. Frequency is daily.', 'shuffles-social-services-jobs' ) ); ?></p>
 			</div>
@@ -340,16 +352,96 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 		case 'testing':
 			echo '<h2>' . esc_html__( 'Testing worksheet', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Hand this to a tester to confirm the plugin works as it should. Mark each case Pass or Fail — progress is saved in this browser, and Print gives a paper/PDF copy. The same checklist is available on the front end via the [sssj_tests] shortcode, and is kept up to date as the plugin changes.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Hand this to a tester to confirm the plugin works as it should. Mark each case Pass or Fail, progress is saved in this browser, and Print gives a paper/PDF copy. The same checklist is available on the front end via the [sssj_tests] shortcode, and is kept up to date as the plugin changes.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo Shuffles_SSJ_Tests::render( array( 'title' => __( 'Testing worksheet', 'shuffles-social-services-jobs' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput
+
+			// Submitted tester feedback (most recent first).
+			$sssj_fb = class_exists( 'Shuffles_SSJ_Tests' ) ? Shuffles_SSJ_Tests::recent_feedback( 25 ) : array();
+			echo '<hr /><h3 style="margin-top:18px">' . esc_html__( 'Recent tester feedback', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<p class="description" style="max-width:800px">' . esc_html__( 'Testers submit this from the worksheet above, or from the Testing tab in their dashboard (admins, plus any member you flag as a “Platform tester” on their user profile). It is also emailed to the site admin.', 'shuffles-social-services-jobs' ) . '</p>';
+			if ( empty( $sssj_fb ) ) {
+				echo '<p class="description">' . esc_html__( 'No feedback submitted yet.', 'shuffles-social-services-jobs' ) . '</p>';
+			} else {
+				foreach ( $sssj_fb as $sssj_f ) {
+					echo '<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2563eb;border-radius:8px;padding:12px 16px;margin:0 0 10px;max-width:860px">';
+					echo '<p style="margin:0"><strong>' . esc_html( (string) $sssj_f['name'] ) . '</strong> &lt;' . esc_html( (string) $sssj_f['email'] ) . '&gt; &middot; ' . esc_html( (string) $sssj_f['date'] ) . ' &middot; v' . esc_html( (string) $sssj_f['version'] ) . '</p>';
+					if ( ! empty( $sssj_f['summary'] ) ) {
+						echo '<p style="margin:4px 0;color:#475569"><em>' . esc_html( (string) $sssj_f['summary'] ) . '</em></p>';
+					}
+					if ( ! empty( $sssj_f['comments'] ) && is_array( $sssj_f['comments'] ) ) {
+						echo '<ul class="ul-disc" style="margin:6px 0 0">';
+						foreach ( $sssj_f['comments'] as $sssj_lbl => $sssj_txt ) {
+							echo '<li><strong>' . esc_html( (string) $sssj_lbl ) . ':</strong> ' . esc_html( (string) $sssj_txt ) . '</li>';
+						}
+						echo '</ul>';
+					}
+					echo '</div>';
+				}
+			}
 			break;
 
 		case 'demo':
 			echo '<h2>' . esc_html__( 'Demo / test users', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'These are the demo accounts created by the seeder (<code>dist/seed-demo.php</code>) — one per functional role, each with a sample listing. Click <strong>“View as”</strong> to instantly browse the site as that user; a “Return to admin” link appears in the toolbar to switch back. <strong>For testing only:</strong> the initial passwords are stored in plain text so they can be shared here, and “View as” works only for demo accounts — remove these accounts before going to production (a one-line cleanup is in the seeder file).', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'These are the demo accounts created by the seeder (<code>dist/seed-demo.php</code>), one per functional role, each with a sample listing. Click <strong>“View as”</strong> to instantly browse the site as that user; a “Return to admin” link appears in the toolbar to switch back. <strong>For testing only:</strong> the initial passwords are stored in plain text so they can be shared here, and “View as” works only for demo accounts, remove these accounts before going to production (a one-line cleanup is in the seeder file).', 'shuffles-social-services-jobs' ) ) . '</p>';
+			// Result of a Run now / Remove action.
+			$dm = isset( $_GET['sssj_demo'] ) ? sanitize_key( wp_unslash( $_GET['sssj_demo'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( 'seeded' === $dm || 'purged' === $dm ) {
+				$dr = get_transient( 'sssj_demo_seed_result' );
+				delete_transient( 'sssj_demo_seed_result' );
+				if ( 'seeded' === $dm && is_array( $dr ) ) {
+					$msg = sprintf( __( 'Done. %1$d demo user(s) created, %2$d already existed, %3$d sample listing(s) created.', 'shuffles-social-services-jobs' ), (int) $dr['users_created'], (int) $dr['users_existing'], (int) $dr['posts_created'] );
+					if ( ! empty( $dr['errors'] ) ) {
+						$msg .= ' ' . sprintf( __( '%d issue(s):', 'shuffles-social-services-jobs' ), count( $dr['errors'] ) ) . ' ' . implode( '; ', array_map( 'sanitize_text_field', (array) $dr['errors'] ) );
+					}
+					echo '<div class="notice notice-success inline" style="margin:8px 0;max-width:820px"><p>' . esc_html( $msg ) . '</p></div>';
+				} elseif ( 'purged' === $dm && is_array( $dr ) ) {
+					echo '<div class="notice notice-success inline" style="margin:8px 0;max-width:820px"><p>' . esc_html( sprintf( __( 'Removed %1$d demo user(s) and %2$d demo listing(s).', 'shuffles-social-services-jobs' ), (int) $dr['users_deleted'], (int) $dr['posts_deleted'] ) ) . '</p></div>';
+				}
+			}
+			// Run now / Remove buttons.
+			echo '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:12px 0 6px">';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0">';
+			wp_nonce_field( 'sssj_seed_demo' );
+			echo '<input type="hidden" name="action" value="sssj_seed_demo" />';
+			echo '<button type="submit" class="button button-primary">' . esc_html__( 'Run now (create / update demo users)', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</form>';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0" onsubmit="return confirm(\'' . esc_js( __( 'Remove all demo users and their sample listings? This cannot be undone.', 'shuffles-social-services-jobs' ) ) . '\');">';
+			wp_nonce_field( 'sssj_purge_demo' );
+			echo '<input type="hidden" name="action" value="sssj_purge_demo" />';
+			echo '<button type="submit" class="button button-link-delete">' . esc_html__( 'Remove demo users', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</form>';
+			echo '</div>';
+			echo '<p class="description" style="margin:0 0 12px">' . esc_html__( 'Run now is safe to click repeatedly: it only creates what is missing. Participant requests are created as pending, approve them in wp-admin to publish.', 'shuffles-social-services-jobs' ) . '</p>';
+
+			// Load Australian stock photos for the demo tour + demo posts (needs the Unsplash key, Settings → General).
+			if ( isset( $_GET['sssj_photos'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				$pr = get_transient( 'sssj_demo_photos_result' );
+				delete_transient( 'sssj_demo_photos_result' );
+				if ( is_array( $pr ) ) {
+					$pmsg = sprintf( __( 'Loaded photos: %1$d persona banner(s) and %2$d post image(s).', 'shuffles-social-services-jobs' ), (int) $pr['personas'], (int) $pr['posts'] );
+					if ( ! empty( $pr['errors'] ) ) {
+						$pmsg .= ' ' . implode( '; ', array_map( 'sanitize_text_field', (array) $pr['errors'] ) );
+					}
+					$pclass = empty( $pr['errors'] ) ? 'notice-success' : 'notice-warning';
+					echo '<div class="notice ' . esc_attr( $pclass ) . ' inline" style="margin:8px 0;max-width:820px"><p>' . esc_html( $pmsg ) . '</p></div>';
+				}
+			}
+			$stock_on = class_exists( 'Shuffles_SSJ_Stock' ) && Shuffles_SSJ_Stock::enabled();
+			echo '<div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:0 0 6px">';
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0">';
+			wp_nonce_field( 'sssj_load_demo_photos' );
+			echo '<input type="hidden" name="action" value="sssj_load_demo_photos" />';
+			echo '<button type="submit" class="button"' . ( $stock_on ? '' : ' disabled' ) . '>' . esc_html__( 'Load Australian demo photos', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</form>';
+			echo '<span class="description">' . ( $stock_on
+				? esc_html__( 'Pulls a royalty-free, Australian-tuned photo for each demo persona and demo post (downloaded once into your Media Library, photographer credited).', 'shuffles-social-services-jobs' )
+				: esc_html__( 'Add an Unsplash Access Key in Settings → General to enable this.', 'shuffles-social-services-jobs' ) ) . '</span>';
+			echo '</div>';
+			echo '<p class="description" style="margin:0 0 12px"></p>';
+
 			$demo_users = get_users( array( 'meta_key' => '_sssj_demo', 'meta_value' => 1, 'orderby' => 'login', 'order' => 'ASC' ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
 			if ( empty( $demo_users ) ) {
-				echo '<div class="notice notice-info inline" style="margin:8px 0;max-width:820px"><p>' . wp_kses_post( __( 'No demo users yet. Run the seeder on the server with <code>wp eval-file dist/seed-demo.php</code> (from the plugin folder), then reload this tab.', 'shuffles-social-services-jobs' ) ) . '</p></div>';
+				echo '<div class="notice notice-info inline" style="margin:8px 0;max-width:820px"><p>' . esc_html__( 'No demo users yet. Click “Run now” above to create one demo account per role, each with a sample listing.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			} else {
 				$hat_defs = class_exists( 'Shuffles_SSJ_Roles' ) ? Shuffles_SSJ_Roles::hats() : array();
 				echo '<table class="widefat striped" style="max-width:980px"><thead><tr>';
@@ -368,9 +460,9 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 					}
 					echo '<tr>';
 					echo '<td><strong>' . esc_html( $du->user_login ) . '</strong></td>';
-					echo '<td>' . ( '' !== $pass ? '<code>' . esc_html( $pass ) . '</code>' : '<span class="description">' . esc_html__( '(not recorded — reset via Users)', 'shuffles-social-services-jobs' ) . '</span>' ) . '</td>';
+					echo '<td>' . ( '' !== $pass ? '<code>' . esc_html( $pass ) . '</code>' : '<span class="description">' . esc_html__( '(not recorded, reset via Users)', 'shuffles-social-services-jobs' ) . '</span>' ) . '</td>';
 					echo '<td>' . esc_html( $du->user_email ) . '</td>';
-					echo '<td>' . esc_html( $fns ? implode( ', ', $fns ) : '—' ) . '</td>';
+					echo '<td>' . esc_html( $fns ? implode( ', ', $fns ) : '-' ) . '</td>';
 					echo '<td><form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:0">';
 					echo '<input type="hidden" name="action" value="sssj_view_as" />';
 					echo '<input type="hidden" name="user_id" value="' . esc_attr( $du->ID ) . '" />';
@@ -390,17 +482,17 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->key_field(
 				'google_maps_api_key',
 				__( 'Google Maps API key', 'shuffles-social-services-jobs' ),
-				__( 'In the <a href="https://console.cloud.google.com/google/maps-apis/" target="_blank" rel="noopener">Google Cloud Console</a>, create or select a project and <strong>enable these three APIs</strong>:<ul><li><strong>Maps JavaScript API</strong> — draws the interactive map on the boards</li><li><strong>Places API</strong> — suburb/address autocomplete in the search and posting forms</li><li><strong>Geocoding API</strong> — turns a suburb or postcode into coordinates for radius search</li></ul>Then open <strong>APIs &amp; Services → Credentials → Create credentials → API key</strong>, restrict the key by <strong>HTTP referrer</strong> to your site, and paste it here.', 'shuffles-social-services-jobs' ),
-				__( 'Optional. A key adds Google address autocomplete + the Google map. It is NOT required for radius search — the plugin has its own geocoder (below) and Geo my WP is never used.', 'shuffles-social-services-jobs' )
+				__( 'In the <a href="https://console.cloud.google.com/google/maps-apis/" target="_blank" rel="noopener">Google Cloud Console</a>, create or select a project and <strong>enable these three APIs</strong>:<ul><li><strong>Maps JavaScript API</strong>, draws the interactive map on the boards</li><li><strong>Places API</strong>, suburb/address autocomplete in the search and posting forms</li><li><strong>Geocoding API</strong>, turns a suburb or postcode into coordinates for radius search</li></ul>Then open <strong>APIs &amp; Services → Credentials → Create credentials → API key</strong>, restrict the key by <strong>HTTP referrer</strong> to your site, and paste it here.', 'shuffles-social-services-jobs' ),
+				__( 'Optional. A key adds Google address autocomplete + the Google map. It is NOT required for radius search, the plugin has its own geocoder (below) and Geo my WP is never used.', 'shuffles-social-services-jobs' )
 			);
 			$this->select_field(
 				'geocoder_provider',
 				__( 'Location lookup (geocoder)', 'shuffles-social-services-jobs' ),
 				array(
-					'osm' => __( 'OpenStreetMap — keyless, free (recommended)', 'shuffles-social-services-jobs' ),
-					'off' => __( 'Off — rely on Google autocomplete coordinates only', 'shuffles-social-services-jobs' ),
+					'osm' => __( 'OpenStreetMap, keyless, free (recommended)', 'shuffles-social-services-jobs' ),
+					'off' => __( 'Off, rely on Google autocomplete coordinates only', 'shuffles-social-services-jobs' ),
 				),
-				__( 'How the plugin turns a typed suburb/postcode into coordinates for radius search when no Google autocomplete coordinates are present. <strong>OpenStreetMap</strong> needs no API key (a bundled list of Australian cities resolves instantly; the rest is looked up free via OpenStreetMap and cached). This is what makes the geo a self-contained custom build — no Geo my WP, no mandatory Google.', 'shuffles-social-services-jobs' ),
+				__( 'How the plugin turns a typed suburb/postcode into coordinates for radius search when no Google autocomplete coordinates are present. <strong>OpenStreetMap</strong> needs no API key (a bundled list of Australian cities resolves instantly; the rest is looked up free via OpenStreetMap and cached). This is what makes the geo a self-contained custom build, no Geo my WP, no mandatory Google.', 'shuffles-social-services-jobs' ),
 				'osm'
 			);
 			$this->number_field( 'default_radius_km', __( 'Default search radius (km)', 'shuffles-social-services-jobs' ), '', 1, 500 );
@@ -412,24 +504,24 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'rendering':
 			$rt = isset( $_GET['sssj_render_test'] ) ? sanitize_key( wp_unslash( $_GET['sssj_render_test'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			if ( 'ok' === $rt ) {
-				echo '<div class="notice notice-success inline"><p>' . esc_html__( 'Render service reachable — a test PDF was generated successfully. High-quality PDFs are ready to use.', 'shuffles-social-services-jobs' ) . '</p></div>';
+				echo '<div class="notice notice-success inline"><p>' . esc_html__( 'Render service reachable, a test PDF was generated successfully. High-quality PDFs are ready to use.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			} elseif ( 'fail' === $rt ) {
 				echo '<div class="notice notice-error inline"><p>' . esc_html__( 'Could not reach the render service, or it did not return a PDF. Check the URL is correct and reachable from this web server, then test again.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			} elseif ( 'noendpoint' === $rt ) {
 				echo '<div class="notice notice-warning inline"><p>' . esc_html__( 'Enter and save a render service URL first, then test.', 'shuffles-social-services-jobs' ) . '</p></div>';
 			}
 			echo '<h2 style="margin-top:0">' . esc_html__( 'Asset rendering (PDF quality)', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'The “Create an asset” résumé/flyer builder always works for free using the member’s browser to make a PDF (the “Download PDF” button). That is fine for most people. If you want <strong>print-quality, pixel-perfect PDFs</strong> — identical for everyone, regardless of their browser — you can connect your own HTML-to-PDF render service and the builder will offer a “Print-quality PDF” button as well.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'The “Create an asset” résumé/flyer builder always works for free using the member’s browser to make a PDF (the “Download PDF” button). That is fine for most people. If you want <strong>print-quality, pixel-perfect PDFs</strong>, identical for everyone, regardless of their browser, you can connect your own HTML-to-PDF render service and the builder will offer a “Print-quality PDF” button as well.', 'shuffles-social-services-jobs' ) ) . '</p>';
 			echo '<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #2563eb;border-radius:8px;padding:14px 18px;margin:0 0 16px;max-width:840px">';
 			echo '<h3 style="margin-top:0">' . esc_html__( 'How to set up Gotenberg (the recommended renderer)', 'shuffles-social-services-jobs' ) . '</h3>';
-			echo '<p class="description">' . esc_html__( 'Gotenberg is free, open-source, self-hosted software — there is no sign-up; you run it yourself on a server you control. It is not pre-installed here, and this managed host generally cannot run it on the same server, so use a small separate server you control (e.g. a low-cost cloud VPS with Docker).', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Gotenberg is free, open-source, self-hosted software, there is no sign-up; you run it yourself on a server you control. It is not pre-installed here, and this managed host generally cannot run it on the same server, so use a small separate server you control (e.g. a low-cost cloud VPS with Docker).', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<ol style="margin:6px 0 6px 18px">';
 			echo '<li>' . wp_kses_post( __( 'On a server you control with Docker installed, run: <code>docker run -d --restart unless-stopped -p 3000:3000 gotenberg/gotenberg:8</code>', 'shuffles-social-services-jobs' ) ) . '</li>';
-			echo '<li>' . wp_kses_post( __( 'Make sure port <code>3000</code> is reachable from THIS website’s web server (open the firewall — ideally restricted to this server’s IP only).', 'shuffles-social-services-jobs' ) ) . '</li>';
-			echo '<li>' . wp_kses_post( __( 'Set <strong>Render service URL</strong> below to <code>http://YOUR-SERVER-ADDRESS:3000</code> (base URL only — the plugin adds the rest).', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( 'Make sure port <code>3000</code> is reachable from THIS website’s web server (open the firewall, ideally restricted to this server’s IP only).', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( 'Set <strong>Render service URL</strong> below to <code>http://YOUR-SERVER-ADDRESS:3000</code> (base URL only, the plugin adds the rest).', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '<li>' . esc_html__( 'Set Render quality to “Server”, tick “self-hosted / private”, click Save Changes, then click “Test connection” below.', 'shuffles-social-services-jobs' ) . '</li>';
 			echo '</ol>';
-			echo '<p class="description">' . esc_html__( 'Privacy: members’ asset content is sent to this service to be rendered, so keep it on your own infrastructure — never a third-party service. No server yet? Leave Render quality on “Browser”; the free in-browser PDF works for everyone.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Privacy: members’ asset content is sent to this service to be rendered, so keep it on your own infrastructure, never a third-party service. No server yet? Leave Render quality on “Browser”; the free in-browser PDF works for everyone.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '</div>';
 			$open_form( 'rendering' );
 			echo '<table class="form-table" role="presentation">';
@@ -437,8 +529,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				'asset_render_mode',
 				__( 'Render quality', 'shuffles-social-services-jobs' ),
 				array(
-					'browser' => __( 'Browser — free, no setup (default)', 'shuffles-social-services-jobs' ),
-					'server'  => __( 'Server — print-quality PDF via your own render service', 'shuffles-social-services-jobs' ),
+					'browser' => __( 'Browser, free, no setup (default)', 'shuffles-social-services-jobs' ),
+					'server'  => __( 'Server, print-quality PDF via your own render service', 'shuffles-social-services-jobs' ),
 				),
 				__( '“Browser” uses the visitor’s own browser to make the PDF (always available, $0). “Server” adds a “Print-quality PDF” button that renders on your render service for identical, high-fidelity output. If “Server” is chosen but no URL is set, it quietly falls back to the browser path.', 'shuffles-social-services-jobs' ),
 				'browser'
@@ -455,14 +547,76 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			wp_nonce_field( 'sssj_asset_render_test' );
 			echo '<input type="hidden" name="action" value="sssj_asset_render_test" />';
 			echo '<button type="submit" class="button">' . esc_html__( 'Test connection', 'shuffles-social-services-jobs' ) . '</button>';
-			echo ' <span class="description">' . esc_html__( 'Save your settings first, then test — this generates a one-line test PDF through the service.', 'shuffles-social-services-jobs' ) . '</span>';
+			echo ' <span class="description">' . esc_html__( 'Save your settings first, then test, this generates a one-line test PDF through the service.', 'shuffles-social-services-jobs' ) . '</span>';
 			echo '</form>';
+			break;
+
+		case 'profilecard':
+			$pc_on   = class_exists( 'Shuffles_SSJ_Profile_Card' ) && Shuffles_SSJ_Profile_Card::enabled();
+			$pc_prov = ( defined( 'FLUENTCART' ) || class_exists( '\FluentCart\App\Models\Order' ) ) ? 'FluentCart' : ( function_exists( 'pmpro_getLevel' ) ? 'PMPro' : '' );
+			echo '<h2 style="margin-top:0">' . esc_html__( 'AI Profile Card', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'Lets a member turn their profile into a <strong>styled, shareable square image</strong> with the <code>[sssj_profile_card]</code> shortcode. Our image engine creates a decorative, <strong>text-free</strong> background for the chosen style; the member’s <strong>location and services (top)</strong> and name/tagline (bottom) are then drawn on top <strong>in their browser</strong>, so it runs on this managed host with no extra server software. Only the member’s own profile is ever used, never a participant’s or anyone else’s details.', 'shuffles-social-services-jobs' ) ) . '</p>';
+
+			echo '<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid ' . ( $pc_on ? '#0d9488' : '#b45309' ) . ';border-radius:8px;padding:14px 18px;margin:0 0 16px;max-width:840px">';
+			echo '<p style="margin:0"><strong>' . esc_html__( 'Status:', 'shuffles-social-services-jobs' ) . '</strong> ' . ( $pc_on
+				? esc_html__( 'On. Members can create cards.', 'shuffles-social-services-jobs' )
+				: esc_html__( 'Off. Add and save an image-engine key below, then tick “Enable”.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p style="margin:8px 0 0"><strong>' . esc_html__( 'Membership gating:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html(
+				$pc_prov
+					? sprintf( __( 'Detected %s. You can give paid members a higher monthly limit via the shuffles_ssj_card_limit filter.', 'shuffles-social-services-jobs' ), $pc_prov )
+					: __( 'No membership system detected, so the monthly limit below applies to everyone.', 'shuffles-social-services-jobs' )
+			) . '</p>';
+			echo '<p style="margin:8px 0 0">' . esc_html__( 'Heads up: each card calls a paid image service, so it bills per image. Keep the monthly limit sensible, or gate it to paying members.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '</div>';
+
+			// Result of a "Refresh available models" run.
+			$pc_models = isset( $_GET['sssj_models'] ) ? sanitize_key( wp_unslash( $_GET['sssj_models'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( 'ok' === $pc_models ) {
+				$pc_n = isset( $_GET['n'] ) ? (int) $_GET['n'] : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+				echo '<div class="notice notice-success inline"><p>' . esc_html( sprintf( _n( 'Loaded %d image model from your account into the dropdown below.', 'Loaded %d image models from your account into the dropdown below.', $pc_n, 'shuffles-social-services-jobs' ), $pc_n ) ) . '</p></div>';
+			} elseif ( 'fail' === $pc_models ) {
+				$pc_err = get_transient( 'sssj_card_models_err' );
+				delete_transient( 'sssj_card_models_err' );
+				echo '<div class="notice notice-error inline"><p>' . esc_html__( 'Could not load models:', 'shuffles-social-services-jobs' ) . ' ' . esc_html( $pc_err ? $pc_err : __( 'unknown error.', 'shuffles-social-services-jobs' ) ) . '</p></div>';
+			}
+
+			$open_form( 'profilecard' );
+			echo '<table class="form-table" role="presentation">';
+			$this->checkbox_field( 'profile_card_enabled', __( 'Enable the profile card generator', 'shuffles-social-services-jobs' ), __( 'When on (and a key is set), members see a working generator wherever you place [sssj_profile_card]. Off by default because it bills per image.', 'shuffles-social-services-jobs' ) );
+			$this->key_field(
+				'openai_api_key',
+				__( 'Image engine key (OpenAI)', 'shuffles-social-services-jobs' ),
+				__( 'Sign in at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener">platform.openai.com/api-keys</a>, click “Create new secret key”, copy it (it starts with <code>sk-</code>) and paste it here. You need billing set up on that account and access to the image model. The key is stored masked and is never shown again.', 'shuffles-social-services-jobs' ),
+				__( 'Generates the decorative, text-free background artwork for each card. Required, the generator stays off without it.', 'shuffles-social-services-jobs' )
+			);
+			$this->select_field( 'openai_image_model', __( 'Image model', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Profile_Card::model_choices(), __( 'Pick the image model to use. <strong>gpt-image-1</strong> is recommended (best quality). Use the <strong>Refresh available models</strong> button below to load the exact models your own account can access, then choose one and Save.', 'shuffles-social-services-jobs' ), 'gpt-image-1' );
+			$this->number_field( 'profile_card_limit', __( 'Cards per member, per month', 'shuffles-social-services-jobs' ), __( 'How many cards each member can create per calendar month (resets on the 1st). Use the shuffles_ssj_card_limit filter to raise it for paid tiers. Set to 999 for effectively unlimited.', 'shuffles-social-services-jobs' ), 0, 999 );
+			echo '</table>';
+			submit_button();
+			echo '</form>';
+
+			// Live "refresh models from this account" action (uses the saved key).
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" style="margin:2px 0 0">';
+			wp_nonce_field( 'sssj_card_fetch_models' );
+			echo '<input type="hidden" name="action" value="sssj_card_fetch_models" />';
+			echo '<button type="submit" class="button">' . esc_html__( 'Refresh available models', 'shuffles-social-services-jobs' ) . '</button>';
+			echo ' <span class="description">' . esc_html__( 'Save your key first, then click to load the image models your OpenAI account can use into the dropdown above.', 'shuffles-social-services-jobs' ) . '</span>';
+			echo '</form>';
+
+			echo '<p class="description" style="max-width:820px;margin-top:10px">' . wp_kses_post( __( 'Then place the <code>[sssj_profile_card]</code> shortcode on a members-only page (there is a one-click create button on the <strong>Pages</strong> tab). Members open it, pick a style, click <strong>Create my card</strong>, then download it or save it to their media library.', 'shuffles-social-services-jobs' ) ) . '</p>';
 			break;
 
 		case 'cald':
 			$open_form( 'cald' );
 			echo '<table class="form-table" role="presentation">';
-			$this->checkbox_field( 'cald_enabled', __( 'CALD & accessibility layer', 'shuffles-social-services-jobs' ), __( 'Master switch for voice search, multilingual interface, read-aloud and display modes. Browser-side — $0 to run. (UI lands with the first public board, plus a floating bar site-wide.)', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'cald_enabled', __( 'CALD & accessibility layer', 'shuffles-social-services-jobs' ), __( 'Master switch for voice search, multilingual interface, read-aloud and display modes. Browser-side, $0 to run. (UI lands with the first public board, plus a floating bar site-wide.)', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'cald_bar_open', __( 'Show the accessibility/language bar open by default', 'shuffles-social-services-jobs' ), __( 'When on, the toolbar (including the language picker) is expanded on every page instead of hidden behind the ♿ button. Visitors can still collapse it, and their choice is remembered.', 'shuffles-social-services-jobs' ) );
+			$this->key_field(
+				'deepl_api_key',
+				__( 'Whole-site translation key (DeepL)', 'shuffles-social-services-jobs' ),
+				__( 'Free: sign up at <a href="https://www.deepl.com/pro-api" target="_blank" rel="noopener">deepl.com/pro-api</a> (the free plan gives ~500,000 characters a month), then copy your <strong>Authentication Key for DeepL API</strong> here. Free keys end in <code>:fx</code>. Stored masked.', 'shuffles-social-services-jobs' ),
+				__( 'Turns the language picker into a real whole-site translator: when a visitor picks a language, the page is translated and remembered for them. Each phrase is translated once and cached, so cost stays low. Without a key, the picker only translates this plugin’s own labels. Note: DeepL does not support Punjabi, so that language stays in English for page content. If TranslatePress is installed, the picker hands over to it instead.', 'shuffles-social-services-jobs' )
+			);
 			$this->text_field( 'cald_languages', __( 'Offered languages (this site)', 'shuffles-social-services-jobs' ), __( 'Comma-separated language codes to show in the picker, e.g. en, ar, zh, vi. Leave blank to offer all built-ins (en, ar, zh, el, it, id, pa). English is always available. Built-in codes: ar=Arabic, zh=Chinese, el=Greek, it=Italian, id=Indonesian, pa=Punjabi.', 'shuffles-social-services-jobs' ) );
 			$this->textarea_field( 'cald_custom_langs', __( 'Add custom languages', 'shuffles-social-services-jobs' ), __( 'One per line: <code>code | Endonym | rtl</code> (the rtl flag is optional). Example: <code>vi | Tiếng Việt</code> or <code>fa | فارسی | rtl</code>. Added languages appear in the picker immediately (the switch, page language and right-to-left layout all work); supply their wording below.', 'shuffles-social-services-jobs' ), 4, "vi | Tiếng Việt\nfa | فارسی | rtl" );
 			$this->textarea_field( 'cald_lang_overrides', __( 'Translation overrides (JSON)', 'shuffles-social-services-jobs' ), __( 'Optional. Provide or override interface wording per language as JSON, e.g. <code>{ "vi": { "filter": "Lọc", "view_job": "Xem việc làm", "apply": "Ứng tuyển" } }</code>. Keys map to the on-screen labels; anything not supplied falls back to English. Built-in languages already include their core labels.', 'shuffles-social-services-jobs' ), 6, '{ "vi": { "filter": "Lọc", "apply": "Ứng tuyển" } }' );
@@ -474,7 +628,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'seo':
 			$open_form( 'seo' );
 			echo '<table class="form-table" role="presentation">';
-			$this->checkbox_field( 'seo_enabled', __( 'Strong SEO for jobs', 'shuffles-social-services-jobs' ), __( 'JobPosting structured data + indexable job/category pages. Participant needs always stay noindex. This is what makes your jobs eligible for Google for Jobs — free, no setup.', 'shuffles-social-services-jobs' ) );
+			$this->checkbox_field( 'seo_enabled', __( 'Strong SEO for jobs', 'shuffles-social-services-jobs' ), __( 'JobPosting structured data + indexable job/category pages. Participant needs always stay noindex. This is what makes your jobs eligible for Google for Jobs, free, no setup.', 'shuffles-social-services-jobs' ) );
 			$this->checkbox_field( 'syndication_feed_enabled', __( 'Publish a job feed for aggregators', 'shuffles-social-services-jobs' ), __( 'Exposes a standard job XML feed that aggregators like Jora and Adzuna can ingest, so your jobs reach a wider audience for free. Anonymous ads appear as “Private advertiser”; participant requests are never included.', 'shuffles-social-services-jobs' ) );
 			echo '</table>';
 			submit_button();
@@ -487,8 +641,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				echo '<h2 style="margin-top:0">' . esc_html__( 'Job syndication (free reach)', 'shuffles-social-services-jobs' ) . '</h2>';
 				echo '<p>' . esc_html__( 'Two free ways your jobs reach people beyond this site:', 'shuffles-social-services-jobs' ) . '</p>';
 				echo '<ol style="margin:6px 0 10px 18px">';
-				echo '<li>' . wp_kses_post( __( '<strong>Google for Jobs</strong> — automatic. Each public job page carries JobPosting structured data (keep “Strong SEO for jobs” on), so Google can show your roles in its jobs experience. Nothing else to do.', 'shuffles-social-services-jobs' ) ) . '</li>';
-				echo '<li>' . wp_kses_post( __( '<strong>Aggregator feed</strong> — give the feed URL below to a job aggregator and they will pull your jobs in.', 'shuffles-social-services-jobs' ) ) . '</li>';
+				echo '<li>' . wp_kses_post( __( '<strong>Google for Jobs</strong>, automatic. Each public job page carries JobPosting structured data (keep “Strong SEO for jobs” on), so Google can show your roles in its jobs experience. Nothing else to do.', 'shuffles-social-services-jobs' ) ) . '</li>';
+				echo '<li>' . wp_kses_post( __( '<strong>Aggregator feed</strong>, give the feed URL below to a job aggregator and they will pull your jobs in.', 'shuffles-social-services-jobs' ) ) . '</li>';
 				echo '</ol>';
 				echo '<p><strong>' . esc_html__( 'Your job feed URL:', 'shuffles-social-services-jobs' ) . '</strong><br>';
 				echo '<input type="text" class="large-text code" readonly onclick="this.select()" value="' . esc_attr( $feed ) . '" />';
@@ -503,15 +657,15 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #3897e0;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:900px">
 				<h2 style="margin-top:0"><?php esc_html_e( 'How monetisation works', 'shuffles-social-services-jobs' ); ?></h2>
-				<p><?php esc_html_e( 'The plugin is free and fully usable out of the box. Monetisation is entirely optional — nothing is gated until you tick “Enable monetisation gates” below. When it is on, there are two independent ways to earn:', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'The plugin is free and fully usable out of the box. Monetisation is entirely optional, nothing is gated until you tick “Enable monetisation gates” below. When it is on, there are two independent ways to earn:', 'shuffles-social-services-jobs' ); ?></p>
 				<ol>
-					<li><strong><?php esc_html_e( 'Advertiser (employer) subscription', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'organisations can post a set number of free listings (the “Free active listings” number). Beyond that, posting more — and getting featured/promoted placement — requires a paid advertiser subscription.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Provider (worker/contractor) application-fee subscription', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'responding to a participant request or an ABN task requires a paid provider subscription. This is checked on the server when they apply, so it can’t be bypassed in the browser.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Advertiser (employer) subscription', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'organisations can post a set number of free listings (the “Free active listings” number). Beyond that, posting more, and getting featured/promoted placement, requires a paid advertiser subscription.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Provider (worker/contractor) application-fee subscription', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'responding to a participant request or an ABN task requires a paid provider subscription. This is checked on the server when they apply, so it can’t be bypassed in the browser.', 'shuffles-social-services-jobs' ); ?></li>
 				</ol>
 				<p><?php echo wp_kses_post( __( 'Admins and the site’s resale-licence holder <strong>always bypass</strong> every gate, so your own testing is never blocked.', 'shuffles-social-services-jobs' ) ); ?></p>
 
 				<h3 style="margin-bottom:4px"><?php esc_html_e( 'Choosing your billing tool: PMPro or FluentCart', 'shuffles-social-services-jobs' ); ?></h3>
-				<p><?php esc_html_e( 'The plugin doesn’t handle payments itself — it reads “does this user hold an active subscription?” from whichever billing tool you already run. Pick one:', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'The plugin doesn’t handle payments itself, it reads “does this user hold an active subscription?” from whichever billing tool you already run. Pick one:', 'shuffles-social-services-jobs' ); ?></p>
 				<table class="widefat striped" style="max-width:860px;margin:6px 0 10px">
 					<thead><tr>
 						<th><?php esc_html_e( 'Option', 'shuffles-social-services-jobs' ); ?></th>
@@ -534,7 +688,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 						</tr>
 					</tbody>
 				</table>
-				<p class="description"><?php echo wp_kses_post( __( 'Run neither yet? Leave monetisation off — everything stays free. Run something else? You can wire any logic in via the <code>shuffles_ssj_has_advertiser_sub</code> and <code>shuffles_ssj_has_provider_sub</code> filters (return true/false for a user). Whichever you choose, the matching fields below are the ones that apply; the others are simply ignored.', 'shuffles-social-services-jobs' ) ); ?></p>
+				<p class="description"><?php echo wp_kses_post( __( 'Run neither yet? Leave monetisation off, everything stays free. Run something else? You can wire any logic in via the <code>shuffles_ssj_has_advertiser_sub</code> and <code>shuffles_ssj_has_provider_sub</code> filters (return true/false for a user). Whichever you choose, the matching fields below are the ones that apply; the others are simply ignored.', 'shuffles-social-services-jobs' ) ); ?></p>
 			</div>
 			<?php
 			$open_form( 'monetisation' );
@@ -549,17 +703,17 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 					'pmpro'      => __( 'Paid Memberships Pro (PMPro)', 'shuffles-social-services-jobs' ),
 					'fluentcart' => __( 'FluentCart', 'shuffles-social-services-jobs' ),
 				),
-				__( 'Which billing tool decides who holds a paid subscription. <strong>FluentCart</strong> needs the free <em>FluentCart</em> core plugin active (not just FluentCart Pro) — until then no FluentCart subscriber is detected. <strong>PMPro</strong> needs Paid Memberships Pro active.', 'shuffles-social-services-jobs' ),
+				__( 'Which billing tool decides who holds a paid subscription. <strong>FluentCart</strong> needs the free <em>FluentCart</em> core plugin active (not just FluentCart Pro), until then no FluentCart subscriber is detected. <strong>PMPro</strong> needs Paid Memberships Pro active.', 'shuffles-social-services-jobs' ),
 				'pmpro'
 			);
 
 			echo '<tr><th colspan="2" style="padding-top:8px"><strong>' . esc_html__( 'PMPro level IDs (used when provider = PMPro)', 'shuffles-social-services-jobs' ) . '</strong></th></tr>';
-			$this->number_field( 'advertiser_pmpro_level', __( 'Advertiser subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'Find it at Memberships → Membership Levels (the ID column). Unlocks unlimited posting + featured placement. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
-			$this->number_field( 'provider_pmpro_level', __( 'Provider subscription — PMPro level ID', 'shuffles-social-services-jobs' ), __( 'PMPro level required to respond to participant needs / ABN tasks. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
+			$this->number_field( 'advertiser_pmpro_level', __( 'Advertiser subscription, PMPro level ID', 'shuffles-social-services-jobs' ), __( 'Find it at Memberships → Membership Levels (the ID column). Unlocks unlimited posting + featured placement. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
+			$this->number_field( 'provider_pmpro_level', __( 'Provider subscription, PMPro level ID', 'shuffles-social-services-jobs' ), __( 'PMPro level required to respond to participant needs / ABN tasks. 0 = none.', 'shuffles-social-services-jobs' ), 0, 99999 );
 
 			echo '<tr><th colspan="2" style="padding-top:8px"><strong>' . esc_html__( 'FluentCart product IDs (used when provider = FluentCart)', 'shuffles-social-services-jobs' ) . '</strong></th></tr>';
-			$this->number_field( 'advertiser_fc_product', __( 'Advertiser subscription — FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'The subscription product in FluentCart → Products (open it; the ID is in the URL/post ID). An active subscription unlocks unlimited posting + featured placement. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
-			$this->number_field( 'provider_fc_product', __( 'Provider subscription — FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'FluentCart subscription product required to respond to participant needs / ABN tasks. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
+			$this->number_field( 'advertiser_fc_product', __( 'Advertiser subscription, FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'The subscription product in FluentCart → Products (open it; the ID is in the URL/post ID). An active subscription unlocks unlimited posting + featured placement. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
+			$this->number_field( 'provider_fc_product', __( 'Provider subscription, FluentCart product ID', 'shuffles-social-services-jobs' ), __( 'FluentCart subscription product required to respond to participant needs / ABN tasks. 0 = any active FluentCart subscription qualifies.', 'shuffles-social-services-jobs' ), 0, 99999999 );
 
 			echo '<tr><td colspan="2"><p class="description">' . wp_kses_post( __( 'Gates are OFF unless "Enable monetisation gates" is ticked. The site resale licence and admins always bypass. You can also plug in custom logic via the <code>shuffles_ssj_has_advertiser_sub</code>, <code>shuffles_ssj_has_provider_sub</code> and <code>shuffles_ssj_fluentcart_active</code> filters.', 'shuffles-social-services-jobs' ) ) . '</p></td></tr>';
 
@@ -570,7 +724,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				? '<span class="sssj-badge sssj-badge--verified">' . esc_html__( 'FluentAffiliate detected', 'shuffles-social-services-jobs' ) . '</span>'
 				: '<span class="sssj-badge">' . esc_html__( 'FluentAffiliate not detected', 'shuffles-social-services-jobs' ) . '</span>' );
 			echo '</th></tr>';
-			echo '<tr><td colspan="2"><p class="description" style="max-width:820px">' . wp_kses_post( __( 'Invite members — <strong>especially participants</strong> — to earn a little income by referring others. A friendly promo card appears in onboarding (and via <code>[sssj_affiliate]</code>) that links to your affiliate sign-up and clearly tells members they need a <strong>PayPal account</strong> to be paid, and that they can set it up <strong>later</strong> — it never blocks onboarding. With FluentAffiliate active we auto-link to the page running <code>[fluent_affiliate_portal]</code>; set a URL below only to override.', 'shuffles-social-services-jobs' ) ) . '</p></td></tr>';
+			echo '<tr><td colspan="2"><p class="description" style="max-width:820px">' . wp_kses_post( __( 'Invite members, <strong>especially participants</strong>, to earn a little income by referring others. A friendly promo card appears in onboarding (and via <code>[sssj_affiliate]</code>) that links to your affiliate sign-up and clearly tells members they need a <strong>PayPal account</strong> to be paid, and that they can set it up <strong>later</strong>, it never blocks onboarding. With FluentAffiliate active we auto-link to the page running <code>[fluent_affiliate_portal]</code>; set a URL below only to override.', 'shuffles-social-services-jobs' ) ) . '</p></td></tr>';
 			$this->checkbox_field( 'affiliate_enabled', __( 'Show the “earn by referring” promo', 'shuffles-social-services-jobs' ), __( 'Master switch for the referral promo card (onboarding + [sssj_affiliate]). Off = it never appears.', 'shuffles-social-services-jobs' ) );
 			$aff_url = (string) $this->settings()->get( 'affiliate_url', '' );
 			echo '<tr><th scope="row">' . esc_html__( 'Affiliate area URL (optional override)', 'shuffles-social-services-jobs' ) . '</th><td>';
@@ -627,10 +781,10 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #ea580c;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
 				<h2 style="margin-top:0"><?php esc_html_e( 'Ads (Advanced Ads)', 'shuffles-social-services-jobs' ); ?></h2>
-				<p><?php echo wp_kses_post( __( 'Show banner ads from the <strong>Advanced Ads</strong> plugin inside the marketplace. This is a light, optional integration — we never bundle or require Advanced Ads. If it is not active, everything here simply renders nothing.', 'shuffles-social-services-jobs' ) ); ?></p>
+				<p><?php echo wp_kses_post( __( 'Show banner ads from the <strong>Advanced Ads</strong> plugin inside the marketplace. This is a light, optional integration, we never bundle or require Advanced Ads. If it is not active, everything here simply renders nothing.', 'shuffles-social-services-jobs' ) ); ?></p>
 				<p>
 					<?php if ( $ads_active ) : ?>
-						<span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Advanced Ads detected — active', 'shuffles-social-services-jobs' ); ?></span>
+						<span class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Advanced Ads detected, active', 'shuffles-social-services-jobs' ); ?></span>
 					<?php else : ?>
 						<span class="sssj-badge"><?php esc_html_e( 'Advanced Ads not detected', 'shuffles-social-services-jobs' ); ?></span>
 						<span class="description"><?php esc_html_e( 'Install & activate the Advanced Ads plugin, then create your ads/placements.', 'shuffles-social-services-jobs' ); ?></span>
@@ -663,9 +817,9 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				<h2 style="margin-top:0"><?php esc_html_e( 'Reviews & Ratings', 'shuffles-social-services-jobs' ); ?></h2>
 				<p><?php esc_html_e( 'Members can leave a 1–5 star rating and a written review on a contractor (worker profile) or a provider (organisation). Three protections keep reviews trustworthy:', 'shuffles-social-services-jobs' ); ?></p>
 				<ol>
-					<li><strong><?php esc_html_e( 'Engagement-gated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'only a member who has actually engaged through the platform (a relay message exists between them — applying starts one) can review. You cannot review yourself.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Pre-moderated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'every review is held as Pending and only appears once you Approve it below.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Right of reply', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'the reviewed party may post one public response, and the approved average feeds the matching “trust” signal.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Engagement-gated', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'only a member who has actually engaged through the platform (a relay message exists between them, applying starts one) can review. You cannot review yourself.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Pre-moderated', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'every review is held as Pending and only appears once you Approve it below.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Right of reply', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'the reviewed party may post one public response, and the approved average feeds the matching “trust” signal.', 'shuffles-social-services-jobs' ); ?></li>
 				</ol>
 				<p class="description"><?php esc_html_e( 'Reviews show automatically on the contractor’s and provider’s profile pages. One (editable) review per member per subject.', 'shuffles-social-services-jobs' ); ?></p>
 			</div>
@@ -736,11 +890,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div class="sssj-help-card" style="background:#fff;border:1px solid #dcdcde;border-left:4px solid #d97706;border-radius:8px;padding:16px 20px;margin:8px 0 18px;max-width:920px">
 				<h2 style="margin-top:0"><?php esc_html_e( 'Testimonials', 'shuffles-social-services-jobs' ); ?></h2>
-				<p><?php esc_html_e( 'Testimonials are short, qualitative endorsements shown on a contractor’s or provider’s profile under “What people say”. They are separate from star Reviews — the profile owner curates which testimonials appear.', 'shuffles-social-services-jobs' ); ?></p>
+				<p><?php esc_html_e( 'Testimonials are short, qualitative endorsements shown on a contractor’s or provider’s profile under “What people say”. They are separate from star Reviews, the profile owner curates which testimonials appear.', 'shuffles-social-services-jobs' ); ?></p>
 				<ol>
-					<li><strong><?php esc_html_e( 'Two sources', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'a member can submit an endorsement about someone, and the owner can add a quote they received elsewhere.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Pre-moderated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'every testimonial is held as Pending and only becomes available once you Approve it below. Nothing shows publicly until then.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><strong><?php esc_html_e( 'Owner-curated', 'shuffles-social-services-jobs' ); ?></strong> — <?php esc_html_e( 'once approved, the owner chooses which ones to Feature on their profile. Only Approved + Featured testimonials are public.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Two sources', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'a member can submit an endorsement about someone, and the owner can add a quote they received elsewhere.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Pre-moderated', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'every testimonial is held as Pending and only becomes available once you Approve it below. Nothing shows publicly until then.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><strong><?php esc_html_e( 'Owner-curated', 'shuffles-social-services-jobs' ); ?></strong>, <?php esc_html_e( 'once approved, the owner chooses which ones to Feature on their profile. Only Approved + Featured testimonials are public.', 'shuffles-social-services-jobs' ); ?></li>
 				</ol>
 				<p class="description"><?php esc_html_e( 'The submitter chooses how they are credited, so a participant never has to reveal their identity. Testimonials only attach to worker/provider profiles, never to participant requests.', 'shuffles-social-services-jobs' ); ?></p>
 			</div>
@@ -775,7 +929,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 						$cred = trim( (string) $t->author_name . ( $t->author_role ? ', ' . $t->author_role : '' ) );
 						echo '<tr>';
 						echo '<td>' . esc_html( wp_trim_words( wp_strip_all_tags( (string) $t->body ), 40 ) ) . '</td>';
-						echo '<td>' . esc_html( '' !== $cred ? $cred : '—' ) . '</td>';
+						echo '<td>' . esc_html( '' !== $cred ? $cred : '-' ) . '</td>';
 						echo '<td>' . esc_html( $slbl ) . ': ' . ( $surl ? '<a href="' . esc_url( $surl ) . '" target="_blank" rel="noopener">' . esc_html( $stit ) . '</a>' : esc_html( $stit ) ) . '</td>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						echo '<td>' . esc_html( 'owner' === $t->source ? __( 'Owner-added', 'shuffles-social-services-jobs' ) : __( 'Submitted', 'shuffles-social-services-jobs' ) ) . '</td>';
 						echo '<td><span class="sssj-badge">' . esc_html( ucfirst( (string) $t->status ) ) . ( $t->featured ? ' · ' . esc_html__( 'Featured', 'shuffles-social-services-jobs' ) : '' ) . '</span></td>';
@@ -812,7 +966,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$bmsg = array(
 				'added'     => array( 'success', __( 'Register entry added.', 'shuffles-social-services-jobs' ) ),
 				'dupe'      => array( 'warning', __( 'That entry is already on the register.', 'shuffles-social-services-jobs' ) ),
-				'badabn'    => array( 'error', __( 'That ABN is not 11 digits — nothing was added.', 'shuffles-social-services-jobs' ) ),
+				'badabn'    => array( 'error', __( 'That ABN is not 11 digits, nothing was added.', 'shuffles-social-services-jobs' ) ),
 				'deleted'   => array( 'success', __( 'Register entry removed.', 'shuffles-social-services-jobs' ) ),
 				'imported'  => array( 'success', __( 'Import complete.', 'shuffles-social-services-jobs' ) ),
 				'importerr' => array( 'error', __( 'Import failed.', 'shuffles-social-services-jobs' ) ),
@@ -842,8 +996,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				<p><?php esc_html_e( 'Keep a private register of ABNs that have been banned or sanctioned (e.g. from the NDIS Commission’s published compliance and enforcement actions). Whenever an ABN is recorded on a job, worker or organisation, it is cross-matched against this register.', 'shuffles-social-services-jobs' ); ?></p>
 				<p><strong><?php esc_html_e( 'This is a safety aid, not an automatic gate:', 'shuffles-social-services-jobs' ); ?></strong></p>
 				<ul>
-					<li><?php esc_html_e( 'Flag only — a match never blocks posting, never auto-rejects, and never changes a listing.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Staff only — a match is shown to administrators and emailed to staff. It is never shown to the public or to the provider.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Flag only, a match never blocks posting, never auto-rejects, and never changes a listing.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Staff only, a match is shown to administrators and emailed to staff. It is never shown to the public or to the provider.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'A human reviews every flag. Register data can be stale or about a different entity that shares an ABN, so confirm before acting.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
 			</div>
@@ -891,7 +1045,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				wp_nonce_field( 'sssj_ban_import' );
 				echo '<input type="hidden" name="action" value="sssj_ban_import" />';
 				echo '<h3 style="margin-top:0">' . esc_html__( 'Import a CSV', 'shuffles-social-services-jobs' ) . '</h3>';
-				echo '<p class="description">' . esc_html__( 'Upload the NDIS Commission compliance / enforcement-actions CSV (from data.gov.au), or any CSV with an ABN column. Columns are auto-detected (ABN, provider name, action/outcome, dates). Re-importing is safe — duplicates are skipped.', 'shuffles-social-services-jobs' ) . '</p>';
+				echo '<p class="description">' . esc_html__( 'Upload the NDIS Commission compliance / enforcement-actions CSV (from data.gov.au), or any CSV with an ABN column. Columns are auto-detected (ABN, provider name, action/outcome, dates). Re-importing is safe, duplicates are skipped.', 'shuffles-social-services-jobs' ) . '</p>';
 				echo '<p><input type="file" name="csv" accept=".csv,.txt" required /></p>';
 				echo '<p><label>' . esc_html__( 'Source label', 'shuffles-social-services-jobs' ) . ' <input type="text" name="source" value="NDIS Commission" class="regular-text" /></label></p>';
 				echo '<button class="button button-primary">' . esc_html__( 'Import register', 'shuffles-social-services-jobs' ) . '</button>';
@@ -927,7 +1081,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 						echo '<td><code>' . esc_html( (string) $br->abn_norm ) . '</code></td>';
 						echo '<td>' . esc_html( (string) $br->provider_name ) . '</td>';
 						echo '<td>' . esc_html( (string) $br->action_type ) . '</td>';
-						echo '<td>' . esc_html( $br->effective_date ? (string) $br->effective_date : '—' ) . '</td>';
+						echo '<td>' . esc_html( $br->effective_date ? (string) $br->effective_date : '-' ) . '</td>';
 						echo '<td>' . esc_html( (string) $br->source ) . '</td>';
 						echo '<td><form method="post" action="' . $bap . '" style="display:inline-block">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 						wp_nonce_field( 'sssj_ban_delete' );
@@ -976,7 +1130,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 		case 'appearance':
 			echo '<h2>' . esc_html__( 'Style Studio', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Re-skin the public-facing plugin for this install. Adjust the controls and watch the live preview update — nothing is saved until you click Save Changes. Everything is scoped to the plugin (.sssj), so your wider theme is untouched.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Re-skin the public-facing plugin for this install. Adjust the controls and watch the live preview update, nothing is saved until you click Save Changes. Everything is scoped to the plugin (.sssj), so your wider theme is untouched.', 'shuffles-social-services-jobs' ) . '</p>';
 			$open_form( 'appearance' );
 			echo '<div class="sssj-studio"><div class="sssj-studio__controls">';
 			echo '<table class="form-table" role="presentation">';
@@ -1013,13 +1167,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<button type="button" class="button" data-sssj-width="380">' . esc_html__( 'Mobile', 'shuffles-social-services-jobs' ) . '</button>';
 			echo '</div>';
 			echo '<div class="sssj-studio__bar"><strong>' . esc_html__( 'Saved looks:', 'shuffles-social-services-jobs' ) . '</strong> ';
-			echo '<select data-sssj-themes><option value="">' . esc_html__( '— select —', 'shuffles-social-services-jobs' ) . '</option></select> ';
+			echo '<select data-sssj-themes><option value="">' . esc_html__( '- select -', 'shuffles-social-services-jobs' ) . '</option></select> ';
 			echo '<button type="button" class="button" data-sssj-theme-load>' . esc_html__( 'Load', 'shuffles-social-services-jobs' ) . '</button> ';
 			echo '<button type="button" class="button" data-sssj-theme-save>' . esc_html__( 'Save current…', 'shuffles-social-services-jobs' ) . '</button> ';
 			echo '<button type="button" class="button" data-sssj-theme-del>' . esc_html__( 'Delete', 'shuffles-social-services-jobs' ) . '</button>';
 			echo '</div>';
 			echo '<input type="hidden" id="sssj-appearance_themes" name="' . esc_attr( $this->field_name( 'appearance_themes' ) ) . '" value="' . esc_attr( (string) $this->settings->get( 'appearance_themes', '' ) ) . '" />';
-			echo '<p class="description">' . esc_html__( 'Live preview — presets and edits apply here instantly but are only stored when you Save Changes.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description">' . esc_html__( 'Live preview, presets and edits apply here instantly but are only stored when you Save Changes.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<div class="sssj-studio__stage"><div id="sssj-studio-preview" class="sssj">' . $this->studio_preview_html() . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput
 			echo '</div></div>'; // /preview-wrap /studio
 
@@ -1027,15 +1181,15 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '</form>';
 
 			// --- Custom CSS guide: tokens, classes, examples, rules ---
-			echo '<details open style="margin-top:18px;max-width:880px"><summary style="cursor:pointer;font-weight:600;font-size:14px">' . esc_html__( 'Custom CSS guide — tokens, classes & examples', 'shuffles-social-services-jobs' ) . '</summary>';
+			echo '<details open style="margin-top:18px;max-width:880px"><summary style="cursor:pointer;font-weight:600;font-size:14px">' . esc_html__( 'Custom CSS guide, tokens, classes & examples', 'shuffles-social-services-jobs' ) . '</summary>';
 			echo '<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:14px;margin-top:10px">';
-			echo '<p>' . wp_kses_post( __( 'Two ways to restyle, easiest first: <strong>1)</strong> change the colour / radius / font controls above — they set the design tokens for you. <strong>2)</strong> write Custom CSS for anything else. Everything the plugin renders sits inside a <code>.sssj</code> wrapper, so <strong>prefix every rule with <code>.sssj</code></strong> and the rest of your theme is never touched.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p>' . wp_kses_post( __( 'Two ways to restyle, easiest first: <strong>1)</strong> change the colour / radius / font controls above, they set the design tokens for you. <strong>2)</strong> write Custom CSS for anything else. Everything the plugin renders sits inside a <code>.sssj</code> wrapper, so <strong>prefix every rule with <code>.sssj</code></strong> and the rest of your theme is never touched.', 'shuffles-social-services-jobs' ) ) . '</p>';
 
 			echo '<h4 style="margin:14px 0 6px">' . esc_html__( 'Design tokens (the easy way)', 'shuffles-social-services-jobs' ) . '</h4>';
 			echo '<p class="description">' . esc_html__( 'Override these CSS variables on .sssj to recolour/resize everything at once:', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<table class="widefat striped" style="max-width:760px"><tbody>';
 			$tokens = array(
-				'--sssj-blue'      => __( 'Primary colour — buttons, links, focus ring', 'shuffles-social-services-jobs' ),
+				'--sssj-blue'      => __( 'Primary colour, buttons, links, focus ring', 'shuffles-social-services-jobs' ),
 				'--sssj-blue-deep' => __( 'Primary hover / active', 'shuffles-social-services-jobs' ),
 				'--sssj-ink'       => __( 'Headings / strong text', 'shuffles-social-services-jobs' ),
 				'--sssj-text'      => __( 'Body text', 'shuffles-social-services-jobs' ),
@@ -1055,13 +1209,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 			echo '<h4 style="margin:16px 0 6px">' . esc_html__( 'Main classes to target', 'shuffles-social-services-jobs' ) . '</h4>';
 			echo '<ul class="ul-disc" style="max-width:760px">';
-			echo '<li><code>.sssj</code> — ' . esc_html__( 'the wrapper around everything (always prefix your rules with it).', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li><code>.sssj-panel</code> — ' . esc_html__( 'a bordered content panel.', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li><code>.sssj-card</code> <code>--abn</code> <code>--tfn</code> <code>--need</code> <code>--featured</code> <code>--banned</code> — ' . esc_html__( 'result cards + their accents.', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li><code>.sssj-btn</code> <code>--primary</code> <code>--secondary</code> <code>--ghost</code> <code>--danger</code> <code>--sm</code> — ' . esc_html__( 'buttons.', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li><code>.sssj-badge</code> <code>--verified</code> <code>--featured</code> <code>--pending</code> <code>--rejected</code> <code>--expired</code> — ' . esc_html__( 'status chips.', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li><code>.sssj-input</code> <code>.sssj-select</code> <code>.sssj-textarea</code> <code>.sssj-field</code> <code>.sssj-row</code> <code>.sssj-stack</code> <code>.sssj-grid</code> — ' . esc_html__( 'form fields + layout helpers.', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li><code>.sssj-nav</code> <code>.sssj-nav__item</code> <code>--cta</code> — ' . esc_html__( 'the [sssj_menu] navigation bar.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj</code>, ' . esc_html__( 'the wrapper around everything (always prefix your rules with it).', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-panel</code>, ' . esc_html__( 'a bordered content panel.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-card</code> <code>--abn</code> <code>--tfn</code> <code>--need</code> <code>--featured</code> <code>--banned</code>, ' . esc_html__( 'result cards + their accents.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-btn</code> <code>--primary</code> <code>--secondary</code> <code>--ghost</code> <code>--danger</code> <code>--sm</code>, ' . esc_html__( 'buttons.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-badge</code> <code>--verified</code> <code>--featured</code> <code>--pending</code> <code>--rejected</code> <code>--expired</code>, ' . esc_html__( 'status chips.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-input</code> <code>.sssj-select</code> <code>.sssj-textarea</code> <code>.sssj-field</code> <code>.sssj-row</code> <code>.sssj-stack</code> <code>.sssj-grid</code>, ' . esc_html__( 'form fields + layout helpers.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li><code>.sssj-nav</code> <code>.sssj-nav__item</code> <code>--cta</code>, ' . esc_html__( 'the [sssj_menu] navigation bar.', 'shuffles-social-services-jobs' ) . '</li>';
 			echo '</ul>';
 
 			echo '<h4 style="margin:16px 0 6px">' . esc_html__( 'Copy-paste examples', 'shuffles-social-services-jobs' ) . '</h4>';
@@ -1080,20 +1234,20 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<h4 style="margin:16px 0 6px">' . esc_html__( 'Rules of thumb', 'shuffles-social-services-jobs' ) . '</h4>';
 			echo '<ul class="ul-disc" style="max-width:760px">';
 			echo '<li>' . wp_kses_post( __( 'Always prefix selectors with <code>.sssj</code>.', 'shuffles-social-services-jobs' ) ) . '</li>';
-			echo '<li>' . esc_html__( 'Prefer changing tokens over hard-coding values — one change recolours everything consistently.', 'shuffles-social-services-jobs' ) . '</li>';
-			echo '<li>' . wp_kses_post( __( 'Avoid <code>!important</code> — it can stop the High-contrast / No-colour accessibility modes from working.', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . esc_html__( 'Prefer changing tokens over hard-coding values, one change recolours everything consistently.', 'shuffles-social-services-jobs' ) . '</li>';
+			echo '<li>' . wp_kses_post( __( 'Avoid <code>!important</code>, it can stop the High-contrast / No-colour accessibility modes from working.', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '<li>' . esc_html__( 'Changes apply only to plugin surfaces; your theme and other pages are unaffected. HTML typed in the box is stripped for safety.', 'shuffles-social-services-jobs' ) . '</li>';
 			echo '</ul>';
 			echo '</div></details>';
 			break;
 
 		case 'boards':
-			echo '<h2>' . esc_html__( 'ABN vs TFN — segregated boards', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<h2>' . esc_html__( 'ABN vs TFN, segregated boards', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p>' . esc_html__( 'Every job carries an engagement basis. The boards are kept strictly apart in the query layer:', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<ul class="ul-disc">';
-			echo '<li>' . wp_kses_post( __( '<strong>TFN board</strong> — employee positions only; never shows ABN work.', 'shuffles-social-services-jobs' ) ) . '</li>';
-			echo '<li>' . wp_kses_post( __( '<strong>ABN board</strong> — contractor / sole-trader work only.', 'shuffles-social-services-jobs' ) ) . '</li>';
-			echo '<li>' . wp_kses_post( __( '<strong>Participant-needs board</strong> — always ABN; never shows TFN positions.', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( '<strong>TFN board</strong>, employee positions only; never shows ABN work.', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( '<strong>ABN board</strong>, contractor / sole-trader work only.', 'shuffles-social-services-jobs' ) ) . '</li>';
+			echo '<li>' . wp_kses_post( __( '<strong>Participant-needs board</strong>, always ABN; never shows TFN positions.', 'shuffles-social-services-jobs' ) ) . '</li>';
 			echo '</ul>';
 			echo '<p class="description">' . esc_html__( 'The board (and all other) pages are mapped in the Pages tab.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<p><a class="button" href="' . esc_url( $this->tab_url( 'pages' ) ) . '">' . esc_html__( 'Go to the Pages tab →', 'shuffles-social-services-jobs' ) . '</a></p>';
@@ -1142,30 +1296,40 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->page_picker_field( 'page_messages', __( 'Messages (inbox)', 'shuffles-social-services-jobs' ), '[sssj_messages]', __( 'Private relay inbox.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_create_asset', __( 'Create an asset (résumé builder)', 'shuffles-social-services-jobs' ), '[sssj_create_asset]', __( 'The résumé builder: turns a worker profile into a clean, readable, downloadable résumé (PDF, image, caption). Also a tab in the dashboard.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_tests', __( 'Plugin tests (admin/testing)', 'shuffles-social-services-jobs' ), '[sssj_tests]', __( 'The interactive Pass/Fail test worksheet (also at Settings → Testing).', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_why_us', __( 'Why us (benefits)', 'shuffles-social-services-jobs' ), '[sssj_why_us]', __( 'A point-form “why choose us” page — interconnectivity, community, purpose-built, privacy, fair pricing, etc.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_why_us', __( 'Why us (benefits)', 'shuffles-social-services-jobs' ), '[sssj_why_us]', __( 'A point-form “why choose us” page, interconnectivity, community, purpose-built, privacy, fair pricing, etc.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_demo_tour', __( 'Test by Hat Type (demo tour)', 'shuffles-social-services-jobs' ), '[sssj_demo_tour]', __( 'A public, animated showcase with one fictional persona per role (participant, worker, employer, provider, etc.), their backstory, and callouts of the features they use (language, support, alerts, maps). Great for a “See how it works” page.', 'shuffles-social-services-jobs' ) );
 			$wu_points = (string) $this->settings()->get( 'why_us_points', '' );
 			if ( '' === trim( $wu_points ) && class_exists( 'Shuffles_SSJ_Display' ) ) {
 				$wu_points = Shuffles_SSJ_Display::why_us_points_text();
 			}
-			echo '<tr><th scope="row">' . esc_html__( 'Why us — benefit points', 'shuffles-social-services-jobs' ) . '</th><td>';
+			echo '<tr><th scope="row">' . esc_html__( 'Why us, benefit points', 'shuffles-social-services-jobs' ) . '</th><td>';
 			echo '<textarea name="why_us_points" rows="12" class="large-text code" style="font-family:inherit">' . esc_textarea( $wu_points ) . '</textarea>';
-			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'These are the points shown by <code>[sssj_why_us]</code>. <strong>One benefit per line</strong>, in the form <code>icon | Heading | Blurb</code> — e.g. <code>🔗 | Everything connected | Jobs, workers and providers in one place.</code> The icon is optional (a two-part line <code>Heading | Blurb</code> uses a default tick). The box is pre-filled with the current points — edit, reorder, add or remove lines. Clear it completely to restore the built-in defaults.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<p class="description" style="max-width:780px">' . wp_kses_post( __( 'These are the points shown by <code>[sssj_why_us]</code>. <strong>One benefit per line</strong>, in the form <code>icon | Heading | Blurb</code>, e.g. <code>🔗 | Everything connected | Jobs, workers and providers in one place.</code> The icon is optional (a two-part line <code>Heading | Blurb</code> uses a default tick). The box is pre-filled with the current points, edit, reorder, add or remove lines. Clear it completely to restore the built-in defaults.', 'shuffles-social-services-jobs' ) ) . '</p>';
 			echo '</td></tr>';
 			$this->page_picker_field( 'page_join', __( 'Join (welcome / get started)', 'shuffles-social-services-jobs' ), '[sssj_join]', __( 'A friendly “Join” landing page that funnels people into onboarding, with sign-up / log-in.', 'shuffles-social-services-jobs' ) );
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Help & content', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
-			$this->page_picker_field( 'page_workflows', __( 'How it works (step-by-step)', 'shuffles-social-services-jobs' ), '[sssj_workflows]', __( 'Plain-English explainer workflows for end users — set up, advertise, apply, quote, manage applicants, request support, store a résumé, join an org, alerts, volunteer, stay safe. Also at Settings → How-to Workflows; the “Guides” advice content lives at Settings → Guides ([sssj_guides]).', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_policies', __( 'Policies (safety & privacy)', 'shuffles-social-services-jobs' ), '[sssj_policies]', __( 'Plain-English summaries of all platform policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion, Advertising. Also at Settings → Policies. Link it in your footer.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_workflows', __( 'How it works (step-by-step)', 'shuffles-social-services-jobs' ), '[sssj_workflows]', __( 'Plain-English explainer workflows for end users, set up, advertise, apply, quote, manage applicants, request support, store a résumé, join an org, alerts, volunteer, stay safe. Also at Settings → How-to Workflows; the “Guides” advice content lives at Settings → Guides ([sssj_guides]).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_policies', __( 'Policies (safety & privacy)', 'shuffles-social-services-jobs' ), '[sssj_policies]', __( 'Plain-English summaries of all platform policies, Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms, Worker Screening, Data Retention, Cookies, Inclusion, Advertising. Also at Settings → Policies. Link it in your footer.', 'shuffles-social-services-jobs' ) );
 			$this->page_picker_field( 'page_marketing', __( 'Marketing master', 'shuffles-social-services-jobs' ), '[sssj_marketing]', __( 'The living marketing + product master (business logic, functional spec, audience analysis) as a readable page. Often partner-facing or internal. Also at Settings → Marketing.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_promote', __( 'Promote the platform (self-promo studio)', 'shuffles-social-services-jobs' ), '[sssj_promo]', __( 'An admin/marketer-only studio that turns real, privacy-safe platform highlights (open jobs, available + verified workers, providers, people placed, new this week, states covered — shown only once they are big enough to impress) and your brand messages into a square social graphic + a ready-to-paste caption, one at a time. Save the image, copy the caption, post it yourself. Never uses participant data. Keep this page private/internal (members of the public should not see it).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_promote', __( 'Promote the platform (self-promo studio)', 'shuffles-social-services-jobs' ), '[sssj_promo]', __( 'An admin/marketer-only studio that turns real, privacy-safe platform highlights (open jobs, available + verified workers, providers, people placed, new this week, states covered, shown only once they are big enough to impress) and your brand messages into a square social graphic + a ready-to-paste caption, one at a time. Save the image, copy the caption, post it yourself. Never uses participant data. Keep this page private/internal (members of the public should not see it).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_profile_card', __( 'My profile card (AI generator)', 'shuffles-social-services-jobs' ), '[sssj_profile_card]', __( 'A members-only tool that turns a member’s own profile into a styled, shareable square image: pick a style, our image engine makes the artwork, and the member’s location, services and name are drawn on top in their browser. Save or download it. Switch it on and add the key under Settings → AI Profile Card first.', 'shuffles-social-services-jobs' ) );
 
 			echo '</table>';
+
+			echo '<h3 style="margin:22px 0 4px">' . esc_html__( 'Login & create-account pages (optional)', 'shuffles-social-services-jobs' ) . '</h3>';
+			echo '<p class="description" style="max-width:820px">' . wp_kses_post( __( 'Use your own <strong>Login</strong> and <strong>Create-account</strong> pages instead of the default WordPress screens. When set, every “Log in” and “Create account” link across the marketplace points to these pages. Leave a field blank to use the standard WordPress login/registration. Administrators always keep access to <code>wp-admin</code> / <code>wp-login.php</code>. The quickest option is the built-in, fully themed forms below (<code>[sssj_login]</code> / <code>[sssj_register]</code>): click <strong>Create page</strong> and it is built and selected for you. You can also point these at any other page (for example a Fluent Forms login/registration page) by selecting it in the dropdown.', 'shuffles-social-services-jobs' ) ) . '</p>';
+			echo '<table class="form-table" role="presentation">';
+			$this->page_picker_field( 'page_login', __( 'Login page', 'shuffles-social-services-jobs' ), '[sssj_login]', __( 'A branded login form that signs members in to their normal WordPress account. Members are sent here to log in and returned to where they were. Or select your own page (e.g. a Fluent Forms login page).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_register', __( 'Create-account page', 'shuffles-social-services-jobs' ), '[sssj_register]', __( 'A branded sign-up form that creates a normal WordPress account (name, email, password) and sends the new member straight into onboarding. Or select your own page (e.g. a Fluent Forms registration page). The “Create account” links appear whenever this page is set, even if WordPress open registration is off.', 'shuffles-social-services-jobs' ) );
+			echo '</table>';
+
 			submit_button();
 			echo '</form>';
 
 			// --- Header menu (Appearance → Menus) ------------------------------------------------
 			echo '<hr /><h3 style="margin-top:18px">' . esc_html__( 'Header menu (Appearance → Menus)', 'shuffles-social-services-jobs' ) . '</h3>';
-			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Create a real WordPress menu — “Jobs & Engagements” — that mirrors the plugin navigation, so it appears under Appearance → Menus and can be placed in your theme header. The plugin keeps it maintained: once created it re-syncs on each update, adding/removing items as features change (it only touches items it created — anything you add by hand is left alone). Note: a WordPress menu is the same for everyone, so it carries the public items (Jobs, Find a worker, Organisations, Participant requests, Post a job, My dashboard, Log in, Register); the login-aware, capability-gated version (with admin Settings) stays available via the [sssj_menu] shortcode.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description" style="max-width:780px">' . esc_html__( 'Create a real WordPress menu, “Jobs & Engagements”, that mirrors the plugin navigation, so it appears under Appearance → Menus and can be placed in your theme header. The plugin keeps it maintained: once created it re-syncs on each update, adding/removing items as features change (it only touches items it created, anything you add by hand is left alone). Note: a WordPress menu is the same for everyone, so it carries the public items (Jobs, Find a worker, Organisations, Participant requests, Post a job, My dashboard, Log in, Register); the login-aware, capability-gated version (with admin Settings) stays available via the [sssj_menu] shortcode.', 'shuffles-social-services-jobs' ) . '</p>';
 
 			if ( ! empty( $_GET['sssj_nav'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 				$nav_s = sanitize_text_field( wp_unslash( $_GET['sssj_nav'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -1188,7 +1352,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				echo '<input type="hidden" name="action" value="sssj_sync_nav" />';
 				wp_nonce_field( 'sssj_sync_nav' );
 				if ( $regs ) {
-					echo '<p><label>' . esc_html__( 'Also assign to theme location:', 'shuffles-social-services-jobs' ) . ' <select name="assign_location"><option value="">' . esc_html__( '— don’t change —', 'shuffles-social-services-jobs' ) . '</option>';
+					echo '<p><label>' . esc_html__( 'Also assign to theme location:', 'shuffles-social-services-jobs' ) . ' <select name="assign_location"><option value="">' . esc_html__( '- don’t change -', 'shuffles-social-services-jobs' ) . '</option>';
 					foreach ( $regs as $slug => $desc ) {
 						echo '<option value="' . esc_attr( $slug ) . '" ' . selected( $cur_loc, $slug, false ) . '>' . esc_html( $desc ) . '</option>';
 					}
@@ -1202,7 +1366,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 		case 'logic':
 			echo '<h2>' . esc_html__( 'Business Logic', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p class="description">' . esc_html__( 'How this plugin decides things — the rules behind gating, visibility, verification, segregation, privacy and the automated checks. Written in plain English.', 'shuffles-social-services-jobs' );
+			echo '<p class="description">' . esc_html__( 'How this plugin decides things, the rules behind gating, visibility, verification, segregation, privacy and the automated checks. Written in plain English.', 'shuffles-social-services-jobs' );
 			if ( class_exists( 'Shuffles_SSJ_Business_Rules' ) ) {
 				echo ' ' . esc_html( sprintf( __( 'Last updated: %s.', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Business_Rules::last_updated() ) );
 			}
@@ -1223,7 +1387,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				}
 				$inv = Shuffles_SSJ_Business_Rules::invariants();
 				if ( $inv ) {
-					echo '<h3 style="margin:22px 0 4px">' . esc_html__( 'Key invariants — the “never” rules', 'shuffles-social-services-jobs' ) . '</h3>';
+					echo '<h3 style="margin:22px 0 4px">' . esc_html__( 'Key invariants, the “never” rules', 'shuffles-social-services-jobs' ) . '</h3>';
 					echo '<ol style="margin-left:18px">';
 					foreach ( $inv as $rule ) {
 						echo '<li>' . esc_html( $rule ) . '</li>';
@@ -1238,18 +1402,18 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<h2>' . esc_html__( 'Provider Import (beta)', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p class="description">' . wp_kses_post( sprintf(
 				/* translators: 1: active providers dataset URL, 2: compliance actions dataset URL */
-				__( 'Proof of concept — <strong>preview only</strong>. This tool reads the NDIS Commission’s official bulk datasets and shows what it found; <strong>it does not write anything</strong> (no organisations are created, no data is changed). Get the <strong>Active providers</strong> CSV from the <a href="%1$s" target="_blank" rel="noopener">NDIS provider datasets</a>, and the <strong>Compliance actions</strong> CSV from <a href="%2$s" target="_blank" rel="noopener">data.gov.au</a>. Columns are auto-detected so you can confirm the mapping before any future import is enabled.', 'shuffles-social-services-jobs' ),
+				__( 'Proof of concept, <strong>preview only</strong>. This tool reads the NDIS Commission’s official bulk datasets and shows what it found; <strong>it does not write anything</strong> (no organisations are created, no data is changed). Get the <strong>Active providers</strong> CSV from the <a href="%1$s" target="_blank" rel="noopener">NDIS provider datasets</a>, and the <strong>Compliance actions</strong> CSV from <a href="%2$s" target="_blank" rel="noopener">data.gov.au</a>. Columns are auto-detected so you can confirm the mapping before any future import is enabled.', 'shuffles-social-services-jobs' ),
 				esc_url( 'https://dataresearch.ndis.gov.au/datasets/provider-datasets' ),
 				esc_url( 'https://www.data.gov.au/' )
 			) ) . '</p>';
-			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'Import is disabled in this proof of concept — uploads are previewed only. Nothing is saved.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			echo '<div class="notice notice-info inline"><p>' . esc_html__( 'Import is disabled in this proof of concept, uploads are previewed only. Nothing is saved.', 'shuffles-social-services-jobs' ) . '</p></div>';
 
 			$rep = class_exists( 'Shuffles_SSJ_Provider_Import' ) ? Shuffles_SSJ_Provider_Import::pull_report() : null;
 			if ( is_array( $rep ) ) {
 				if ( '' !== $rep['error'] ) {
 					echo '<div class="notice notice-error inline"><p>' . esc_html( $rep['error'] ) . '</p></div>';
 				} else {
-					$mode = $rep['dry_run'] ? esc_html__( 'Preview (dry run — nothing written)', 'shuffles-social-services-jobs' ) : esc_html__( 'Imported', 'shuffles-social-services-jobs' );
+					$mode = $rep['dry_run'] ? esc_html__( 'Preview (dry run, nothing written)', 'shuffles-social-services-jobs' ) : esc_html__( 'Imported', 'shuffles-social-services-jobs' );
 					echo '<div class="notice notice-success inline"><p><strong>' . $mode . '.</strong> ';
 					echo esc_html( sprintf( __( '%1$s data rows read%2$s.', 'shuffles-social-services-jobs' ), number_format_i18n( $rep['total'] ), $rep['truncated'] ? '+' : '' ) );
 					if ( ! $rep['dry_run'] ) {
@@ -1265,7 +1429,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 					echo '<h3>' . esc_html__( 'Detected columns', 'shuffles-social-services-jobs' ) . '</h3><p class="description">';
 					$pairs = array();
 					foreach ( $rep['mapping'] as $field => $idx ) {
-						$col = ( null !== $idx && isset( $rep['headers'][ $idx ] ) ) ? $rep['headers'][ $idx ] : '—';
+						$col = ( null !== $idx && isset( $rep['headers'][ $idx ] ) ) ? $rep['headers'][ $idx ] : '-';
 						$pairs[] = $field . ' → ' . $col;
 					}
 					echo esc_html( implode( '  ·  ', $pairs ) ) . '</p>';
@@ -1323,7 +1487,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				. '</tr></thead><tbody>';
 			foreach ( $rows as $r ) {
 				$sl   = isset( $state_lbl[ $r['state'] ] ) ? $state_lbl[ $r['state'] ] : $state_lbl['never'];
-				$last = $r['last'] ? date_i18n( $fmt, $r['last'] + ( (int) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) ) : '—';
+				$last = $r['last'] ? date_i18n( $fmt, $r['last'] + ( (int) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) ) : '-';
 				$next = $r['next'] ? date_i18n( $fmt, $r['next'] + ( (int) get_option( 'gmt_offset' ) * HOUR_IN_SECONDS ) ) : esc_html__( 'Not scheduled', 'shuffles-social-services-jobs' );
 				$run  = wp_nonce_url( admin_url( 'admin-post.php?action=sssj_cron_run&hook=' . rawurlencode( $r['hook'] ) ), 'sssj_cron_run_' . $r['hook'] );
 				echo '<tr>';
@@ -1346,7 +1510,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<h2>' . esc_html__( 'Compliance & credentials', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p>' . sprintf(
 				/* translators: %s: current compliance profile name */
-				esc_html__( 'Current default profile: %s. Workers upload their checks (WWCC, NDIS Worker Screening, police check, certifications) via the [sssj_credentials] shortcode; an administrator reviews the evidence and approves or rejects. The ✓ Verified badge is set ONLY by admin approval — never from user input. Evidence files are stored privately and served only to the owner and admins.', 'shuffles-social-services-jobs' ),
+				esc_html__( 'Current default profile: %s. Workers upload their checks (WWCC, NDIS Worker Screening, police check, certifications) via the [sssj_credentials] shortcode; an administrator reviews the evidence and approves or rejects. The ✓ Verified badge is set ONLY by admin approval, never from user input. Evidence files are stored privately and served only to the owner and admins.', 'shuffles-social-services-jobs' ),
 				'<strong>' . esc_html( (string) $this->settings()->get( 'compliance_profile', '' ) ) . '</strong>'
 			) . '</p>';
 			$pend_c = class_exists( 'Shuffles_SSJ_Credentials' ) ? Shuffles_SSJ_Credentials::count_by_status( 'pending' ) : 0;
@@ -1358,12 +1522,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			$this->key_field(
 				'abr_guid',
 				__( 'ABR Web Services GUID (ABN verification)', 'shuffles-social-services-jobs' ),
-				__( 'Register free for an authentication GUID at the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank" rel="noopener">ABR Web Services</a> site (you receive the GUID by email). Paste it here. When set, any ABN entered on a job, worker or organisation is <strong>checked against the Australian Business Register</strong> on save — the entity name + ABN status are stored and shown as an “ABR Active · &lt;Name&gt;” badge. Leave blank to keep the offline checksum validation only.', 'shuffles-social-services-jobs' )
+				__( 'Register free for an authentication GUID at the <a href="https://abr.business.gov.au/Tools/WebServices" target="_blank" rel="noopener">ABR Web Services</a> site (you receive the GUID by email). Paste it here. When set, any ABN entered on a job, worker or organisation is <strong>checked against the Australian Business Register</strong> on save, the entity name + ABN status are stored and shown as an “ABR Active · &lt;Name&gt;” badge. Leave blank to keep the offline checksum validation only.', 'shuffles-social-services-jobs' )
 			);
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'NDIS provider register auto-check', 'shuffles-social-services-jobs' ) . '</h3>'
-				. '<p class="description">' . esc_html__( 'When an organisation enters its NDIS Registration No (the number after ?id= in its provider-register URL), the plugin reads that public listing and stores the Registration status, the approved registration groups and the “in force until” date — shown as a table on the organisation’s profile. A monthly background check re-reads each listing and emails you if anything changes (status, groups, or the expiry date), so you can re-verify. Nothing is ever emailed to the provider. This reads the NDIS Commission’s own public register; keep it on unless you prefer to verify entirely by hand.', 'shuffles-social-services-jobs' ) . '</p></td></tr>';
+				. '<p class="description">' . esc_html__( 'When an organisation enters its NDIS Registration No (the number after ?id= in its provider-register URL), the plugin reads that public listing and stores the Registration status, the approved registration groups and the “in force until” date, shown as a table on the organisation’s profile. A monthly background check re-reads each listing and emails you if anything changes (status, groups, or the expiry date), so you can re-verify. Nothing is ever emailed to the provider. This reads the NDIS Commission’s own public register; keep it on unless you prefer to verify entirely by hand.', 'shuffles-social-services-jobs' ) . '</p></td></tr>';
 			$this->checkbox_field( 'ndis_scan_enabled', __( 'Monthly NDIS register check', 'shuffles-social-services-jobs' ), __( 'Read each registered organisation’s NDIS Commission listing on save and once a month, and alert on any change.', 'shuffles-social-services-jobs' ) );
-			$this->text_field( 'ndis_alert_email', __( 'Change-alert email', 'shuffles-social-services-jobs' ), __( 'Where to send “NDIS registration changed” alerts. Leave blank to use the site admin email. Alerts go to staff only — never to the provider.', 'shuffles-social-services-jobs' ), 'email' );
+			$this->text_field( 'ndis_alert_email', __( 'Change-alert email', 'shuffles-social-services-jobs' ), __( 'Where to send “NDIS registration changed” alerts. Leave blank to use the site admin email. Alerts go to staff only, never to the provider.', 'shuffles-social-services-jobs' ), 'email' );
 			echo '</table>';
 			submit_button();
 			echo '</form>';
@@ -1372,7 +1536,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 		case 'funding':
 			$count = (int) wp_count_terms( array( 'taxonomy' => 'sssjt_funding_source', 'hide_empty' => false ) );
 			echo '<h2>' . esc_html__( 'Funding sources', 'shuffles-social-services-jobs' ) . '</h2>';
-			echo '<p>' . esc_html__( 'Participants attach one, many, or no funding source. Funding is a soft match signal — never a hard filter.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p>' . esc_html__( 'Participants attach one, many, or no funding source. Funding is a soft match signal, never a hard filter.', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<p>' . sprintf( esc_html__( '%d funding sources seeded.', 'shuffles-social-services-jobs' ), $count ) . ' <a class="button button-small" href="' . esc_url( admin_url( 'edit-tags.php?taxonomy=sssjt_funding_source&post_type=sssj_need' ) ) . '">' . esc_html__( 'Manage', 'shuffles-social-services-jobs' ) . '</a></p>';
 			break;
 
@@ -1389,7 +1553,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				$badge = $row['present']
 					? '<span class="sssj-badge sssj-badge--ok">' . esc_html__( 'Detected', 'shuffles-social-services-jobs' ) . '</span>'
 					: '<span class="sssj-badge sssj-badge--off">' . esc_html__( 'Not detected', 'shuffles-social-services-jobs' ) . '</span>';
-				echo '<tr><td><strong>' . esc_html( $row['label'] ) . '</strong></td><td>' . $badge . '</td><td>' . esc_html( $row['present'] ? '—' : $row['fallback'] ) . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+				echo '<tr><td><strong>' . esc_html( $row['label'] ) . '</strong></td><td>' . $badge . '</td><td>' . esc_html( $row['present'] ? '-' : $row['fallback'] ) . '</td></tr>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			}
 			echo '</tbody></table>';
 			break;
@@ -1400,8 +1564,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			echo '<table class="widefat striped"><tbody>';
 			$rows = array(
 				__( 'Plugin version', 'shuffles-social-services-jobs' )  => SHUFFLES_SSJ_VERSION,
-				__( 'DB schema version', 'shuffles-social-services-jobs' ) => (string) get_option( 'shuffles_ssj_db_version', '—' ),
-				__( 'Installed at', 'shuffles-social-services-jobs' )     => (string) get_option( 'shuffles_ssj_installed_at', '—' ),
+				__( 'DB schema version', 'shuffles-social-services-jobs' ) => (string) get_option( 'shuffles_ssj_db_version', '-' ),
+				__( 'Installed at', 'shuffles-social-services-jobs' )     => (string) get_option( 'shuffles_ssj_installed_at', '-' ),
 				__( 'WordPress', 'shuffles-social-services-jobs' )        => get_bloginfo( 'version' ),
 				__( 'PHP', 'shuffles-social-services-jobs' )              => PHP_VERSION,
 			);
@@ -1425,6 +1589,97 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
+				<h3>v1.10.15 · 2026-06-09 · Core objective: privacy, dignity and no “post-piracy”</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Added an explicit core objective across the platform and its marketing: listings, requests and profiles are designed to live and be acted on inside the platform, not copied out onto public social media. This maintains privacy, increases dignity, and reduces the well-meaning copying or resharing of posts by the public that can re-expose people and become an unhealthy distraction.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'It appears on the home-page hero “Safety, built in” strip and in the Business Logic tab (Participant privacy), and is mirrored in the platform’s objectives and marketing documents.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.14 · 2026-06-09 · Whole-site translation (DeepL) + tour role filter</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Whole-site translation: the language picker can now translate the entire page (theme, posts, everything visible), not just this plugin’s own labels. Add a free DeepL key at Settings → CALD & Access → “Whole-site translation key (DeepL)” to switch it on. Each visitor’s choice is remembered as they browse, and every phrase is translated once and cached so cost stays low.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Translation stays off until a key is set (no change without it). DeepL does not support Punjabi, so that language still translates the plugin’s labels but leaves page content in English. If TranslatePress is ever installed, the picker hands over to it automatically.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Demo tour, Phase 1: a “Which are you?” filter (Everyone / I need support / I’m looking for work / I offer work or services) shows only the matching personas, and each persona now has a role-appropriate button (Request support, Create my profile, Post a job, List our organisation) instead of a generic one.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.13 · 2026-06-09 · Surface the tour: header menu + hero button</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'A “Take a tour” item now appears in the navigation (both the [sssj_menu] shortcode and the synced “Jobs & Engagements” Appearance menu) once a tour page exists.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The [sssj_hero] banner automatically shows a “Take a tour” button (toggle: Settings → General → “Show a Take a tour button in the hero”), so it is front-and-centre on your main page. No need to edit your hero shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.12 · 2026-06-09 · Language bar open by default + auto-created tour page</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The accessibility/language bar now shows open by default on every page (the language picker is visible without first clicking the ♿ button). Visitors can still collapse it, and a new toggle in Settings → CALD & Access lets you turn the open-by-default behaviour off.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “Take a tour” page ([sssj_demo_tour]) is now created automatically (once) and linked under Settings → Pages, so it is ready to view without setting it up. If you delete it, it will not be recreated.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.11 · 2026-06-09 · Testing worksheet: tester sign-in + per-group comments + feedback</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The testing worksheet now records the tester’s name and email, has a large comment box under each group, and a “Send my feedback” button. Submissions (their Pass/Fail marks, summary and comments) are saved and emailed to the site admin; the latest ones are listed under Settings → Testing.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Added a “Where to test” panel with one-click links to each area (boards, dashboard, onboarding, profile, demo tour), so testers can jump straight to what they are checking.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testers can do all this from their own login: a “Testing” tab now appears in the dashboard for administrators and for any member you flag as a “Platform tester” on their user profile.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.10 · 2026-06-09 · Australian stock photos (Unsplash)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Add a free Unsplash Access Key in Settings → General, then Settings → Demo Users → “Load Australian demo photos” pulls a royalty-free, Australian-tuned photo for each demo-tour persona and each demo post, downloaded once into your Media Library and reused (no API calls on public pages). The photographer is credited automatically, as Unsplash requires.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “Test by Hat Type” demo tour now shows a photo banner per persona (with a subtle brand tint so the text stays readable), falling back to the coloured banner when no photo is loaded.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.9 · 2026-06-09 · “Test by Hat Type” demo showcase</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New public showcase: [sssj_demo_tour]. A “take it for a test drive” page with one fictional persona per role (Aria the participant, Tom the nominee, Priya the job-seeker, Jordan the contractor, Riverview the employer, Coastal the provider, AdaptWell the supplier). Each has a short backstory, what they offer or need, and animated, scroll-in feature callouts (language & accessibility, support, email alerts, maps, privacy, messaging and more). All content is fictional and safe to show publicly.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Place it with one click from Settings → Pages → “Test by Hat Type (demo tour)”, and it is listed on the Shortcodes tab.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Process: from this release, every deploy is preceded by a PHP syntax check (dist/lint.ps1) so parse errors never reach the site.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.8 · 2026-06-09 · Dashboard: Alerts hub, roles pop-up, polish</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The Member dashboard reveals tabs by the roles (hats) the member holds, and now has an “Edit my roles” button at the top that opens a tidy pop-up (modal) to add, change or unselect hats. Saving updates the dashboard tabs to match.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Alerts hub (the dashboard “Alerts” tab, also available as [sssj_alerts]): one place for each member to manage every alert, new jobs that match their profile, new candidates for each job they advertise, and their saved-search alerts. The alert cron respects these choices.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Visual polish: a clearer dashboard header, tidier alert rows, and a reusable modal style.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.7 · 2026-06-09 · Demo users “Run now” + choosable tab order</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Settings → Demo Users now has a “Run now” button that creates (or updates) the demo accounts and sample listings directly, no command line needed. There is also a “Remove demo users” button that cleans them all out before going to production. Run now is safe to click repeatedly; it only creates what is missing.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Settings → General → “Settings tab order”: choose how the tabs along the top of the Settings page are ordered, grouped by topic (default), by their T-number, or alphabetically.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.6 · 2026-06-09 · Profile Card: tidy empty state + custom styles</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Fixed the AI Profile Card layout before a card is generated: the “your preview will appear here” message now sits neatly centred inside the preview area instead of being squashed into a sliver beside it.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Custom (describe your own)” style: members can type their own look (e.g. “soft watercolour sunset, pastel blues, native banksia”) and the artwork is generated to match. Our safety rules still apply, so the background stays text-free and the member’s details are placed on top.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.5 · 2026-06-09 · Built-in branded Login & Create-account forms</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New shortcodes [sssj_login] and [sssj_register]: fully themed, on-brand login and sign-up forms that use your normal WordPress accounts (no extra plugin needed). Sign-up collects name, email and password, creates the account, signs the member in and sends them to onboarding.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Settings → Pages → “Login & create-account pages” can now create these pages for you in one click (or you can still point them at any other page, such as a Fluent Forms login/registration page).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Security built in: per-form nonce, a honeypot, same-site redirect checks and a light per-IP throttle. Log in works with an email address or a username. Administrators still use wp-admin / wp-login.php as normal.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.4 · 2026-06-09 · Custom Login & Create-account pages (Fluent Forms ready)</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New (Settings → Pages → “Login & create-account pages”): choose your own Login page and Create-account page. Every “Log in” and “Create account” link across the marketplace (hero, menu, and all the gated prompts) then points to those pages instead of the default WordPress screens. Ideal for a Fluent Forms login form and a Fluent Forms user-registration form.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Leaving a page unset keeps the standard WordPress login/registration, so nothing changes until you choose a page. Administrators always keep direct access to wp-admin / wp-login.php.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “Register / Create account” link now appears whenever a Create-account page is set, even if WordPress’s own open registration is turned off.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Removed every long em dash from the plugin’s wording (903 of them, site-wide) in line with the house style, and tidied the onboarding heading wording.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.3 · 2026-06-09 · Onboarding: role cards restyled to the theme</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'The “How will you use the marketplace” role cards on the onboarding page now use your site’s own theme colour for their selected/hover state (previously a fixed blue that clashed with custom themes). Added a coloured accent bar, a soft tint, a subtle lift on hover, and a divider on each group heading for a more polished, professional look.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'A role card now highlights the moment you tick it (live), instead of only after saving.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.2 · 2026-06-08 · Asset builder: themes + reliable “Save image”</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Fixed “Save image” in the Create-an-asset (résumé / flyer / social) builder. It now draws the asset onto a canvas and downloads a clean PNG, so it works reliably in Chrome and every other browser. Previously it could fail with “Could not build the image.”', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Added a colour-theme picker to the asset builder: seven themes (Ocean Teal, Indigo, Plum, Rose, Emerald, Sunset Amber, Slate). The chosen theme applies to the live preview, the PDF and the saved image, and is remembered for next time.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The saved image follows the asset type: a tall card for the résumé and service flyer, and a square tile for the social post.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.1 · 2026-06-08 · AI Profile Card: image-model dropdown</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'Settings → AI Profile Card: the “Image model” field is now a dropdown instead of free text, pre-filled with the recommended image models (gpt-image-1, dall-e-3, dall-e-2). Any model you had saved is kept and preselected.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Added a “Refresh available models” button that securely queries your own OpenAI account and loads the exact image models it can access into the dropdown, so you only ever pick from models that will actually work.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
+				<h3>v1.10.0 · 2026-06-08 · AI Profile Card generator</h3>
+					<ul class="ul-disc">
+						<li><?php esc_html_e( 'New member tool: [sssj_profile_card]. A member turns their own profile into a styled, shareable square image. They pick from sixteen visual styles (Art Nouveau, Antique Engraving, Bauhaus, Mid-Century, Japanese Woodblock, Art Deco, Folk Art, Clean Professional, Soft Watercolour, Vintage Botanical, Memphis Pop, Scandinavian Minimal, Modern Gradient, Terrazzo, Blueprint, Marble & Gold); our image engine makes a decorative, text-free background, then their location and services (top) and name/tagline (bottom) are drawn on top in their browser. They can download it or save it to their media library.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Settings → AI Profile Card tab: master enable, image-engine key (stored masked, with how-to-get and what-it-does help), image model, and a per-member monthly limit. Off by default because it bills per image.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Membership gating: where a membership system is present, paid members can be given a higher monthly limit via the shuffles_ssj_card_limit filter; otherwise the monthly limit applies to everyone. The limit resets on the 1st of each month.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Privacy: the artwork is always text-free and is composited in the member’s own browser, so words stay sharp and correct. Only the member’s own profile is ever used (name, suburb, services); no participant or third-party data is included.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Runs on this managed host with no extra server software (no Puppeteer/Node). One-click create button added on the Pages tab, and the shortcode is listed on the Shortcodes tab.', 'shuffles-social-services-jobs' ); ?></li>
+					</ul>
 				<h3>v1.9.3 · 2026-06-08 · self-promo studio: bulletproof buttons</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Made the Promote-the-platform buttons (Save image, Copy caption, Show another, Style) robust: clicks are now handled at the page level and the current highlight/style are read live from the form, so the buttons respond regardless of how/when the studio loads. Fixes the case where the buttons appeared to do nothing.', 'shuffles-social-services-jobs' ); ?></li>
@@ -1442,7 +1697,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 				<h3>v1.9.0 · 2026-06-08 · job syndication Phase A (free reach)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New standard job XML feed for aggregators (Jora, Adzuna, …). Find the feed URL in Settings → SEO and submit it to an aggregator to reach a wider audience for free. Anonymous ads appear as “Private advertiser”; participant requests are never included; expired jobs are excluded.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Hardened the Google for Jobs (JobPosting) structured data: added a job identifier, a description fallback, and remote/hybrid handling (jobLocationType TELECOMMUTE + Australia applicant requirements) — so more of your jobs are eligible to appear in Google’s jobs experience. This is free and automatic.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Hardened the Google for Jobs (JobPosting) structured data: added a job identifier, a description fallback, and remote/hybrid handling (jobLocationType TELECOMMUTE + Australia applicant requirements), so more of your jobs are eligible to appear in Google’s jobs experience. This is free and automatic.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Two scope documents added to the repo (docs/JOB-SYNDICATION-SCOPE.md, docs/CANVA-ASSETS-SCOPE.md) capturing the real, researched syndication channels (and why Indeed/SEEK/Facebook are not free options) and the Canva templated-assets option.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Note: free reach is Google for Jobs + Jora/Adzuna. Indeed (since 31 Mar 2026) and SEEK require paid/partner access; pull-in of external jobs (Adzuna/Jooble/Careerjet APIs) is a later phase and must link back to the source per their terms.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
@@ -1452,32 +1707,32 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 					</ul>
 				<h3>v1.8.0 · 2026-06-08 · banned-provider register + ABN cross-match (safety)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New Settings → Safety Register: keep a private register of banned/sanctioned ABNs and cross-match it whenever an ABN is recorded on a job, worker or organisation. Standalone — no dependency on any other plugin or live API.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Flag-only and staff-only by design: a match never blocks posting, never auto-rejects, and is never shown to the public or the provider. Administrators see a red “Staff only — safety flag” banner on the listing, the flag appears in a “Flagged listings” queue, and staff get an alert email. A human reviews every flag.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Settings → Safety Register: keep a private register of banned/sanctioned ABNs and cross-match it whenever an ABN is recorded on a job, worker or organisation. Standalone, no dependency on any other plugin or live API.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Flag-only and staff-only by design: a match never blocks posting, never auto-rejects, and is never shown to the public or the provider. Administrators see a red “Staff only, safety flag” banner on the listing, the flag appears in a “Flagged listings” queue, and staff get an alert email. A human reviews every flag.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Populate the register by importing the NDIS Commission’s published compliance / enforcement-actions CSV (columns auto-detected; duplicates skipped on re-import), or add entries by hand. A “Re-scan all listings” button re-checks everyone after an update.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Reminder built into every alert: register data can be stale or about a different entity sharing an ABN — confirm before acting, and never contact the provider on the basis of the flag alone.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Reminder built into every alert: register data can be stale or about a different entity sharing an ABN, confirm before acting, and never contact the provider on the basis of the flag alone.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Adds a database table (sssj_ban_register). Loading wp-admin once after updating applies the table upgrade.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
 				<h3>v1.7.0 · 2026-06-08 · testimonials (Workstream F)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New “What people say” testimonials section on contractor (worker) and provider (organisation) profiles — separate from star Reviews. Endorsements are qualitative quotes the profile owner curates.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “What people say” testimonials section on contractor (worker) and provider (organisation) profiles, separate from star Reviews. Endorsements are qualitative quotes the profile owner curates.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Two sources: any logged-in member can submit an endorsement about someone, and the profile owner can add a quote they received elsewhere (via “Manage my testimonials” on their own profile).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Everything is pre-moderated: a new Settings → Testimonials tab holds them as Pending until you Approve. Then the owner chooses which approved ones to Feature — only Approved + Featured testimonials show publicly.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Privacy-safe by design: the submitter chooses how they are credited (no full name required, ideal for participants), and testimonials only attach to worker/provider profiles — never to participant requests. Switchable off globally without losing existing ones.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Everything is pre-moderated: a new Settings → Testimonials tab holds them as Pending until you Approve. Then the owner chooses which approved ones to Feature, only Approved + Featured testimonials show publicly.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Privacy-safe by design: the submitter chooses how they are credited (no full name required, ideal for participants), and testimonials only attach to worker/provider profiles, never to participant requests. Switchable off globally without losing existing ones.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Adds a new database table (sssj_testimonial). Loading wp-admin once after updating applies the table upgrade.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
 				<h3>v1.6.0 · 2026-06-08 · print-quality asset PDFs (Phase 2 renderer)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'The “Create an asset” builder can now produce true print-quality, pixel-identical PDFs of a résumé, service flyer or job flyer via your own render service — optional, and off by default (the free browser PDF/PNG path is unchanged).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New Settings → Asset Rendering tab: choose Browser (free) or Server, set your render service URL, confirm it is self-hosted, and “Test connection”. Recommended service is the free, self-hosted Gotenberg (one Docker container) — full how-to on the tab and in docs/ASSET-RENDERER.md.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “Create an asset” builder can now produce true print-quality, pixel-identical PDFs of a résumé, service flyer or job flyer via your own render service, optional, and off by default (the free browser PDF/PNG path is unchanged).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Settings → Asset Rendering tab: choose Browser (free) or Server, set your render service URL, confirm it is self-hosted, and “Test connection”. Recommended service is the free, self-hosted Gotenberg (one Docker container), full how-to on the tab and in docs/ASSET-RENDERER.md.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'When server rendering is on, the builder shows a “Print-quality PDF” button alongside “Quick PDF (browser)”. The server rebuilds the locked template from your profile/job data (with your edited wording) and inlines the styling + images, so everyone gets identical output. Any failure falls back to the browser path.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Built as a pluggable renderer seam (Shuffles_SSJ_Asset_Renderer) with a login + nonce + ownership-checked endpoint, and a privacy guard: participant-derived assets can never be sent to a renderer that is not affirmed self-hosted.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
 				<h3>v1.5.0 · 2026-06-08 · self-promotion studio (Workstream G)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New [sssj_promo] “Promote the platform” studio (admin/marketer only): turns real, privacy-safe platform highlights into an on-brand square social graphic plus a ready-to-paste caption, one at a time, for posting to your own channels.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Highlights come from live numbers — open jobs, available workers, verified workers, providers, people placed, new jobs this week, states covered — and only appear once each number is big enough to impress. It also rotates the same brand messages as the daily feature spotlight (single source).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Never uses participant data or any private detail — only public, aggregate figures and brand messaging.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Highlights come from live numbers, open jobs, available workers, verified workers, providers, people placed, new jobs this week, states covered, and only appear once each number is big enough to impress. It also rotates the same brand messages as the daily feature spotlight (single source).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Never uses participant data or any private detail, only public, aggregate figures and brand messaging.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( '“Show another” and the dropdown swap the graphic and its caption together; “Save image” downloads a square PNG (Instagram/Facebook/LinkedIn ready); “Copy caption” copies the matching words and hashtags. Reuses the résumé builder’s $0 browser image export.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Add it via Settings → Pages → “Promote the platform” (keep that page private/internal). Automatic posting can follow later via syndication.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
@@ -1569,555 +1824,555 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 						<li><?php esc_html_e( 'New living marketing master document (docs/MARKETING-MASTER.md) combining the business logic, the functional spec, and an out-of-the-box audience analysis. It names no third-party tools, describing everything as our internally curated and constructed tech stack and customised workflows.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'House style: em dashes are no longer used anywhere in new content. Testing and Business Logic updated.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.90.0 — 2026-06-07 · earn by referring (FluentAffiliate in onboarding)</h3>
+				<h3>v0.90.0, 2026-06-07 · earn by referring (FluentAffiliate in onboarding)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Onboarding now invites members — especially participants — to earn money by referring others. A friendly “Earn money by referring others” card appears at the end of onboarding (extra encouragement for participants), links to the affiliate sign-up, and never blocks finishing onboarding.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Onboarding now invites members, especially participants, to earn money by referring others. A friendly “Earn money by referring others” card appears at the end of onboarding (extra encouragement for participants), links to the affiliate sign-up, and never blocks finishing onboarding.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Clearly tells members they need a PayPal account to be paid (with a link to create one) and that they can set it up later.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Standalone-safe FluentAffiliate integration (never bundled/required): auto-links to your [fluent_affiliate_portal] page, or a URL you set. New [sssj_affiliate] shortcode places the same card anywhere (e.g. the dashboard). Configure + master switch in Settings → Monetisation.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Renders nothing (no errors) when FluentAffiliate is inactive or the promo is switched off. Testing + Shortcodes reference + FEATURES updated.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.89.0 — 2026-06-07 · Advanced Ads integration (banners in the marketplace)</h3>
+				<h3>v0.89.0, 2026-06-07 · Advanced Ads integration (banners in the marketplace)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Optional, standalone-safe integration with the Advanced Ads plugin (never bundled or required). New [sssj_ad] shortcode places a banner anywhere by placement slug, ad id or group id.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Named ad slots — Board top, Board bottom and Single listing (below content) — map an Advanced Ads placement to each in the new Settings → Ads tab; the boards and listing pages then show them automatically (a slot value can be a placement slug or id:123).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Named ad slots, Board top, Board bottom and Single listing (below content), map an Advanced Ads placement to each in the new Settings → Ads tab; the boards and listing pages then show them automatically (a slot value can be a placement slug or id:123).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Detection + master on/off switch: shows whether Advanced Ads is active; if it is inactive or ads are switched off, nothing renders and nothing breaks. Ads are labelled “Advertisement”.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Testing + Shortcodes reference updated. (Migrating existing banners from another site is a separate WordPress/Advanced Ads export-import — see the migration runbook.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Testing + Shortcodes reference updated. (Migrating existing banners from another site is a separate WordPress/Advanced Ads export-import, see the migration runbook.)', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.88.0 — 2026-06-07 · policies completed & published</h3>
+				<h3>v0.88.0, 2026-06-07 · policies completed & published</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'All ten platform policies drafted as formal /docs templates: Privacy, NDIS Code of Conduct, Incident Management & Reportable Incidents, Safeguarding & Risk, Terms of Use / Acceptable Use, Worker Screening & Verification, Data Retention & Destruction, Cookie & Consent, and Anti-Discrimination & Inclusion (Complaints was already drafted).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Published, member-facing layer: new [sssj_policies] shortcode + Settings → Policies tab — plain-English, easy-read summaries of every policy with key points and the NDIS / OAIC / AHRC + interpreter contacts. Single source: includes/class-policies.php.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Published, member-facing layer: new [sssj_policies] shortcode + Settings → Policies tab, plain-English, easy-read summaries of every policy with key points and the NDIS / OAIC / AHRC + interpreter contacts. Single source: includes/class-policies.php.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'New “Policies (safety & privacy)” page mapping with one-click create (Settings → Pages → Help & content) and a “Policies” item in the navigation (shortcode menu + synced Appearance menu).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Policy register (docs/POLICIES.md) updated — all ten now show a formal template + a published summary; the remaining work is your review, bracket fill-in and formal adoption (Terms liability/governing-law needs legal review). Testing + Shortcodes reference updated.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Policy register (docs/POLICIES.md) updated, all ten now show a formal template + a published summary; the remaining work is your review, bracket fill-in and formal adoption (Terms liability/governing-law needs legal review). Testing + Shortcodes reference updated.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.87.0 — 2026-06-07 · member reviews & ratings (contractors + providers)</h3>
+				<h3>v0.87.0, 2026-06-07 · member reviews & ratings (contractors + providers)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New star-rating + written-review system for contractors (worker profiles) and providers (organisations). Reviews show automatically on the profile page with an average summary, individual reviews and the owner’s public response.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Trust by design: you can only review someone you have genuinely engaged with (a relay message exists between you — applying starts one); you cannot review yourself; one editable review per member per subject.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Every review is pre-moderated — held as Pending until an admin approves it in the new Settings → Reviews & Ratings tab (Approve / Reject, with a master on/off switch).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'The approved average is cached on the profile and feeds the matching “trust” signal (well-rated workers rank a little higher with a “Rated X★” reason). New sssj_review table (DB v8) — load wp-admin once after updating so the table is created.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Trust by design: you can only review someone you have genuinely engaged with (a relay message exists between you, applying starts one); you cannot review yourself; one editable review per member per subject.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Every review is pre-moderated, held as Pending until an admin approves it in the new Settings → Reviews & Ratings tab (Approve / Reject, with a master on/off switch).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The approved average is cached on the profile and feeds the matching “trust” signal (well-rated workers rank a little higher with a “Rated X★” reason). New sssj_review table (DB v8), load wp-admin once after updating so the table is created.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Testing: new “Reviews & ratings” suite (engagement gate, pre-moderation, approve/reject, response, trust signal, master switch). Business Logic updated.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.86.0 — 2026-06-07 · explainer workflows for end users (“How it works”)</h3>
+				<h3>v0.86.0, 2026-06-07 · explainer workflows for end users (“How it works”)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New [sssj_workflows] shortcode and Settings → How-to Workflows tab: eleven plain-English, step-by-step walkthroughs that show end users the exact path through the app — set up your account, advertise a role, apply for an employee (TFN) job, quote for contractor (ABN) work, review applicants, request support privately, store a résumé, join an organisation, save alerts, volunteer, and stay safe.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_workflows] shortcode and Settings → How-to Workflows tab: eleven plain-English, step-by-step walkthroughs that show end users the exact path through the app, set up your account, advertise a role, apply for an employee (TFN) job, quote for contractor (ABN) work, review applicants, request support privately, store a résumé, join an organisation, save alerts, volunteer, and stay safe.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Each workflow has a Goal, a “Before you start” checklist, numbered steps with location hints, a “Done” outcome, and a self-healing “Start here” button. For logged-in members, workflows matching their primary role float to the top with a “For you” marker (nothing is hidden). Optional only="…" and roles="…" attributes filter the list.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Single source of truth in includes/class-workflows.php (distinct from the advice-style Guides). Added a “How it works” page mapping with one-click create (Settings → Pages → Help & content) and a “How it works” item in the navigation (shortcode menu + synced Appearance menu).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Testing updated: the “Guides, help & explainer workflows” suite now covers rendering, the Start-here links, primary-role “For you” ordering, attribute filtering, and the navigation item.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.85.0 — 2026-06-07 · application pipeline phase 3 (Hired/Declined · history · withdraw · notifications)</h3>
+				<h3>v0.85.0, 2026-06-07 · application pipeline phase 3 (Hired/Declined · history · withdraw · notifications)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Application stages now include Hired and Declined. Employers move applicants through the pipeline in My listings; jobs set to “Full pipeline” show all stages plus a Status history, while “Simple” jobs show a minimal set.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Candidates can Withdraw their own application from My dashboard → (My applications).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Applicants are emailed automatically when an advertiser changes their status (e.g. shortlisted, offer, hired). Turn off with the shuffles_ssj_send_application_email filter.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.84.0 — 2026-06-07 · testing worksheet — per-area objectives</h3>
+				<h3>v0.84.0, 2026-06-07 · testing worksheet, per-area objectives</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'The Testing worksheet (Settings → Testing and [sssj_tests]) now states an overall Objective for each area of checks, and shows the number of checks per group — so testers know what each group is proving, not just the steps.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The Testing worksheet (Settings → Testing and [sssj_tests]) now states an overall Objective for each area of checks, and shows the number of checks per group, so testers know what each group is proving, not just the steps.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.83.0 — 2026-06-07 · primary role (focus) + menu “See all”</h3>
+				<h3>v0.83.0, 2026-06-07 · primary role (focus) + menu “See all”</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Members can choose a primary role in “My roles”. The dashboard then opens to that role’s tab, and the menu focuses on its items — keeping the experience clean for single-purpose members.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Members can choose a primary role in “My roles”. The dashboard then opens to that role’s tab, and the menu focuses on its items, keeping the experience clean for single-purpose members.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Nothing is locked away: a “See all” dropdown in the [sssj_menu] reveals every item the member can use, and the dashboard still shows all their tabs. Leave the primary role on “No preference” to show everything by default.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.82.0 — 2026-06-07 · Demo Users settings tab + “View as”</h3>
+				<h3>v0.82.0, 2026-06-07 · Demo Users settings tab + “View as”</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New Settings → Demo Users tab lists the seeded demo/test accounts with their username, initial password and function(s), so you can test each side of the marketplace. The seeder now records each initial password for this list.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( '“View as” — one click to browse the site as a demo user, with a “Return to admin” link in the toolbar to switch back. Admins only, and only for demo accounts (safe-gated).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'For testing only — passwords are shown in plain text; remove the demo accounts before production (one-line cleanup in dist/seed-demo.php). Run the seeder with: wp eval-file dist/seed-demo.php', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( '“View as”, one click to browse the site as a demo user, with a “Return to admin” link in the toolbar to switch back. Admins only, and only for demo accounts (safe-gated).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'For testing only, passwords are shown in plain text; remove the demo accounts before production (one-line cleanup in dist/seed-demo.php). Run the seeder with: wp eval-file dist/seed-demo.php', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.81.0 — 2026-06-07 · advertise anonymously (employers)</h3>
+				<h3>v0.81.0, 2026-06-07 · advertise anonymously (employers)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Employers can tick “Advertise anonymously” when posting a job. The listing then shows an “🕶️ Anonymous” badge instead of the organisation name/logo, the organisation isn’t revealed (it’s also kept off that organisation’s public “open positions”), and the advertiser’s name is kept out of search engines (structured data shows “Private advertiser”).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Participant requests are already anonymous by design — pseudonymous, members-only and never indexed — so this option is built in for participants.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant requests are already anonymous by design, pseudonymous, members-only and never indexed, so this option is built in for participants.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.80.0 — 2026-06-07 · Volunteer roles as their own opportunity type</h3>
+				<h3>v0.80.0, 2026-06-07 · Volunteer roles as their own opportunity type</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Volunteer (unpaid) is now a third engagement type alongside TFN and ABN. Choose “Volunteer” when posting a job (no ABN, no pay).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New [sssj_volunteer_board] shows only volunteer roles — segregated in the query layer, just like the TFN and ABN boards (set its page in Settings → Pages). Volunteer roles show a green “Volunteer” badge.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_volunteer_board] shows only volunteer roles, segregated in the query layer, just like the TFN and ABN boards (set its page in Settings → Pages). Volunteer roles show a green “Volunteer” badge.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Applying to a volunteer role is open to any logged-in member (no ABN required).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.79.0 — 2026-06-07 · “Open to…” options (visa sponsorship · work placements · volunteers)</h3>
+				<h3>v0.79.0, 2026-06-07 · “Open to…” options (visa sponsorship · work placements · volunteers)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Jobs and organisations can now flag what they’re open to: ✈️ open to overseas applicants / visa sponsorship, and 🎓 work-placement (student placement) enquiries. Organisations can also flag 🤝 “volunteers welcome”.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'These show as badges on job cards, the jobs board, organisation profiles and the organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Next: Volunteer roles as a full opportunity type (their own board), and (separately) the application pipeline phase 3.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.78.0 — 2026-06-07 · TFN apply form + screening questions + per-job mode (phase 2)</h3>
+				<h3>v0.78.0, 2026-06-07 · TFN apply form + screening questions + per-job mode (phase 2)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Applying to an employee (TFN) job now captures more: the candidate picks one of their stored résumés, enters availability + earliest start date, confirms right-to-work, and answers the employer’s screening questions.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'When posting a job, the employer can add screening questions (one per line, up to 12) and choose how applications are handled — Full pipeline (track stages) or Simple — changeable later.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'When posting a job, the employer can add screening questions (one per line, up to 12) and choose how applications are handled, Full pipeline (track stages) or Simple, changeable later.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Employers see all of this on each applicant in My dashboard → My listings (résumé link, availability, start date, right-to-work, and the screening answers). The chosen résumé opens only for the employer who was applied to.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Next (phase 3): Hired/Declined stages, status history, candidate withdraw, and email notifications.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.77.0 — 2026-06-07 · stored résumés (TFN application — phase 1)</h3>
+				<h3>v0.77.0, 2026-06-07 · stored résumés (TFN application, phase 1)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Candidates can now store one or more named résumés against their profile (PDF / Word / RTF / ODT, up to 5), set a default, and remove old ones — via the new “My résumés” tab in the member dashboard, or the [sssj_resumes] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Candidates can now store one or more named résumés against their profile (PDF / Word / RTF / ODT, up to 5), set a default, and remove old ones, via the new “My résumés” tab in the member dashboard, or the [sssj_resumes] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Résumés are private: stored securely and served only to the owner, admins, and (next phase) the employer you apply to. Same safe storage approach as credential files.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'This is phase 1 of the TFN employment application flow. Next: the apply form picks a stored résumé and adds availability / start date / right-to-work / employer screening questions, with a per-job application-handling mode.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.76.0 — 2026-06-07 · “Save & alert me” visible to logged-out visitors</h3>
+				<h3>v0.76.0, 2026-06-07 · “Save & alert me” visible to logged-out visitors</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'The “🔔 Save & alert me” button on the boards is now visible to logged-out visitors too — so they can see the feature exists. It isn’t active for them: clicking it sends them to log in and returns to the exact same search, where they can then save it. Saving alerts still requires being logged in.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The “🔔 Save & alert me” button on the boards is now visible to logged-out visitors too, so they can see the feature exists. It isn’t active for them: clicking it sends them to log in and returns to the exact same search, where they can then save it. Saving alerts still requires being logged in.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.75.0 — 2026-06-07 · auto-scrolling “Why us” carousel · title = your site name</h3>
+				<h3>v0.75.0, 2026-06-07 · auto-scrolling “Why us” carousel · title = your site name</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The [sssj_why_us] carousel now auto-scrolls (one card at a time, looping), pauses when you hover or touch it, and the raw scrollbar is hidden. Control it with autoscroll="on|off|4000" (milliseconds between steps).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The default “Why us” heading now uses your site name (e.g. “Why Just Tasks”) instead of a fixed brand. Override any time with title="…".', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.74.0 — 2026-06-07 · edit the “Why us” points in Settings</h3>
+				<h3>v0.74.0, 2026-06-07 · edit the “Why us” points in Settings</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'You can now edit the “Why us” benefit points without code: Settings → Pages → “Why us — benefit points”. One benefit per line as “icon | Heading | Blurb”. The box is pre-filled with the current points to edit, reorder, add or remove. Clear it to restore the built-in defaults.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'You can now edit the “Why us” benefit points without code: Settings → Pages → “Why us, benefit points”. One benefit per line as “icon | Heading | Blurb”. The box is pre-filled with the current points to edit, reorder, add or remove. Clear it to restore the built-in defaults.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.73.0 — 2026-06-07 · “Why us” layout options (carousel / columns / rows / font)</h3>
+				<h3>v0.73.0, 2026-06-07 · “Why us” layout options (carousel / columns / rows / font)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( '[sssj_why_us] now supports layout="grid" (default) or layout="carousel" (a horizontal, snap-scrolling row).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'per_row="N" sets the number of columns (grid) or cards in view (carousel); rows="N" limits how many rows show (caps to per_row × rows benefits). Leave blank for a responsive auto layout.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'font="theme" (default) makes the block use the same font as the page/theme; font="brand" uses the plugin’s configured font. On small screens grids collapse to one column so cards stay readable.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.72.0 — 2026-06-07 · Join page · hero buttons fix · location layout</h3>
+				<h3>v0.72.0, 2026-06-07 · Join page · hero buttons fix · location layout</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New [sssj_join] custom “Join” page — a friendly welcome that funnels people into onboarding, with Create-account / Log-in and quick links (browse jobs, find a worker, browse organisations). Add it via Settings → Pages → “Join (welcome / get started)”.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_join] custom “Join” page, a friendly welcome that funnels people into onboarding, with Create-account / Log-in and quick links (browse jobs, find a worker, browse organisations). Add it via Settings → Pages → “Join (welcome / get started)”.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Fixed: the hero banner (and other shortcodes) only showing the first button when several were set. The editor’s “smart quotes” were corrupting the later attributes; the plugin now keeps straight quotes inside its shortcodes so all buttons (up to four) appear. Tip: if a button still misbehaves, avoid apostrophes/curly quotes in the label.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Board layout: the location / radius / “use my location” controls now sit on their own row, directly below the search and filter inputs, on the Jobs, Worker, Organisations and Participant-request boards.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.71.0 — 2026-06-07 · “Why us” benefits page</h3>
+				<h3>v0.71.0, 2026-06-07 · “Why us” benefits page</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New [sssj_why_us] shortcode — a point-form “Why us” / benefits page, each point with a short blurb: everything connected in one place, plugged into the community Facebook groups, purpose-built for social services, employment + contracting side by side, résumé/flyer creation, you control your privacy (hide your profile), high visibility, and giving back with fair pricing (participants free).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_why_us] shortcode, a point-form “Why us” / benefits page, each point with a short blurb: everything connected in one place, plugged into the community Facebook groups, purpose-built for social services, employment + contracting side by side, résumé/flyer creation, you control your privacy (hide your profile), high visibility, and giving back with fair pricing (participants free).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Add it via Settings → Pages → “Why us (benefits)” (Create page inserts the shortcode), or place [sssj_why_us] on any page. Edit the list from one place with the shuffles_ssj_why_us filter.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.70.0 — 2026-06-07 · more hero buttons · featured-role teaser</h3>
+				<h3>v0.70.0, 2026-06-07 · more hero buttons · featured-role teaser</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Hero banner [sssj_hero] now supports up to FOUR call-to-action buttons (button_text/url, button2_*, button3_*, button4_*). The first is the primary button; the rest are outline buttons.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Featured roles [sssj_featured] now show a short teaser (about 40 characters) from each advertised position’s description, under the rate.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.69.0 — 2026-06-07 · request to join an organisation (admin approves)</h3>
+				<h3>v0.69.0, 2026-06-07 · request to join an organisation (admin approves)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Members can now ask to join an organisation. On any organisation’s profile, a logged-in member sees a “Request to join this organisation” button (with an optional message). They can cancel a pending request.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Org admins review requests in My dashboard → Team: a “Requests to join” list with Approve (as Member or Admin) and Decline. Approving adds them to the team; no one joins without admin approval. The Team tab shows a count of pending requests.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Org admins are emailed when a new request comes in (can be turned off with the shuffles_ssj_send_join_request_email filter).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.68.0 — 2026-06-07 · full ABR record (trading names) · menu repoint · best-practice guide</h3>
+				<h3>v0.68.0, 2026-06-07 · full ABR record (trading names) · menu repoint · best-practice guide</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'ABN / ABR: when an ABN is saved (and an ABR GUID is set in Settings → Compliance), the FULL Australian Business Register response is now recorded — entity name, trading / business names, ABN status & date, entity type, ACN, GST registration and main business location — in one read-only “recorded details” field on the worker and organisation forms, and shown on the organisation’s public profile. (The ABR key field and the on-save check already existed in Settings → Compliance.)', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Header menu repoint: menu/links now self-heal to the page that actually contains the right shortcode — so “My dashboard” resolves to the all-in-one dashboard hub and “Jobs” resolves to our jobs board, even if an old/legacy page was previously mapped. The header menu re-syncs automatically on this update.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New guide “Best practice: creating a flyer or résumé (social services)” — national, plain-English, person-centred and privacy-safe guidance, available now under Settings → Guides and via [sssj_guides]. It will also appear inline when the asset creator is built.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'ABN / ABR: when an ABN is saved (and an ABR GUID is set in Settings → Compliance), the FULL Australian Business Register response is now recorded, entity name, trading / business names, ABN status & date, entity type, ACN, GST registration and main business location, in one read-only “recorded details” field on the worker and organisation forms, and shown on the organisation’s public profile. (The ABR key field and the on-save check already existed in Settings → Compliance.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Header menu repoint: menu/links now self-heal to the page that actually contains the right shortcode, so “My dashboard” resolves to the all-in-one dashboard hub and “Jobs” resolves to our jobs board, even if an old/legacy page was previously mapped. The header menu re-syncs automatically on this update.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New guide “Best practice: creating a flyer or résumé (social services)”, national, plain-English, person-centred and privacy-safe guidance, available now under Settings → Guides and via [sssj_guides]. It will also appear inline when the asset creator is built.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.67.0 — 2026-06-07 · location autocomplete fixes + apply links</h3>
+				<h3>v0.67.0, 2026-06-07 · location autocomplete fixes + apply links</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Worker profile: the “Your location” field now has address autocomplete and records the precise lat/long behind the scenes (filling Suburb / State / Postcode), so the profile works correctly in the directory and in radius matching. (The location map/autocomplete script wasn’t being loaded on the worker form.)', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Boards: choosing a location from the autocomplete now recenters and zooms the results map to that place AND refreshes the results via AJAX (a sensible default radius is applied so the location actually narrows results). Previously the map stayed put and the filter ignored the chosen place.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Apply for a contractor (ABN) job, or respond to a participant request, when your profile has no ABN: the “add a valid ABN” message now includes an “Edit my profile” button/link straight to your profile.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.66.0 — 2026-06-07 · D · multi-user organisations (teams)</h3>
+				<h3>v0.66.0, 2026-06-07 · D · multi-user organisations (teams)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Organisations can now have a team. The owner (creator) plus any number of members — each a “Member” or an “Admin” — can belong to one organisation.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Organisations can now have a team. The owner (creator) plus any number of members, each a “Member” or an “Admin”, can belong to one organisation.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'New “Team” tab in the member dashboard (and a [sssj_org_team] shortcode): an org admin can add an existing person by email or username, change a member’s role, or remove someone. The owner can never be removed or demoted.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Safety: accounts are never created here (the person must already be registered — otherwise you’re prompted to ask them to sign up first), and removing a member only unlinks them from the organisation; their account is not deleted.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Safety: accounts are never created here (the person must already be registered, otherwise you’re prompted to ask them to sign up first), and removing a member only unlinks them from the organisation; their account is not deleted.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Added team members gain the ability to post jobs for the organisation.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.65.0 — 2026-06-07 · C5 · smart synonym-aware search</h3>
+				<h3>v0.65.0, 2026-06-07 · C5 · smart synonym-aware search</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Search now understands sector language. A search for “support work” also finds “Disability Support Worker”, “carer”, “DSW”, “PCA” and similar; “aged care” matches “home care” and “elderly care”; “OT” matches “occupational therapist”, and so on across the Jobs, Worker and Organisations boards.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Synonyms broaden a search rather than narrowing it — related terms are matched with OR, so a sensible search never collapses to zero results.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Built deterministically now and ready for a smarter (AI) expander later via a single hook — with no change to the boards and nothing vendor-named shown to members.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Synonyms broaden a search rather than narrowing it, related terms are matched with OR, so a sensible search never collapses to zero results.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Built deterministically now and ready for a smarter (AI) expander later via a single hook, with no change to the boards and nothing vendor-named shown to members.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.64.0 — 2026-06-07 · C4 · per-field privacy masking (“members only”)</h3>
+				<h3>v0.64.0, 2026-06-07 · C4 · per-field privacy masking (“members only”)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New privacy control on the worker and organisation profile forms: tick a sensitive field to show it only to logged-in members. Logged-out visitors then see a “🔒 Log in to view” note instead of the value; signed-in members, the owner and admins still see it.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Maskable fields: a worker’s pay rate; an organisation’s phone number and website. The profile itself stays findable in the directory — only the chosen field’s value is hidden from guests.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Applies everywhere the field shows — profile pages and the directory cards (including the instant-filter results) — from one setting.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Maskable fields: a worker’s pay rate; an organisation’s phone number and website. The profile itself stays findable in the directory, only the chosen field’s value is hidden from guests.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Applies everywhere the field shows, profile pages and the directory cards (including the instant-filter results), from one setting.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Safety: masking is additive and can never reveal NDIS-register data, which stays read-only; participant privacy and worker visibility rules are unchanged.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.63.0 — 2026-06-07 · instant AJAX filtering · “I need support” first</h3>
+				<h3>v0.63.0, 2026-06-07 · instant AJAX filtering · “I need support” first</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Directory filtering is now instant. When you change the search box, location, radius, categories or any filter on the Jobs, Employee, Contractor, Worker, Organisations and Participant-request boards, only the result tiles refresh — the page no longer reloads or jumps to the top, and your cursor stays in the search box. The address bar still updates so the filtered view is shareable.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Directory filtering is now instant. When you change the search box, location, radius, categories or any filter on the Jobs, Employee, Contractor, Worker, Organisations and Participant-request boards, only the result tiles refresh, the page no longer reloads or jumps to the top, and your cursor stays in the search box. The address bar still updates so the filtered view is shareable.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Pagination (Next / Previous / page numbers) on those boards also loads in place via AJAX, with the Shuffles spinner while results load.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Graceful fallback: if a board hasn’t opted in or JavaScript is unavailable, filtering still works the old way (a normal page reload).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Onboarding (Get started) now lists “I need support” as the first group of hats, ahead of “I’m looking for work” and “I offer work or services”.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.62.0 — 2026-06-07 · page mappings for onboarding / dashboard / swipe / tests</h3>
+				<h3>v0.62.0, 2026-06-07 · page mappings for onboarding / dashboard / swipe / tests</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Settings → Pages now includes mappings (lookup / create / edit) for the Get started (onboarding), Member dashboard (all-in-one hub), Discover providers (swipe) and Plugin tests pages — so they can be created and placed like the other pages.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Settings → Pages now includes mappings (lookup / create / edit) for the Get started (onboarding), Member dashboard (all-in-one hub), Discover providers (swipe) and Plugin tests pages, so they can be created and placed like the other pages.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.61.0 — 2026-06-07 · onboarding wizard · provider size/structure · sole-trader listings</h3>
+				<h3>v0.61.0, 2026-06-07 · onboarding wizard · provider size/structure · sole-trader listings</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'C1 — Get started: a new [sssj_onboard] guided wizard. New members tick the hats that apply, then get tailored next-step buttons (set up profile, create organisation/provider listing, post a job, request support, go to dashboard).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'C2 — Provider size & structure: organisations can record a size (Sole trader / Small / Medium / Large) and a legal structure (Sole trader / Partnership / Company / Not-for-profit / Government). Both are shown as badges and are new filters on the Organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'C3 — Sole traders in the providers directory: a member with the “Available for contracting (sole trader / ABN)” hat can also create a provider listing (defaulted to size = Sole trader) so they appear in the Organisations/Providers directory as well as the worker directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'C1, Get started: a new [sssj_onboard] guided wizard. New members tick the hats that apply, then get tailored next-step buttons (set up profile, create organisation/provider listing, post a job, request support, go to dashboard).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'C2, Provider size & structure: organisations can record a size (Sole trader / Small / Medium / Large) and a legal structure (Sole trader / Partnership / Company / Not-for-profit / Government). Both are shown as badges and are new filters on the Organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'C3, Sole traders in the providers directory: a member with the “Available for contracting (sole trader / ABN)” hat can also create a provider listing (defaulted to size = Sole trader) so they appear in the Organisations/Providers directory as well as the worker directory.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.60.0 — 2026-06-07 · “hats” onboarding + dashboard reveal (employer vs contractor, one account)</h3>
+				<h3>v0.60.0, 2026-06-07 · “hats” onboarding + dashboard reveal (employer vs contractor, one account)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'My roles is now a clear “hat picker”: one account can tick the hats that apply — Employer / company, NDIS / service provider, Supplier, Available for contracting (sole trader / ABN), Looking for employee work (PAYG / TFN), Participant, or Participant representative / nominee — grouped under “I offer work”, “I’m looking for work”, “I need support”, each with a plain-English description.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'The dashboard now reveals only the sections that match your hats — so an employer who also contracts manages both from one place without confusion. Members who haven’t set hats yet see everything (capability fallback), so nothing disappears.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'My roles is now a clear “hat picker”: one account can tick the hats that apply, Employer / company, NDIS / service provider, Supplier, Available for contracting (sole trader / ABN), Looking for employee work (PAYG / TFN), Participant, or Participant representative / nominee, grouped under “I offer work”, “I’m looking for work”, “I need support”, each with a plain-English description.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The dashboard now reveals only the sections that match your hats, so an employer who also contracts manages both from one place without confusion. Members who haven’t set hats yet see everything (capability fallback), so nothing disappears.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Foundation for the application-process expansion (basis-aware apply) and the legislation-aware guidance coming next. Existing roles still work; the legacy “worker” role is recognised.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.59.0 — 2026-06-07 · provider swipe deck · section accent borders</h3>
+				<h3>v0.59.0, 2026-06-07 · provider swipe deck · section accent borders</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New [sssj_swipe] — a Tinder-style swipe deck for browsing providers: swipe right (♥ / →) to save a provider to your shortlist, left (✕ / ←) to skip, tap to view the profile. Works on touch, mouse and keyboard; saving is stored to the member’s shortlist. Drop it on a “Discover providers” page.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_swipe], a Tinder-style swipe deck for browsing providers: swipe right (♥ / →) to save a provider to your shortlist, left (✕ / ←) to skip, tap to view the profile. Works on touch, mouse and keyboard; saving is stored to the member’s shortlist. Drop it on a “Discover providers” page.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Form section cards now carry a tasteful left accent border (a muted brand-colour per group) for clearer, more professional grouping.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.58.0 — 2026-06-07 · profile form UI polish (section cards, completeness, sticky save)</h3>
+				<h3>v0.58.0, 2026-06-07 · profile form UI polish (section cards, completeness, sticky save)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The worker/organisation/participant forms are grouped into clean “section cards” (Basic information, Photos, Availability & status, Skills & services, Location & travel, Experience & rates, Business & credentials, Visibility & notifications) with icons, and fade in as you scroll.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Worker form: a live “Profile completeness” meter, an Available-for-work pill toggle, an “About you” character counter, friendlier file-upload buttons with an instant profile-photo preview.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'All sssj forms: a sticky “Save now” bar on scroll, Ctrl/Cmd+S to save, an unsaved-changes dot in the browser tab title, and toast notifications. Brand-styled (uses the existing design tokens / Style Studio) and reuses the existing Tom Select pickers, suburb autocomplete, NDIS “Scan now” and the Shuffles spinner — no field names or submission logic changed.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'All sssj forms: a sticky “Save now” bar on scroll, Ctrl/Cmd+S to save, an unsaved-changes dot in the browser tab title, and toast notifications. Brand-styled (uses the existing design tokens / Style Studio) and reuses the existing Tom Select pickers, suburb autocomplete, NDIS “Scan now” and the Shuffles spinner, no field names or submission logic changed.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.57.0 — 2026-06-07 · header menu mirrored into Appearance → Menus</h3>
+				<h3>v0.57.0, 2026-06-07 · header menu mirrored into Appearance → Menus</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New: the plugin can create and maintain a real WordPress menu (“Jobs & Engagements”) under Appearance → Menus that mirrors the [sssj_menu] navigation — so it shows in your theme header and is editable there. Settings → Pages → “Header menu”: click to create it, optionally assign it to a theme location.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Self-maintaining: once created, the menu re-syncs on each plugin update — adding/removing items as features change. It only manages items it created (tagged internally); any menu items you add by hand are never touched. A WordPress menu is the same for all visitors, so it carries the public items; the login-aware, capability-gated version (with admin Settings) stays in the [sssj_menu] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New: the plugin can create and maintain a real WordPress menu (“Jobs & Engagements”) under Appearance → Menus that mirrors the [sssj_menu] navigation, so it shows in your theme header and is editable there. Settings → Pages → “Header menu”: click to create it, optionally assign it to a theme location.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Self-maintaining: once created, the menu re-syncs on each plugin update, adding/removing items as features change. It only manages items it created (tagged internally); any menu items you add by hand are never touched. A WordPress menu is the same for all visitors, so it carries the public items; the login-aware, capability-gated version (with admin Settings) stays in the [sssj_menu] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.56.0 — 2026-06-07 · Provider Import (beta) — bulk NDIS CSV importer</h3>
+				<h3>v0.56.0, 2026-06-07 · Provider Import (beta), bulk NDIS CSV importer</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New “Provider Import (beta)” tab: a proof-of-concept reader for the NDIS Commission’s official bulk datasets — the “Active providers” CSV and the “Compliance/enforcement actions” CSV. It demonstrates the recommended bulk route (official datasets, not scraping the register).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'PREVIEW ONLY: this proof of concept never writes anything — uploads are parsed, the columns auto-detected, and the row count + mapping + a sample shown, with nothing saved. Admin-only and nonce-checked. (The import/write path exists in code behind a hard “preview only” switch for when bulk import is actually wanted.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Provider Import (beta)” tab: a proof-of-concept reader for the NDIS Commission’s official bulk datasets, the “Active providers” CSV and the “Compliance/enforcement actions” CSV. It demonstrates the recommended bulk route (official datasets, not scraping the register).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'PREVIEW ONLY: this proof of concept never writes anything, uploads are parsed, the columns auto-detected, and the row count + mapping + a sample shown, with nothing saved. Admin-only and nonce-checked. (The import/write path exists in code behind a hard “preview only” switch for when bulk import is actually wanted.)', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.55.4 — 2026-06-07 · NDIS outlets & phone · red “Revoked/Banned” status</h3>
+				<h3>v0.55.4, 2026-06-07 · NDIS outlets & phone · red “Revoked/Banned” status</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'The NDIS register check now also captures the listing’s outlets and phone number (from the listing footer) and shows them on the profile + “Scan now” preview. All register-sourced details are read-only — they can’t be edited by the member.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'A “Revoked” or “Banned” registration status now shows on a RED background (never green) — both on the profile and in the “Scan now” preview (which previously always showed green). Negative statuses are matched first so “Registration revoked” can’t be mistaken for active.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The NDIS register check now also captures the listing’s outlets and phone number (from the listing footer) and shows them on the profile + “Scan now” preview. All register-sourced details are read-only, they can’t be edited by the member.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'A “Revoked” or “Banned” registration status now shows on a RED background (never green), both on the profile and in the “Scan now” preview (which previously always showed green). Negative statuses are matched first so “Registration revoked” can’t be mistaken for active.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.55.3 — 2026-06-07 · fuller NDIS details + ABN mismatch flag</h3>
+				<h3>v0.55.3, 2026-06-07 · fuller NDIS details + ABN mismatch flag</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'The NDIS register check now also captures and shows the listing’s legal name, ABN, head-office location and website (alongside status, registration groups and expiry) — on the profile table and in the “Scan now” preview.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The NDIS register check now also captures and shows the listing’s legal name, ABN, head-office location and website (alongside status, registration groups and expiry), on the profile table and in the “Scan now” preview.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'ABN cross-check: if the ABN on the NDIS register differs from the ABN on file (the organisation’s ABN, or the sole trader’s ABN), a red warning note is shown so it can be checked.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.55.2 — 2026-06-07 · NDIS “Scan now” on the forms · mic button width fix</h3>
+				<h3>v0.55.2, 2026-06-07 · NDIS “Scan now” on the forms · mic button width fix</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'NDIS “Scan now”: a button next to the NDIS Registration No field (organisation + sole-trader worker forms) checks the number against the public NDIS Commission register on the spot and shows the live status, registration groups and expiry — before you save. Uses the Shuffles spinner while it checks.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Fix: the voice-input microphone button on location fields was stretching full-width inside the profile forms — it’s now constrained to a normal button size.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'NDIS “Scan now”: a button next to the NDIS Registration No field (organisation + sole-trader worker forms) checks the number against the public NDIS Commission register on the spot and shows the live status, registration groups and expiry, before you save. Uses the Shuffles spinner while it checks.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fix: the voice-input microphone button on location fields was stretching full-width inside the profile forms, it’s now constrained to a normal button size.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.55.1 — 2026-06-07 · admin Settings sub-item in the menu</h3>
+				<h3>v0.55.1, 2026-06-07 · admin Settings sub-item in the menu</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The [sssj_menu] now supports sub-menus, and shows an admin-only “Settings” item nested under “My dashboard” (links straight to the plugin settings). Only users who can manage options see it; it opens as a dropdown on desktop and indents inline on mobile.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.55.0 — 2026-06-07 · Business Logic tab · “Edit my profile” in the menu</h3>
+				<h3>v0.55.0, 2026-06-07 · Business Logic tab · “Edit my profile” in the menu</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New “Business Logic” settings tab: a plain-English, in-app record of how the plugin decides things — members & roles, ABN/TFN segregation, who pays vs free, organisation categories & sponsorship, verification & trust, the NDIS register check, participant privacy, matching/alerts/CRM, and a “Key invariants (never rules)” list. Mirrors docs/business_rules_and_logic.md.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Business Logic” settings tab: a plain-English, in-app record of how the plugin decides things, members & roles, ABN/TFN segregation, who pays vs free, organisation categories & sponsorship, verification & trust, the NDIS register check, participant privacy, matching/alerts/CRM, and a “Key invariants (never rules)” list. Mirrors docs/business_rules_and_logic.md.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The login-aware [sssj_menu] now includes an “Edit my profile” link for logged-in members (opens their worker/candidate profile editor).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.54.0 — 2026-06-06 · Cron Jobs tab · My profile in the dashboard · home-page hero</h3>
+				<h3>v0.54.0, 2026-06-06 · Cron Jobs tab · My profile in the dashboard · home-page hero</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Cron Job List & Status tab: a new admin tab listing every scheduled background job (daily maintenance, daily email alerts, monthly NDIS check) with its frequency, last run, next run due, completion status, any reported errors, and a “Run now” button. Last-run/status are recorded automatically (a job that starts but never finishes is flagged “Did not complete”).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'My profile in the dashboard: the member dashboard now has a “My profile” tab that lets you edit your personal worker/candidate profile right there, with one-click links to manage an organisation or a participant support request.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Home-page hero safety strip: the [sssj_hero] banner now carries a “Safety, built in” strip listing the platform’s privacy & verification guardrails (toggle with safety="off"). The wording comes from one place (shuffles_ssj_hero_guardrails filter).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Counters that wait until you’re impressive: the [sssj_stats] counters take a new min="…" attribute that hides any counter below that number — so small early totals stay hidden and simply appear as the marketplace grows (e.g. [sssj_stats min="25"]).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Counters that wait until you’re impressive: the [sssj_stats] counters take a new min="…" attribute that hides any counter below that number, so small early totals stay hidden and simply appear as the marketplace grows (e.g. [sssj_stats min="25"]).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Marketing: a docs/SAFETY-GUARDRAILS.md reference (not shipped publicly) collects all the trust & safety guardrails with copy-ready “sales angle” lines, and is the single source for the hero strip wording.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Sole-trader NDIS registration: individuals registered with the NDIS Commission in their own right can now add their NDIS Registration No on their worker profile — the same live status / registration-groups / expiry table and monthly auto-check that organisations get.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Shuffles spinner: lookups and saves that take a few seconds (the website auto-fill, profile saves that check the NDIS register / ABR / location, and the “Re-check NDIS register now” button) now show the branded Shuffles spinner — the site logo when one is set, otherwise a brand-blue ring.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Tidy-up: the organisation form’s two NDIS number fields are merged into one — “NDIS Registration No”. (The value is still mirrored to the old field internally, so existing badges/links keep working with no migration.)', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Sole-trader NDIS registration: individuals registered with the NDIS Commission in their own right can now add their NDIS Registration No on their worker profile, the same live status / registration-groups / expiry table and monthly auto-check that organisations get.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Shuffles spinner: lookups and saves that take a few seconds (the website auto-fill, profile saves that check the NDIS register / ABR / location, and the “Re-check NDIS register now” button) now show the branded Shuffles spinner, the site logo when one is set, otherwise a brand-blue ring.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Tidy-up: the organisation form’s two NDIS number fields are merged into one, “NDIS Registration No”. (The value is still mirrored to the old field internally, so existing badges/links keep working with no migration.)', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.53.0 — 2026-06-06 · live NDIS provider-register check + monthly change alerts</h3>
+				<h3>v0.53.0, 2026-06-06 · live NDIS provider-register check + monthly change alerts</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'NDIS Registration No: organisations can enter the number after ?id= in their provider-register URL (e.g. 902439). On save, the plugin reads that public listing and stores the live Registration status, the approved registration groups and the “in force until” date.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Registration table on the profile: a neat “NDIS provider registration” table shows the status (colour-coded), the approved registration groups, the expiry date, a link to the Commission register and a “Last checked” date. Admins get a “Re-check NDIS register now” button.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Monthly auto-check + alerts: a background check re-reads every registered organisation’s listing once a month and emails staff (Settings → Compliance → change-alert email, default the site admin) only when something changes — status, groups, or the expiry date. The provider is never emailed.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Monthly auto-check + alerts: a background check re-reads every registered organisation’s listing once a month and emails staff (Settings → Compliance → change-alert email, default the site admin) only when something changes, status, groups, or the expiry date. The provider is never emailed.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Safe-by-design: a fetch or parse failure never overwrites the stored details and instead alerts staff (so a register-page layout change can’t silently read as “no change”). Reads only the NDIS Commission’s own public data, on a gentle cadence. Toggle the whole feature on/off in Settings → Compliance.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Hooks for integrators: shuffles_ssj_ndis_changed (fires with the change list), shuffles_ssj_ndis_alert_email, shuffles_ssj_ndis_suppress_default_email, shuffles_ssj_ndis_base_url, shuffles_ssj_ndis_user_agent.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-				<h3>v0.52.0 — 2026-06-06 · member roles · organisation categories · participant-free posting · provider directory fee &amp; sponsorship</h3>
+				<h3>v0.52.0, 2026-06-06 · member roles · organisation categories · participant-free posting · provider directory fee &amp; sponsorship</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Member roles: a member can wear many hats. New [sssj_roles] form (and a “My roles” tab in the dashboard) lets each member tick the roles that apply — worker, candidate, participant, sole-trader provider, provider representative, or supplier — which grants the matching posting capabilities and tailors their dashboard. Change it any time.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Organisation categories: organisations now choose a type — Support provider, Supplier / services to the sector, SDA / housing, Real estate, Professional services, or Other. It shows as a badge on the card + profile and is a filter (“All organisation types”) on the Organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Participant-free posting: participants employing directly, or seeking workers or providers, are never charged — even when monetisation is on. Providers seeking staff, sponsorship, or a directory listing are the paid side.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Provider directory fee + sponsorship: when monetisation is on, only providers who hold a listing subscription (or admins) appear in the Organisations directory. Admins can grant a “Sponsored placement” (Verification box) — sponsored organisations sort to the top and show a ★ Sponsored badge.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Fix: the recommended provider field set (Settings → Profile Fields → “Add recommended provider fields”) now also mirrors “Services Provided” (multi-select of NDIS/aged-care services) and “Peak Bodies” (multi-select of industry memberships such as NDS, ACCPA, DIA) — both were missing and so never synced. Both are banner filters on the Organisations directory. Re-run the button to add just the two new fields (existing fields are left untouched).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Member roles: a member can wear many hats. New [sssj_roles] form (and a “My roles” tab in the dashboard) lets each member tick the roles that apply, worker, candidate, participant, sole-trader provider, provider representative, or supplier, which grants the matching posting capabilities and tailors their dashboard. Change it any time.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Organisation categories: organisations now choose a type, Support provider, Supplier / services to the sector, SDA / housing, Real estate, Professional services, or Other. It shows as a badge on the card + profile and is a filter (“All organisation types”) on the Organisations directory.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant-free posting: participants employing directly, or seeking workers or providers, are never charged, even when monetisation is on. Providers seeking staff, sponsorship, or a directory listing are the paid side.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Provider directory fee + sponsorship: when monetisation is on, only providers who hold a listing subscription (or admins) appear in the Organisations directory. Admins can grant a “Sponsored placement” (Verification box), sponsored organisations sort to the top and show a ★ Sponsored badge.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fix: the recommended provider field set (Settings → Profile Fields → “Add recommended provider fields”) now also mirrors “Services Provided” (multi-select of NDIS/aged-care services) and “Peak Bodies” (multi-select of industry memberships such as NDS, ACCPA, DIA), both were missing and so never synced. Both are banner filters on the Organisations directory. Re-run the button to add just the two new fields (existing fields are left untouched).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.51.0 — 2026-06-06 · NDIS provider registration · provider field seed · website auto-fill</h3>
+					<h3>v0.51.0, 2026-06-06 · NDIS provider registration · provider field seed · website auto-fill</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Organisations can mark themselves a registered NDIS provider with a registration number — shown as an “NDIS Registered · #number” badge linking to the NDIS Commission register. Registration status + groups are set by an admin or an auto-scan integration hook (there is no official public API, so it is best-effort/manual).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New “Add recommended provider fields” button (Settings → Profile Fields) seeds a Shuffles-style organisation field set (specialisations, service delivery, ages supported, accepting clients, accessibility, languages, years operating, accreditations) — the banner-flagged ones become directory filters.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Organisations can mark themselves a registered NDIS provider with a registration number, shown as an “NDIS Registered · #number” badge linking to the NDIS Commission register. Registration status + groups are set by an admin or an auto-scan integration hook (there is no official public API, so it is best-effort/manual).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Add recommended provider fields” button (Settings → Profile Fields) seeds a Shuffles-style organisation field set (specialisations, service delivery, ages supported, accepting clients, accessibility, languages, years operating, accreditations), the banner-flagged ones become directory filters.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Website auto-fill: on the organisation form, “Fetch details from my website” reads the site and pre-fills empty name/description/phone fields for review (our AI; only empty fields are touched). An AI/web-read integration can enrich it via the shuffles_ssj_autofill filter.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.50.0 — 2026-06-06 · ABR verification · ABN required for businesses · “what are you seeking”</h3>
+					<h3>v0.50.0, 2026-06-06 · ABR verification · ABN required for businesses · “what are you seeking”</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'ABR check: set a free ABR Web Services GUID (Settings → Compliance) and any ABN entered on a job, worker or organisation is verified against the Australian Business Register on save — the entity name + status are stored and shown as an “🏢 ABR Active · <Name>” badge on cards/profiles. Without a GUID the offline checksum still runs.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'ABR check: set a free ABR Web Services GUID (Settings → Compliance) and any ABN entered on a job, worker or organisation is verified against the Australian Business Register on save, the entity name + status are stored and shown as an “🏢 ABR Active · <Name>” badge on cards/profiles. Without a GUID the offline checksum still runs.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'A valid ABN is now required for organisations (they are non-TFN businesses), in addition to ABN-basis job ads which already required it. TFN (employee) job ads never ask for an ABN.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Participant requests now have a “What are you seeking?” option — ongoing support (a worker), a one-off task, or a provider/organisation — shown as a badge on the request card.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Participant requests now have a “What are you seeking?” option, ongoing support (a worker), a one-off task, or a provider/organisation, shown as a badge on the request card.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.49.0 — 2026-06-06 · Job funding filter · clearer menu · interactive map markers</h3>
+					<h3>v0.49.0, 2026-06-06 · Job funding filter · clearer menu · interactive map markers</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Jobs can now carry funding source(s) (NDIS, Aged Care, DVA, Foundational Supports, …) — set on the posting form — and the Jobs board has funding tick-box filter chips so job-seekers can narrow by funding.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Jobs can now carry funding source(s) (NDIS, Aged Care, DVA, Foundational Supports, …), set on the posting form, and the Jobs board has funding tick-box filter chips so job-seekers can narrow by funding.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The navigation menu’s participant link is now labelled “Participants seeking workers” (providers are under “Organisations”), and “My dashboard” points at the all-in-one dashboard when present.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Map markers are now interactive (where a Google Maps API key is set): single-click shows an info box with a summary + View link; double-click scrolls to that result’s card and surrounds it with an animated rainbow “tracer” highlight.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.48.0 — 2026-06-06 · “Willing to travel” radius + distance pills on cards</h3>
+					<h3>v0.48.0, 2026-06-06 · “Willing to travel” radius + distance pills on cards</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New “How far are you willing to travel?” field on worker profiles (and a “Service area radius” on organisations, and “How far can a worker be?” on participant requests). The worker value also sets the default radius on the Jobs board for that member.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'When you search a directory with a location, each result card now shows a highlighted “X km away” distance pill (the nearest location for organisations). Travel radius is shown on worker and organisation profiles.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.47.0 — 2026-06-06 · All-in-one member dashboard</h3>
+					<h3>v0.47.0, 2026-06-06 · All-in-one member dashboard</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New [sssj_dashboard] shortcode — a single tabbed hub for logged-in members that ties everything together: an Overview (quick stats + actions), My listings & applicants (advertisers), Matched jobs and My credentials (workers), Saved searches, and Messages. Each tab appears only if it applies to that member.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New [sssj_dashboard] shortcode, a single tabbed hub for logged-in members that ties everything together: an Overview (quick stats + actions), My listings & applicants (advertisers), Matched jobs and My credentials (workers), Saved searches, and Messages. Each tab appears only if it applies to that member.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'It composes the existing feature shortcodes (single source of truth per feature). Progressive enhancement: tabs switch panels with JavaScript; with JS off every section is still shown.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.46.0 — 2026-06-06 · Email alerts (job matches, new candidates, saved searches)</h3>
+					<h3>v0.46.0, 2026-06-06 · Email alerts (job matches, new candidates, saved searches)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'Workers can opt in (on their profile) to a daily email when new jobs match their profile; advertisers can opt in (when posting a job) to a daily email when new candidates match the role.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Saved searches: a “Save & alert me” button on every directory saves the current filters and emails the member when new listings match. Manage via the new [sssj_saved_searches] shortcode.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'All driven by a daily cron and the matching engine; “new” = published since the last alert. New Settings → Email Alerts tab with a master switch + “Run alerts now”. Emails go via the site mailer unless a FluentCRM automation claims them (shuffles_ssj_alert_sent / shuffles_ssj_alert_suppress_default).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.45.0 — 2026-06-06 · Smart matching engine (“Best matches” panels)</h3>
+					<h3>v0.45.0, 2026-06-06 · Smart matching engine (“Best matches” panels)</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New real-time matching: job pages show “Workers who may suit this role”, worker profiles show “Open roles this worker may suit”, and the new [sssj_matches] shortcode shows “Jobs matched to you” for a logged-in worker. Each match lists short reasons.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Matches are ranked on shared services, location proximity, availability, engagement basis (ABN/TFN — an ABN role favours workers with a recorded ABN), rate compatibility and trust (verified / blue tick). Respects worker visibility.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Matches are ranked on shared services, location proximity, availability, engagement basis (ABN/TFN, an ABN role favours workers with a recorded ABN), rate compatibility and trust (verified / blue tick). Respects worker visibility.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.44.0 — 2026-06-06 · Custom field “banner filters” now work on the directories</h3>
+					<h3>v0.44.0, 2026-06-06 · Custom field “banner filters” now work on the directories</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Custom Profile Fields marked “show on banner filters” now appear as searchable filter dropdowns on the relevant directory (worker, organisation, participant-request) and actually filter the results — completing that option. Multi-select fields match within their stored values; “Clear all” resets them along with the other filters.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Custom Profile Fields marked “show on banner filters” now appear as searchable filter dropdowns on the relevant directory (worker, organisation, participant-request) and actually filter the results, completing that option. Multi-select fields match within their stored values; “Clear all” resets them along with the other filters.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.43.0 — 2026-06-06 · Account verification “blue tick”</h3>
+					<h3>v0.43.0, 2026-06-06 · Account verification “blue tick”</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New account-level “blue tick” verification for workers and organisations — an admin-granted trust mark, separate from the green ✓ Verified credential badge. Grant it from the “Verification (blue tick)” box on the worker/organisation edit screen.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New account-level “blue tick” verification for workers and organisations, an admin-granted trust mark, separate from the green ✓ Verified credential badge. Grant it from the “Verification (blue tick)” box on the worker/organisation edit screen.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The blue tick shows next to the name on directory cards and profiles (and on a job from a verified organisation). Use it for accounts whose identity and key checks you have confirmed.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Single job pages now show a Google map of the job’s suburb/town (suburb-level only — no exact address). Works without a Google Maps API key.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Single job pages now show a Google map of the job’s suburb/town (suburb-level only, no exact address). Works without a Google Maps API key.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Participant request cards now have a “View full request” expander showing the full details in place. Participant requests stay private (pseudonymous, no public page), so the drill-down expands on the card rather than linking to a separate URL.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.42.0 — 2026-06-06 · Per-directory “read me” notes + job logos (inherit from organisation)</h3>
+					<h3>v0.42.0, 2026-06-06 · Per-directory “read me” notes + job logos (inherit from organisation)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Each directory (jobs, workers, organisations, participant requests) now has a collapsible “Read me — things to know” note under the banner, with tips specific to that directory. Plain, accessible, no JavaScript.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Each directory (jobs, workers, organisations, participant requests) now has a collapsible “Read me, things to know” note under the banner, with tips specific to that directory. Plain, accessible, no JavaScript.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Jobs now show a logo: by default a job inherits its organisation’s logo automatically; you can upload a per-job logo on the posting form to override it. Logos appear on the job board cards.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.41.0 — 2026-06-06 · Fix: auto header menu rendering twice</h3>
+					<h3>v0.41.0, 2026-06-06 · Fix: auto header menu rendering twice</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'The “Show navigation menu at the top of every page” option could output the menu twice on themes that fire the wp_body_open hook more than once. It now renders at most once per page. (If you also placed an [sssj_menu] manually, switch this testing option off in Settings → General.)', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Organisation logos are now smaller on cards and profiles (less dominant).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.40.0 — 2026-06-06 · Elementor widget pack for the front-page blocks</h3>
+					<h3>v0.40.0, 2026-06-06 · Elementor widget pack for the front-page blocks</h3>
 					<ul class="ul-disc">
 						<li><?php esc_html_e( 'New “Shuffles Jobs” Elementor widget category with drag-and-drop widgets for the home-page blocks: Hero banner, Animated stats, Featured roles, Recent items, and the Navigation menu. Each has visual controls (headings, button text/links, counts, type, layout) and previews live in the Elementor editor.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Standalone-first: the widgets only load when Elementor is active (no hard dependency). Without Elementor, use the [sssj_hero], [sssj_stats], [sssj_featured], [sssj_recent] and [sssj_menu] shortcodes as before. Elementor now also appears on the Integrations tab.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.39.0 — 2026-06-06 · Worker profile pages now show details + photos · compact accessibility language pill</h3>
+					<h3>v0.39.0, 2026-06-06 · Worker profile pages now show details + photos · compact accessibility language pill</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Worker / contractor profile pages now display the full details below the bio — availability, services, rate, location, languages & cultural focus, verified checks and any custom fields — instead of appearing blank.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Worker / contractor profile pages now display the full details below the bio, availability, services, rate, location, languages & cultural focus, verified checks and any custom fields, instead of appearing blank.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Worker profiles can now have a profile photo (shown as a headshot on the card and profile) plus an optional photo gallery that displays as a swipeable strip. Add them on the worker profile form.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The accessibility-bar language picker is now a compact rounded pill sized to its text, matching the other accessibility controls, instead of a full-width box.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Added breathing room between the filter/header panel and the cards on every directory (panels now have consistent spacing below them).', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.38.0 — 2026-06-06 · Custom Profile Fields + FluentCRM sync (with per-user log)</h3>
+					<h3>v0.38.0, 2026-06-06 · Custom Profile Fields + FluentCRM sync (with per-user log)</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New “Profile Fields” settings tab: define your own custom fields on worker/contractor, organisation and participant-request profiles — text, paragraph, number, searchable single-select, searchable multi-select (pills) or yes/no toggle. Mark a field required or “show on banner filters”. Fields render on the relevant profile forms and save automatically.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New “CRM Sync” settings tab: map any profile value — a funding source like NDIS, a sector, a culture/language, or a custom-field option — to a FluentCRM tag and/or list. When a member ticks that value on their profile, the tag/list is added to their contact; un-ticking removes it. Syncs to the FluentCRM on this site, gated by a master switch, and only ever maps to tags/lists that already exist.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Per-user CRM sync log: every attach/remove is recorded and viewable both on each user’s profile screen (with a “Re-sync now” button) and on the CRM Sync tab. If a mapped tag/list is later deleted in FluentCRM, an admin alert + a “missing” log entry appear so you can fix the mapping — a profile save is never broken by a CRM error.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Profile Fields” settings tab: define your own custom fields on worker/contractor, organisation and participant-request profiles, text, paragraph, number, searchable single-select, searchable multi-select (pills) or yes/no toggle. Mark a field required or “show on banner filters”. Fields render on the relevant profile forms and save automatically.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “CRM Sync” settings tab: map any profile value, a funding source like NDIS, a sector, a culture/language, or a custom-field option, to a FluentCRM tag and/or list. When a member ticks that value on their profile, the tag/list is added to their contact; un-ticking removes it. Syncs to the FluentCRM on this site, gated by a master switch, and only ever maps to tags/lists that already exist.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Per-user CRM sync log: every attach/remove is recorded and viewable both on each user’s profile screen (with a “Re-sync now” button) and on the CRM Sync tab. If a mapped tag/list is later deleted in FluentCRM, an admin alert + a “missing” log entry appear so you can fix the mapping, a profile save is never broken by a CRM error.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.37.0 — 2026-06-06 · Branding (Foundational Supports + Thriving Kids) &amp; SEO · auto header menu · readable CSS examples</h3>
+					<h3>v0.37.0, 2026-06-06 · Branding (Foundational Supports + Thriving Kids) &amp; SEO · auto header menu · readable CSS examples</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Branding & SEO: a new “Focus programs” setting (General tab) lists the funding programs/sectors the site covers — defaulting to NDIS, Aged Care, DVA, Foundational Supports and Thriving Kids. It is emitted as SEO keywords on your job, worker and organisation pages, and becomes the default sub-text on the [sssj_hero] banner. “Foundational Supports” and “Thriving Kids” are also added to the seeded Funding Sources list (re-seed, or add via the taxonomy screen, to use them on existing sites).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New “Show navigation menu at the top of every page” option (General tab) — outputs the [sssj_menu] bar at the top of every front-end page via wp_body_open, so you can navigate the marketplace while testing without editing your theme header.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'Fixed the Custom CSS examples in the Appearance tab — the code samples were unreadable (the admin theme was painting light boxes behind the text). They now render as clean light-on-dark code blocks.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Branding & SEO: a new “Focus programs” setting (General tab) lists the funding programs/sectors the site covers, defaulting to NDIS, Aged Care, DVA, Foundational Supports and Thriving Kids. It is emitted as SEO keywords on your job, worker and organisation pages, and becomes the default sub-text on the [sssj_hero] banner. “Foundational Supports” and “Thriving Kids” are also added to the seeded Funding Sources list (re-seed, or add via the taxonomy screen, to use them on existing sites).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New “Show navigation menu at the top of every page” option (General tab), outputs the [sssj_menu] bar at the top of every front-end page via wp_body_open, so you can navigate the marketplace while testing without editing your theme header.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Fixed the Custom CSS examples in the Appearance tab, the code samples were unreadable (the admin theme was painting light boxes behind the text). They now render as clean light-on-dark code blocks.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.36.0 — 2026-06-06 · Dynamic filters + “Use my location” + animated front-page shortcodes + monetisation explainer</h3>
+					<h3>v0.36.0, 2026-06-06 · Dynamic filters + “Use my location” + animated front-page shortcodes + monetisation explainer</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'All directory filters now apply automatically as you change them — no “Filter” button required. A “Clear all” button resets every filter in one click, and a “Use my location” button next to the location field finds nearby results using the browser’s location (a sensible default radius is applied).', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'New animated front-page display shortcodes for the home page: [sssj_hero] (gradient hero banner with call-to-action buttons), [sssj_stats] (counters that count up as they scroll into view — open jobs, available workers, organisations, people placed), [sssj_featured] (featured roles with a shine effect), and [sssj_recent] (latest jobs / workers / organisations / participant requests with a staggered fade-in; layout="list" makes a compact sidebar widget). All animations respect the visitor’s “reduce motion” setting and are documented in the Shortcodes tab.', 'shuffles-social-services-jobs' ); ?></li>
-						<li><?php esc_html_e( 'The Monetisation settings tab now opens with a plain-English explanation of how it works (the two subscription types and the free-listings cap) and a side-by-side comparison of the PMPro vs FluentCart billing choice — what each is best for, how to configure it, and what it needs.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'All directory filters now apply automatically as you change them, no “Filter” button required. A “Clear all” button resets every filter in one click, and a “Use my location” button next to the location field finds nearby results using the browser’s location (a sensible default radius is applied).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New animated front-page display shortcodes for the home page: [sssj_hero] (gradient hero banner with call-to-action buttons), [sssj_stats] (counters that count up as they scroll into view, open jobs, available workers, organisations, people placed), [sssj_featured] (featured roles with a shine effect), and [sssj_recent] (latest jobs / workers / organisations / participant requests with a staggered fade-in; layout="list" makes a compact sidebar widget). All animations respect the visitor’s “reduce motion” setting and are documented in the Shortcodes tab.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'The Monetisation settings tab now opens with a plain-English explanation of how it works (the two subscription types and the free-listings cap) and a side-by-side comparison of the PMPro vs FluentCart billing choice, what each is best for, how to configure it, and what it needs.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.35.0 — 2026-06-06 · Guides section + “Do not display” + English hot key moved out</h3>
+					<h3>v0.35.0, 2026-06-06 · Guides section + “Do not display” + English hot key moved out</h3>
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'New Guides section: plain-language how-to guides for each side of the marketplace — writing a successful job post, responding to a job, working as an ABN contractor, and building a standing profile. Available as the [sssj_guides] shortcode (collapsible panels, with an optional only="…" attribute) and a new Settings → Guides tab, from a single source of truth (Shuffles_SSJ_Guides::sections()).', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'New Guides section: plain-language how-to guides for each side of the marketplace, writing a successful job post, responding to a job, working as an ABN contractor, and building a standing profile. Available as the [sssj_guides] shortcode (collapsible panels, with an optional only="…" attribute) and a new Settings → Guides tab, from a single source of truth (Shuffles_SSJ_Guides::sections()).', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'New “Do not display” privacy option on worker and organisation profiles: hides the profile from search engines (noindex) and removes it from the public directory entirely.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'The “English” hot key now sits outside the accessibility bar, directly next to the ♿ Accessibility button, so members can return to English in one tap without opening the toolbar.', 'shuffles-social-services-jobs' ); ?></li>
 					</ul>
-					<h3>v0.34.0 — 2026-06-06 · Culture & Language fields (shared, preseeded, multi-select)</h3>
+					<h3>v0.34.0, 2026-06-06 · Culture & Language fields (shared, preseeded, multi-select)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New Cultural/community-focus and Language taxonomies, preseeded (CALD communities, LGBTQIA+, First Nations… and 40+ community languages incl. Auslan). One shared lookup used across jobs, workers/contractors and participant requests.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Added to the job, worker and request forms as searchable multi-selects (typeahead pills). Manage the lists under the plugin menu’s taxonomy screens.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.33.0 — 2026-06-06 · Accessibility toggle + centred map + multi-select filters</h3>
+				<h3>v0.33.0, 2026-06-06 · Accessibility toggle + centred map + multi-select filters</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'The accessibility toolbar is now hidden behind a single “♿ Accessibility” button (same position) and only opens when clicked — reclaiming page space.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'The accessibility toolbar is now hidden behind a single “♿ Accessibility” button (same position) and only opens when clicked, reclaiming page space.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'The directory map is now half-width and centred, with tasteful spacing between the filter banner and the cards.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Directory category/service filters are now multi-select (search-and-add pills) — filter by several categories at once.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Directory category/service filters are now multi-select (search-and-add pills), filter by several categories at once.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.32.0 — 2026-06-06 · Wider language coverage on the directories</h3>
+				<h3>v0.32.0, 2026-06-06 · Wider language coverage on the directories</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'More of each directory now translates: headings, the “Available now / Within” controls, the “Only with open placements” toggle, and the search/location field placeholders (the language switcher now translates placeholders too). New strings added to all six languages.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Note: user-typed content (names, bios, job text) and items inside the new search-pickers are not auto-translated — that needs a paid translation service or the browser’s built-in “Translate page”.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Note: user-typed content (names, bios, job text) and items inside the new search-pickers are not auto-translated, that needs a paid translation service or the browser’s built-in “Translate page”.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.31.0 — 2026-06-06 · Testing worksheet (shortcode + Settings tab)</h3>
+				<h3>v0.31.0, 2026-06-06 · Testing worksheet (shortcode + Settings tab)</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'A tester checklist covering every feature — work through each case and mark Pass/Fail (progress saved per browser; printable). Available as the [sssj_tests] shortcode and the new Settings → Testing tab, from a single source of truth (Shuffles_SSJ_Tests::suites()) kept current as the plugin changes.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'A tester checklist covering every feature, work through each case and mark Pass/Fail (progress saved per browser; printable). Available as the [sssj_tests] shortcode and the new Settings → Testing tab, from a single source of truth (Shuffles_SSJ_Tests::suites()) kept current as the plugin changes.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.30.0 — 2026-06-06 · Searchable multi-selects + tighter filter banner + org counters + responsive</h3>
+				<h3>v0.30.0, 2026-06-06 · Searchable multi-selects + tighter filter banner + org counters + responsive</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Checkbox grids are now searchable multi-selects (type-ahead pills): worker “Services you offer”, and the participant request’s support types + funding sources. Search and add, instead of scanning a long list.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Org cards show two counters: open jobs now, and total placed (all-time applicants the org marked as an Offer).', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Tighter filter banners — the location field is no longer over-wide — and a mobile/responsive pass (controls stack full-width, single-column cards) for a more professional small-screen layout.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Tighter filter banners, the location field is no longer over-wide, and a mobile/responsive pass (controls stack full-width, single-column cards) for a more professional small-screen layout.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.29.0 — 2026-06-06 · Organisation sectors + funding sources (pills + filters)</h3>
+				<h3>v0.29.0, 2026-06-06 · Organisation sectors + funding sources (pills + filters)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Organisations can now select the sectors they cover and the funding sources they accept (NDIS, Aged Care, DVA, etc.). These show as pills on the org card and are emitted in the org profile.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'The Organisations directory filter panel gains Sector and Funding filters plus an “Only with open placements” toggle (organisations that currently have at least one open job).', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.28.0 — 2026-06-06 · Worker location + worker-directory finder</h3>
+				<h3>v0.28.0, 2026-06-06 · Worker location + worker-directory finder</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Workers can now add their location (suburb/state/postcode, geocoded server-side). The worker directory gains a location search + radius slider + map, matching the job and organisation finders. Only the suburb is shown publicly.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.27.0 — 2026-06-06 · Keyless location finder on the job boards + friendlier English hot-key</h3>
+				<h3>v0.27.0, 2026-06-06 · Keyless location finder on the job boards + friendlier English hot-key</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The Jobs / TFN / ABN boards now show the location search + a radius slider even without a Google Maps key (geocoding runs server-side). The map still needs a key; the radius search itself is keyless.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'The English hot-key now reads “English Hot Key” with a friendly note: “Have you chosen a language you can’t read, and want to go back to English? We got you! Hit the Hot Key.”', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.26.0 — 2026-06-06 · Select2-style pill pickers everywhere</h3>
+				<h3>v0.26.0, 2026-06-06 · Select2-style pill pickers everywhere</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Every plugin dropdown is now a searchable, professional select2-style picker; multi-selects show removable pills. Powered by a self-hosted Tom Select (no jQuery), themed to your design system / Style Studio colours.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Loaded only on pages with plugin content; the accessibility language picker is left untouched. Opt a select out with a data-no-enhance attribute.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.25.0 — 2026-06-06 · Organisation finder — location + radius + map</h3>
+				<h3>v0.25.0, 2026-06-06 · Organisation finder, location + radius + map</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The Organisations directory gains a location search with a radius slider and a map of org locations. An organisation matches if ANY of its locations is within the radius, ordered by nearest.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Every saved location (primary + additional) is geocoded server-side (keyless), so multi-location orgs are found by distance from all their sites. Map needs a Google key; the radius search itself works with no key.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.24.0 — 2026-06-06 · Organisation branding — logo + social links</h3>
+				<h3>v0.24.0, 2026-06-06 · Organisation branding, logo + social links</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Organisations can upload a logo (shown on their profile, directory cards and search results, and added to the Organization structured data for SEO).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Social + profile links: Facebook, LinkedIn, Instagram, X, YouTube and a Shuffles profile link, shown as branded icons and emitted as schema.org sameAs for richer search results.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.23.0 — 2026-06-06 · Appearance "Style Studio" (live preview)</h3>
+				<h3>v0.23.0, 2026-06-06 · Appearance "Style Studio" (live preview)</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'The Appearance tab is now a Style Studio: visual controls (colours, corner radius, font, base size, heading weight, density) alongside a live preview of a realistic mock board (nav, search, ABN/TFN/featured/need cards) that updates as you edit — nothing saved until you click Save.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'The Appearance tab is now a Style Studio: visual controls (colours, corner radius, font, base size, heading weight, density) alongside a live preview of a realistic mock board (nav, search, ABN/TFN/featured/need cards) that updates as you edit, nothing saved until you click Save.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'One-click presets (Soft / Bold / Calm), a desktop/mobile width toggle, and Save / Load named looks. The raw Custom CSS box edits live too, scoped to the preview.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'New tokens wired through to the front end: base font size (--sssj-fs), heading weight (--sssj-weight-heading) and a density control that scales the spacing.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.22.0 — 2026-06-06 · Pages tab + Custom CSS guide</h3>
+				<h3>v0.22.0, 2026-06-06 · Pages tab + Custom CSS guide</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New Pages tab gathers ALL page mappings in one place, grouped (Browse / Participants / Post-create / Member account), each with lookup + create + edit. The Boards tab now points here.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Appearance tab now includes a Custom CSS guide: the design tokens you can override, the main classes to target, five copy-paste examples, and rules of thumb (scope to .sssj, prefer tokens, avoid !important so accessibility modes still win).', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.21.0 — 2026-06-06 · Login-aware navigation menu + remaining page pickers</h3>
+				<h3>v0.21.0, 2026-06-06 · Login-aware navigation menu + remaining page pickers</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New [sssj_menu] shortcode: a responsive navigation bar that adapts to the visitor. Logged-out users see browse links + Log in / Register; logged-in users see their dashboard, messages, participant requests, log out, plus action links (Post a job / My credentials / Request support) shown only when their account can use them.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'It maintains itself — links resolve from your configured pages (Boards tab) or by finding the page that contains each shortcode, and it re-renders for each visitor. Fully customisable via the shuffles_ssj_menu_items filter.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Added the remaining page pickers (worker directory, create worker profile, participant requests, request support, my credentials) so every page has a lookup / create / edit control — and the menu can link to all of them.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'It maintains itself, links resolve from your configured pages (Boards tab) or by finding the page that contains each shortcode, and it re-renders for each visitor. Fully customisable via the shuffles_ssj_menu_items filter.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Added the remaining page pickers (worker directory, create worker profile, participant requests, request support, my credentials) so every page has a lookup / create / edit control, and the menu can link to all of them.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.20.0 — 2026-06-06 · Shortcodes reference tab</h3>
+				<h3>v0.20.0, 2026-06-06 · Shortcodes reference tab</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'New Settings → Shortcodes tab: every public shortcode listed and explained, grouped by area (Job ads, Workers, Participants, Organisations, Member account), with a copy-ready code, what it does, where to use it, who can see it, and any optional attributes.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Driven by a single source of truth (Shuffles_SSJ_Shortcodes::reference()) co-located with the shortcode registration, so adding a shortcode documents it automatically.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.19.0 — 2026-06-06 · Compliance & verification (credentials → admin approval → ✓ Verified)</h3>
+				<h3>v0.19.0, 2026-06-06 · Compliance & verification (credentials → admin approval → ✓ Verified)</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Workers add their checks (NDIS Worker Screening, WWCC, police check, First Aid, qualifications, insurance) with the [sssj_credentials] shortcode — type, reference, issue/expiry dates and an evidence file (PDF/JPG/PNG).', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Evidence is stored in the database — no file on disk and no URL, so it is never directly fetchable even on Nginx (which ignores .htaccess). Server-side MIME + size checks (PDF/JPG/PNG, 8 MB). Served only to its owner or an admin through a nonce-signed handler.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'New admin Verification queue (Jobs & Engagements → Verification, with a pending count): review each document and Approve or Reject with a note. The ✓ Verified badge is set ONLY by admin approval — never from user input.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Workers add their checks (NDIS Worker Screening, WWCC, police check, First Aid, qualifications, insurance) with the [sssj_credentials] shortcode, type, reference, issue/expiry dates and an evidence file (PDF/JPG/PNG).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Evidence is stored in the database, no file on disk and no URL, so it is never directly fetchable even on Nginx (which ignores .htaccess). Server-side MIME + size checks (PDF/JPG/PNG, 8 MB). Served only to its owner or an admin through a nonce-signed handler.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'New admin Verification queue (Jobs & Engagements → Verification, with a pending count): review each document and Approve or Reject with a note. The ✓ Verified badge is set ONLY by admin approval, never from user input.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Daily expiry sweep: a lapsed credential auto-expires and drops the verified badge; workers get an email reminder at the configurable lead time (Compliance tab) and on the expiry day. Worker cards show which checks are verified (labels only).', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.18.0 — 2026-06-06 · Self-hosted geolocation (no Geo my WP, no mandatory Google)</h3>
+				<h3>v0.18.0, 2026-06-06 · Self-hosted geolocation (no Geo my WP, no mandatory Google)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'The geo is now a fully self-contained custom build. Geo my WP is never called (it was only ever an optional status row). New Shuffles_SSJ_Geo engine: true great-circle (Haversine) distance with nearest-first ordering, replacing the bounding-box-only filter.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Keyless geocoding: typing a suburb or postcode now resolves to coordinates with no Google key — a bundled list of Australian cities resolves instantly and the rest is looked up free via OpenStreetMap (cached). Radius search and stored listing coordinates work with no API key. Choose the geocoder in the Maps tab.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Keyless geocoding: typing a suburb or postcode now resolves to coordinates with no Google key, a bundled list of Australian cities resolves instantly and the rest is looked up free via OpenStreetMap (cached). Radius search and stored listing coordinates work with no API key. Choose the geocoder in the Maps tab.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Listings are geocoded server-side from their suburb/state/postcode when posted without autocomplete. A Google key remains optional (it only adds Google autocomplete + the Google map). Pluggable via shuffles_ssj_geocode / shuffles_ssj_geo_dataset.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.17.0 — 2026-06-06 · Languages by site + FluentCart/PMPro provider choice</h3>
+				<h3>v0.17.0, 2026-06-06 · Languages by site + FluentCart/PMPro provider choice</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Languages are now per-site: choose which built-in languages appear in the picker (CALD tab → Offered languages), add your own (code | Endonym | rtl) including right-to-left ones, and supply/override their wording via a small JSON box. The English hot-key and live switching are unchanged.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Monetisation can now run on FluentCart or PMPro — pick the provider in the Monetisation tab. PMPro uses level IDs; FluentCart uses product IDs (active subscription = access). Featured placement and both gates follow the chosen provider.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'FluentCart support is built against its subscription model and is safe when the FluentCart core plugin is not yet active (no detection = treated as no subscription; never errors). Pluggable via shuffles_ssj_fluentcart_active. Standalone-first as ever — removing WooCommerce / WP Job Manager does not affect this plugin.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Monetisation can now run on FluentCart or PMPro, pick the provider in the Monetisation tab. PMPro uses level IDs; FluentCart uses product IDs (active subscription = access). Featured placement and both gates follow the chosen provider.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'FluentCart support is built against its subscription model and is safe when the FluentCart core plugin is not yet active (no detection = treated as no subscription; never errors). Pluggable via shuffles_ssj_fluentcart_active. Standalone-first as ever, removing WooCommerce / WP Job Manager does not affect this plugin.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.16.0 — 2026-06-06 · Featured placement for paid advertisers</h3>
+				<h3>v0.16.0, 2026-06-06 · Featured placement for paid advertisers</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Advertisers with the advertising subscription get featured placement: their jobs float to the top of every board (rides the existing menu_order sort — no change to the segregation/query layer) and show a ★ Featured badge.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Featured state is stamped at post time and re-synced daily, so a lapsed subscription un-features automatically and a new one features without a re-save. Per-advertiser only — the site-wide resale licence never blanket-features every job.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Advertisers with the advertising subscription get featured placement: their jobs float to the top of every board (rides the existing menu_order sort, no change to the segregation/query layer) and show a ★ Featured badge.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Featured state is stamped at post time and re-synced daily, so a lapsed subscription un-features automatically and a new one features without a re-save. Per-advertiser only, the site-wide resale licence never blanket-features every job.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Only active when monetisation is enabled (boards stay neutral by default). Pluggable via the shuffles_ssj_is_job_featured filter; ★ Featured badge translated into all six CALD languages; advertiser dashboard shows which listings are featured.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.15.0 — 2026-06-06 · Monetisation subscriptions</h3>
+				<h3>v0.15.0, 2026-06-06 · Monetisation subscriptions</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Employer advertising subscription: free-tier active-listing cap enforced at posting; an active subscription (PMPro level) unlocks unlimited. Over-limit advertisers see an upgrade prompt.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Provider application-fee subscription: required to respond to participant needs / ABN tasks (rides the existing response gate).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Both gates are OFF until enabled; PMPro level IDs configurable; FluentCart/custom logic pluggable via filters. Enforced server-side.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.14.0 — 2026-06-06 · Organisation / employer profiles</h3>
+				<h3>v0.14.0, 2026-06-06 · Organisation / employer profiles</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Permanent, SEO-able organisation profiles (Organization structured data) with multiple locations: [sssj_post_org] to create/edit, [sssj_org_directory] to browse, and a company page that lists all that employer\'s open positions.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Jobs can be attached to an organisation (browse jobs by company). Page-pickers added for the directory + profile pages.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Participants stay private by design — their listings remain pseudonymous and noindex; only named businesses get public profiles.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Participants stay private by design, their listings remain pseudonymous and noindex; only named businesses get public profiles.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.13.0 — 2026-06-06 · Appearance — per-install re-skin</h3>
+				<h3>v0.13.0, 2026-06-06 · Appearance, per-install re-skin</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'New Appearance tab: set the primary/hover/ink/text/border/background colours, the ABN/TFN/participant accents, corner radius and font family with colour pickers — each install can be fully re-skinned without code.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'New Appearance tab: set the primary/hover/ink/text/border/background colours, the ABN/TFN/participant accents, corner radius and font family with colour pickers, each install can be fully re-skinned without code.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'A Custom CSS box for anything else. Settings are output as inline CSS variables scoped to the plugin (.sssj), so the rest of your theme is untouched.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.12.0 — 2026-06-06 · Configurable vendor/brand URLs + domain-neutral</h3>
+				<h3>v0.12.0, 2026-06-06 · Configurable vendor/brand URLs + domain-neutral</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Licence vendor store URL (Licensing tab) and brand website URL (General tab) are now editable settings — repoint them without touching code.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Licence vendor store URL (Licensing tab) and brand website URL (General tab) are now editable settings, repoint them without touching code.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Confirmed the plugin hardcodes no site domain (everything follows the WordPress site URL), so a domain change needs no code edit; docs made domain-neutral.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.11.0 — 2026-06-06 · Internal messaging relay</h3>
+				<h3>v0.11.0, 2026-06-06 · Internal messaging relay</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Private inbox [sssj_messages]. Applying to a job or responding to a participant request starts a conversation with the listing owner (carrying your message); both sides reply in-app.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Relay only — no email addresses are shown; participants appear by pseudonym to workers; recipients get a no-content "you have a message" email.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Relay only, no email addresses are shown; participants appear by pseudonym to workers; recipients get a no-content "you have a message" email.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Page-pickers added for the Member dashboard and Messages pages.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.10.0 — 2026-06-06 · Site-wide language + English hot-key</h3>
+				<h3>v0.10.0, 2026-06-06 · Site-wide language + English hot-key</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Language choice is now site-wide: the accessibility/language toolbar appears on every page (a floating bar where there is no board), and the chosen language + translations persist and re-apply everywhere.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Always-visible English hot-key in the toolbar whenever a non-English language is active — one tap back to English.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Always-visible English hot-key in the toolbar whenever a non-English language is active, one tap back to English.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.9.0 — 2026-06-06 · Resale licensing (FluentCart)</h3>
+				<h3>v0.9.0, 2026-06-06 · Resale licensing (FluentCart)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Licence client: enter key + product ID, Activate/Deactivate, live status on the Licensing tab; daily re-validation with a grace window so a vendor-store outage never disables a valid licence.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'is_pro() gate for premium features (filter shuffles_ssj_is_pro); your own site bypasses via the SHUFFLES_SSJ_PRO constant in wp-config.php. Core boards always work.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.8.0 — 2026-06-06 · Interface translation (CALD)</h3>
+				<h3>v0.8.0, 2026-06-06 · Interface translation (CALD)</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Language picker in the accessibility toolbar — switches the interface into Arabic (RTL), Mandarin, Greek, Italian, Indonesian or Punjabi, live, no reload. Auto-translated, pending native review.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Language picker in the accessibility toolbar, switches the interface into Arabic (RTL), Mandarin, Greek, Italian, Indonesian or Punjabi, live, no reload. Auto-translated, pending native review.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Translations extend/override via the shuffles_ssj_i18n and shuffles_ssj_languages filters; choice remembered in the browser.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.7.0 — 2026-06-06 · Accessibility / CALD toolbar</h3>
+				<h3>v0.7.0, 2026-06-06 · Accessibility / CALD toolbar</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Browser-side accessibility toolbar on every board/form: larger text, high-contrast, no-colour, Easy-Read, read-aloud (speech), and voice input on search fields. $0 to run.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Preferences remembered (localStorage). Master-gated by the CALD & Access switch. Display-mode filters apply to content blocks, never the page root.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( '(7-language interface translation + RTL to follow.)', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.6.0 — 2026-06-06 · Google Maps + radius</h3>
+				<h3>v0.6.0, 2026-06-06 · Google Maps + radius</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Places autocomplete on the job + participant posting forms — fills suburb/state/postcode and stores coordinates (manual entry still works without a key).', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Places autocomplete on the job + participant posting forms, fills suburb/state/postcode and stores coordinates (manual entry still works without a key).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Radius (distance) filter on the job board and participant board; a results map on the job board. Participant needs are radius-searchable but never plotted (privacy).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Maps settings now list the exact Google APIs to enable: Maps JavaScript API, Places API, Geocoding API.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.5.0 — 2026-06-06 · Apply / respond flow</h3>
+				<h3>v0.5.0, 2026-06-06 · Apply / respond flow</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Apply to jobs (panel on each job page) and respond to participant needs (button on the needs board), recorded in the applications table — duplicates blocked by the unique key.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Apply to jobs (panel on each job page) and respond to participant needs (button on the needs board), recorded in the applications table, duplicates blocked by the unique key.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Gating: TFN jobs accept any member; ABN jobs and participant needs require a recorded, valid ABN (with a filter hook for the upcoming provider subscription).', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Member dashboard [sssj_my_listings] — your applications, your job ads with applicants + status control, your participant requests with responses.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Member dashboard [sssj_my_listings], your applications, your job ads with applicants + status control, your participant requests with responses.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.4.0 — 2026-06-05 · Phase 1 (Participants) — four sides live</h3>
+				<h3>v0.4.0, 2026-06-05 · Phase 1 (Participants), four sides live</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Participant-need board [sssj_need_board] — logged-in only, shows published (admin-moderated) requests with pseudonym + suburb only; no names or contact details.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Request form [sssj_post_need] — participant/nominee posts a need; pseudonym generated server-side; multi-select support types + funding (one/many/none); always saved as pending for moderation.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Participant-need board [sssj_need_board], logged-in only, shows published (admin-moderated) requests with pseudonym + suburb only; no names or contact details.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Request form [sssj_post_need], participant/nominee posts a need; pseudonym generated server-side; multi-select support types + funding (one/many/none); always saved as pending for moderation.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.3.0 — 2026-06-05 · Phase 1 (Workers)</h3>
+				<h3>v0.3.0, 2026-06-05 · Phase 1 (Workers)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Worker directory [sssj_worker_directory] with visibility enforced in the query layer (guests see public only; members also see logged-in profiles; verified-only is never over-exposed).', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'Worker profile form [sssj_post_worker] — create/edit your own profile (one per user), with services, availability, status, rate, optional ABN (checksum-validated) and visibility.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Worker profile form [sssj_post_worker], create/edit your own profile (one per user), with services, availability, status, rate, optional ABN (checksum-validated) and visibility.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.2.2 — 2026-06-05 · Database hardening (speed + accuracy)</h3>
+				<h3>v0.2.2, 2026-06-05 · Database hardening (speed + accuracy)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Custom tables retuned: UNIQUE key stops duplicate applications; composite indexes match the real query patterns (applicants-by-status, thread view, by-context messages, worker credentials by kind, expiry/verification sweeps).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'NOT NULL + sensible defaults on key columns for accuracy.', 'shuffles-social-services-jobs' ); ?></li>
-					<li><?php esc_html_e( 'In-place schema upgrade (dbDelta) runs automatically on already-installed sites — no reactivation needed.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'In-place schema upgrade (dbDelta) runs automatically on already-installed sites, no reactivation needed.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.2.1 — 2026-06-05 · Settings conventions (page-pickers + key instructions)</h3>
+				<h3>v0.2.1, 2026-06-05 · Settings conventions (page-pickers + key instructions)</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Page settings now use a lookup + create (auto-inserts the shortcode) + edit/view picker — Boards tab links the board and post-a-job pages.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Page settings now use a lookup + create (auto-inserts the shortcode) + edit/view picker, Boards tab links the board and post-a-job pages.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'API-key fields (Google Maps, licence key) now include how-to-get + what-it-does instructions and mask the stored value (blank submission keeps it).', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.2.0 — 2026-06-05 · Phase 1 (Advertisers, slice 1)</h3>
+				<h3>v0.2.0, 2026-06-05 · Phase 1 (Advertisers, slice 1)</h3>
 				<ul class="ul-disc">
-					<li><?php esc_html_e( 'Segregated job boards: [sssj_job_board], [sssj_tfn_board] (no ABN), [sssj_abn_board] (no TFN) — ABN/TFN separation enforced in the query layer.', 'shuffles-social-services-jobs' ); ?></li>
+					<li><?php esc_html_e( 'Segregated job boards: [sssj_job_board], [sssj_tfn_board] (no ABN), [sssj_abn_board] (no TFN), ABN/TFN separation enforced in the query layer.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Advertiser posting form [sssj_post_job] with engagement basis, one-off/ongoing, category, location, rate and ABN checksum validation (ABN stored only for ABN engagements).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'JobPosting JSON-LD (Google for Jobs) on job pages; participant needs + non-public workers forced noindex.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Daily expiry cron closes past-dated job ads. ABN-recorded hook fires for the banning cross-match.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.1.1 — 2026-06-05 · Plugin row links</h3>
+				<h3>v0.1.1, 2026-06-05 · Plugin row links</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Added a Settings action link on the Plugins screen (next to Activate / Delete).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Added row-meta links: Shuffles website, Documentation, and View details (→ GitHub repository).', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'Added Author URI and Plugin URI to the plugin header.', 'shuffles-social-services-jobs' ); ?></li>
 				</ul>
-				<h3>v0.1.0 — 2026-06-05 · Phase 0 (Scaffold)</h3>
+				<h3>v0.1.0, 2026-06-05 · Phase 0 (Scaffold)</h3>
 				<ul class="ul-disc">
 					<li><?php esc_html_e( 'Plugin skeleton, activator/deactivator/uninstaller, singleton bootstrap.', 'shuffles-social-services-jobs' ); ?></li>
 					<li><?php esc_html_e( 'CPTs: sssj_job (public), sssj_worker (public), sssj_need (private/noindex by design).', 'shuffles-social-services-jobs' ); ?></li>
@@ -2132,7 +2387,7 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			break;
 
 		case 'pm':
-			echo '<h2>' . esc_html__( 'Project Management — index', 'shuffles-social-services-jobs' ) . '</h2>';
+			echo '<h2>' . esc_html__( 'Project Management, index', 'shuffles-social-services-jobs' ) . '</h2>';
 			echo '<p>' . esc_html__( 'Mirrors docs/INDEX-SYSTEM.md. Settings tabs by domain colour:', 'shuffles-social-services-jobs' ) . '</p>';
 			echo '<table class="widefat striped"><thead><tr><th>' . esc_html__( 'Code', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Tab', 'shuffles-social-services-jobs' ) . '</th><th>' . esc_html__( 'Domain', 'shuffles-social-services-jobs' ) . '</th></tr></thead><tbody>';
 			foreach ( $tabs as $def ) {

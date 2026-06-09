@@ -1,12 +1,12 @@
 /**
- * Shuffles spinner — the branded busy state for lookups/queries that take a few seconds.
+ * Shuffles spinner, the branded busy state for lookups/queries that take a few seconds.
  *
  * Two uses:
  *  1. Automatic: any <form data-sssj-busy="Message…"> shows a full-form overlay on submit
  *     (e.g. the org / worker / participant forms, which do NDIS + ABR + geocode lookups on save).
  *  2. Programmatic: window.SSSJSpinner.show(el, msg) / .hide(el) for AJAX flows (e.g. autofill).
  *
- * Uses the site logo (pulsing) when one is available, else a brand-blue ring — mirrors SPF.
+ * Uses the site logo (pulsing) when one is available, else a brand-blue ring, mirrors SPF.
  */
 ( function () {
 	'use strict';
@@ -63,7 +63,7 @@
 		show( form, form.getAttribute( 'data-sssj-busy' ) || '' );
 	}, true );
 
-	// Links/buttons flagged data-sssj-busy that navigate (e.g. "Re-check NDIS register now") —
+	// Links/buttons flagged data-sssj-busy that navigate (e.g. "Re-check NDIS register now") -
 	// overlay the nearest panel before the page reloads.
 	document.addEventListener( 'click', function ( e ) {
 		var el = e.target.closest ? e.target.closest( 'a[data-sssj-busy], button[data-sssj-busy]' ) : null;

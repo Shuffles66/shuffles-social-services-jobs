@@ -1,6 +1,6 @@
 <?php
 /**
- * Cron monitor — tracks this plugin's scheduled (WP-Cron) jobs so the admin can see, per job:
+ * Cron monitor, tracks this plugin's scheduled (WP-Cron) jobs so the admin can see, per job:
  * frequency, next run due, last run, and whether the last run completed or errored.
  *
  * WP-Cron stores neither last-run times nor errors, so we record them: a PHP_INT_MIN recorder

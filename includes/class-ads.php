@@ -4,10 +4,10 @@
  *
  * We do NOT bundle or depend on Advanced Ads. If the Advanced Ads plugin is active, this class
  * lets its banners appear inside the marketplace:
- *   - [sssj_ad placement="slug"] / [sssj_ad id="123"] — drop an ad anywhere.
+ *   - [sssj_ad placement="slug"] / [sssj_ad id="123"], drop an ad anywhere.
  *   - Named slots (board top/bottom, single listing) mapped to an Advanced Ads placement in
  *     Settings → Ads, rendered automatically by the boards and single listing pages.
- * If Advanced Ads is not active (or a slot is unmapped), everything renders as empty — nothing breaks.
+ * If Advanced Ads is not active (or a slot is unmapped), everything renders as empty, nothing breaks.
  *
  * Advanced Ads template tags used (all guarded by function_exists):
  *   get_the_ad( $id ) · get_the_ad_placement( $id_or_slug ) · get_the_ad_group( $id )
@@ -24,9 +24,9 @@ class Shuffles_SSJ_Ads {
 	/** Named slots we expose (slot key without the ad_slot_ prefix). */
 	public static function slots() {
 		return array(
-			'board_top'    => __( 'Board — top (above results)', 'shuffles-social-services-jobs' ),
-			'board_bottom' => __( 'Board — bottom (below results)', 'shuffles-social-services-jobs' ),
-			'single'       => __( 'Single listing — below content', 'shuffles-social-services-jobs' ),
+			'board_top'    => __( 'Board, top (above results)', 'shuffles-social-services-jobs' ),
+			'board_bottom' => __( 'Board, bottom (below results)', 'shuffles-social-services-jobs' ),
+			'single'       => __( 'Single listing, below content', 'shuffles-social-services-jobs' ),
 		);
 	}
 
@@ -102,7 +102,7 @@ class Shuffles_SSJ_Ads {
 		return self::render( array( 'placement' => $placement ) );
 	}
 
-	/** [sssj_ad placement="slug" id="123" group="4"] — place an Advanced Ads unit anywhere. */
+	/** [sssj_ad placement="slug" id="123" group="4"], place an Advanced Ads unit anywhere. */
 	public static function shortcode( $atts ) {
 		$a = shortcode_atts(
 			array( 'placement' => '', 'id' => 0, 'group' => 0 ),

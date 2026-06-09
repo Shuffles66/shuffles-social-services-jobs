@@ -1,6 +1,6 @@
 <?php
 /**
- * Profile Field Registry — admin-defined custom fields on worker / organisation / participant
+ * Profile Field Registry, admin-defined custom fields on worker / organisation / participant
  * profiles. Each field has a type (text, number, searchable select / multi-select, toggle), can be
  * marked required and "show on banner filters", and its options can be mapped to FluentCRM tags/lists
  * by the CRM Sync layer. Definitions live in the sssj_profile_fields option; values in post meta
@@ -28,7 +28,7 @@ class Shuffles_SSJ_Field_Registry {
 		// Apply "show on banner filters" custom fields to the directory queries.
 		add_filter( 'shuffles_ssj_worker_query_args', array( $this, 'filter_worker_args' ), 10, 2 );
 		add_filter( 'shuffles_ssj_need_query_args', array( $this, 'filter_need_args' ), 10, 2 );
-		// (Organisations use a bespoke query — handled inline in Shortcodes::org_directory via filter_clauses.)
+		// (Organisations use a bespoke query, handled inline in Shortcodes::org_directory via filter_clauses.)
 	}
 
 	/* --------------------------------------------------------------- Banner filters */
@@ -324,7 +324,7 @@ class Shuffles_SSJ_Field_Registry {
 		$this->redirect_fields( 'deleted' );
 	}
 
-	/** Recommended provider (organisation) field set — mirrors a typical Shuffles XProfile provider set. */
+	/** Recommended provider (organisation) field set, mirrors a typical Shuffles XProfile provider set. */
 	public static function provider_field_seed() {
 		return array(
 			array( 'key' => 'specialisations', 'label' => __( 'Specialisations', 'shuffles-social-services-jobs' ), 'entities' => array( 'org' ), 'type' => 'multiselect', 'options' => array( 'Autism', 'Intellectual disability', 'Psychosocial / mental health', 'Physical disability', 'Acquired brain injury', 'Sensory (vision / hearing)', 'Aged care', 'Complex / high needs' ), 'required' => false, 'banner' => true ),

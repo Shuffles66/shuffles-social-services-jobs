@@ -1,6 +1,6 @@
 <?php
 /**
- * Self-hosted geolocation engine — the plugin's OWN geo, independent of Geo my WP (and of
+ * Self-hosted geolocation engine, the plugin's OWN geo, independent of Geo my WP (and of
  * Google when no key is set).
  *
  * Provides:

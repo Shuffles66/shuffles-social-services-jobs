@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! is_user_logged_in() ) {
 	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to manage your credentials.', 'shuffles-social-services-jobs' )
-		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 	return;
 }
 
@@ -25,14 +25,14 @@ $has_profile = (bool) Shuffles_SSJ_Credentials::worker_post_id( $uid );
 <div class="sssj sssj--credentials">
 	<div class="sssj-panel">
 		<h2><?php esc_html_e( 'My credentials', 'shuffles-social-services-jobs' ); ?></h2>
-		<p class="description"><?php esc_html_e( 'Add your checks and certificates. An administrator reviews each one — only admin-approved credentials earn the ✓ Verified badge on your profile. Your documents are stored privately and are never shown publicly.', 'shuffles-social-services-jobs' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Add your checks and certificates. An administrator reviews each one, only admin-approved credentials earn the ✓ Verified badge on your profile. Your documents are stored privately and are never shown publicly.', 'shuffles-social-services-jobs' ); ?></p>
 
 		<?php if ( '1' === $status ) : ?>
 			<p class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Credential submitted for review. Thank you!', 'shuffles-social-services-jobs' ); ?></p>
 		<?php elseif ( 'deleted' === $status ) : ?>
 			<p class="sssj-badge"><?php esc_html_e( 'Credential removed.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php elseif ( 'error' === $status ) : ?>
-			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'Sorry — that could not be saved. Check the file is a PDF, JPG or PNG under 8 MB and try again.', 'shuffles-social-services-jobs' ); ?></p>
+			<p class="sssj-badge" style="background:#fee2e2;color:#b91c1c"><?php esc_html_e( 'Sorry, that could not be saved. Check the file is a PDF, JPG or PNG under 8 MB and try again.', 'shuffles-social-services-jobs' ); ?></p>
 		<?php endif; ?>
 
 		<?php if ( ! $has_profile ) : ?>
@@ -85,7 +85,7 @@ $has_profile = (bool) Shuffles_SSJ_Credentials::worker_post_id( $uid );
 			<div class="sssj-field">
 				<label for="sssj-cred-kind"><?php esc_html_e( 'Credential type', 'shuffles-social-services-jobs' ); ?> *</label>
 				<select class="sssj-select" id="sssj-cred-kind" name="kind" required>
-					<option value=""><?php esc_html_e( '— Select —', 'shuffles-social-services-jobs' ); ?></option>
+					<option value=""><?php esc_html_e( '- Select -', 'shuffles-social-services-jobs' ); ?></option>
 					<?php foreach ( Shuffles_SSJ_Credentials::kinds() as $k => $label ) : ?>
 						<option value="<?php echo esc_attr( $k ); ?>"><?php echo esc_html( $label ); ?></option>
 					<?php endforeach; ?>

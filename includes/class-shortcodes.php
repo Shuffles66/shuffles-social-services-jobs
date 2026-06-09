@@ -58,6 +58,7 @@ class Shuffles_SSJ_Shortcodes {
 		add_shortcode( 'sssj_marketing', array( 'Shuffles_SSJ_Marketing', 'shortcode' ) );
 		add_shortcode( 'sssj_create_asset', array( $this, 'create_asset' ) );
 		add_shortcode( 'sssj_promo', array( $this, 'promo' ) );
+		add_shortcode( 'sssj_profile_card', array( 'Shuffles_SSJ_Profile_Card', 'shortcode' ) );
 		add_shortcode( 'sssj_matches', array( $this, 'matches_panel' ) );
 		add_filter( 'the_content', array( $this, 'maybe_job_map' ) );
 		add_filter( 'the_content', array( $this, 'maybe_apply_panel' ) );
@@ -82,7 +83,7 @@ class Shuffles_SSJ_Shortcodes {
 	/** Echo the [sssj_menu] bar at the top of the page when the "auto header menu" option is on. */
 	public function auto_header_menu() {
 		static $done = false;
-		// Some themes fire wp_body_open more than once — only ever render the auto menu a single time.
+		// Some themes fire wp_body_open more than once, only ever render the auto menu a single time.
 		if ( is_admin() || $done ) {
 			return;
 		}
@@ -91,7 +92,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * Single source of truth for the public shortcodes — drives the Settings → Shortcodes tab.
+	 * Single source of truth for the public shortcodes, drives the Settings → Shortcodes tab.
 	 * When you ADD a shortcode, add an entry here so it is documented automatically.
 	 *
 	 * Each entry: tag, title, what (description), where (page + audience), atts (array tag=>desc),
@@ -104,8 +105,8 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_menu',
 				'title'  => __( 'Navigation menu (login-aware)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A ready-made navigation bar that adapts to the visitor. Logged-OUT: Jobs, Find a worker, Organisations, Log in (and Register if open). Logged-IN: Participant requests, Edit my profile, Messages, My dashboard, Log out — plus Post a job / My credentials / Request support shown only when the account can use them. Admins also get a “Settings” sub-item nested under “My dashboard”. Links resolve automatically from your configured pages (Boards tab), or by finding the page that contains each shortcode.', 'shuffles-social-services-jobs' ),
-				'where'  => __( 'Your site header, a navigation/widget area, or the top of key pages. It maintains itself — no separate menu to edit.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A ready-made navigation bar that adapts to the visitor. Logged-OUT: Jobs, Find a worker, Organisations, Log in (and Register if open). Logged-IN: Participant requests, Edit my profile, Messages, My dashboard, Log out, plus Post a job / My credentials / Request support shown only when the account can use them. Admins also get a “Settings” sub-item nested under “My dashboard”. Links resolve automatically from your configured pages (Boards tab), or by finding the page that contains each shortcode.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'Your site header, a navigation/widget area, or the top of key pages. It maintains itself, no separate menu to edit.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Navigation', 'shuffles-social-services-jobs' ),
 				'atts'   => array(
@@ -121,19 +122,19 @@ class Shuffles_SSJ_Shortcodes {
 				'access' => 'public',
 				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
 				'atts'   => array(
-					'basis="abn|tfn"' => __( 'Optional — restrict to one engagement basis (omit to show both).', 'shuffles-social-services-jobs' ),
+					'basis="abn|tfn"' => __( 'Optional, restrict to one engagement basis (omit to show both).', 'shuffles-social-services-jobs' ),
 					'title="Jobs"'    => __( 'Optional heading shown above the board.', 'shuffles-social-services-jobs' ),
-					'per_page="12"'   => __( 'Optional — results per page (default 12).', 'shuffles-social-services-jobs' ),
+					'per_page="12"'   => __( 'Optional, results per page (default 12).', 'shuffles-social-services-jobs' ),
 				),
 			),
 			array(
 				'tag'    => 'sssj_tfn_board',
 				'title'  => __( 'Employee jobs board (TFN only)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Shows ONLY TFN employee positions (wages, tax withheld). Never shows ABN listings or participant requests — segregation is enforced in the query layer.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows ONLY TFN employee positions (wages, tax withheld). Never shows ABN listings or participant requests, segregation is enforced in the query layer.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A public "Employee jobs" page, if you want the two engagement types on separate pages.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
-				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional, results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
 				'tag'    => 'sssj_abn_board',
@@ -142,16 +143,16 @@ class Shuffles_SSJ_Shortcodes {
 				'where'  => __( 'A public "Contractor & ABN engagements" page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
-				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional, results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
 				'tag'    => 'sssj_volunteer_board',
 				'title'  => __( 'Volunteer opportunities board', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Shows ONLY volunteer (unpaid) roles. Never shows paid TFN/ABN listings — segregation is enforced in the query layer, just like the other boards.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows ONLY volunteer (unpaid) roles. Never shows paid TFN/ABN listings, segregation is enforced in the query layer, just like the other boards.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A public "Volunteer opportunities" page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Job ads', 'shuffles-social-services-jobs' ),
-				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional, results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
 				'tag'    => 'sssj_post_job',
@@ -169,7 +170,7 @@ class Shuffles_SSJ_Shortcodes {
 				'where'  => __( 'A public "Find a worker" page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
-				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional, results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
 				'tag'    => 'sssj_post_worker',
@@ -192,7 +193,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_resumes',
 				'title'  => __( 'My résumés', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Candidates store one or more named résumé files (PDF / Word / RTF / ODT), set a default, and remove old ones. Files are private — served only to the owner, admins, and (when applying) the employer. Pick which résumé to send when applying for an employee (TFN) job.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Candidates store one or more named résumé files (PDF / Word / RTF / ODT), set a default, and remove old ones. Files are private, served only to the owner, admins, and (when applying) the employer. Pick which résumé to send when applying for an employee (TFN) job.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "My résumés" page, or the “My résumés” tab in the member dashboard.', 'shuffles-social-services-jobs' ),
 				'access' => 'workers',
 				'group'  => __( 'Workers', 'shuffles-social-services-jobs' ),
@@ -201,11 +202,11 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_need_board',
 				'title'  => __( 'Participant requests board', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Lists participant support requests (always ABN). Participants are shown only by a pseudonym and suburb — never a name or contact detail. First contact goes through the internal relay.', 'shuffles-social-services-jobs' ),
-				'where'  => __( 'A "Participant requests" page. LOGIN-GATED — guests are blocked and prompted to log in.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lists participant support requests (always ABN). Participants are shown only by a pseudonym and suburb, never a name or contact detail. First contact goes through the internal relay.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A "Participant requests" page. LOGIN-GATED, guests are blocked and prompted to log in.', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Participants', 'shuffles-social-services-jobs' ),
-				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+				'atts'   => array( 'title="…"' => __( 'Optional heading.', 'shuffles-social-services-jobs' ), 'per_page="12"' => __( 'Optional, results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
 				'tag'    => 'sssj_post_need',
@@ -219,11 +220,11 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_org_directory',
 				'title'  => __( 'Organisation directory', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Browse employer / provider organisation profiles. Each public org page (Organization structured data for SEO) lists the company’s locations and its open positions — i.e. browse jobs by company.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Browse employer / provider organisation profiles. Each public org page (Organization structured data for SEO) lists the company’s locations and its open positions, i.e. browse jobs by company.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A public "Organisations" / "Providers" page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
-				'atts'   => array( 'per_page="12"' => __( 'Optional — results per page.', 'shuffles-social-services-jobs' ) ),
+				'atts'   => array( 'per_page="12"' => __( 'Optional, results per page.', 'shuffles-social-services-jobs' ) ),
 			),
 			array(
 				'tag'    => 'sssj_swipe',
@@ -233,7 +234,7 @@ class Shuffles_SSJ_Shortcodes {
 				'access' => 'public',
 				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
 				'atts'   => array(
-					'count="24"' => __( 'Optional — how many providers to load into the deck (max 60).', 'shuffles-social-services-jobs' ),
+					'count="24"' => __( 'Optional, how many providers to load into the deck (max 60).', 'shuffles-social-services-jobs' ),
 					'title="…"'  => __( 'Optional heading.', 'shuffles-social-services-jobs' ),
 				),
 			),
@@ -249,7 +250,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_org_team',
 				'title'  => __( 'Organisation team', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Lets several people belong to one organisation. An organisation admin (the owner, or any member promoted to admin) can add an existing member by email/username, change a member’s role, or remove someone. Accounts are never created here — the person must already be registered. Also appears as a “Team” tab inside the member dashboard.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets several people belong to one organisation. An organisation admin (the owner, or any member promoted to admin) can add an existing member by email/username, change a member’s role, or remove someone. Accounts are never created here, the person must already be registered. Also appears as a “Team” tab inside the member dashboard.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "Team" page for organisations, or rely on the Team tab in [sssj_dashboard].', 'shuffles-social-services-jobs' ),
 				'access' => 'advertisers',
 				'group'  => __( 'Organisations', 'shuffles-social-services-jobs' ),
@@ -267,7 +268,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_dashboard',
 				'title'  => __( 'Member dashboard (all-in-one)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'One tabbed hub that ties everything together for the logged-in member: an Overview with quick stats + actions, My listings & applicants (advertisers), Matched jobs and My credentials (workers), Saved searches, and Messages. Each tab shows only if it applies to that member.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'One tabbed hub that ties everything together for the logged-in member: an Overview with quick stats + actions, My listings & applicants (advertisers), Matched jobs and My credentials (workers), an Alerts hub, and Messages. Members add, change or remove their roles (hats) from the “Edit my roles” button, which opens a pop-up picker; the tabs shown update to match. Each tab shows only if it applies to that member.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'Your main "My account" / "Dashboard" page (the single page to send logged-in members to).', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
@@ -285,8 +286,17 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_messages',
 				'title'  => __( 'Messages (internal relay inbox)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'The private messaging inbox: thread list, thread view and reply. Applying or responding starts a thread to the listing owner. Relay-only — email addresses are never exposed, and participants appear as their pseudonym.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'The private messaging inbox: thread list, thread view and reply. Applying or responding starts a thread to the listing owner. Relay-only, email addresses are never exposed, and participants appear as their pseudonym.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "Messages" page.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_alerts',
+				'title'  => __( 'Alerts hub (manage all my alerts)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'One place for a member to turn their email alerts on or off: new jobs that match their profile, new candidates for each job they advertise, and their saved-search alerts (each with its own remove button). Built into the Member dashboard “Alerts” tab; also usable on its own page.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'An "Alerts" page, or the Alerts tab inside My dashboard.', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
@@ -294,7 +304,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_roles',
 				'title'  => __( 'My roles (declare how you use the marketplace)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Lets a logged-in member tick the role(s) that apply to them — worker, candidate, participant, sole-trader provider, provider representative, or supplier. This sets what they can post (e.g. participants post needs and direct jobs free; providers can advertise and list) and tailors their dashboard. Members can change it any time. (Also shown as the "My roles" tab inside the all-in-one dashboard.)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets a logged-in member tick the role(s) that apply to them, worker, candidate, participant, sole-trader provider, provider representative, or supplier. This sets what they can post (e.g. participants post needs and direct jobs free; providers can advertise and list) and tailors their dashboard. Members can change it any time. (Also shown as the "My roles" tab inside the all-in-one dashboard.)', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A "My roles" / onboarding page, or just use [sssj_dashboard].', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
@@ -328,7 +338,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_policies',
 				'title'  => __( 'Policies (plain-English, member-facing)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Easy-read summaries of the platform’s policies — Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms/Acceptable Use, Worker Screening & Verification, Data Retention, Cookies & Consent, and Anti-Discrimination & Inclusion — each with the key points and the NDIS/OAIC/AHRC + interpreter contacts. Collapsible panels. Same content as Settings → Policies. (The full, formal templates live in /docs and must be adopted before relying on them.)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Easy-read summaries of the platform’s policies, Complaints, Privacy, NDIS Code of Conduct, Incident Management, Safeguarding, Terms/Acceptable Use, Worker Screening & Verification, Data Retention, Cookies & Consent, and Anti-Discrimination & Inclusion, each with the key points and the NDIS/OAIC/AHRC + interpreter contacts. Collapsible panels. Same content as Settings → Policies. (The full, formal templates live in /docs and must be adopted before relying on them.)', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A public “Policies” / “Safety & policies” page (link it in the footer and menu).', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
@@ -343,6 +353,15 @@ class Shuffles_SSJ_Shortcodes {
 				'what'   => __( 'Publishes the living marketing and product master document as a readable page: the positioning, the business logic, the full functional spec, and the out-of-the-box audience analysis. Logged-out visitors see a log-in prompt instead, and the page is kept out of search engines (noindex), so it is not readable or findable by non-members. Same content previews in Settings to Marketing.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A “Marketing” / “About the platform” page (partner-facing or internal, members only).', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
+				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_demo_tour',
+				'title'  => __( 'Test by Hat Type (demo tour)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A public, animated showcase: one fictional persona per role (participant, representative, candidate, contractor, employer, provider, supplier), each with a short backstory, what they offer or need, and scroll-in callouts of the features they use, language & accessibility, support, email alerts, maps, privacy, messaging and more. All content is fictional and safe for public display. Great for a “See how it works” page.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public “How it works” / “Take a tour” page.', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
 				'group'  => __( 'Help & content', 'shuffles-social-services-jobs' ),
 				'atts'   => array(),
 			),
@@ -365,10 +384,41 @@ class Shuffles_SSJ_Shortcodes {
 				'atts'   => array(),
 			),
 			array(
+				'tag'    => 'sssj_profile_card',
+				'title'  => __( 'My profile card (AI generator)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Lets a member turn their own profile into a styled, shareable square image. They pick from sixteen visual styles; our image engine makes a decorative, text-free background, then their location and services (top) and name/tagline (bottom) are drawn on top in their browser. They can download it or save it to their media library. Off until you enable it and add an image-engine key under Settings → AI Profile Card; gated by a monthly per-member limit. Only the member’s own profile is used, never a participant’s.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A members-only “My profile card” page, or a tab in My dashboard.', 'shuffles-social-services-jobs' ),
+				'access' => 'members',
+				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
+				'atts'   => array(),
+			),
+			array(
+				'tag'    => 'sssj_login',
+				'title'  => __( 'Log in (branded form)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A themed login form that signs members in to their normal WordPress account (works with an email or a username), with “keep me signed in” and a “forgot password” link. A friendlier alternative to the default wp-login.php. After login the member is returned to where they were heading. Place it on a page and select that page under Settings → Pages → “Login & create-account pages”.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public “Log in” page (set it as the Login page in Settings → Pages).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Navigation', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'register_url="…"' => __( 'Optional link to your create-account page (otherwise it uses the configured one).', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
+				'tag'    => 'sssj_register',
+				'title'  => __( 'Create account (branded form)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A themed sign-up form (name, email, password) that creates a normal WordPress account and signs the new member in, then sends them to onboarding. Members, roles and every marketplace feature keep working exactly as with a standard account. Includes a honeypot and basic anti-spam. Place it on a page and select that page under Settings → Pages → “Login & create-account pages”.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'A public “Create account” page (set it as the Create-account page in Settings → Pages).', 'shuffles-social-services-jobs' ),
+				'access' => 'public',
+				'group'  => __( 'Navigation', 'shuffles-social-services-jobs' ),
+				'atts'   => array(
+					'login_url="…"' => __( 'Optional link to your login page (otherwise it uses the configured one).', 'shuffles-social-services-jobs' ),
+				),
+			),
+			array(
 				'tag'    => 'sssj_ad',
 				'title'  => __( 'Advertisement (Advanced Ads)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Displays an Advanced Ads banner anywhere you place it — by placement slug ([sssj_ad placement="sidebar"]), by ad id ([sssj_ad id="123"]) or by group ([sssj_ad group="4"]). Requires the Advanced Ads plugin to be active; renders nothing if it is not, or if marketplace ads are switched off (Settings → Ads). The boards and single-listing pages can also show ads automatically via mapped slots — no shortcode needed.', 'shuffles-social-services-jobs' ),
-				'where'  => __( 'Anywhere — a sidebar widget/block, inside content, or on a board/landing page.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Displays an Advanced Ads banner anywhere you place it, by placement slug ([sssj_ad placement="sidebar"]), by ad id ([sssj_ad id="123"]) or by group ([sssj_ad group="4"]). Requires the Advanced Ads plugin to be active; renders nothing if it is not, or if marketplace ads are switched off (Settings → Ads). The boards and single-listing pages can also show ads automatically via mapped slots, no shortcode needed.', 'shuffles-social-services-jobs' ),
+				'where'  => __( 'Anywhere, a sidebar widget/block, inside content, or on a board/landing page.', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Monetisation', 'shuffles-social-services-jobs' ),
 				'atts'   => array(
@@ -398,7 +448,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_matches',
 				'title'  => __( 'Matched jobs (for the logged-in worker)', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'Shows “Jobs matched to you” for the logged-in member’s worker profile — ranked on shared services, location, availability, engagement basis (ABN/TFN), rate and trust. (Job pages and worker profiles also show matches automatically.)', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'Shows “Jobs matched to you” for the logged-in member’s worker profile, ranked on shared services, location, availability, engagement basis (ABN/TFN), rate and trust. (Job pages and worker profiles also show matches automatically.)', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A member dashboard / “My matches” page.', 'shuffles-social-services-jobs' ),
 				'access' => 'members',
 				'group'  => __( 'Member account', 'shuffles-social-services-jobs' ),
@@ -407,7 +457,7 @@ class Shuffles_SSJ_Shortcodes {
 			array(
 				'tag'    => 'sssj_tests',
 				'title'  => __( 'Testing worksheet', 'shuffles-social-services-jobs' ),
-				'what'   => __( 'A tester checklist covering every feature — work through each case and mark Pass/Fail (progress saved in the browser; printable). Same content as Settings → Testing.', 'shuffles-social-services-jobs' ),
+				'what'   => __( 'A tester checklist covering every feature, work through each case and mark Pass/Fail (progress saved in the browser; printable). Same content as Settings → Testing.', 'shuffles-social-services-jobs' ),
 				'where'  => __( 'A private/internal page for testers (or just use the Settings → Testing tab).', 'shuffles-social-services-jobs' ),
 				'access' => 'public',
 				'group'  => __( 'Admin & testing', 'shuffles-social-services-jobs' ),
@@ -429,11 +479,11 @@ class Shuffles_SSJ_Shortcodes {
 			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
 			wp_localize_script( 'sssj-filters', 'SSSJ_Filter', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
 		}
-		// Navigation menu — mobile hamburger toggle for [sssj_menu].
+		// Navigation menu, mobile hamburger toggle for [sssj_menu].
 		if ( ! wp_script_is( 'sssj-nav', 'registered' ) ) {
 			wp_register_script( 'sssj-nav', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-nav.js', array(), SHUFFLES_SSJ_VERSION, true );
 		}
-		// Shuffles spinner — branded busy state for lookups/queries (form submits + AJAX).
+		// Shuffles spinner, branded busy state for lookups/queries (form submits + AJAX).
 		if ( ! wp_script_is( 'sssj-spinner', 'registered' ) ) {
 			wp_register_script( 'sssj-spinner', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-spinner.js', array(), SHUFFLES_SSJ_VERSION, true );
 			wp_localize_script( 'sssj-spinner', 'SSSJ_Spinner', array( 'logo' => self::site_logo_url() ) );
@@ -449,7 +499,7 @@ class Shuffles_SSJ_Shortcodes {
 				'ajax'       => admin_url( 'admin-ajax.php' ),
 				'nonce'      => wp_create_nonce( 'sssj_swipe' ),
 				'logged_in'  => is_user_logged_in() ? 1 : 0,
-				'login_url'  => wp_login_url(),
+				'login_url'  => Shuffles_SSJ_Shortcodes::login_url(),
 			) );
 		}
 		// NDIS "Scan now" preview (org + worker forms).
@@ -470,13 +520,13 @@ class Shuffles_SSJ_Shortcodes {
 					'i18n_phone'   => __( 'Phone (register)', 'shuffles-social-services-jobs' ),
 					'i18n_outlets' => __( 'Outlets', 'shuffles-social-services-jobs' ),
 					/* translators: %s: the ABN the member typed on the form. */
-					'i18n_abnwarn' => __( '⚠ This differs from the ABN you entered (%s) — please check.', 'shuffles-social-services-jobs' ),
+					'i18n_abnwarn' => __( '⚠ This differs from the ABN you entered (%s), please check.', 'shuffles-social-services-jobs' ),
 					'i18n_empty'   => __( 'Enter your NDIS Registration No first.', 'shuffles-social-services-jobs' ),
 					'i18n_loading' => __( 'Checking the NDIS register…', 'shuffles-social-services-jobs' ),
 				)
 			);
 		}
-		// Auto header menu prints at wp_body_open (too late to enqueue its own CSS) — load it here.
+		// Auto header menu prints at wp_body_open (too late to enqueue its own CSS), load it here.
 		if ( '1' === (string) $this->settings->get( 'auto_header_menu', '0' ) ) {
 			wp_enqueue_style( 'sssj' );
 		}
@@ -485,7 +535,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( '' !== $inline ) {
 			wp_add_inline_style( 'sssj', $inline );
 		}
-		// Accessibility / CALD toolbar — master-gated. Loaded site-wide so the language choice
+		// Accessibility / CALD toolbar, master-gated. Loaded site-wide so the language choice
 		// and toolbar are available on every page (a floating bar appears where there's no board).
 		if ( '1' === (string) $this->settings->get( 'cald_enabled', '1' ) ) {
 			wp_enqueue_style( 'sssj' );
@@ -494,7 +544,12 @@ class Shuffles_SSJ_Shortcodes {
 				'sssj-a11y',
 				'SSJ_A11y',
 				array(
-					'lang'   => str_replace( '_', '-', get_locale() ),
+					'lang'    => str_replace( '_', '-', get_locale() ),
+					'bar_open' => (string) $this->settings->get( 'cald_bar_open', '1' ),
+					'translate'       => ( class_exists( 'Shuffles_SSJ_Translate' ) && 'machine' === Shuffles_SSJ_Translate::provider() ) ? 1 : 0,
+					'translate_url'   => esc_url_raw( rest_url( 'sssj/v1/translate' ) ),
+					'translate_nonce' => wp_create_nonce( 'wp_rest' ),
+					'translate_langs' => class_exists( 'Shuffles_SSJ_Translate' ) ? Shuffles_SSJ_Translate::supported_codes() : array(),
 					'langs'  => Shuffles_SSJ_I18n::langs(),
 					'i18n'   => Shuffles_SSJ_I18n::map(),
 					'rtl'    => Shuffles_SSJ_I18n::rtl_langs(),
@@ -528,7 +583,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * Per-install appearance overrides — design-system CSS variables + Custom CSS, scoped to .sssj.
+	 * Per-install appearance overrides, design-system CSS variables + Custom CSS, scoped to .sssj.
 	 */
 	private function appearance_css() {
 		$s    = $this->settings;
@@ -666,7 +721,7 @@ class Shuffles_SSJ_Shortcodes {
 	/* --- Maps helpers --- */
 
 	/**
-	 * Resolve a search centre (lat/lng) from the request for distance display — independent of radius,
+	 * Resolve a search centre (lat/lng) from the request for distance display, independent of radius,
 	 * so cards can show "X km away" whenever a location is in the search. Returns array|null.
 	 */
 	private function resolve_center() {
@@ -697,7 +752,7 @@ class Shuffles_SSJ_Shortcodes {
 			$extra['lng']    = (float) $_GET['sssj_lng'];
 			$extra['radius'] = $radius;
 		} elseif ( ! empty( $_GET['sssj_loc'] ) ) {
-			// No client coordinates (e.g. no Google key) — geocode the typed place ourselves.
+			// No client coordinates (e.g. no Google key), geocode the typed place ourselves.
 			$hit = Shuffles_SSJ_Geo::geocode( sanitize_text_field( wp_unslash( $_GET['sssj_loc'] ) ) );
 			if ( $hit ) {
 				$extra['lat']    = (float) $hit['lat'];
@@ -881,11 +936,11 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		wp_enqueue_script( 'sssj-filters' );
 
-		// Needs are never public — require login before querying.
+		// Needs are never public, require login before querying.
 		if ( ! is_user_logged_in() ) {
 			return '<div class="sssj sssj--needs"><div class="sssj-panel"><p>'
 				. esc_html__( 'Participant requests are visible to logged-in members only.', 'shuffles-social-services-jobs' )
-				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 		}
 
 		$extra = array(
@@ -901,7 +956,7 @@ class Shuffles_SSJ_Shortcodes {
 		$this->read_radius( $extra );
 
 		$query   = $this->build_board_query( 'need', '', $extra, (int) $atts['per_page'] );
-		$has_map = $this->enqueue_maps(); // autocomplete for the centre field only — needs are not plotted (privacy)
+		$has_map = $this->enqueue_maps(); // autocomplete for the centre field only, needs are not plotted (privacy)
 		ob_start();
 		$this->load_template( 'need-board.php', array( 'query' => $query, 'atts' => $atts, 'has_map' => $has_map, 'center' => $this->resolve_center() ) );
 		wp_reset_postdata();
@@ -940,12 +995,12 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
-	/** [sssj_roles] — let a logged-in member declare their role(s); grants the matching capabilities. */
+	/** [sssj_roles], let a logged-in member declare their role(s); grants the matching capabilities. */
 	public function roles_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		if ( ! is_user_logged_in() ) {
 			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to set your roles.', 'shuffles-social-services-jobs' )
-				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 		}
 		$current = Shuffles_SSJ_Roles::member_roles( get_current_user_id() );
 		$saved   = isset( $_GET['sssj_roles'] ) && '1' === sanitize_key( wp_unslash( $_GET['sssj_roles'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
@@ -955,7 +1010,7 @@ class Shuffles_SSJ_Shortcodes {
 			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Your roles were saved.', 'shuffles-social-services-jobs' ) . '</p>';
 		}
 		echo '<h2 style="margin-top:0">' . esc_html__( 'How do you use the marketplace?', 'shuffles-social-services-jobs' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Tick all that apply — one account can wear several hats. This sets what you can post and tailors your dashboard so you only see what’s relevant. You can change it any time. Participants post free; employers and providers may need a subscription to advertise or list.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Tick all that apply, one account can wear several hats. This sets what you can post and tailors your dashboard so you only see what’s relevant. You can change it any time. Participants post free; employers and providers may need a subscription to advertise or list.', 'shuffles-social-services-jobs' ) . '</p>';
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-stack">';
 		echo '<input type="hidden" name="action" value="sssj_save_roles" />';
 		wp_nonce_field( 'sssj_save_roles', 'sssj_roles_nonce' );
@@ -976,12 +1031,12 @@ class Shuffles_SSJ_Shortcodes {
 			}
 			echo '</div>';
 		}
-		// Primary (focus) role — tailors the default dashboard view + menu; everything stays reachable via "See all".
+		// Primary (focus) role, tailors the default dashboard view + menu; everything stays reachable via "See all".
 		$primary = Shuffles_SSJ_Roles::primary_role( get_current_user_id() );
 		echo '<h3 class="sssj-hats__group">' . esc_html__( 'Primary role (optional)', 'shuffles-social-services-jobs' ) . '</h3>';
-		echo '<p class="description">' . esc_html__( 'Pick the hat you use most. Your dashboard opens to it and your menu focuses on it — the rest stays one click away under “See all”. Leave on “No preference” to see everything.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<p class="description">' . esc_html__( 'Pick the hat you use most. Your dashboard opens to it and your menu focuses on it, the rest stays one click away under “See all”. Leave on “No preference” to see everything.', 'shuffles-social-services-jobs' ) . '</p>';
 		echo '<select class="sssj-select" name="sssj_primary_role">';
-		echo '<option value="">' . esc_html__( 'No preference — show everything', 'shuffles-social-services-jobs' ) . '</option>';
+		echo '<option value="">' . esc_html__( 'No preference, show everything', 'shuffles-social-services-jobs' ) . '</option>';
 		foreach ( $hats as $key => $h ) {
 			$sel = ( $key === $primary && in_array( $key, $current, true ) ) ? ' selected' : '';
 			echo '<option value="' . esc_attr( $key ) . '"' . $sel . '>' . esc_html( $h['label'] ) . '</option>';
@@ -994,12 +1049,12 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
-	/** [sssj_onboard] — a guided first-run: pick your hats, then see tailored next steps. */
+	/** [sssj_onboard], a guided first-run: pick your hats, then see tailored next steps. */
 	public function onboard( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		if ( ! is_user_logged_in() ) {
 			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to get started.', 'shuffles-social-services-jobs' )
-				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 		}
 		$uid     = get_current_user_id();
 		$current = Shuffles_SSJ_Roles::member_roles( $uid );
@@ -1009,10 +1064,10 @@ class Shuffles_SSJ_Shortcodes {
 
 		ob_start();
 		echo '<div class="sssj sssj--onboard"><div class="sssj-panel">';
-		echo '<h2 style="margin-top:0">' . esc_html__( 'Welcome — let’s set you up', 'shuffles-social-services-jobs' ) . '</h2>';
-		echo '<p class="description">' . esc_html__( 'Tell us how you’ll use the marketplace — tick everything that applies (one account can wear several hats). We’ll tailor your dashboard and show the right next steps. You can change this any time.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<h2 style="margin-top:0">' . esc_html__( 'Welcome! Let’s set you up', 'shuffles-social-services-jobs' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Tell us how you’ll use the marketplace. Tick everything that applies (one account can wear several hats). We’ll tailor your dashboard and show the right next steps. You can change this any time.', 'shuffles-social-services-jobs' ) . '</p>';
 		if ( $saved ) {
-			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Saved — your next steps are below.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'Saved, your next steps are below.', 'shuffles-social-services-jobs' ) . '</p>';
 		}
 		echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-stack">';
 		echo '<input type="hidden" name="action" value="sssj_save_roles" />';
@@ -1051,7 +1106,7 @@ class Shuffles_SSJ_Shortcodes {
 			echo '</div>';
 		}
 		echo '</div>'; // close the first panel
-		// Optional: invite members (especially participants) to earn via referrals — never blocks onboarding.
+		// Optional: invite members (especially participants) to earn via referrals, never blocks onboarding.
 		if ( class_exists( 'Shuffles_SSJ_Affiliate' ) ) {
 			echo Shuffles_SSJ_Affiliate::render_card( $uid, $current, 'onboard' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
@@ -1061,7 +1116,7 @@ class Shuffles_SSJ_Shortcodes {
 
 
 	/**
-	 * [sssj_dashboard] — a single, tabbed member hub that pulls the member-facing pieces together.
+	 * [sssj_dashboard], a single, tabbed member hub that pulls the member-facing pieces together.
 	 * Capability-aware: shows worker sections for workers, advertiser sections for advertisers.
 	 * Sections compose the existing shortcodes so there is one source of truth per feature.
 	 */
@@ -1069,7 +1124,7 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		if ( ! is_user_logged_in() ) {
 			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to view your dashboard.', 'shuffles-social-services-jobs' )
-				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 		}
 		wp_enqueue_script( 'sssj-dashboard', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-dashboard.js', array(), SHUFFLES_SSJ_VERSION, true );
 
@@ -1112,14 +1167,15 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_creds ) { $tabs['credentials'] = __( 'My credentials', 'shuffles-social-services-jobs' ); }
 		if ( $want_worker ) { $tabs['resumes'] = __( 'My résumés', 'shuffles-social-services-jobs' ); }
 		if ( ( $want_worker || $want_listings ) && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) { $tabs['create-asset'] = __( 'Create an asset', 'shuffles-social-services-jobs' ); }
-		$tabs['saved']    = __( 'Saved searches', 'shuffles-social-services-jobs' );
+		$tabs['alerts']   = __( 'Alerts', 'shuffles-social-services-jobs' );
 		$tabs['messages'] = __( 'Messages', 'shuffles-social-services-jobs' );
 		// Earn (referrals) + Support tabs appear only when those capabilities are available.
 		$want_earn    = class_exists( 'Shuffles_SSJ_Affiliate' ) && Shuffles_SSJ_Affiliate::enabled();
 		$want_support = class_exists( 'Shuffles_SSJ_Support' ) && Shuffles_SSJ_Support::enabled();
 		if ( $want_earn ) { $tabs['earn'] = __( 'Earn', 'shuffles-social-services-jobs' ); }
 		if ( $want_support ) { $tabs['support'] = __( 'Support', 'shuffles-social-services-jobs' ); }
-		$tabs['roles']    = __( 'My roles', 'shuffles-social-services-jobs' );
+		$want_testing = class_exists( 'Shuffles_SSJ_Tests' ) && Shuffles_SSJ_Tests::is_tester( $uid );
+		if ( $want_testing ) { $tabs['testing'] = __( 'Testing', 'shuffles-social-services-jobs' ); }
 
 		$current = wp_get_current_user();
 		$name    = $current->display_name ? $current->display_name : $current->user_login;
@@ -1135,7 +1191,10 @@ class Shuffles_SSJ_Shortcodes {
 
 		ob_start();
 		echo '<div class="sssj sssj--dash" data-sssj-dash data-sssj-dash-default="' . esc_attr( $default_tab ) . '">';
-		echo '<div class="sssj-panel sssj-dash__head"><h2 style="margin-top:0">' . esc_html( sprintf( __( 'Welcome, %s', 'shuffles-social-services-jobs' ), $name ) ) . '</h2>';
+		echo '<div class="sssj-panel sssj-dash__head">';
+		echo '<div class="sssj-dash__headtop"><h2 style="margin:0">' . esc_html( sprintf( __( 'Welcome, %s', 'shuffles-social-services-jobs' ), $name ) ) . '</h2>';
+		echo '<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm sssj-dash__editroles" data-sssj-modal-open="roles">&#9998; ' . esc_html__( 'Edit my roles', 'shuffles-social-services-jobs' ) . '</button>';
+		echo '</div>';
 		echo '<nav class="sssj-dash__tabs" role="tablist">';
 		$first = true;
 		foreach ( $tabs as $slug => $label ) {
@@ -1159,9 +1218,9 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_worker ) { echo '<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_worker', '[sssj_post_worker]' ) ) . '">' . esc_html( $has_worker ? __( 'Edit my profile', 'shuffles-social-services-jobs' ) : __( 'Create my profile', 'shuffles-social-services-jobs' ) ) . '</a>'; }
 		if ( $want_org ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_org', '[sssj_post_org]' ) ) . '">' . esc_html( $has_org ? __( 'Edit organisation', 'shuffles-social-services-jobs' ) : __( 'Create organisation', 'shuffles-social-services-jobs' ) ) . '</a>'; }
 		if ( $want_needs ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Request support', 'shuffles-social-services-jobs' ) . '</a>'; }
-		echo '</div><p class="description" style="margin:8px 0 0">' . esc_html__( 'Use the “My roles” tab to add or change your hats — your dashboard updates to match.', 'shuffles-social-services-jobs' ) . '</p></div></section>';
+		echo '</div><p class="description" style="margin:8px 0 0">' . esc_html__( 'Use “Edit my roles” at the top to add, change or remove your hats, your dashboard updates to match.', 'shuffles-social-services-jobs' ) . '</p></div></section>';
 
-		// My profile — edit the personal (worker/contractor) profile inline. Only for those hats.
+		// My profile, edit the personal (worker/contractor) profile inline. Only for those hats.
 		if ( $want_worker ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="profile">';
 			echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'My profile', 'shuffles-social-services-jobs' ) . '</h3>';
@@ -1196,7 +1255,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ( $want_worker || $want_listings ) && class_exists( 'Shuffles_SSJ_Assets' ) && Shuffles_SSJ_Assets::enabled() ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="create-asset">' . do_shortcode( '[sssj_create_asset]' ) . '</section>';
 		}
-		echo '<section class="sssj-dash__panel" data-dash-panel="saved">' . do_shortcode( '[sssj_saved_searches]' ) . '</section>';
+		echo '<section class="sssj-dash__panel" data-dash-panel="alerts">' . do_shortcode( '[sssj_alerts]' ) . '</section>';
 		echo '<section class="sssj-dash__panel" data-dash-panel="messages">' . do_shortcode( '[sssj_messages]' ) . '</section>';
 		if ( $want_earn ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="earn">' . Shuffles_SSJ_Affiliate::render_dashboard( $uid ) . '</section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
@@ -1204,7 +1263,16 @@ class Shuffles_SSJ_Shortcodes {
 		if ( $want_support ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="support">' . Shuffles_SSJ_Support::render() . '</section>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
-		echo '<section class="sssj-dash__panel" data-dash-panel="roles">' . do_shortcode( '[sssj_roles]' ) . '</section>';
+		if ( $want_testing ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="testing">' . do_shortcode( '[sssj_tests]' ) . '</section>';
+		}
+		// "Edit my roles" modal (opened by the header button). Holds the hat picker.
+		echo '<div class="sssj-modal" data-sssj-modal="roles" hidden>';
+		echo '<div class="sssj-modal__backdrop" data-sssj-modal-close></div>';
+		echo '<div class="sssj-modal__dialog" role="dialog" aria-modal="true" aria-label="' . esc_attr__( 'Edit my roles', 'shuffles-social-services-jobs' ) . '">';
+		echo '<button type="button" class="sssj-modal__close" data-sssj-modal-close aria-label="' . esc_attr__( 'Close', 'shuffles-social-services-jobs' ) . '">&times;</button>';
+		echo do_shortcode( '[sssj_roles]' );
+		echo '</div></div>';
 
 		echo '</div>';
 		return ob_get_clean();
@@ -1220,7 +1288,7 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_style( 'sssj' );
 		if ( ! is_user_logged_in() ) {
 			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to manage your organisation’s team.', 'shuffles-social-services-jobs' )
-				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 		}
 		$uid     = get_current_user_id();
 		$managed = class_exists( 'Shuffles_SSJ_Org_Team' ) ? Shuffles_SSJ_Org_Team::orgs_administered_by( $uid ) : array();
@@ -1261,7 +1329,7 @@ class Shuffles_SSJ_Shortcodes {
 		$paged = isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1;
 		$q     = ! empty( $_GET['sssj_q'] ) ? sanitize_text_field( wp_unslash( $_GET['sssj_q'] ) ) : '';
 		// Smart synonym-aware search (C5) needs the posts_search filter, which get_posts() suppresses
-		// by default — so opt in via the smart var + suppress_filters=false when there's a query.
+		// by default, so opt in via the smart var + suppress_filters=false when there's a query.
 		$search_args = ( '' !== $q && class_exists( 'Shuffles_SSJ_Search' ) )
 			? array( Shuffles_SSJ_Search::QV => $q, 'suppress_filters' => false )
 			: array( 's' => $q );
@@ -1332,7 +1400,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! empty( $_GET['sssj_structure'] ) ) {
 			$extra_clauses[] = array( 'key' => 'org_structure', 'value' => sanitize_key( wp_unslash( $_GET['sssj_structure'] ) ) );
 		}
-		// Providers pay to be listed — when monetisation is on, only org_listed orgs appear.
+		// Providers pay to be listed, when monetisation is on, only org_listed orgs appear.
 		if ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::enabled() ) {
 			$extra_clauses[] = array( 'key' => 'org_listed', 'value' => '1' );
 		}
@@ -1373,7 +1441,7 @@ class Shuffles_SSJ_Shortcodes {
 				$query->max_num_pages = (int) ceil( $total / $per );
 			}
 		} else {
-			// Sponsored orgs first, then newest — partitioned in PHP so orgs without the meta are never excluded
+			// Sponsored orgs first, then newest, partitioned in PHP so orgs without the meta are never excluded
 			// and pagination stays correct (ordering by an optional meta inside a nested clause is unreliable in WP_Query).
 			$all_ids = get_posts( array_merge( array( 'post_type' => 'sssj_org', 'post_status' => 'publish', 'posts_per_page' => 500, 'fields' => 'ids', 'orderby' => 'date', 'order' => 'DESC', 'no_found_rows' => true ), $search_args, $base_filter ) );
 			$spon = array();
@@ -1413,7 +1481,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * [sssj_swipe] — a Tinder-style swipe deck for browsing providers (organisations).
+	 * [sssj_swipe], a Tinder-style swipe deck for browsing providers (organisations).
 	 * Swipe/keys/buttons: right (or ♥ / →) saves to the member's shortlist, left (or ✕ / ←) skips.
 	 */
 	public function provider_swipe( $atts ) {
@@ -1504,7 +1572,7 @@ class Shuffles_SSJ_Shortcodes {
 	public function ajax_filter() {
 		$this->last_points = array(); // reset so a board with no map returns no markers
 		$board = isset( $_POST['board'] ) ? sanitize_key( wp_unslash( $_POST['board'] ) ) : 'job'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		// Participant needs are never public; require login at the dispatch layer too (defence in depth —
+		// Participant needs are never public; require login at the dispatch layer too (defence in depth -
 		// this endpoint is open to nopriv for the public boards, so don't rely solely on need_board()).
 		if ( 'need' === $board && ! is_user_logged_in() ) {
 			wp_send_json_error( array( 'msg' => __( 'Please log in to view participant requests.', 'shuffles-social-services-jobs' ) ) );
@@ -1603,7 +1671,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * "Use my location" button — browser geolocation → radius search. Placed next to the location field.
+	 * "Use my location" button, browser geolocation → radius search. Placed next to the location field.
 	 * Carries its own translated status strings as data-attributes for sssj-filters.js.
 	 */
 	public static function location_button() {
@@ -1674,7 +1742,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * "Things to know" content per directory type — single source of truth for the read-me panels.
+	 * "Things to know" content per directory type, single source of truth for the read-me panels.
 	 *
 	 * @return array { title, intro, points[] } | null
 	 */
@@ -1685,7 +1753,7 @@ class Shuffles_SSJ_Shortcodes {
 				'intro'  => __( 'Roles posted by organisations and sole traders across disability, aged care and social services.', 'shuffles-social-services-jobs' ),
 				'points' => array(
 					__( 'TFN roles are employee positions (wages, tax withheld). ABN roles are contractor / sole-trader work you invoice for.', 'shuffles-social-services-jobs' ),
-					__( 'Use the search, category, location and radius filters — results update as you change them.', 'shuffles-social-services-jobs' ),
+					__( 'Use the search, category, location and radius filters, results update as you change them.', 'shuffles-social-services-jobs' ),
 					__( 'Open a job to see full details and apply. First contact is made through the site.', 'shuffles-social-services-jobs' ),
 				),
 			),
@@ -1695,12 +1763,12 @@ class Shuffles_SSJ_Shortcodes {
 				'points' => array(
 					__( 'Filter by service, “available now”, and location / radius. Tick “Use my location” to find people near you.', 'shuffles-social-services-jobs' ),
 					__( 'A ✓ Verified badge means an admin has confirmed that worker’s credentials.', 'shuffles-social-services-jobs' ),
-					__( 'Some profiles are visible to logged-in members only — log in to see everyone.', 'shuffles-social-services-jobs' ),
+					__( 'Some profiles are visible to logged-in members only, log in to see everyone.', 'shuffles-social-services-jobs' ),
 				),
 			),
 			'orgs' => array(
 				'title'  => __( 'About organisations', 'shuffles-social-services-jobs' ),
-				'intro'  => __( 'Provider and employer profiles — browse open roles by company.', 'shuffles-social-services-jobs' ),
+				'intro'  => __( 'Provider and employer profiles, browse open roles by company.', 'shuffles-social-services-jobs' ),
 				'points' => array(
 					__( 'Filter by sector, funding, location / radius, and “only with open placements”.', 'shuffles-social-services-jobs' ),
 					__( 'Each card shows current open jobs and people placed all-time.', 'shuffles-social-services-jobs' ),
@@ -1711,9 +1779,9 @@ class Shuffles_SSJ_Shortcodes {
 				'title'  => __( 'About participant requests', 'shuffles-social-services-jobs' ),
 				'intro'  => __( 'Support requests from participants or their nominees. Privacy is protected at all times.', 'shuffles-social-services-jobs' ),
 				'points' => array(
-					__( 'Requests show a pseudonym and a suburb only — never a name or contact details.', 'shuffles-social-services-jobs' ),
+					__( 'Requests show a pseudonym and a suburb only, never a name or contact details.', 'shuffles-social-services-jobs' ),
 					__( 'You need a recorded ABN to respond. First contact is made through the site.', 'shuffles-social-services-jobs' ),
-					__( 'Be respectful and professional — these are vulnerable members of the community.', 'shuffles-social-services-jobs' ),
+					__( 'Be respectful and professional, these are vulnerable members of the community.', 'shuffles-social-services-jobs' ),
 				),
 			),
 		);
@@ -1735,7 +1803,7 @@ class Shuffles_SSJ_Shortcodes {
 		if ( ! $r ) {
 			return;
 		}
-		echo '<details class="sssj-readme"><summary class="sssj-readme__summary"><span class="sssj-readme__icon" aria-hidden="true">ℹ︎</span> ' . esc_html__( 'Read me — things to know', 'shuffles-social-services-jobs' ) . '</summary>';
+		echo '<details class="sssj-readme"><summary class="sssj-readme__summary"><span class="sssj-readme__icon" aria-hidden="true">ℹ︎</span> ' . esc_html__( 'Read me, things to know', 'shuffles-social-services-jobs' ) . '</summary>';
 		echo '<div class="sssj-readme__body"><strong>' . esc_html( $r['title'] ) . '</strong>';
 		echo '<p>' . esc_html( $r['intro'] ) . '</p><ul>';
 		foreach ( $r['points'] as $p ) {
@@ -1772,7 +1840,7 @@ class Shuffles_SSJ_Shortcodes {
 		return Shuffles_SSJ_Policies::render( is_array( $atts ) ? $atts : array() );
 	}
 
-	/** [sssj_create_asset] — the shareable-asset wizard (Phase 1: worker / sole-trader résumé). */
+	/** [sssj_create_asset], the shareable-asset wizard (Phase 1: worker / sole-trader résumé). */
 	public function create_asset( $atts ) {
 		if ( class_exists( 'Shuffles_SSJ_Assets' ) && ! Shuffles_SSJ_Assets::enabled() ) {
 			return '';
@@ -1794,7 +1862,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * [sssj_promo] — the site self-promotion studio (admin / marketer). Turns real, privacy-safe
+	 * [sssj_promo], the site self-promotion studio (admin / marketer). Turns real, privacy-safe
 	 * platform positives into an on-brand square graphic + caption, one at a time, for manual posting.
 	 */
 	public function promo( $atts ) {
@@ -1807,7 +1875,7 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		$positives = Shuffles_SSJ_Promo::positives();
 		if ( empty( $positives ) ) {
-			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'No promotable highlights yet — once there are jobs, workers and providers on the platform, branded graphics will appear here.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'No promotable highlights yet, once there are jobs, workers and providers on the platform, branded graphics will appear here.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
 		}
 		$today = Shuffles_SSJ_Promo::today_index( count( $positives ) );
 
@@ -1849,7 +1917,7 @@ class Shuffles_SSJ_Shortcodes {
 	/**
 	 * Resolve a feature page URL ('' if none). Order of preference:
 	 *   1. The configured page (settings key) IF it actually contains the shortcode (or none given).
-	 *   2. Otherwise the page that DOES contain the shortcode — this self-heals a stale mapping, e.g.
+	 *   2. Otherwise the page that DOES contain the shortcode, this self-heals a stale mapping, e.g.
 	 *      a "Jobs" item still pointing at a legacy board page, or "My dashboard" pointing at the old
 	 *      my-listings page, repoints automatically to the page running our shortcode.
 	 *   3. As a last resort, the configured page even without the literal shortcode (e.g. an Elementor
@@ -1903,14 +1971,55 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * "Open to…" badges for a job or organisation — visa sponsorship, work placements, volunteers.
+	 * Login URL for the whole front end. Uses the admin-chosen "Login page" (e.g. a Fluent Forms login
+	 * page) when set, otherwise the standard WordPress login. Admins still reach wp-admin / wp-login.php.
+	 *
+	 * @param string $redirect Optional URL to return to after login.
+	 * @return string
+	 */
+	public static function login_url( $redirect = '' ) {
+		$opts = get_option( 'shuffles_ssj_settings', array() );
+		$pid  = is_array( $opts ) && ! empty( $opts['page_login'] ) ? (int) $opts['page_login'] : 0;
+		if ( $pid && 'publish' === get_post_status( $pid ) ) {
+			$url = get_permalink( $pid );
+			if ( $url ) {
+				if ( '' !== $redirect ) {
+					$url = add_query_arg( 'redirect_to', rawurlencode( $redirect ), $url );
+				}
+				return $url;
+			}
+		}
+		return wp_login_url( $redirect );
+	}
+
+	/**
+	 * Create-account URL for the front end. Uses the admin-chosen "Create-account page" (e.g. a Fluent
+	 * Forms registration page) when set; else the standard WordPress registration URL only if WordPress
+	 * registration is enabled; else '' (so callers can hide the link).
+	 *
+	 * @return string '' when no account page is available.
+	 */
+	public static function register_url() {
+		$opts = get_option( 'shuffles_ssj_settings', array() );
+		$pid  = is_array( $opts ) && ! empty( $opts['page_register'] ) ? (int) $opts['page_register'] : 0;
+		if ( $pid && 'publish' === get_post_status( $pid ) ) {
+			$url = get_permalink( $pid );
+			if ( $url ) {
+				return $url;
+			}
+		}
+		return get_option( 'users_can_register' ) ? wp_registration_url() : '';
+	}
+
+	/**
+	 * "Open to…" badges for a job or organisation, visa sponsorship, work placements, volunteers.
 	 * Reads the offers_sponsorship / accepts_placements / welcomes_volunteers meta flags. '' if none.
 	 */
 	public static function openness_badges( $id ) {
 		$id  = (int) $id;
 		$out = '';
 		if ( get_post_meta( $id, 'offers_sponsorship', true ) ) {
-			$out .= '<span class="sssj-badge sssj-badge--open" title="' . esc_attr__( 'Open to overseas applicants — visa sponsorship available', 'shuffles-social-services-jobs' ) . '">✈️ ' . esc_html__( 'Visa sponsorship', 'shuffles-social-services-jobs' ) . '</span> ';
+			$out .= '<span class="sssj-badge sssj-badge--open" title="' . esc_attr__( 'Open to overseas applicants, visa sponsorship available', 'shuffles-social-services-jobs' ) . '">✈️ ' . esc_html__( 'Visa sponsorship', 'shuffles-social-services-jobs' ) . '</span> ';
 		}
 		if ( get_post_meta( $id, 'accepts_placements', true ) ) {
 			$out .= '<span class="sssj-badge sssj-badge--open" title="' . esc_attr__( 'Accepts work-placement / student-placement enquiries', 'shuffles-social-services-jobs' ) . '">🎓 ' . esc_html__( 'Work placements', 'shuffles-social-services-jobs' ) . '</span> ';
@@ -1937,13 +2046,14 @@ class Shuffles_SSJ_Shortcodes {
 		$logged_in = is_user_logged_in();
 		$items     = array();
 
-		// Browse — everyone.
+		// Browse, everyone.
 		$this->add_nav_item( $items, __( 'Home', 'shuffles-social-services-jobs' ), home_url( '/' ) );
 		$this->add_nav_item( $items, __( 'Jobs', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_job_board', '[sssj_job_board]' ) );
 		$this->add_nav_item( $items, __( 'Find a worker', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_worker_directory', '[sssj_worker_directory]' ) );
 		$this->add_nav_item( $items, __( 'Organisations', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_org_directory', '[sssj_org_directory]' ) );
 		$this->add_nav_item( $items, __( 'How it works', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_workflows', '[sssj_workflows]' ) );
 		$this->add_nav_item( $items, __( 'Policies', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_policies', '[sssj_policies]' ) );
+		$this->add_nav_item( $items, __( 'Take a tour', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_demo_tour', '[sssj_demo_tour]' ) );
 
 		if ( $logged_in ) {
 			$this->add_nav_item( $items, __( 'Participants seeking workers', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_need_board', '[sssj_need_board]' ), false, array( 'contractor', 'provider' ) );
@@ -1962,7 +2072,7 @@ class Shuffles_SSJ_Shortcodes {
 			$dash = $dash ? $dash : $this->resolve_page( 'page_my_listings', '[sssj_my_listings]' );
 			if ( '' !== (string) $dash ) {
 				$dash_item = array( 'label' => __( 'My dashboard', 'shuffles-social-services-jobs' ), 'url' => $dash, 'cta' => false );
-				// Admin-only sub-level: jump to the plugin settings (uses the literal page slug —
+				// Admin-only sub-level: jump to the plugin settings (uses the literal page slug -
 				// the admin class isn't loaded on the front end where this menu renders).
 				if ( current_user_can( 'manage_options' ) ) {
 					$dash_item['children'] = array(
@@ -1974,9 +2084,9 @@ class Shuffles_SSJ_Shortcodes {
 			$items[] = array( 'label' => __( 'Log out', 'shuffles-social-services-jobs' ), 'url' => wp_logout_url( home_url( '/' ) ), 'cta' => false );
 		} else {
 			$here    = esc_url_raw( home_url( add_query_arg( array() ) ) );
-			$items[] = array( 'label' => __( 'Log in', 'shuffles-social-services-jobs' ), 'url' => wp_login_url( $here ), 'cta' => false );
-			if ( get_option( 'users_can_register' ) ) {
-				$items[] = array( 'label' => __( 'Register', 'shuffles-social-services-jobs' ), 'url' => wp_registration_url(), 'cta' => true );
+			$items[] = array( 'label' => __( 'Log in', 'shuffles-social-services-jobs' ), 'url' => Shuffles_SSJ_Shortcodes::login_url( $here ), 'cta' => false );
+			if ( '' !== Shuffles_SSJ_Shortcodes::register_url() ) {
+				$items[] = array( 'label' => __( 'Register', 'shuffles-social-services-jobs' ), 'url' => Shuffles_SSJ_Shortcodes::register_url(), 'cta' => true );
 			}
 		}
 
@@ -1984,7 +2094,7 @@ class Shuffles_SSJ_Shortcodes {
 	}
 
 	/**
-	 * [sssj_menu] — a responsive navigation bar that adapts to logged-in vs logged-out visitors.
+	 * [sssj_menu], a responsive navigation bar that adapts to logged-in vs logged-out visitors.
 	 * Atts: title (optional brand text), class (optional extra CSS class).
 	 */
 	public function menu( $atts ) {
@@ -2059,7 +2169,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	/**
 	 * Append a Google map of the job's suburb/town on a single job page (keyless Google Maps embed,
-	 * so it works without an API key). Suburb-level only — no exact address is shown.
+	 * so it works without an API key). Suburb-level only, no exact address is shown.
 	 */
 	public function maybe_job_map( $content ) {
 		if ( ! ( is_singular( 'sssj_job' ) && in_the_loop() && is_main_query() ) ) {
@@ -2086,7 +2196,7 @@ class Shuffles_SSJ_Shortcodes {
 				<div class="sssj-jobmap">
 					<iframe title="<?php echo esc_attr( sprintf( __( 'Map of %s', 'shuffles-social-services-jobs' ), $label ) ); ?>" src="<?php echo esc_url( $src ); ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
 				</div>
-				<p class="description"><?php esc_html_e( 'Approximate location — shown at suburb level.', 'shuffles-social-services-jobs' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Approximate location, shown at suburb level.', 'shuffles-social-services-jobs' ); ?></p>
 			</div>
 		</div>
 		<?php
@@ -2117,7 +2227,7 @@ class Shuffles_SSJ_Shortcodes {
 		return $content;
 	}
 
-	/** [sssj_matches] — jobs matched to the logged-in member's own worker profile (dashboard widget). */
+	/** [sssj_matches], jobs matched to the logged-in member's own worker profile (dashboard widget). */
 	public function matches_panel( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		if ( ! is_user_logged_in() ) {
@@ -2136,7 +2246,7 @@ class Shuffles_SSJ_Shortcodes {
 			return '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Create your worker profile to see matched jobs.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
 		}
 		$html = class_exists( 'Shuffles_SSJ_Matcher' ) ? Shuffles_SSJ_Matcher::render_job_matches( (int) $found[0], __( 'Jobs matched to you', 'shuffles-social-services-jobs' ) ) : '';
-		return $html ? $html : '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'No matched jobs yet — add services and a location to your profile.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
+		return $html ? $html : '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'No matched jobs yet, add services and a location to your profile.', 'shuffles-social-services-jobs' ) . '</p></div></div>';
 	}
 
 	/** Render the worker's details (services, rate, location, credentials, photos) on their profile page. */
@@ -2198,7 +2308,7 @@ class Shuffles_SSJ_Shortcodes {
 		return $content;
 	}
 
-	/** Staff-only banned-register safety banner on a flagged listing (administrators only — never public). */
+	/** Staff-only banned-register safety banner on a flagged listing (administrators only, never public). */
 	public function maybe_ban_flag( $content ) {
 		if ( is_singular( array( 'sssj_worker', 'sssj_org', 'sssj_job' ) ) && in_the_loop() && is_main_query()
 			&& current_user_can( 'manage_options' ) && class_exists( 'Shuffles_SSJ_Ban_Register' ) ) {

@@ -42,13 +42,13 @@ $extra   = is_array( $extra ) ? $extra : array();
 			<?php if ( $website ) : ?>
 				<?php if ( ! class_exists( 'Shuffles_SSJ_Privacy' ) || Shuffles_SSJ_Privacy::show( $org_id, 'website' ) ) : ?>
 					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( $website ); ?>" target="_blank" rel="noopener nofollow"><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></a>
-				<?php else : echo Shuffles_SSJ_Privacy::lock_html( __( 'Website — log in', 'shuffles-social-services-jobs' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<?php else : echo Shuffles_SSJ_Privacy::lock_html( __( 'Website, log in', 'shuffles-social-services-jobs' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<?php endif; ?>
 			<?php endif; ?>
 			<?php if ( $phone ) : ?>
 				<?php if ( ! class_exists( 'Shuffles_SSJ_Privacy' ) || Shuffles_SSJ_Privacy::show( $org_id, 'phone' ) ) : ?>
 					<span class="sssj-badge"><?php echo esc_html( $phone ); ?></span>
-				<?php else : echo Shuffles_SSJ_Privacy::lock_html( __( 'Phone — log in', 'shuffles-social-services-jobs' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
+				<?php else : echo Shuffles_SSJ_Privacy::lock_html( __( 'Phone, log in', 'shuffles-social-services-jobs' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?>
 				<?php endif; ?>
 			<?php endif; ?>
 		</div>
@@ -68,7 +68,7 @@ $extra   = is_array( $extra ) ? $extra : array();
 				echo '<div class="sssj-note sssj-note--warn">' . esc_html__( 'That request could not be completed.', 'shuffles-social-services-jobs' ) . '</div>';
 			}
 			if ( ! $j_uid ) {
-				echo '<p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink( $org_id ) ) ) . '">' . esc_html__( 'Log in to request to join', 'shuffles-social-services-jobs' ) . '</a></p>';
+				echo '<p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink( $org_id ) ) ) . '">' . esc_html__( 'Log in to request to join', 'shuffles-social-services-jobs' ) . '</a></p>';
 			} elseif ( Shuffles_SSJ_Org_Team::is_member( $org_id, $j_uid ) ) {
 				echo '<p class="sssj-badge sssj-badge--verified">✓ ' . esc_html__( 'You’re part of this organisation', 'shuffles-social-services-jobs' ) . '</p>';
 			} elseif ( Shuffles_SSJ_Org_Team::has_request( $org_id, $j_uid ) ) {
@@ -120,7 +120,7 @@ $extra   = is_array( $extra ) ? $extra : array();
 					if ( '' === $label && '' === $line ) {
 						continue;
 					}
-					echo '<li>📍 ' . esc_html( trim( ( $label ? $label . ' — ' : '' ) . $line ) ) . '</li>';
+					echo '<li>📍 ' . esc_html( trim( ( $label ? $label . ', ' : '' ) . $line ) ) . '</li>';
 				}
 				?>
 			</ul>

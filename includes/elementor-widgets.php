@@ -1,7 +1,7 @@
 <?php
 /**
  * Elementor widget classes for the Shuffles Jobs display shortcodes. This file is required ONLY
- * from Shuffles_SSJ_Elementor::register_widgets(), i.e. only when Elementor is loaded — so the
+ * from Shuffles_SSJ_Elementor::register_widgets(), i.e. only when Elementor is loaded, so the
  * \Elementor\Widget_Base base class is guaranteed to exist. Each widget is a thin wrapper that
  * maps visual controls onto the matching [sssj_*] shortcode (the single source of truth for output).
  *

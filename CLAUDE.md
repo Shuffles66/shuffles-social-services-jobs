@@ -18,10 +18,11 @@ Every change session MUST complete ALL of the following steps in order:
 
 1. Bump the version in both the `Version:` plugin header and the `SHUFFLES_SSJ_VERSION` constant in `shuffles-social-services-jobs.php`
 2. Add a changelog entry for the new version at the **top** of the version list in `admin/views/settings.php` (inside `#sssj-tab-changelog`, before the previous top entry). Each entry must include the version number, today's date, and bullet points describing every change made in that version.
-3. Run `dist/build.ps1` to produce a new versioned zip
-4. Run `PYTHONUTF8=1 python3 /tmp/sftp_sync.py` to deploy to the live server (see sibling plugin's deployment pattern)
+3. **Lint (PHP syntax check) — run `powershell.exe -NonInteractive -File ".\dist\lint.ps1"` and confirm `RESULT: OK`. It runs `php -l` on every PHP file. NEVER deploy if it reports a syntax error.** (PHP 8.3 is installed locally via winget `PHP.PHP.8.3`; `lint.ps1` auto-finds php.exe under `%LOCALAPPDATA%\Microsoft\WinGet\Packages`, so it works even when `php` is not yet on the current shell's PATH.)
+4. Run `dist/build.ps1` to produce a new versioned zip
+5. Run `PYTHONUTF8=1 python3 C:/tmp/sftp_sync_ssj.py` to deploy to the live server (each live deploy needs the user's explicit per-action authorisation)
 
-**Never ship a version without a matching changelog entry. The changelog step is not optional.**
+**Never ship a version without a matching changelog entry. The changelog step is not optional. Never deploy with a failing lint.**
 
 **Also keep `docs/business_rules_and_logic.md` current** — whenever a business rule changes, a gate is added, or a default flips, update that doc and bump its "Last updated" line. It is the authoritative plain-English record of the plugin's decision logic.
 

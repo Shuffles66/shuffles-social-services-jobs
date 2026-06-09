@@ -1,6 +1,6 @@
 <?php
 /**
- * CRM Sync — keeps a user's FluentCRM tags & lists in step with the selections on their profile.
+ * CRM Sync, keeps a user's FluentCRM tags & lists in step with the selections on their profile.
  *
  * When a worker / organisation / participant profile is saved, each "on" value (a funding source
  * like NDIS, a sector, a culture/language term, or a custom-field option) that an admin has mapped
@@ -294,7 +294,7 @@ class Shuffles_SSJ_CRM_Sync {
 		try {
 			$fn();
 		} catch ( \Throwable $e ) {
-			// swallow — logged by caller context where relevant
+			// swallow, logged by caller context where relevant
 		}
 	}
 
@@ -324,7 +324,7 @@ class Shuffles_SSJ_CRM_Sync {
 
 	private function tag_label( $id ) {
 		if ( ! class_exists( '\FluentCrm\App\Models\Tag' ) ) {
-			return '#' . (int) $id; // can't verify — assume present
+			return '#' . (int) $id; // can't verify, assume present
 		}
 		$t = \FluentCrm\App\Models\Tag::find( (int) $id );
 		return $t ? (string) $t->title : null;
@@ -366,7 +366,7 @@ class Shuffles_SSJ_CRM_Sync {
 			return;
 		}
 		$url = admin_url( 'admin.php?page=' . Shuffles_SSJ_Admin::PAGE_SLUG . '&tab=crm' );
-		echo '<div class="notice notice-warning"><p><strong>' . esc_html__( 'Shuffles Jobs — CRM sync:', 'shuffles-social-services-jobs' ) . '</strong> '
+		echo '<div class="notice notice-warning"><p><strong>' . esc_html__( 'Shuffles Jobs, CRM sync:', 'shuffles-social-services-jobs' ) . '</strong> '
 			. esc_html( sprintf( _n( '%d mapped tag/list no longer exists in FluentCRM.', '%d mapped tags/lists no longer exist in FluentCRM.', count( $miss ), 'shuffles-social-services-jobs' ), count( $miss ) ) )
 			. ' <a href="' . esc_url( $url ) . '">' . esc_html__( 'Review &amp; fix', 'shuffles-social-services-jobs' ) . '</a></p></div>';
 	}
@@ -461,7 +461,7 @@ class Shuffles_SSJ_CRM_Sync {
 			return;
 		}
 		$rows = self::get_logs( array( 'user_id' => $user->ID, 'limit' => 30 ) );
-		echo '<h2>' . esc_html__( 'Shuffles Jobs — CRM sync log', 'shuffles-social-services-jobs' ) . '</h2>';
+		echo '<h2>' . esc_html__( 'Shuffles Jobs, CRM sync log', 'shuffles-social-services-jobs' ) . '</h2>';
 		if ( ! $this->available() ) {
 			echo '<p class="description">' . esc_html__( 'CRM sync is off or FluentCRM is not active.', 'shuffles-social-services-jobs' ) . '</p>';
 		}

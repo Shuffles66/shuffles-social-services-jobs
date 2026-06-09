@@ -31,8 +31,12 @@ class Shuffles_SSJ_Settings {
 			'geocoder_provider'         => 'osm',
 			'default_radius_km'         => 25,
 			'auto_header_menu'          => '0',
+			'admin_tab_order'           => 'grouped',
+			'hero_show_tour'            => '1',
 			'focus_programs'            => 'NDIS, Aged Care, DVA, Foundational Supports, Thriving Kids',
 			'cald_enabled'              => '1',
+			'cald_bar_open'             => '1',
+			'deepl_api_key'             => '',
 			'seo_enabled'               => '1',
 			'syndication_feed_enabled'  => '1',
 			'crm_sync_enabled'          => '0',
@@ -58,6 +62,11 @@ class Shuffles_SSJ_Settings {
 			'asset_render_mode'         => 'browser',
 			'asset_render_endpoint'     => '',
 			'asset_render_self_hosted'  => '0',
+			'profile_card_enabled'      => '0',
+			'openai_api_key'            => '',
+			'openai_image_model'        => 'gpt-image-1',
+			'profile_card_limit'        => 2,
+			'unsplash_access_key'       => '',
 			'licence_key'               => '',
 			'license_item_id'           => '',
 			'vendor_url'                => 'https://shuffles.com.au',
@@ -95,6 +104,10 @@ class Shuffles_SSJ_Settings {
 			'page_credentials'          => 0,
 			'page_create_asset'         => 0,
 			'page_promote'              => 0,
+			'page_profile_card'         => 0,
+			'page_login'                => 0,
+			'page_register'             => 0,
+			'page_demo_tour'            => 0,
 		);
 	}
 
@@ -144,10 +157,10 @@ class Shuffles_SSJ_Settings {
 			return $out;
 		}
 
-		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family', 'font_size', 'heading_weight', 'focus_programs', 'ad_slot_board_top', 'ad_slot_board_bottom', 'ad_slot_single', 'affiliate_url', 'hero_heading', 'hero_blurb' );
-		$secret_keys = array( 'google_maps_api_key', 'licence_key', 'abr_guid' );
-		$toggle_keys = array( 'cald_enabled', 'seo_enabled', 'syndication_feed_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled', 'ndis_scan_enabled', 'reviews_enabled', 'testimonials_enabled', 'ban_register_enabled', 'ads_enabled', 'affiliate_enabled', 'asset_render_self_hosted' );
-		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_volunteer_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'page_onboard', 'page_dashboard', 'page_swipe', 'page_tests', 'page_why_us', 'page_join', 'page_workflows', 'page_policies', 'page_marketing', 'page_create_asset', 'page_promote', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
+		$text_keys   = array( 'compliance_profile', 'license_item_id', 'font_family', 'font_size', 'heading_weight', 'focus_programs', 'ad_slot_board_top', 'ad_slot_board_bottom', 'ad_slot_single', 'affiliate_url', 'hero_heading', 'hero_blurb', 'openai_image_model' );
+		$secret_keys = array( 'google_maps_api_key', 'licence_key', 'abr_guid', 'openai_api_key', 'unsplash_access_key', 'deepl_api_key' );
+		$toggle_keys = array( 'cald_enabled', 'cald_bar_open', 'hero_show_tour', 'seo_enabled', 'syndication_feed_enabled', 'monetisation_enabled', 'delete_data_on_uninstall', 'auto_header_menu', 'crm_sync_enabled', 'crm_create_contact', 'alerts_enabled', 'ndis_scan_enabled', 'reviews_enabled', 'testimonials_enabled', 'ban_register_enabled', 'ads_enabled', 'affiliate_enabled', 'asset_render_self_hosted', 'profile_card_enabled' );
+		$int_keys    = array( 'default_radius_km', 'free_active_listings', 'page_job_board', 'page_tfn_board', 'page_abn_board', 'page_volunteer_board', 'page_post_job', 'page_my_listings', 'page_messages', 'page_org_directory', 'page_post_org', 'page_worker_directory', 'page_post_worker', 'page_need_board', 'page_post_need', 'page_credentials', 'page_onboard', 'page_dashboard', 'page_swipe', 'page_tests', 'page_why_us', 'page_join', 'page_workflows', 'page_policies', 'page_marketing', 'page_create_asset', 'page_promote', 'page_profile_card', 'page_login', 'page_register', 'page_demo_tour', 'profile_card_limit', 'ui_radius', 'advertiser_pmpro_level', 'provider_pmpro_level', 'advertiser_fc_product', 'provider_fc_product', 'credential_reminder_days' );
 
 		foreach ( $text_keys as $k ) {
 			if ( isset( $input[ $k ] ) ) {
@@ -199,29 +212,35 @@ class Shuffles_SSJ_Settings {
 			$out['custom_css'] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input['custom_css'] ) );
 		}
 
-		// Density — whitelist.
+		// Density, whitelist.
 		if ( isset( $input['ui_density'] ) ) {
 			$d = sanitize_key( wp_unslash( (string) $input['ui_density'] ) );
 			$out['ui_density'] = in_array( $d, array( 'compact', 'normal', 'comfortable' ), true ) ? $d : 'normal';
 		}
-		// Saved style themes — JSON, angle brackets stripped.
+		// Saved style themes, JSON, angle brackets stripped.
 		if ( isset( $input['appearance_themes'] ) ) {
 			$out['appearance_themes'] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input['appearance_themes'] ) );
 		}
 
-		// Gating provider — whitelist.
+		// Settings tab order, whitelist.
+		if ( isset( $input['admin_tab_order'] ) ) {
+			$to = sanitize_key( wp_unslash( (string) $input['admin_tab_order'] ) );
+			$out['admin_tab_order'] = in_array( $to, array( 'grouped', 'tnum', 'alpha' ), true ) ? $to : 'grouped';
+		}
+
+		// Gating provider, whitelist.
 		if ( isset( $input['gating_provider'] ) ) {
 			$gp = sanitize_key( wp_unslash( (string) $input['gating_provider'] ) );
 			$out['gating_provider'] = in_array( $gp, array( 'pmpro', 'fluentcart' ), true ) ? $gp : 'pmpro';
 		}
 
-		// Server-side geocoder — whitelist.
+		// Server-side geocoder, whitelist.
 		if ( isset( $input['geocoder_provider'] ) ) {
 			$gc = sanitize_key( wp_unslash( (string) $input['geocoder_provider'] ) );
 			$out['geocoder_provider'] = in_array( $gc, array( 'osm', 'off' ), true ) ? $gc : 'osm';
 		}
 
-		// NDIS register alert recipient — email (blank = fall back to admin_email).
+		// NDIS register alert recipient, email (blank = fall back to admin_email).
 		if ( isset( $input['ndis_alert_email'] ) ) {
 			$em = sanitize_email( wp_unslash( (string) $input['ndis_alert_email'] ) );
 			$out['ndis_alert_email'] = $em ? $em : '';
@@ -231,12 +250,12 @@ class Shuffles_SSJ_Settings {
 			$out['ban_alert_email'] = $em ? $em : '';
 		}
 
-		// CALD: enabled language codes — normalise to a comma-separated list of sanitized keys.
+		// CALD: enabled language codes, normalise to a comma-separated list of sanitized keys.
 		if ( isset( $input['cald_languages'] ) ) {
 			$codes = array_filter( array_map( 'sanitize_key', preg_split( '/[\s,]+/', (string) wp_unslash( $input['cald_languages'] ) ) ) );
 			$out['cald_languages'] = implode( ',', array_unique( $codes ) );
 		}
-		// CALD: custom language definitions + JSON overrides — keep multiline text, strip angle brackets.
+		// CALD: custom language definitions + JSON overrides, keep multiline text, strip angle brackets.
 		foreach ( array( 'cald_custom_langs', 'cald_lang_overrides', 'why_us_points' ) as $k ) {
 			if ( isset( $input[ $k ] ) ) {
 				$out[ $k ] = str_replace( array( '<', '>' ), '', (string) wp_unslash( $input[ $k ] ) );
@@ -256,6 +275,8 @@ class Shuffles_SSJ_Settings {
 	private static function tab_owns( $tab, $key ) {
 		$owner = array(
 			'cald_enabled'             => 'cald',
+			'cald_bar_open'            => 'cald',
+			'hero_show_tour'           => 'general',
 			'testimonials_enabled'     => 'testimonials',
 			'ban_register_enabled'     => 'safety',
 			'asset_render_self_hosted' => 'rendering',
@@ -271,6 +292,7 @@ class Shuffles_SSJ_Settings {
 			'reviews_enabled'          => 'reviews',
 			'ads_enabled'              => 'ads',
 			'affiliate_enabled'        => 'monetisation',
+			'profile_card_enabled'     => 'profilecard',
 		);
 		return isset( $owner[ $key ] ) && sanitize_key( (string) $tab ) === $owner[ $key ];
 	}

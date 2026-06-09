@@ -1,6 +1,6 @@
 <?php
 /**
- * Testing worksheet — a structured tester checklist (single source of truth) covering every feature.
+ * Testing worksheet, a structured tester checklist (single source of truth) covering every feature.
  * Rendered by the [sssj_tests] shortcode and the Settings → Testing tab. Keep suites() CURRENT on
  * every ship: when a feature changes, add/adjust its case here.
  *
@@ -28,13 +28,13 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'job-abn', 'do' => __( 'Post a job with basis = ABN and a valid 11-digit ABN.', 'shuffles-social-services-jobs' ), 'expect' => __( 'ABN passes validation; it shows on the ABN board, never the TFN board. A bad ABN is rejected.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-vol', 'do' => __( 'Post a job with basis = Volunteer (no ABN). View the Volunteer board ([sssj_volunteer_board]), the TFN board and the ABN board.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It shows on the Volunteer board and the all-jobs board with a green “Volunteer” badge, and NEVER on the TFN or ABN boards. Any logged-in member can apply (no ABN required).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-anon', 'do' => __( 'Post a job linked to your organisation with “Advertise anonymously” ticked. View the job board, the job page source/structured data, and your organisation’s public profile “open positions”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The card shows “🕶️ Anonymous” with no org name/logo/tick; the JobPosting structured data shows “Private advertiser” (your name is not in SEO); and the role does NOT appear under your organisation’s public open positions.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'abr-record', 'do' => __( 'Set an ABR Web Services GUID in Settings → Compliance, then save an organisation (or worker) with a real ABN; reopen the form.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A read-only “Australian Business Register — recorded details” field shows the full register response: entity name, trading/business names, status, type, ACN, GST and location. The organisation’s public profile shows the same record. Without a GUID, nothing is recorded (offline checksum only).', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'menu-repoint', 'do' => __( 'Open the header menu and click “My dashboard” and “Jobs”.', 'shuffles-social-services-jobs' ), 'expect' => __( '“My dashboard” lands on the all-in-one dashboard hub and “Jobs” lands on our jobs board (the page actually running the shortcode) — not a legacy/old page, even if one was previously mapped.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'abr-record', 'do' => __( 'Set an ABR Web Services GUID in Settings → Compliance, then save an organisation (or worker) with a real ABN; reopen the form.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A read-only “Australian Business Register, recorded details” field shows the full register response: entity name, trading/business names, status, type, ACN, GST and location. The organisation’s public profile shows the same record. Without a GUID, nothing is recorded (offline checksum only).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'menu-repoint', 'do' => __( 'Open the header menu and click “My dashboard” and “Jobs”.', 'shuffles-social-services-jobs' ), 'expect' => __( '“My dashboard” lands on the all-in-one dashboard hub and “Jobs” lands on our jobs board (the page actually running the shortcode), not a legacy/old page, even if one was previously mapped.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'syndication-feed', 'do' => __( 'In Settings → SEO, copy the “Your job feed URL” and open it in a browser (or add ?sssj_feed=jobs to the site URL). Post an anonymous job too. Then untick “Publish a job feed for aggregators” and reopen the feed.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A valid job XML feed (<source><job>…) lists your published, non-expired jobs with title, location, salary, type and a link back. Anonymous ads show company “Private advertiser”; participant requests never appear. With the toggle off, the feed returns “disabled”. The same feed URL is what you give Jora/Adzuna.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'google-jobs-schema', 'do' => __( 'Open a public job page and view source / run it through Google’s Rich Results test.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Valid JobPosting structured data is present (title, description, datePosted, validThrough, hiringOrganization, jobLocation, employmentType, baseSalary, identifier, directApply). Remote/hybrid jobs add jobLocationType TELECOMMUTE + Australia applicant requirements. Anonymous ads show “Private advertiser”.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-search', 'do' => __( 'On the Jobs board, search a keyword and pick a category.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results filter to matching jobs; the count updates.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'filter-ajax', 'do' => __( 'On any board (Jobs, Employee, Contractor, Worker, Organisations, Participant requests) change the search box, a filter, the radius, or click a pagination link.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the result tiles refresh in place (the Shuffles spinner shows briefly) — the whole page does NOT reload, the view does not jump to the top, and the cursor stays in the search box. The results map markers also refresh to match the filtered results (old pins clear, new pins plot, the map refits). The address bar still updates so the filtered view can be shared.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'smart-search', 'do' => __( 'On the Jobs (and Worker / Organisations) board, search a term using different words than the listing — e.g. “support work” for a “Disability Support Worker” role, “OT” for an occupational therapist, or “aged care” for a “home care” listing.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Related listings still appear — the search matches sector synonyms (broader, never narrower), so a sensible search does not come back empty.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'filter-ajax', 'do' => __( 'On any board (Jobs, Employee, Contractor, Worker, Organisations, Participant requests) change the search box, a filter, the radius, or click a pagination link.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the result tiles refresh in place (the Shuffles spinner shows briefly), the whole page does NOT reload, the view does not jump to the top, and the cursor stays in the search box. The results map markers also refresh to match the filtered results (old pins clear, new pins plot, the map refits). The address bar still updates so the filtered view can be shared.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'smart-search', 'do' => __( 'On the Jobs (and Worker / Organisations) board, search a term using different words than the listing, e.g. “support work” for a “Disability Support Worker” role, “OT” for an occupational therapist, or “aged care” for a “home care” listing.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Related listings still appear, the search matches sector synonyms (broader, never narrower), so a sensible search does not come back empty.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-funding', 'do' => __( 'Set funding source(s) on a job (posting form), then on the Jobs board tick the funding chips (NDIS / Aged Care / DVA / …).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results narrow to jobs matching the ticked funding (any of them); un-ticking widens again.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-radius', 'do' => __( 'Type a suburb in the location field and set a radius (with no Google key set).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results narrow to jobs within the radius, nearest first (keyless geocoding).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'job-expire', 'do' => __( 'Set a job’s “Closes on” date in the past and wait for the daily cron (or run it).', 'shuffles-social-services-jobs' ), 'expect' => __( 'The job moves to draft and drops off the board.', 'shuffles-social-services-jobs' ) ),
@@ -56,7 +56,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Workers', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove worker/contractor profiles, availability, visibility, résumés, travel radius and location search all behave. Goal: a worker is found exactly as widely as they choose — never more.', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove worker/contractor profiles, availability, visibility, résumés, travel radius and location search all behave. Goal: a worker is found exactly as widely as they choose, never more.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'worker-profile', 'do' => __( 'Create a worker profile; add Services via the search-and-add picker; set a location; choose visibility.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Profile saves; services show as pills; location geocodes; one profile per user.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'worker-place-ac', 'do' => __( 'On the worker profile, start typing a suburb in “Your location” and pick a suggestion (needs a Google Maps API key set in Settings → Integrations).', 'shuffles-social-services-jobs' ), 'expect' => __( 'An autocomplete dropdown appears; picking a place fills Suburb / State / Postcode and records the lat/long, so the profile is found by location and radius.', 'shuffles-social-services-jobs' ) ),
@@ -79,10 +79,10 @@ class Shuffles_SSJ_Tests {
 				'title' => __( 'Participants (privacy-critical)', 'shuffles-social-services-jobs' ),
 				'objective' => __( 'Prove participant requests stay pseudonymous, suburb-level, members-only, admin-moderated and never indexed. Goal: the most vulnerable people on the platform are protected by design, not by setting.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
-					array( 'id' => 'need-post', 'do' => __( 'Post a participant support request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is held for admin moderation; once approved it shows only a pseudonym + suburb — never a name or contact detail.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'need-post', 'do' => __( 'Post a participant support request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is held for admin moderation; once approved it shows only a pseudonym + suburb, never a name or contact detail.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-gate', 'do' => __( 'Open the Participant requests board as a logged-out guest.', 'shuffles-social-services-jobs' ), 'expect' => __( 'You are prompted to log in; no requests are shown.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-noindex', 'do' => __( 'View the page source / robots of a participant request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is noindex and excluded from sitemaps.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'need-details', 'do' => __( 'On a participant request card, click “View full request”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The full request details expand in place (when, gender preference, full description) — no separate page, so privacy is preserved.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'need-details', 'do' => __( 'On a participant request card, click “View full request”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The full request details expand in place (when, gender preference, full description), no separate page, so privacy is preserved.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-seeking', 'do' => __( 'Post a participant request and choose “What are you seeking?” (ongoing support / one-off task / a provider).', 'shuffles-social-services-jobs' ), 'expect' => __( 'The choice is saved and shown as a badge on the request card (e.g. “Seeking a provider”).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-easyform', 'do' => __( 'Open the “Request a worker” form. Read it top to bottom.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It reads as clear numbered steps (What you need, Where, The kind of support, When and preferences, Close date) with friendly plain-English help, a single required field, and a reassuring intro about privacy and editing later.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'need-enddate', 'do' => __( 'Post a request and set (or leave) the “Close this request on” date; reopen the dashboard “My participant requests”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A close date is stored (about two months out if left blank), and the listing shows “Closes on …”.', 'shuffles-social-services-jobs' ) ),
@@ -96,8 +96,8 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'org-profile', 'do' => __( 'Create an org profile: logo, social links, sectors + funding (search-and-add), multiple locations.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Saves; logo + social icons + sector/funding pills appear on the profile and card.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-find', 'do' => __( 'On the Organisations directory, filter by sector, funding, location/radius, and “Only with open placements”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results match all filters; multi-location orgs match if ANY site is in range.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mask-org', 'do' => __( 'On an organisation profile (Privacy section) tick “Phone number” and/or “Website” as members-only; then open the org page while logged out and while logged in.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Logged out, the chosen field shows a “🔒 Log in” lock; logged in (or as the owner / an admin) the real phone / website button shows. NDIS-register details are never affected.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'team-add', 'do' => __( 'As an organisation owner, open the dashboard “Team” tab (or a page with [sssj_org_team]) and add a team member by the email or username of another existing account; try both “Member” and “Admin” roles. Then try an email with no account.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The existing person is added with the chosen role and appears in the roster. An unknown email is refused with a note to have them sign up first — no account is ever created.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'team-manage', 'do' => __( 'As an org admin, change a member’s role and then remove a member; also log in AS a promoted “Admin” member and confirm they can manage the team; finally try to remove or demote the owner.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Role changes and removals apply (removal only unlinks — the account still exists). An admin member can manage the team. The owner can never be removed or demoted.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'team-add', 'do' => __( 'As an organisation owner, open the dashboard “Team” tab (or a page with [sssj_org_team]) and add a team member by the email or username of another existing account; try both “Member” and “Admin” roles. Then try an email with no account.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The existing person is added with the chosen role and appears in the roster. An unknown email is refused with a note to have them sign up first, no account is ever created.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'team-manage', 'do' => __( 'As an org admin, change a member’s role and then remove a member; also log in AS a promoted “Admin” member and confirm they can manage the team; finally try to remove or demote the owner.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Role changes and removals apply (removal only unlinks, the account still exists). An admin member can manage the team. The owner can never be removed or demoted.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'primary-role', 'do' => __( 'In My dashboard → My roles, tick a couple of hats, set a “Primary role”, and save. Reopen the dashboard and the [sssj_menu].', 'shuffles-social-services-jobs' ), 'expect' => __( 'The dashboard opens to the primary role’s tab; the menu shows that role’s items with a “See all” dropdown revealing the rest. Setting “No preference” shows everything (no See-all).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'team-join', 'do' => __( 'As a different logged-in member, open an organisation’s profile and click “Request to join” (add a message). Then, as that org’s admin, open My dashboard → Team and Approve (or Decline) the request.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The requester sees “Request to join pending” (and can cancel). The admin sees it under “Requests to join” with a count on the Team tab; Approve adds them to the team (as Member or Admin), Decline removes it. Nobody joins without admin approval.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-counters', 'do' => __( 'Check an org card’s counters.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Shows current open jobs and total placed (all-time Offers).', 'shuffles-social-services-jobs' ) ),
@@ -107,29 +107,29 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'org-seed-fields', 'do' => __( 'Settings → Profile Fields → “Add recommended provider fields”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A Shuffles-style organisation field set is added (specialisations, Services Provided, service delivery, ages supported, accepting clients, accessibility, languages, years operating, accreditations, Peak Bodies); the banner-flagged ones (incl. Services Provided + Peak Bodies) become filters on the Organisations directory and appear on org profiles. Re-running only adds fields that don’t already exist.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-autofill', 'do' => __( 'On the organisation form enter your website URL and click “Fetch details from my website”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Empty name / description / phone fields are pre-filled from your site for review (only empty fields are touched).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'org-category', 'do' => __( 'On the organisation form choose an “Organisation type” (Support provider / Supplier / SDA-housing / Real estate / Professional services / Other) and save; then filter the Organisations directory by that type.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The category saves, shows as a badge on the card + profile, and the “All organisation types” directory filter narrows to it.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'org-sponsored', 'do' => __( 'As an admin, edit an organisation and tick “Sponsored placement” in the Verification box; view the directory.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The org sorts to the top of the directory and shows a “★ Sponsored” badge on its card + profile; un-ticking removes both. (Admin-only — members can’t self-set it.)', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'org-sponsored', 'do' => __( 'As an admin, edit an organisation and tick “Sponsored placement” in the Verification box; view the directory.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The org sorts to the top of the directory and shows a “★ Sponsored” badge on its card + profile; un-ticking removes both. (Admin-only, members can’t self-set it.)', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'open-to', 'do' => __( 'On a job, tick “Open to overseas applicants / visa sponsorship” and “Accepts work-placement enquiries”. On an organisation, tick those plus “Volunteers welcome”. View the job board, job page, organisations directory and org profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The chosen options show as badges (✈️ Visa sponsorship, 🎓 Work placements, 🤝 Volunteers welcome) on the relevant cards and profiles.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
 				'title' => __( 'Compliance & verification', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove credential uploads, the admin verification queue, the ✓ Verified / blue-tick badges, and the live ABN (ABR) + NDIS register checks. Goal: a trust badge is only ever granted by an admin against real evidence — never self-claimed — and register data stays read-only.', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove credential uploads, the admin verification queue, the ✓ Verified / blue-tick badges, and the live ABN (ABR) + NDIS register checks. Goal: a trust badge is only ever granted by an admin against real evidence, never self-claimed, and register data stays read-only.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'cred-upload', 'do' => __( 'As a worker, add a credential (e.g. WWCC) with an evidence PDF.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Saved as Pending; the evidence file has no public URL.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cred-verify', 'do' => __( 'As an admin, open Jobs & Engagements → Verification, view the evidence, Approve it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The worker gains the ✓ Verified badge (and the verified checks show on their card).', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'cred-serve', 'do' => __( 'Copy an evidence link and open it while logged out (or as a different non-admin).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Access is denied — only the owner or an admin can open it.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'cred-serve', 'do' => __( 'Copy an evidence link and open it while logged out (or as a different non-admin).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Access is denied, only the owner or an admin can open it.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cred-expire', 'do' => __( 'Set a verified credential’s expiry in the past; run the daily cron.', 'shuffles-social-services-jobs' ), 'expect' => __( 'It expires, the badge drops, and a reminder email is sent.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'blue-tick', 'do' => __( 'As an admin, edit a worker or organisation, tick “Account verified (blue tick)” in the Verification box and update; then view the directory and profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A blue tick shows next to the name on cards and the profile (and on jobs from a verified org). Un-ticking removes it. It is separate from the green ✓ Verified credential badge.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'abr-check', 'do' => __( 'Enter an ABR GUID (Settings → Compliance), then post a job (ABN basis) or organisation with a valid ABN.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The ABN is checked against the Australian Business Register on save; the card/profile shows an “🏢 ABR Active · <Entity Name>” badge. Without a GUID, only the offline checksum runs.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'org-abn-required', 'do' => __( 'Try to save an organisation profile without an ABN (or with an invalid one).', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is rejected — organisations (non-TFN businesses) require a valid 11-digit ABN. TFN job ads never ask for an ABN.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'org-abn-required', 'do' => __( 'Try to save an organisation profile without an ABN (or with an invalid one).', 'shuffles-social-services-jobs' ), 'expect' => __( 'It is rejected, organisations (non-TFN businesses) require a valid 11-digit ABN. TFN job ads never ask for an ABN.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'ndis-lookup', 'do' => __( 'Edit a registered organisation, enter its NDIS Registration No (the number after ?id= in its provider-register URL, e.g. 902439) and save; then view the org profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A “NDIS provider registration” table shows the live Registration status, the approved registration groups and the “in force until” date, with a link to the Commission register and a “Last checked” date. (Reads the NDIS Commission’s own public listing.)', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'ndis-rescan', 'do' => __( 'As an admin, open that org profile and click “Re-check NDIS register now”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The branded Shuffles spinner shows briefly, then the table refreshes from the live listing. The monthly background check (Settings → Compliance toggle) re-reads every registered org and emails the change-alert address only when status, groups, or the expiry date change — never the provider.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'ndis-rescan', 'do' => __( 'As an admin, open that org profile and click “Re-check NDIS register now”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The branded Shuffles spinner shows briefly, then the table refreshes from the live listing. The monthly background check (Settings → Compliance toggle) re-reads every registered org and emails the change-alert address only when status, groups, or the expiry date change, never the provider.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'ndis-soletrader', 'do' => __( 'On a worker profile, tick “I’m an NDIS-registered sole trader” and enter the NDIS Registration No (e.g. 902439); save, then view the worker’s public profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The same NDIS registration table (status, groups, expiry, register link, last checked) shows on the individual’s profile, and the listing is included in the monthly auto-check.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'ndis-scannow', 'do' => __( 'On the organisation or worker form, type an NDIS Registration No and click “Scan now”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The Shuffles spinner shows, then the live legal name, status, ABN, head office, website, registration groups and expiry appear inline — without saving the form. A bad number shows a friendly error.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'ndis-scannow', 'do' => __( 'On the organisation or worker form, type an NDIS Registration No and click “Scan now”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The Shuffles spinner shows, then the live legal name, status, ABN, head office, website, registration groups and expiry appear inline, without saving the form. A bad number shows a friendly error.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'ndis-abn-mismatch', 'do' => __( 'Enter an ABN on the form that differs from the ABN on the NDIS listing, then Scan now (or save and view the profile).', 'shuffles-social-services-jobs' ), 'expect' => __( 'A red warning note appears saying the register ABN differs from the ABN on file.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'ndis-outlets', 'do' => __( 'Scan a registered provider that lists outlets (e.g. 902439).', 'shuffles-social-services-jobs' ), 'expect' => __( 'The outlets and their phone number(s) appear (read from the register footer); these are read-only and have no editable field.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'ndis-revoked-red', 'do' => __( 'Scan a provider whose status is Revoked/Banned (or set the stored status to “Revoked”).', 'shuffles-social-services-jobs' ), 'expect' => __( 'The status badge shows on a RED background, not green — on both the profile table and the Scan-now preview.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'ban-register', 'do' => __( 'In Settings → Safety Register, add a banned ABN (or import a CSV). Then create/save an organisation or worker with that same ABN, and open its profile as an admin and as a normal visitor.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The listing is flagged in “Flagged listings (needs review)”; a staff alert email is sent. A red “Staff only — safety flag” banner shows on the profile to administrators ONLY (normal visitors never see it). Posting is NOT blocked and nothing is shown publicly. “Dismiss flag” and “Re-scan all listings” work, and removing the register entry clears the flag.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'ndis-revoked-red', 'do' => __( 'Scan a provider whose status is Revoked/Banned (or set the stored status to “Revoked”).', 'shuffles-social-services-jobs' ), 'expect' => __( 'The status badge shows on a RED background, not green, on both the profile table and the Scan-now preview.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'ban-register', 'do' => __( 'In Settings → Safety Register, add a banned ABN (or import a CSV). Then create/save an organisation or worker with that same ABN, and open its profile as an admin and as a normal visitor.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The listing is flagged in “Flagged listings (needs review)”; a staff alert email is sent. A red “Staff only, safety flag” banner shows on the profile to administrators ONLY (normal visitors never see it). Posting is NOT blocked and nothing is shown publicly. “Dismiss flag” and “Re-scan all listings” work, and removing the register entry clears the flag.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'ban-import', 'do' => __( 'In Settings → Safety Register, import a CSV with an ABN column (e.g. the NDIS Commission enforcement-actions dataset). Re-import the same file.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Columns (ABN, provider, action, dates) are auto-detected; rows with a valid 11-digit ABN are added and a count is shown. Re-importing skips duplicates. A file with no ABN column is rejected with a clear message.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'spinner', 'do' => __( 'Save an organisation or worker profile, and use the website “Fetch details” button.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A branded Shuffles spinner (site logo if set, else a blue ring) overlays the form while the few-second lookups run.', 'shuffles-social-services-jobs' ) ),
 				),
@@ -140,17 +140,17 @@ class Shuffles_SSJ_Tests {
 				'cases' => array(
 					array( 'id' => 'mon-off', 'do' => __( 'With monetisation OFF, post jobs and respond.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Everything is free / ungated.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mon-cap', 'do' => __( 'Turn monetisation ON; set a free-listing cap; post beyond it without a subscription.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Posting is blocked with an upgrade prompt; a subscriber posts unlimited + gets featured placement.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'mon-participant-free', 'do' => __( 'Turn monetisation ON, then as a member whose role is Participant (only) post a direct job for a worker.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Posting is allowed free — participants employing directly or seeking workers/providers are never charged, even when monetisation is on. (A participant who is also a provider follows the provider rules.)', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'mon-participant-free', 'do' => __( 'Turn monetisation ON, then as a member whose role is Participant (only) post a direct job for a worker.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Posting is allowed free, participants employing directly or seeking workers/providers are never charged, even when monetisation is on. (A participant who is also a provider follows the provider rules.)', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mon-directory-fee', 'do' => __( 'Turn monetisation ON, then save an organisation as a member with no advertiser/provider subscription, and view the Organisations directory.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The org is not listed in the directory until the provider holds a listing subscription (or is an admin); with monetisation OFF every org lists for free.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'ads-integration', 'do' => __( 'With the Advanced Ads plugin active, create a placement, map it to a slot in Settings → Ads (e.g. Board — top), and put [sssj_ad placement="…"] on a page. Then deactivate Advanced Ads (or turn off Settings → Ads) and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'When Advanced Ads is active + enabled, the banner shows in the board slot and via the shortcode (labelled “Advertisement”); when it is inactive or the master switch is off, nothing renders and no errors appear (standalone-safe).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'ads-integration', 'do' => __( 'With the Advanced Ads plugin active, create a placement, map it to a slot in Settings → Ads (e.g. Board, top), and put [sssj_ad placement="…"] on a page. Then deactivate Advanced Ads (or turn off Settings → Ads) and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'When Advanced Ads is active + enabled, the banner shows in the board slot and via the shortcode (labelled “Advertisement”); when it is inactive or the master switch is off, nothing renders and no errors appear (standalone-safe).', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
 				'title' => __( 'Hats / roles & onboarding', 'shuffles-social-services-jobs' ),
 				'objective' => __( 'Prove hats grant the right abilities, onboarding routes new members, the dashboard reveals by hat, and the primary-role focus + “See all” work. Goal: members see what’s relevant to them, with everything still reachable.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
-					array( 'id' => 'roles-pick', 'do' => __( 'Put [sssj_roles] on a page (or open the “My roles” tab in [sssj_dashboard]); as a logged-in member tick hats from the grouped picker (I offer work / I’m looking for work / I need support) — e.g. Employer/company AND Available for contracting — and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Hats save (confirmation shows), persist on reload, and the matching capabilities are granted (employer → post jobs + org; contractor → worker profile).', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'roles-dashboard', 'do' => __( 'After setting hats, reopen the dashboard.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The dashboard reveals only the sections matching your hats — an employer sees My listings & applicants + Post a job / organisation; a contractor sees My profile + Matched jobs + Credentials; a member with both sees both, in one place. A member with no hats yet still sees everything (capability fallback).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'roles-pick', 'do' => __( 'Put [sssj_roles] on a page (or open the “My roles” tab in [sssj_dashboard]); as a logged-in member tick hats from the grouped picker (I offer work / I’m looking for work / I need support), e.g. Employer/company AND Available for contracting, and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Hats save (confirmation shows), persist on reload, and the matching capabilities are granted (employer → post jobs + org; contractor → worker profile).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'roles-dashboard', 'do' => __( 'After setting hats, reopen the dashboard.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The dashboard reveals only the sections matching your hats, an employer sees My listings & applicants + Post a job / organisation; a contractor sees My profile + Matched jobs + Credentials; a member with both sees both, in one place. A member with no hats yet still sees everything (capability fallback).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'roles-guest', 'do' => __( 'Open the [sssj_roles] page while logged out.', 'shuffles-social-services-jobs' ), 'expect' => __( 'You are prompted to log in; no role form is shown.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'onboard', 'do' => __( 'Put [sssj_onboard] on a “Get started” page; as a new member tick some hats and Continue.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Hats save, then tailored next-step buttons appear (set up profile / create organisation / post a job / request support / go to dashboard) matching the chosen hats.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'onboard-affiliate', 'do' => __( 'With FluentAffiliate active (or an Affiliate URL set in Settings → Monetisation), open [sssj_onboard] as a member with the Participant hat; then turn the affiliate promo off and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'An “Earn money by referring others” card appears (extra encouragement for participants), clearly states a PayPal account is needed and that it can be set up later, and links out to the affiliate sign-up (new tab) without blocking onboarding. With FluentAffiliate inactive / promo off, no card shows and nothing breaks. The same card is available via [sssj_affiliate].', 'shuffles-social-services-jobs' ) ),
@@ -160,7 +160,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Accessibility / CALD + appearance', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove the accessibility / multilingual (CALD) tools and the theming (Style Studio) work. Goal: the platform is usable by everyone — including low-vision, neurodiverse and non-English speakers — and stays on-brand.', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the accessibility / multilingual (CALD) tools and the theming (Style Studio) work. Goal: the platform is usable by everyone, including low-vision, neurodiverse and non-English speakers, and stays on-brand.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'cald-lang', 'do' => __( 'Switch the language in the toolbar.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Tagged UI labels translate; right-to-left languages flip layout; the choice persists site-wide.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cald-english', 'do' => __( 'While in another language, hit the “English Hot Key”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The interface returns to English (button shows only when not in English).', 'shuffles-social-services-jobs' ) ),
@@ -177,13 +177,13 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'auto-menu', 'do' => __( 'In Settings → General, tick “Show navigation menu at the top of every page”, save, and open any front-end page.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The navigation bar appears at the very top of every page; un-ticking removes it.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'dashboard', 'do' => __( 'Put [sssj_dashboard] on a page; view it logged in as a worker, then as an advertiser.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A tabbed hub shows only relevant tabs (Overview always; My listings for advertisers; Matched jobs + Credentials for workers; Saved searches; Messages). Tabs switch panels; with JS off all sections still show.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'pills', 'do' => __( 'Open any form/filter with a dropdown or multi-pick.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Single selects are searchable; multi-picks show removable pills (no bare checkbox grids).', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'dynamic-filter', 'do' => __( 'On any directory, change a category, tick a chip or drag the radius — without clicking any button.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results update automatically (no “Filter” button needed). Typing in the search box updates shortly after you stop.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'dynamic-filter', 'do' => __( 'On any directory, change a category, tick a chip or drag the radius, without clicking any button.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Results update automatically (no “Filter” button needed). Typing in the search box updates shortly after you stop.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'clear-all', 'do' => __( 'With several filters applied, click “Clear all”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Every filter resets and the full list returns.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'use-my-location', 'do' => __( 'Click “Use my location” next to the location field and allow the browser prompt.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A default radius is applied and results re-sort to nearest first; denying access shows a friendly message.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'distance-pill', 'do' => __( 'Search any directory with a location (type a suburb or use my location).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Each result card shows a highlighted “X km away” pill (nearest location for organisations).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'map-markers', 'do' => __( 'With a Google Maps API key set, single-click a map marker, then double-click it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Single click opens an info box (summary + View link); double click scrolls to that result’s card and surrounds it with an animated rainbow “tracer” highlight.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'mobile', 'do' => __( 'Open the boards, directories and forms on a phone (or a narrow window).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Filter controls stack full-width, cards go single-column, nothing overflows; it looks professional.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'readme', 'do' => __( 'On each directory, click “Read me — things to know”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A collapsible note opens with tips specific to that directory (jobs / workers / organisations / participant requests); click again to close.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'readme', 'do' => __( 'On each directory, click “Read me, things to know”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A collapsible note opens with tips specific to that directory (jobs / workers / organisations / participant requests); click again to close.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
@@ -207,24 +207,24 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'disp-recent', 'do' => __( 'Add [sssj_recent type="jobs" count="6"] and [sssj_recent type="orgs" layout="list"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Recent cards reveal with a staggered fade; list layout is a compact sidebar list. Participant requests only show to logged-in members.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'disp-featured', 'do' => __( 'Add [sssj_featured]. Promote a job (mark it featured), give it a description, and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Featured roles show with a subtle shine and a short ~40-character teaser from the role’s description under the rate; with none promoted it falls back to the newest jobs.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'disp-whyus', 'do' => __( 'Create a page via Settings → Pages → “Why us (benefits)” (or put [sssj_why_us] on a page) and open it. Then try [sssj_why_us layout="carousel" per_row="3"], [sssj_why_us per_row="2" rows="2"], and font="brand".', 'shuffles-social-services-jobs' ), 'expect' => __( 'A point-form benefits list renders, each with an icon, heading and blurb. layout="carousel" gives a horizontal AUTO-scrolling row (3 in view) that pauses on hover/touch with no visible scrollbar; per_row/rows control columns and how many show; font="theme" (default) matches the page font, font="brand" uses the plugin font. The default heading shows “Why ” + your site name. Grids collapse to one column on mobile.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'whyus-edit', 'do' => __( 'In Settings → Pages → “Why us — benefit points”, edit a line (icon | Heading | Blurb), add a new line, save, then reload the Why us page. Then clear the box entirely and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The Why us page reflects your edited/added points in order. Clearing the box restores the built-in default points.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'whyus-edit', 'do' => __( 'In Settings → Pages → “Why us, benefit points”, edit a line (icon | Heading | Blurb), add a new line, save, then reload the Why us page. Then clear the box entirely and save.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The Why us page reflects your edited/added points in order. Clearing the box restores the built-in default points.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'disp-join', 'do' => __( 'Create a page via Settings → Pages → “Join (welcome / get started)” (or put [sssj_join] on a page) and open it logged out.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A welcome page shows a “Let’s get you onboarded” button (to the onboarding page), Create-account + Log-in buttons, and quick links to browse jobs / find a worker / organisations.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'disp-hero-quotes', 'do' => __( 'Put [sssj_hero] with four button pairs (button_text/url … button4_text/url) into a page in the block editor and view it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'All four buttons appear (not just the first) — the editor’s smart-quote curling no longer breaks the later attributes.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'disp-hero-quotes', 'do' => __( 'Put [sssj_hero] with four button pairs (button_text/url … button4_text/url) into a page in the block editor and view it.', 'shuffles-social-services-jobs' ), 'expect' => __( 'All four buttons appear (not just the first), the editor’s smart-quote curling no longer breaks the later attributes.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'hero-blurb', 'do' => __( 'In Settings → Pages → “Home page hero”, set a Hero headline and a Hero main blurb, save, then view a page with a plain [sssj_hero] (no title/subtitle attributes). Then clear both fields and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The hero uses your edited headline and blurb without changing the shortcode. Clearing them falls back to the focus-programs line, then the built-in default. A title/subtitle on the shortcode still overrides the settings.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'feature-today', 'do' => __( 'Put [sssj_feature_today] on a page (or drop the “Today’s feature spotlight” Elementor widget in a full-width section). Click “Learn more about this feature”, then the Pause control, then double-tap the tile. Reload on two different days, and behind a full-page cache.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A full-width tile titled “Today’s Highlighted Site Feature” shows one feature with a short summary. “Learn more” expands an inline “how it works” explanation right on the tile (it does NOT link to the marketing doc or anywhere). A ball of light traces the outside border; tap to stop/start, double-tap to reverse. The feature changes the next day and stays correct even behind a full-page cache (it refreshes from the REST endpoint).', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'promo-studio', 'do' => __( 'As an admin, put [sssj_promo] on a private page and open it. Click “Show another” a few times, pick a different highlight from the dropdown, change the Style dropdown (Ocean/Forest/Grape/Sunrise/Midnight/Rose), then click “Save image” and “Copy caption”. Open the same page logged out / as a normal member.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A square branded graphic shows one highlight at a time — built from real platform numbers (only those big enough to impress) and the same brand messages as the daily feature spotlight, never any participant data. “Show another” / the dropdown swap the graphic AND its caption together; the Style dropdown recolours both the preview and the saved image; “Save image” downloads a crisp 1080×1080 PNG (drawn on a canvas, works in Chrome/Edge/Firefox/Safari); “Copy caption” copies the matching words + hashtags. Non-admins see only an “available to administrators” notice.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'disp-motion', 'do' => __( 'Turn on the OS “reduce motion” setting and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Animations are disabled — content appears immediately with final numbers.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'promo-studio', 'do' => __( 'As an admin, put [sssj_promo] on a private page and open it. Click “Show another” a few times, pick a different highlight from the dropdown, change the Style dropdown (Ocean/Forest/Grape/Sunrise/Midnight/Rose), then click “Save image” and “Copy caption”. Open the same page logged out / as a normal member.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A square branded graphic shows one highlight at a time, built from real platform numbers (only those big enough to impress) and the same brand messages as the daily feature spotlight, never any participant data. “Show another” / the dropdown swap the graphic AND its caption together; the Style dropdown recolours both the preview and the saved image; “Save image” downloads a crisp 1080×1080 PNG (drawn on a canvas, works in Chrome/Edge/Firefox/Safari); “Copy caption” copies the matching words + hashtags. Non-admins see only an “available to administrators” notice.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'disp-motion', 'do' => __( 'Turn on the OS “reduce motion” setting and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Animations are disabled, content appears immediately with final numbers.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'elementor', 'do' => __( 'With Elementor active, edit a page and open the “Shuffles Jobs” widget category; drag in Hero / Stats / Featured / Recent / Menu and set their controls.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Each widget renders the matching block with your settings, both in the editor preview and on the live page.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 			array(
 				'title' => __( 'Email alerts', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove opt-in alerts (job matches, new candidates, saved-search digests) — including the logged-out “Save & alert me” login prompt. Goal: members only ever get alerts they asked for.', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove opt-in alerts (job matches, new candidates, saved-search digests), including the logged-out “Save & alert me” login prompt. Goal: members only ever get alerts they asked for.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'alert-worker', 'do' => __( 'On a worker profile tick “Email me when new jobs match my profile”, then (Settings → Email Alerts) click “Run alerts now” after a matching job is posted.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The worker receives an email digest of new matching jobs. Nothing is sent if they did not opt in.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'alert-advertiser', 'do' => __( 'When posting a job tick “Email me when new candidates match this job”; add a matching worker, then run alerts.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The advertiser receives an email digest of new matching candidates.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'alert-saved', 'do' => __( 'On a directory, set a filter and click “Save & alert me”; add a new matching listing, then run alerts. Manage via [sssj_saved_searches].', 'shuffles-social-services-jobs' ), 'expect' => __( 'The search is saved; an email arrives with new matching listings; Remove deletes the saved search.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'alert-guest', 'do' => __( 'Log out, set a filter on a board, and click the “🔔 Save & alert me (log in)” button.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The button is visible to logged-out visitors but isn’t active — it sends you to log in and returns to the same filtered search, where you can then save it. No alert is saved while logged out.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'alert-guest', 'do' => __( 'Log out, set a filter on a board, and click the “🔔 Save & alert me (log in)” button.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The button is visible to logged-out visitors but isn’t active, it sends you to log in and returns to the same filtered search, where you can then save it. No alert is saved while logged out.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'alert-master', 'do' => __( 'Turn the master “Enable email alerts” off and run alerts.', 'shuffles-social-services-jobs' ), 'expect' => __( 'No emails are sent; opt-ins are remembered for when it is turned back on.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
@@ -240,7 +240,7 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Guides, workflows & policies', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove the in-app advice guides, the step-by-step end-user workflows, and the plain-English policy summaries all render and self-heal their links. Goal: members can self-serve clear, sector-appropriate help — “how to do it well” (Guides), “the exact steps” (How it works) and “the rules that keep it safe” (Policies).', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the in-app advice guides, the step-by-step end-user workflows, and the plain-English policy summaries all render and self-heal their links. Goal: members can self-serve clear, sector-appropriate help, “how to do it well” (Guides), “the exact steps” (How it works) and “the rules that keep it safe” (Policies).', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'guides-show', 'do' => __( 'Put [sssj_guides] on a page (or open Settings → Guides) and click each guide header.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The advice guides show (write a job post, respond to a job, ABN contractor, standing profile, flyer/résumé best-practice); the first is open; clicking expands/collapses each.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'guides-only', 'do' => __( 'Use [sssj_guides only="respond-to-job"].', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the chosen guide renders.', 'shuffles-social-services-jobs' ) ),
@@ -257,13 +257,13 @@ class Shuffles_SSJ_Tests {
 			),
 			array(
 				'title' => __( 'Reviews & ratings', 'shuffles-social-services-jobs' ),
-				'objective' => __( 'Prove members can rate and review contractors (workers) and providers (orgs), that only genuinely-engaged members can review, that nothing shows until an admin approves, and that the average feeds trust. Goal: ratings are real, moderated and fair — never gameable.', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove members can rate and review contractors (workers) and providers (orgs), that only genuinely-engaged members can review, that nothing shows until an admin approves, and that the average feeds trust. Goal: ratings are real, moderated and fair, never gameable.', 'shuffles-social-services-jobs' ),
 				'cases' => array(
 					array( 'id' => 'review-gate', 'do' => __( 'As a member who has NOT messaged or applied to a given worker/org, open that profile and look for the review form. Then start a message thread (or apply) and reload.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Before any engagement there is no review form (just a note that only engaged members can review); after a relay message/application exists between you, the “Leave a review” form appears. You can never review your own profile/org.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'review-submit', 'do' => __( 'Leave a 1–5 star rating + title + review and submit; reload the profile while logged in as someone else (or logged out).', 'shuffles-social-services-jobs' ), 'expect' => __( 'You see “Awaiting moderation”; the review does NOT yet appear publicly. The star widget records your rating; one (editable) review per member per subject.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'review-moderate', 'do' => __( 'In Settings → Reviews & Ratings, Approve the pending review (then try Reject on another).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Approved reviews appear on the profile and count toward the average + count; rejected ones never show. The average/count update immediately.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'review-respond', 'do' => __( 'As the reviewed worker (or an org admin), open your profile and use “Respond to this review”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Your single public response shows under that review; non-owners do not see the respond form.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'review-trust', 'do' => __( 'Approve some reviews for a worker, then view “Jobs matched to you” / the worker matches on a job.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A well-rated worker scores a little higher and shows a “Rated X★” reason — the approved average feeds the matching trust signal.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'review-trust', 'do' => __( 'Approve some reviews for a worker, then view “Jobs matched to you” / the worker matches on a job.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A well-rated worker scores a little higher and shows a “Rated X★” reason, the approved average feeds the matching trust signal.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'review-off', 'do' => __( 'Turn off “Enable reviews & ratings” in Settings → Reviews & Ratings and reload a profile.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The reviews section disappears everywhere and no new reviews can be left; existing reviews are retained for when it is re-enabled.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'testi-submit', 'do' => __( 'On a worker/provider profile, open “What people say” → “Leave a testimonial” as a logged-in non-owner. Write an endorsement, choose how you are credited + your relationship, submit.', 'shuffles-social-services-jobs' ), 'expect' => __( 'You see “your testimonial was sent for moderation”; it does NOT appear publicly yet. You are never required to use your full name. Owners do not see the submit form on their own profile.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'testi-owner', 'do' => __( 'As the profile owner, open “What people say” → “Manage my testimonials”. Add a quote you received; after an admin approves, click “Feature”, then “Hide”, then “Delete”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Owner-added quotes are also held for moderation. Only Approved testimonials can be Featured; only Approved + Featured ones show publicly under “What people say”. Hide/Delete work as labelled.', 'shuffles-social-services-jobs' ) ),
@@ -280,11 +280,23 @@ class Shuffles_SSJ_Tests {
 					array( 'id' => 'swipe', 'do' => __( 'Put [sssj_swipe] on a page; swipe/drag the top card right and left, use the ✕/♥/↺ buttons and the ← → arrow keys.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Providers show one card at a time; right saves to your shortlist (toast confirms; stored when logged in), left skips, ↺ / U undoes; tapping “View profile” opens the org page; when the deck empties a shortlist summary shows.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cron-tab', 'do' => __( 'As an admin, open Settings → Cron Job List & Status.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Every plugin background job is listed (daily maintenance, daily email alerts, monthly NDIS check) with its frequency, last run, next run due and status. “Run now” triggers a job; after the monthly NDIS check the row shows e.g. “12 checked, 1 could not be read”.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'cron-status', 'do' => __( 'Click “Run now” on a job, then reload the tab.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The “Last run” time updates and Status shows “Completed OK”. A job that starts but fatals mid-run would instead show “Did not complete”.', 'shuffles-social-services-jobs' ) ),
-					array( 'id' => 'provider-import-preview', 'do' => __( 'Settings → Provider Import (beta): choose “Active providers”, upload the NDIS CSV, Upload & preview.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A preview shows the row count, the auto-detected column mapping and a sample of parsed rows — with NOTHING written (proof of concept is preview-only; no organisations are created).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'provider-import-preview', 'do' => __( 'Settings → Provider Import (beta): choose “Active providers”, upload the NDIS CSV, Upload & preview.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A preview shows the row count, the auto-detected column mapping and a sample of parsed rows, with NOTHING written (proof of concept is preview-only; no organisations are created).', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'logic-tab', 'do' => __( 'Open Settings → Business Logic.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A plain-English list of the plugin’s business rules renders (roles, ABN/TFN, who pays, verification, NDIS, privacy, matching) plus a numbered “Key invariants (never rules)” list.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'menu-editprofile', 'do' => __( 'Put [sssj_menu] on a page and view it logged in.', 'shuffles-social-services-jobs' ), 'expect' => __( 'An “Edit my profile” link appears (opening the worker/candidate profile editor); it is absent when logged out.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'menu-admin-settings', 'do' => __( 'View [sssj_menu] as an administrator and hover/focus “My dashboard”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A “Settings” sub-item drops down (links to the plugin settings page). Non-admins never see it.', 'shuffles-social-services-jobs' ) ),
 					array( 'id' => 'nav-sync', 'do' => __( 'Settings → Pages → “Header menu” → Create header menu; then open Appearance → Menus.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A “Jobs & Engagements” menu exists with the public items (Jobs, Find a worker, Organisations, Participant requests, Post a job, My dashboard, Log in, Register). Re-syncing after a change keeps it current; menu items you add by hand are left untouched.', 'shuffles-social-services-jobs' ) ),
+				),
+			),
+			array(
+				'title' => __( 'AI Profile Card', 'shuffles-social-services-jobs' ),
+				'objective' => __( 'Prove the [sssj_profile_card] generator stays off until configured, gates by a monthly per-member limit, only ever uses the member’s own profile, makes a text-free background composited in the browser, and saves to the member’s media library. Goal: a paid image tool that is safe, gated and private by design.', 'shuffles-social-services-jobs' ),
+				'cases' => array(
+					array( 'id' => 'card-off', 'do' => __( 'With no image-engine key set (or “Enable” unticked), put [sssj_profile_card] on a page and view it logged in.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A polite “not available yet” note shows; no Generate button and no calls are made. Logged-out visitors see a “log in to create your profile card” note.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'card-enable', 'do' => __( 'In Settings → AI Profile Card, paste a valid image-engine key, tick Enable, set a monthly limit, Save. Reload the page logged in as a member.', 'shuffles-social-services-jobs' ), 'expect' => __( 'The generator appears: a style picker with sixteen styles, a preview canvas, your name/location/services listed, and a “Create my card” button. The status box on the settings tab reads “On”.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'card-generate', 'do' => __( 'Pick a style and click “Create my card”; wait for it to finish.', 'shuffles-social-services-jobs' ), 'expect' => __( 'A square card renders on the canvas: a decorative, text-free background for that style, with your LOCATION and SERVICES at the top and your name/tagline at the bottom, plus the site name. The artwork itself contains no readable words; the overlaid text is sharp and correct.', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'card-save-download', 'do' => __( 'Click “Download”, then “Save to my media”.', 'shuffles-social-services-jobs' ), 'expect' => __( 'Download saves a 1080×1080 PNG; “Save to my media” reports success and the image appears in your Media Library (attributed to you).', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'card-limit', 'do' => __( 'Generate until you reach the monthly limit, then try once more.', 'shuffles-social-services-jobs' ), 'expect' => __( 'After the limit is reached you get a clear “you have used your N card(s) for this month” message and no further image is billed. The “Used X of N this month” line tracks each generation. (Limit 999 = effectively unlimited.)', 'shuffles-social-services-jobs' ) ),
+					array( 'id' => 'card-privacy', 'do' => __( 'Review what is sent and what is produced (e.g. open the network request, or just reason about it).', 'shuffles-social-services-jobs' ), 'expect' => __( 'Only the member’s own category/location/services are sent for artwork context, and the prompt forbids any names/numbers/readable text in the image. No participant data and no other member’s details are ever used.', 'shuffles-social-services-jobs' ) ),
 				),
 			),
 		);
@@ -307,45 +319,182 @@ class Shuffles_SSJ_Tests {
 	 * @return string
 	 */
 	public static function render( $atts = array() ) {
-		$title   = ! empty( $atts['title'] ) ? $atts['title'] : __( 'Testing worksheet', 'shuffles-social-services-jobs' );
-		$version = defined( 'SHUFFLES_SSJ_VERSION' ) ? SHUFFLES_SSJ_VERSION : '';
+		$title    = ! empty( $atts['title'] ) ? $atts['title'] : __( 'Testing worksheet', 'shuffles-social-services-jobs' );
+		$version  = defined( 'SHUFFLES_SSJ_VERSION' ) ? SHUFFLES_SSJ_VERSION : '';
+		$feedback = ! isset( $atts['feedback'] ) || $atts['feedback'];
+		$u        = is_user_logged_in() ? wp_get_current_user() : null;
+		$thanks   = isset( $_GET['sssj_test'] ) && 'thanks' === sanitize_key( wp_unslash( $_GET['sssj_test'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$redirect = ( is_ssl() ? 'https://' : 'http://' ) . sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ?? '' ) ) . sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ); // phpcs:ignore
+
+		$areas = array(
+			array( __( 'All jobs board', 'shuffles-social-services-jobs' ), 'page_job_board', '[sssj_job_board]' ),
+			array( __( 'Find a worker', 'shuffles-social-services-jobs' ), 'page_worker_directory', '[sssj_worker_directory]' ),
+			array( __( 'Organisations', 'shuffles-social-services-jobs' ), 'page_org_directory', '[sssj_org_directory]' ),
+			array( __( 'Participant requests', 'shuffles-social-services-jobs' ), 'page_need_board', '[sssj_need_board]' ),
+			array( __( 'Get started (onboarding)', 'shuffles-social-services-jobs' ), 'page_onboard', '[sssj_onboard]' ),
+			array( __( 'Create worker profile', 'shuffles-social-services-jobs' ), 'page_post_worker', '[sssj_post_worker]' ),
+			array( __( 'My dashboard', 'shuffles-social-services-jobs' ), 'page_my_listings', '[sssj_dashboard]' ),
+			array( __( 'Demo tour', 'shuffles-social-services-jobs' ), 'page_demo_tour', '[sssj_demo_tour]' ),
+		);
+
 		ob_start();
-		?>
-		<div class="sssj sssj--tests" data-sssj-tests data-tests-version="<?php echo esc_attr( $version ); ?>">
-			<div class="sssj-panel">
-				<h2 style="margin-top:0"><?php echo esc_html( $title ); ?> <?php if ( $version ) : ?><span class="sssj-badge"><?php echo esc_html( 'v' . $version ); ?></span><?php endif; ?></h2>
-				<p class="description"><?php esc_html_e( 'Give this to a tester. Checks are grouped by area, and each group states its overall objective so you know what it’s proving. Work through each case, mark Pass or Fail. Progress is saved in your browser; use Print for a paper copy or a PDF.', 'shuffles-social-services-jobs' ); ?></p>
-				<div class="sssj-tests__bar">
-					<strong data-tests-progress>0 / <?php echo esc_html( (string) self::count_cases() ); ?></strong>
-					<span class="sssj-tests__track"><span class="sssj-tests__fill" data-tests-fill></span></span>
-					<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-tests-reset><?php esc_html_e( 'Reset', 'shuffles-social-services-jobs' ); ?></button>
-					<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" onclick="window.print()"><?php esc_html_e( 'Print', 'shuffles-social-services-jobs' ); ?></button>
-				</div>
-			</div>
-			<?php foreach ( self::suites() as $suite ) : ?>
-				<div class="sssj-panel">
-					<h3 style="margin-top:0"><?php echo esc_html( $suite['title'] ); ?> <span class="sssj-badge sssj-badge--sm"><?php echo esc_html( sprintf( _n( '%d check', '%d checks', count( $suite['cases'] ), 'shuffles-social-services-jobs' ), count( $suite['cases'] ) ) ); ?></span></h3>
-					<?php if ( ! empty( $suite['objective'] ) ) : ?>
-						<p class="sssj-tests__obj"><strong><?php esc_html_e( 'Objective:', 'shuffles-social-services-jobs' ); ?></strong> <?php echo esc_html( $suite['objective'] ); ?></p>
-					<?php endif; ?>
-					<table class="sssj-tests__table">
-						<?php foreach ( $suite['cases'] as $c ) : ?>
-							<tr data-test-id="<?php echo esc_attr( $c['id'] ); ?>">
-								<td class="sssj-tests__do">
-									<strong><?php echo esc_html( $c['do'] ); ?></strong>
-									<div class="sssj-tests__expect"><?php echo esc_html__( 'Expected:', 'shuffles-social-services-jobs' ) . ' ' . esc_html( $c['expect'] ); ?></div>
-								</td>
-								<td class="sssj-tests__marks">
-									<button type="button" class="sssj-btn sssj-btn--sm sssj-tests__pass" data-mark="pass"><?php esc_html_e( 'Pass', 'shuffles-social-services-jobs' ); ?></button>
-									<button type="button" class="sssj-btn sssj-btn--sm sssj-tests__fail" data-mark="fail"><?php esc_html_e( 'Fail', 'shuffles-social-services-jobs' ); ?></button>
-								</td>
-							</tr>
-						<?php endforeach; ?>
-					</table>
-				</div>
-			<?php endforeach; ?>
-		</div>
-		<?php
+		if ( $feedback ) {
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-tests-form">';
+			echo '<input type="hidden" name="action" value="sssj_test_feedback" />';
+			echo '<input type="hidden" name="redirect" value="' . esc_attr( $redirect ) . '" />';
+			wp_nonce_field( 'sssj_test_feedback', '_sssj_tf' );
+		}
+		echo '<div class="sssj sssj--tests" data-sssj-tests data-tests-version="' . esc_attr( $version ) . '">';
+
+		echo '<div class="sssj-panel">';
+		echo '<h2 style="margin-top:0">' . esc_html( $title ) . ( $version ? ' <span class="sssj-badge">v' . esc_html( $version ) . '</span>' : '' ) . '</h2>';
+		echo '<p class="description">' . esc_html__( 'Work through each group, mark every check Pass or Fail, and add a comment for the group if you like. Progress is saved in your browser; Print gives a paper or PDF copy.', 'shuffles-social-services-jobs' ) . '</p>';
+		if ( $thanks ) {
+			echo '<div class="sssj-note sssj-note--ok">' . esc_html__( 'Thanks! Your testing feedback was sent. You can keep testing and submit again any time.', 'shuffles-social-services-jobs' ) . '</div>';
+		}
+		echo '<div class="sssj-tests__bar"><strong data-tests-progress>0 / ' . esc_html( (string) self::count_cases() ) . '</strong>';
+		echo '<span class="sssj-tests__track"><span class="sssj-tests__fill" data-tests-fill></span></span>';
+		echo '<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-tests-reset>' . esc_html__( 'Reset', 'shuffles-social-services-jobs' ) . '</button>';
+		echo '<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" onclick="window.print()">' . esc_html__( 'Print', 'shuffles-social-services-jobs' ) . '</button></div>';
+
+		$links = '';
+		foreach ( $areas as $a ) {
+			$url = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( $a[1], $a[2] ) : '';
+			if ( $url ) {
+				$links .= '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $url ) . '" target="_blank" rel="noopener">' . esc_html( $a[0] ) . ' &nearr;</a> ';
+			}
+		}
+		if ( '' !== $links ) {
+			echo '<div class="sssj-tests__areas"><strong>' . esc_html__( 'Where to test:', 'shuffles-social-services-jobs' ) . '</strong>';
+			echo '<p class="description" style="margin:4px 0 8px">' . esc_html__( 'Open an area in a new tab, try the steps below, then come back here to mark and comment.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<div class="sssj-row" style="flex-wrap:wrap;gap:6px">' . $links . '</div></div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
+
+		if ( $feedback ) {
+			echo '<div class="sssj-tests__who"><label class="sssj-field"><span>' . esc_html__( 'Your name', 'shuffles-social-services-jobs' ) . '</span><input class="sssj-input" type="text" name="tester_name" value="' . esc_attr( $u ? $u->display_name : '' ) . '" required /></label>';
+			echo '<label class="sssj-field"><span>' . esc_html__( 'Your email', 'shuffles-social-services-jobs' ) . '</span><input class="sssj-input" type="email" name="tester_email" value="' . esc_attr( $u ? $u->user_email : '' ) . '" required /></label></div>';
+			echo '<input type="hidden" name="summary" data-tests-summary value="" /><input type="hidden" name="marks_json" data-tests-marks value="" />';
+		}
+		echo '</div>';
+
+		$si = 0;
+		foreach ( self::suites() as $suite ) {
+			echo '<div class="sssj-panel">';
+			echo '<h3 style="margin-top:0">' . esc_html( $suite['title'] ) . ' <span class="sssj-badge sssj-badge--sm">' . esc_html( sprintf( _n( '%d check', '%d checks', count( $suite['cases'] ), 'shuffles-social-services-jobs' ), count( $suite['cases'] ) ) ) . '</span></h3>';
+			if ( ! empty( $suite['objective'] ) ) {
+				echo '<p class="sssj-tests__obj"><strong>' . esc_html__( 'Objective:', 'shuffles-social-services-jobs' ) . '</strong> ' . esc_html( $suite['objective'] ) . '</p>';
+			}
+			echo '<table class="sssj-tests__table">';
+			foreach ( $suite['cases'] as $c ) {
+				echo '<tr data-test-id="' . esc_attr( $c['id'] ) . '"><td class="sssj-tests__do"><strong>' . esc_html( $c['do'] ) . '</strong><div class="sssj-tests__expect">' . esc_html__( 'Expected:', 'shuffles-social-services-jobs' ) . ' ' . esc_html( $c['expect'] ) . '</div></td>';
+				echo '<td class="sssj-tests__marks"><button type="button" class="sssj-btn sssj-btn--sm sssj-tests__pass" data-mark="pass">' . esc_html__( 'Pass', 'shuffles-social-services-jobs' ) . '</button> <button type="button" class="sssj-btn sssj-btn--sm sssj-tests__fail" data-mark="fail">' . esc_html__( 'Fail', 'shuffles-social-services-jobs' ) . '</button></td></tr>';
+			}
+			echo '</table>';
+			if ( $feedback ) {
+				echo '<label class="sssj-field" style="margin-top:10px"><span>' . esc_html__( 'Comments on this group (optional)', 'shuffles-social-services-jobs' ) . '</span><textarea class="sssj-textarea" name="comments[' . esc_attr( $si ) . ']" rows="3" placeholder="' . esc_attr__( 'Anything that did not work, was confusing, or an idea to improve it.', 'shuffles-social-services-jobs' ) . '"></textarea></label>';
+			}
+			echo '</div>';
+			$si++;
+		}
+
+		if ( $feedback ) {
+			echo '<div class="sssj-panel"><button type="submit" class="sssj-btn sssj-btn--primary">' . esc_html__( 'Send my feedback', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '<p class="description" style="margin-top:8px">' . esc_html__( 'Sends your Pass/Fail marks and comments to the site administrators. You can submit more than once.', 'shuffles-social-services-jobs' ) . '</p></div>';
+		}
+
+		echo '</div>';
+		if ( $feedback ) {
+			echo '</form>';
+		}
 		return ob_get_clean();
+	}
+
+	public static function register() {
+		add_action( 'admin_post_sssj_test_feedback', array( __CLASS__, 'handle_test_feedback' ) );
+		add_action( 'show_user_profile', array( __CLASS__, 'tester_field' ) );
+		add_action( 'edit_user_profile', array( __CLASS__, 'tester_field' ) );
+		add_action( 'personal_options_update', array( __CLASS__, 'save_tester_field' ) );
+		add_action( 'edit_user_profile_update', array( __CLASS__, 'save_tester_field' ) );
+	}
+
+	/** Admins always; plus any member flagged as a platform tester. */
+	public static function is_tester( $user_id ) {
+		$user_id = (int) $user_id;
+		if ( ! $user_id ) { return false; }
+		if ( user_can( $user_id, 'manage_options' ) ) { return true; }
+		return (bool) get_user_meta( $user_id, '_sssj_tester', true );
+	}
+
+	/** User-profile checkbox (admins only) to flag a member as a platform tester. */
+	public static function tester_field( $user ) {
+		if ( ! current_user_can( 'manage_options' ) ) { return; }
+		$on = (bool) get_user_meta( $user->ID, '_sssj_tester', true );
+		echo '<h2>' . esc_html__( 'Shuffles Jobs', 'shuffles-social-services-jobs' ) . '</h2>';
+		echo '<table class="form-table" role="presentation"><tr><th><label for="sssj_tester">' . esc_html__( 'Platform tester', 'shuffles-social-services-jobs' ) . '</label></th><td>';
+		echo '<label><input type="checkbox" id="sssj_tester" name="sssj_tester" value="1" ' . checked( $on, true, false ) . ' /> ' . esc_html__( 'Show this member the Testing tab in their dashboard (worksheet + feedback form).', 'shuffles-social-services-jobs' ) . '</label></td></tr></table>';
+	}
+
+	public static function save_tester_field( $user_id ) {
+		if ( ! current_user_can( 'manage_options' ) || ! current_user_can( 'edit_user', $user_id ) ) { return; }
+		if ( ! empty( $_POST['sssj_tester'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			update_user_meta( $user_id, '_sssj_tester', 1 );
+		} else {
+			delete_user_meta( $user_id, '_sssj_tester' );
+		}
+	}
+
+	public static function handle_test_feedback() {
+		if ( ! is_user_logged_in() ) { wp_die( esc_html__( 'Please log in to send testing feedback.', 'shuffles-social-services-jobs' ) ); }
+		check_admin_referer( 'sssj_test_feedback', '_sssj_tf' );
+		$uid = get_current_user_id();
+		$u   = wp_get_current_user();
+		$name  = isset( $_POST['tester_name'] ) ? sanitize_text_field( wp_unslash( $_POST['tester_name'] ) ) : $u->display_name;
+		$email = isset( $_POST['tester_email'] ) ? sanitize_email( wp_unslash( $_POST['tester_email'] ) ) : $u->user_email;
+		$summ  = isset( $_POST['summary'] ) ? sanitize_text_field( wp_unslash( $_POST['summary'] ) ) : '';
+		$cin   = isset( $_POST['comments'] ) ? (array) wp_unslash( $_POST['comments'] ) : array(); // phpcs:ignore
+		$suites = self::suites();
+		$comments = array();
+		foreach ( $cin as $idx => $txt ) {
+			$txt = sanitize_textarea_field( $txt );
+			if ( '' === trim( $txt ) ) { continue; }
+			$label = isset( $suites[ (int) $idx ]['title'] ) ? $suites[ (int) $idx ]['title'] : ( 'Group ' . ( (int) $idx + 1 ) );
+			$comments[ $label ] = $txt;
+		}
+		$rec = array(
+			'name' => $name, 'email' => $email, 'user_id' => $uid,
+			'date' => current_time( 'mysql' ), 'version' => ( defined( 'SHUFFLES_SSJ_VERSION' ) ? SHUFFLES_SSJ_VERSION : '' ),
+			'summary' => $summ, 'comments' => $comments,
+		);
+		$all = get_option( 'sssj_test_feedback', array() );
+		if ( ! is_array( $all ) ) { $all = array(); }
+		array_unshift( $all, $rec );
+		$all = array_slice( $all, 0, 100 );
+		update_option( 'sssj_test_feedback', $all, false );
+
+		$lines = array(
+			sprintf( __( 'Testing feedback from %1$s (%2$s)', 'shuffles-social-services-jobs' ), $name, $email ),
+			sprintf( __( 'Plugin version: %s', 'shuffles-social-services-jobs' ), $rec['version'] ),
+			$summ ? sprintf( __( 'Results: %s', 'shuffles-social-services-jobs' ), $summ ) : '',
+			'',
+		);
+		foreach ( $comments as $label => $txt ) {
+			$lines[] = '## ' . $label;
+			$lines[] = $txt;
+			$lines[] = '';
+		}
+		if ( ! $comments ) { $lines[] = __( '(No group comments left.)', 'shuffles-social-services-jobs' ); }
+		wp_mail( get_option( 'admin_email' ), sprintf( __( '[%1$s] Test feedback from %2$s', 'shuffles-social-services-jobs' ), get_bloginfo( 'name' ), $name ), implode( "\n", $lines ) );
+
+		$to = isset( $_POST['redirect'] ) ? esc_url_raw( wp_unslash( (string) $_POST['redirect'] ) ) : '';
+		$to = $to ? wp_validate_redirect( $to, home_url( '/' ) ) : home_url( '/' );
+		wp_safe_redirect( add_query_arg( 'sssj_test', 'thanks', remove_query_arg( 'sssj_test', $to ) ) );
+		exit;
+	}
+
+	/** Recent submitted feedback (admin view), most recent first. */
+	public static function recent_feedback( $limit = 20 ) {
+		$all = get_option( 'sssj_test_feedback', array() );
+		if ( ! is_array( $all ) ) { return array(); }
+		return array_slice( $all, 0, (int) $limit );
 	}
 }

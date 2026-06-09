@@ -1,6 +1,6 @@
 <?php
 /**
- * ABN helper — normalise, checksum-validate, format.
+ * ABN helper, normalise, checksum-validate, format.
  *
  * Recording ABNs is critical to the ABN/TFN model. This mirrors the proven pattern from
  * the Shuffles Reference Check plugin, with the addition of the official modulus-89 checksum.
@@ -171,12 +171,12 @@ class Shuffles_SSJ_ABN {
 		if ( ! empty( $r['message'] ) ) {
 			$lines[] = __( 'Note:', 'shuffles-social-services-jobs' ) . ' ' . $r['message'];
 		}
-		$lines[] = __( 'Checked:', 'shuffles-social-services-jobs' ) . ' ' . current_time( 'Y-m-d H:i' ) . ' — ' . __( 'source: Australian Business Register (abr.business.gov.au)', 'shuffles-social-services-jobs' );
+		$lines[] = __( 'Checked:', 'shuffles-social-services-jobs' ) . ' ' . current_time( 'Y-m-d H:i' ) . ', ' . __( 'source: Australian Business Register (abr.business.gov.au)', 'shuffles-social-services-jobs' );
 		return implode( "\n", $lines );
 	}
 
 	/**
-	 * Fired on shuffles_ssj_abn_recorded — enrich the entity with the ABR result (name + status).
+	 * Fired on shuffles_ssj_abn_recorded, enrich the entity with the ABR result (name + status).
 	 * No-op without a GUID. Stored in _sssj_abr_name / _sssj_abr_status / _sssj_abr_checked.
 	 */
 	public static function on_abn_recorded( $abn, $entity_type, $entity_id ) {
@@ -217,7 +217,7 @@ class Shuffles_SSJ_ABN {
 		}
 		return '<div class="sssj-abr"><h3 style="margin:0 0 6px">🏢 ' . esc_html__( 'Australian Business Register', 'shuffles-social-services-jobs' ) . '</h3>'
 			. '<pre class="sssj-abr__record">' . esc_html( $text ) . '</pre>'
-			. '<p class="description">' . esc_html__( 'Recorded automatically from the Australian Business Register. Read-only — it cannot be edited here.', 'shuffles-social-services-jobs' ) . '</p></div>';
+			. '<p class="description">' . esc_html__( 'Recorded automatically from the Australian Business Register. Read-only, it cannot be edited here.', 'shuffles-social-services-jobs' ) . '</p></div>';
 	}
 
 	/** A badge for a card/profile showing the ABR-verified entity name + status, '' if not checked. */

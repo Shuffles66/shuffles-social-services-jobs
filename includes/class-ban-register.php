@@ -8,7 +8,7 @@
  *
  * INVARIANTS (non-negotiable, mirror the rest of the safety design):
  *  - FLAG-ONLY: a match never blocks posting, never auto-rejects, never changes a listing's status.
- *  - STAFF-ONLY: a flag is shown to administrators and emailed to staff only — never to the public,
+ *  - STAFF-ONLY: a flag is shown to administrators and emailed to staff only, never to the public,
  *    never to the provider (the data can be stale or about a different entity sharing an ABN, so a
  *    public accusation would be unfair and risky). A human reviews every flag.
  *
@@ -263,13 +263,13 @@ class Shuffles_SSJ_Ban_Register {
 		$first   = $matches[0];
 		$title   = get_the_title( (int) $entity_id );
 		$edit    = get_edit_post_link( (int) $entity_id, '' );
-		$subject = sprintf( __( '[Safety] ABN match on the banned register — %s', 'shuffles-social-services-jobs' ), wp_strip_all_tags( (string) $title ) );
+		$subject = sprintf( __( '[Safety] ABN match on the banned register, %s', 'shuffles-social-services-jobs' ), wp_strip_all_tags( (string) $title ) );
 		$lines   = array(
-			__( 'A recorded ABN matches an entry on the banned/sanctioned provider register. This is a FLAG ONLY — nothing has been blocked or published about it. Please review.', 'shuffles-social-services-jobs' ),
+			__( 'A recorded ABN matches an entry on the banned/sanctioned provider register. This is a FLAG ONLY, nothing has been blocked or published about it. Please review.', 'shuffles-social-services-jobs' ),
 			'',
 			sprintf( __( 'Listing: %s (%s, #%d)', 'shuffles-social-services-jobs' ), wp_strip_all_tags( (string) $title ), (string) $type, (int) $entity_id ),
 			sprintf( __( 'ABN: %s', 'shuffles-social-services-jobs' ), self::normalise( $abn ) ),
-			sprintf( __( 'Register entry: %1$s — %2$s (%3$s)', 'shuffles-social-services-jobs' ), (string) $first->provider_name, (string) $first->action_type, (string) $first->source ),
+			sprintf( __( 'Register entry: %1$s, %2$s (%3$s)', 'shuffles-social-services-jobs' ), (string) $first->provider_name, (string) $first->action_type, (string) $first->source ),
 			$edit ? sprintf( __( 'Review: %s', 'shuffles-social-services-jobs' ), $edit ) : '',
 			'',
 			__( 'Reminder: this register data can be stale or about a different entity sharing an ABN. Confirm before acting, and never contact the provider on the basis of this flag alone.', 'shuffles-social-services-jobs' ),
@@ -394,10 +394,10 @@ class Shuffles_SSJ_Ban_Register {
 		?>
 		<div class="sssj sssj--banflag">
 			<div class="sssj-banflag" role="alert">
-				<strong>⚠️ <?php esc_html_e( 'Staff only — safety flag', 'shuffles-social-services-jobs' ); ?></strong>
-				<p><?php echo esc_html( sprintf( __( 'This listing’s recorded ABN (%s) matches an entry on the banned / sanctioned provider register: %s%s%s. This is a flag only — nothing is shown publicly and nothing has been blocked. Confirm before acting; the data can be stale or about a different entity sharing an ABN.', 'shuffles-social-services-jobs' ),
+				<strong>⚠️ <?php esc_html_e( 'Staff only, safety flag', 'shuffles-social-services-jobs' ); ?></strong>
+				<p><?php echo esc_html( sprintf( __( 'This listing’s recorded ABN (%s) matches an entry on the banned / sanctioned provider register: %s%s%s. This is a flag only, nothing is shown publicly and nothing has been blocked. Confirm before acting; the data can be stale or about a different entity sharing an ABN.', 'shuffles-social-services-jobs' ),
 					$abn,
-					'' !== $name ? $name . ' — ' : '',
+					'' !== $name ? $name . ', ' : '',
 					'' !== $action ? $action : __( 'listed', 'shuffles-social-services-jobs' ),
 					'' !== $source ? ' (' . $source . ')' : ''
 				) ); ?></p>

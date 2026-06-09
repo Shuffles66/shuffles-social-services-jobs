@@ -1,6 +1,6 @@
 <?php
 /**
- * Shareable assets (Workstream E) — Phase 2: pixel-perfect server-side rendering.
+ * Shareable assets (Workstream E), Phase 2: pixel-perfect server-side rendering.
  *
  * The $0 browser path (print-to-PDF + client PNG) always works and stays the default. When an
  * admin points the plugin at a self-hosted HTML-to-PDF service (Gotenberg is the recommended one:
@@ -103,7 +103,7 @@ class Shuffles_SSJ_Asset_Renderer {
 				}
 			}
 		}
-		return $url; // remote / unknown — leave as a URL
+		return $url; // remote / unknown, leave as a URL
 	}
 
 	/** Wrap rendered asset markup into a standalone, self-contained HTML document. */

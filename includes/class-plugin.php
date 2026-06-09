@@ -75,7 +75,7 @@ final class Shuffles_SSJ_Plugin {
 		add_action( 'init', array( $this, 'on_init' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( $this, 'register_front_assets' ) );
 
-		// Phase 1 — front-end boards/forms, SEO, lifecycle.
+		// Phase 1, front-end boards/forms, SEO, lifecycle.
 		$this->shortcodes = new Shuffles_SSJ_Shortcodes( $this->settings );
 		$this->shortcodes->register();
 		$this->display = new Shuffles_SSJ_Display( $this->settings );
@@ -90,7 +90,7 @@ final class Shuffles_SSJ_Plugin {
 		$this->verification->register();
 		$this->alerts = new Shuffles_SSJ_Alerts( $this->settings );
 		$this->alerts->register();
-		// Smart synonym-aware keyword search (C5) — opts in per query via the sssj_smart_search var.
+		// Smart synonym-aware keyword search (C5), opts in per query via the sssj_smart_search var.
 			Shuffles_SSJ_Search::init();
 			Shuffles_SSJ_Resumes::register(); // Stored résumés (upload / manage / private serve).
 			// An employer applied to with a résumé may view it.
@@ -112,11 +112,11 @@ final class Shuffles_SSJ_Plugin {
 		$this->crm_sync->register();
 		$this->cron = new Shuffles_SSJ_Cron();
 		$this->cron->register();
-		// Cron monitor — records last-run/next-run/status for the “Cron Jobs” tab.
+		// Cron monitor, records last-run/next-run/status for the “Cron Jobs” tab.
 		Shuffles_SSJ_Cron_Monitor::register();
-		// Provider CSV importer (PoC) — admin-post handler.
+		// Provider CSV importer (PoC), admin-post handler.
 		Shuffles_SSJ_Provider_Import::register();
-		// Header-menu sync — mirrors [sssj_menu] into Appearance → Menus + maintains it.
+		// Header-menu sync, mirrors [sssj_menu] into Appearance → Menus + maintains it.
 		Shuffles_SSJ_Nav_Sync::register();
 
 		// Daily licence re-validation (cached + grace-handled; never on the hot path).
@@ -125,7 +125,7 @@ final class Shuffles_SSJ_Plugin {
 		// Monetisation gates (provider-response filter; employer cap enforced at posting).
 		Shuffles_SSJ_Monetisation::register();
 
-		// Compliance & verification — credential add/delete/serve + admin approve/reject handlers.
+		// Compliance & verification, credential add/delete/serve + admin approve/reject handlers.
 		Shuffles_SSJ_Credentials::register();
 
 		// Apply schema upgrades in place on already-installed sites (cheap version guard).
@@ -215,7 +215,7 @@ final class Shuffles_SSJ_Plugin {
 		exit;
 	}
 
-	/** Toolbar node shown while impersonating: "Viewing as X — Return to admin". */
+	/** Toolbar node shown while impersonating: "Viewing as X, Return to admin". */
 	public static function view_as_admin_bar( $bar ) {
 		if ( empty( $_COOKIE[ self::VIEWAS_COOKIE ] ) ) {
 			return;
@@ -223,13 +223,13 @@ final class Shuffles_SSJ_Plugin {
 		$token  = sanitize_text_field( wp_unslash( $_COOKIE[ self::VIEWAS_COOKIE ] ) );
 		$origin = $token ? (int) get_transient( 'sssj_viewas_' . $token ) : 0;
 		if ( ! $origin ) {
-			return; // stale cookie — ignore
+			return; // stale cookie, ignore
 		}
 		$cur = wp_get_current_user();
 		$url = wp_nonce_url( admin_url( 'admin-post.php?action=sssj_view_as_return' ), 'sssj_view_as_return' );
 		$bar->add_node( array(
 			'id'    => 'sssj-viewas',
-			'title' => '👁 ' . sprintf( __( 'Viewing as %s — Return to admin', 'shuffles-social-services-jobs' ), esc_html( $cur->display_name ) ),
+			'title' => '👁 ' . sprintf( __( 'Viewing as %s, Return to admin', 'shuffles-social-services-jobs' ), esc_html( $cur->display_name ) ),
 			'href'  => $url,
 			'meta'  => array( 'class' => 'sssj-viewas-bar' ),
 		) );

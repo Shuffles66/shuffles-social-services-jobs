@@ -1,6 +1,6 @@
-/* Shuffles Social Services Jobs — self-promotion studio.
+/* Shuffles Social Services Jobs, self-promotion studio.
  * Cycles the platform "positives", swaps the on-screen card + caption, lets you pick a colour style,
- * and saves a 1080x1080 PNG by drawing it straight to a <canvas> (reliable across browsers — no
+ * and saves a 1080x1080 PNG by drawing it straight to a <canvas> (reliable across browsers, no
  * SVG/foreignObject trick that Chrome refuses to export).
  *
  * Robustness: clicks/changes are delegated on `document`, and the current highlight + style are read
@@ -11,7 +11,7 @@
 
 	var data = window.SSSJ_Promo || {};
 
-	// Colour styles — MUST mirror .sssj .sssj-promo[data-accent="N"] in sssj-assets.css.
+	// Colour styles, MUST mirror .sssj .sssj-promo[data-accent="N"] in sssj-assets.css.
 	var STYLES = [
 		{ bg: [ [ 0, '#1e3a8a' ], [ 0.55, '#2563eb' ], [ 1, '#0ea5e9' ] ] }, // 0 Ocean
 		{ bg: [ [ 0, '#0f766e' ], [ 0.60, '#10b981' ], [ 1, '#34d399' ] ] }, // 1 Forest
@@ -172,7 +172,7 @@
 		if ( navigator.clipboard && navigator.clipboard.writeText ) {
 			navigator.clipboard.writeText( text ).then(
 				function () { msg( root, 'Caption copied. Paste it into your post.' ); },
-				function () { msg( root, 'Could not copy automatically — select the caption and copy it.' ); }
+				function () { msg( root, 'Could not copy automatically, select the caption and copy it.' ); }
 			);
 		} else {
 			msg( root, 'Select the caption above and copy it.' );
@@ -213,7 +213,7 @@
 
 	function boot() {
 		if ( ! data.items || ! data.items.length ) {
-			if ( window.console && console.warn ) { console.warn( 'SSSJ_Promo: no data — self-promo studio inactive.' ); }
+			if ( window.console && console.warn ) { console.warn( 'SSSJ_Promo: no data, self-promo studio inactive.' ); }
 			return;
 		}
 		document.addEventListener( 'click', onClick );

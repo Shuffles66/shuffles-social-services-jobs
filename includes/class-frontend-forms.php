@@ -172,7 +172,7 @@ class Shuffles_SSJ_Frontend_Forms {
 		}
 		$roles = isset( $_POST['sssj_roles'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['sssj_roles'] ) ) : array();
 		Shuffles_SSJ_Roles::set_member_roles( get_current_user_id(), $roles );
-		// Primary (focus) role — must be one of the saved hats; '' clears it.
+		// Primary (focus) role, must be one of the saved hats; '' clears it.
 		Shuffles_SSJ_Roles::set_primary_role( get_current_user_id(), isset( $_POST['sssj_primary_role'] ) ? wp_unslash( $_POST['sssj_primary_role'] ) : '' );
 		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
 		wp_safe_redirect( add_query_arg( 'sssj_roles', '1', $redirect ) );
@@ -182,7 +182,7 @@ class Shuffles_SSJ_Frontend_Forms {
 	/**
 	 * AJAX: read a provider's website and return suggested profile fields (name, description, phone).
 	 * Keyless by default; an AI/Tavily integration can enhance/replace via the shuffles_ssj_autofill
-	 * filter. Member-facing copy calls this "our AI" — never names a vendor.
+	 * filter. Member-facing copy calls this "our AI", never names a vendor.
 	 */
 	public function ajax_autofill() {
 		check_ajax_referer( 'sssj_autofill', 'nonce' );
@@ -346,7 +346,7 @@ class Shuffles_SSJ_Frontend_Forms {
 				wp_set_object_terms( $post_id, array( $term_id ), 'sssjt_category' );
 			}
 		}
-		// Funding source(s) — how the role is funded (NDIS / Aged Care / DVA / …).
+		// Funding source(s), how the role is funded (NDIS / Aged Care / DVA / …).
 		$fund_ids = ( ! empty( $_POST['funding_sources'] ) && is_array( $_POST['funding_sources'] ) ) ? array_filter( array_map( 'absint', (array) wp_unslash( $_POST['funding_sources'] ) ) ) : array();
 		wp_set_object_terms( $post_id, $fund_ids, 'sssjt_funding_source' );
 		if ( ! empty( $_POST['employment_type'] ) ) {
@@ -404,7 +404,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			exit;
 		}
 
-		// Optional ABN — if provided it must be checksum-valid (accuracy).
+		// Optional ABN, if provided it must be checksum-valid (accuracy).
 		$abn = isset( $_POST['worker_abn'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['worker_abn'] ) ) : '';
 		if ( '' !== $abn && ! Shuffles_SSJ_ABN::is_valid( $abn ) ) {
 			wp_safe_redirect( add_query_arg( 'sssj_worker', 'abn', $redirect ) );
@@ -424,7 +424,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'post_author'  => $uid,
 		);
 
-		// One profile per user — update the existing one if present.
+		// One profile per user, update the existing one if present.
 		$existing = get_posts(
 			array(
 				'post_type'      => 'sssj_worker',
@@ -477,7 +477,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			update_post_meta( $post_id, $k, $v );
 		}
 
-		// Per-field privacy masking (C4) — "members only" toggles for sensitive fields.
+		// Per-field privacy masking (C4), "members only" toggles for sensitive fields.
 		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
 			Shuffles_SSJ_Privacy::save( $post_id, 'worker', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
@@ -946,7 +946,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			wp_safe_redirect( add_query_arg( 'sssj_org', 'error', $redirect ) );
 			exit;
 		}
-		// Organisations are businesses (non-TFN) — a valid ABN is required.
+		// Organisations are businesses (non-TFN), a valid ABN is required.
 		$abn = isset( $_POST['org_abn'] ) ? preg_replace( '/\D+/', '', (string) wp_unslash( $_POST['org_abn'] ) ) : '';
 		if ( '' === $abn || ! Shuffles_SSJ_ABN::is_valid( $abn ) ) {
 			wp_safe_redirect( add_query_arg( 'sssj_org', 'abn', $redirect ) );
@@ -1041,7 +1041,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			update_post_meta( $post_id, $k, $v );
 		}
 
-		// Per-field privacy masking (C4) — "members only" toggles for contact fields.
+		// Per-field privacy masking (C4), "members only" toggles for contact fields.
 		if ( class_exists( 'Shuffles_SSJ_Privacy' ) ) {
 			Shuffles_SSJ_Privacy::save( $post_id, 'org', isset( $_POST['sssj_mask'] ) ? (array) wp_unslash( $_POST['sssj_mask'] ) : array() ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 		}
@@ -1087,7 +1087,7 @@ class Shuffles_SSJ_Frontend_Forms {
 				do_action( 'shuffles_ssj_ndis_recorded', $ndis_ref, $post_id );
 			}
 		}
-		// Directory listing eligibility (providers pay to list) — stamped on save (free when monetisation off).
+		// Directory listing eligibility (providers pay to list), stamped on save (free when monetisation off).
 		update_post_meta( $post_id, 'org_listed', ( class_exists( 'Shuffles_SSJ_Monetisation' ) && Shuffles_SSJ_Monetisation::can_list_directory( $uid ) ) ? '1' : '' );
 
 		do_action( 'shuffles_ssj_profile_saved', 'org', $post_id, get_current_user_id() );

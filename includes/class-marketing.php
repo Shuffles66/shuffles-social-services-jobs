@@ -139,7 +139,7 @@ class Shuffles_SSJ_Marketing {
 		if ( ! is_user_logged_in() ) {
 			return '<div class="sssj sssj--marketing"><div class="sssj-panel"><p>'
 				. esc_html__( 'Please log in to read this.', 'shuffles-social-services-jobs' )
-				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+				. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 		}
 		$md = self::markdown();
 		if ( '' === trim( $md ) ) {

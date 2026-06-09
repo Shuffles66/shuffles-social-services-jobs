@@ -1,10 +1,10 @@
 <?php
 /**
- * Job syndication (#7) — Phase A: a standard job XML feed for aggregators (Jora, Adzuna, …).
+ * Job syndication (#7), Phase A: a standard job XML feed for aggregators (Jora, Adzuna, …).
  *
  * Push-out direction. Outputs eligible published, non-expired jobs in the widely-accepted
  * "<source><job>…</job></source>" XML format that Jora and similar aggregators ingest. Google for
- * Jobs is covered separately by the on-page JobPosting JSON-LD (Shuffles_SSJ_SEO) — no feed needed.
+ * Jobs is covered separately by the on-page JobPosting JSON-LD (Shuffles_SSJ_SEO), no feed needed.
  *
  * PRIVACY: participant needs are a different CPT (`sssj_need`) and never appear here. Anonymous jobs
  * syndicate with company = "Private advertiser" and no org name (same rule as on-site). A filter

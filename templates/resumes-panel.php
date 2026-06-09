@@ -1,6 +1,6 @@
 <?php
 /**
- * "My résumés" panel ([sssj_resumes]) — a candidate stores one or more named résumé files
+ * "My résumés" panel ([sssj_resumes]), a candidate stores one or more named résumé files
  * (private), sets a default, and removes old ones. Used standalone and in the dashboard.
  *
  * @package Shuffles_SSJ
@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! is_user_logged_in() ) {
 	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Please log in to manage your résumés.', 'shuffles-social-services-jobs' )
-		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 	return;
 }
 
@@ -25,13 +25,13 @@ $notices = array(
 	'added'   => __( 'Résumé uploaded.', 'shuffles-social-services-jobs' ),
 	'deleted' => __( 'Résumé removed.', 'shuffles-social-services-jobs' ),
 	'default' => __( 'Default résumé updated.', 'shuffles-social-services-jobs' ),
-	'error'   => __( 'That résumé could not be saved — check the file type and size.', 'shuffles-social-services-jobs' ),
+	'error'   => __( 'That résumé could not be saved, check the file type and size.', 'shuffles-social-services-jobs' ),
 );
 ?>
 <div class="sssj sssj--resumes">
 	<div class="sssj-panel">
 		<h3 style="margin-top:0">📄 <?php esc_html_e( 'My résumés', 'shuffles-social-services-jobs' ); ?></h3>
-		<p class="description"><?php esc_html_e( 'Store one or more résumés here and pick which to send when you apply for an employee (TFN) job. They are private — shared only with employers you apply to, and our admins.', 'shuffles-social-services-jobs' ); ?></p>
+		<p class="description"><?php esc_html_e( 'Store one or more résumés here and pick which to send when you apply for an employee (TFN) job. They are private, shared only with employers you apply to, and our admins.', 'shuffles-social-services-jobs' ); ?></p>
 
 		<?php if ( $notice && isset( $notices[ $notice ] ) ) : ?>
 			<div class="sssj-note <?php echo esc_attr( 'error' === $notice ? 'sssj-note--warn' : 'sssj-note--ok' ); ?>"><?php echo esc_html( $notices[ $notice ] ); ?></div>
@@ -90,7 +90,7 @@ $notices = array(
 					<input class="sssj-input" type="text" id="sssj-resume-label" name="label" maxlength="160" placeholder="<?php esc_attr_e( 'e.g. Aged care 2026', 'shuffles-social-services-jobs' ); ?>" />
 				</div>
 				<div class="sssj-field">
-					<label for="sssj-resume-file"><?php esc_html_e( 'Résumé file (PDF, Word, RTF or ODT — max 8 MB)', 'shuffles-social-services-jobs' ); ?></label>
+					<label for="sssj-resume-file"><?php esc_html_e( 'Résumé file (PDF, Word, RTF or ODT, max 8 MB)', 'shuffles-social-services-jobs' ); ?></label>
 					<input class="sssj-input" type="file" id="sssj-resume-file" name="resume" accept=".pdf,.doc,.docx,.rtf,.odt" required />
 				</div>
 				<div class="sssj-field">

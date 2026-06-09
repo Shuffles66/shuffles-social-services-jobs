@@ -3,7 +3,7 @@
  * NDIS Commission provider-register auto-check.
  *
  * Given an organisation's NDIS Commission listing ID (the number after `?id=` in the
- * find-registered-provider URL — it is the Commission's Drupal node id), this reads the
+ * find-registered-provider URL, it is the Commission's Drupal node id), this reads the
  * provider's PUBLIC listing, parses the Registration status, the approved registration
  * groups and the "in force until" date, stores them, renders them as a table on the org
  * profile, and on a monthly cron re-reads each listing and ALERTS STAFF on any change.
@@ -12,7 +12,7 @@
  * - There is NO official public JSON API for the Commission register, so this reads the
  *   server-rendered HTML of /node/{id} (which 301-redirects to the canonical slug page).
  *   Verified working server-side from the live host (plain wp_remote_get, browser UA).
- * - Reads the Commission's OWN public data — like the Google Business display, it is fine
+ * - Reads the Commission's OWN public data, like the Google Business display, it is fine
  *   to show with attribution. The cadence is gentle (monthly + a short per-id cache).
  * - Parser is markup-targeted (Drupal field__label / field__item / ul.field-items). If the
  *   markup changes and parsing fails, we DO NOT overwrite stored values and we alert STAFF
@@ -72,7 +72,7 @@ class Shuffles_SSJ_NDIS_Register {
 		$res = self::scan( $id, false );
 		if ( 'ok' !== $res['scan_state'] ) {
 			$msg = ( 'fetch_fail' === $res['scan_state'] )
-				? __( 'Could not reach the NDIS register just now — please try again shortly.', 'shuffles-social-services-jobs' )
+				? __( 'Could not reach the NDIS register just now, please try again shortly.', 'shuffles-social-services-jobs' )
 				: __( 'That number didn’t return a registration. Please check it and try again.', 'shuffles-social-services-jobs' );
 			wp_send_json_error( array( 'msg' => $msg ) );
 		}
@@ -228,7 +228,7 @@ class Shuffles_SSJ_NDIS_Register {
 		libxml_use_internal_errors( $prev );
 		$xp = new DOMXPath( $dom );
 
-		// Registration status — label "Registration status:" → adjacent field__item.
+		// Registration status, label "Registration status:" → adjacent field__item.
 		$node = $xp->query( '//div[contains(@class,"field__label") and contains(normalize-space(.),"Registration status")]/following-sibling::div[contains(@class,"field__item")][1]' );
 		if ( $node && $node->length ) {
 			$el                  = $node->item( 0 );
@@ -236,7 +236,7 @@ class Shuffles_SSJ_NDIS_Register {
 			$out['status_class'] = $el instanceof DOMElement ? (string) $el->getAttribute( 'class' ) : '';
 		}
 
-		// Period of registration — the machine-readable <time datetime> + human text.
+		// Period of registration, the machine-readable <time datetime> + human text.
 		$t = $xp->query( '//div[contains(@class,"field__label") and contains(normalize-space(.),"in force until")]/following-sibling::div[contains(@class,"field__item")][1]//time' );
 		if ( $t && $t->length ) {
 			$tel                   = $t->item( 0 );
@@ -246,7 +246,7 @@ class Shuffles_SSJ_NDIS_Register {
 			}
 		}
 
-		// Approved registration groups — ul.field-items > li.
+		// Approved registration groups, ul.field-items > li.
 		$lis = $xp->query( '//div[contains(@class,"field__label") and contains(normalize-space(.),"Approved registration groups")]/following-sibling::ul[contains(@class,"field-items")][1]/li' );
 		if ( $lis && $lis->length ) {
 			foreach ( $lis as $li ) {
@@ -263,7 +263,7 @@ class Shuffles_SSJ_NDIS_Register {
 			$out['legal_name'] = trim( preg_replace( '/\s+/', ' ', $ln->item( 0 )->textContent ) );
 		}
 
-		// ABN / Head office address / Website — targeted by the listing's own field-name classes
+		// ABN / Head office address / Website, targeted by the listing's own field-name classes
 		// (more robust + language-independent than label text). &nbsp; → space.
 		$item_text = function ( $field_class ) use ( $xp ) {
 			$n = $xp->query( '//div[contains(@class,"' . $field_class . '")]//div[contains(@class,"field__item")][1]' );
@@ -282,7 +282,7 @@ class Shuffles_SSJ_NDIS_Register {
 			$out['website'] = $item_text( 'field--name-field-website' );
 		}
 
-		// Outlets (with phone) — read from the listing's footer "Outlets" section. Authoritative
+		// Outlets (with phone), read from the listing's footer "Outlets" section. Authoritative
 		// register data: surfaced read-only, never user-editable.
 		$onodes = $xp->query( '//div[contains(@class,"paragraph--type--outlet")]' );
 		if ( $onodes && $onodes->length ) {
@@ -369,7 +369,7 @@ class Shuffles_SSJ_NDIS_Register {
 			update_post_meta( $org_id, 'ndis_abn', $res['abn'] );
 			update_post_meta( $org_id, 'ndis_address', $res['address'] );
 			update_post_meta( $org_id, 'ndis_website', $res['website'] );
-			// Outlets + phone — read from the register footer; authoritative, never user-editable.
+			// Outlets + phone, read from the register footer; authoritative, never user-editable.
 			update_post_meta( $org_id, 'ndis_outlets', wp_json_encode( array_values( $res['outlets'] ) ) );
 			update_post_meta( $org_id, 'ndis_phone', $res['phone'] );
 		}
@@ -389,7 +389,7 @@ class Shuffles_SSJ_NDIS_Register {
 		}
 		$res = self::scan_and_store( $org_id );
 		if ( ! is_array( $res ) ) {
-			// No stored register id — the passed number may itself be the id.
+			// No stored register id, the passed number may itself be the id.
 			$num = preg_replace( '/\D+/', '', (string) $number );
 			if ( strlen( $num ) >= 3 ) {
 				$res = self::scan_and_store( $org_id, $num );
@@ -461,7 +461,7 @@ class Shuffles_SSJ_NDIS_Register {
 
 	/** Compare old vs new and, on a meaningful change, alert staff. */
 	protected static function maybe_alert_change( $org_id, $old, $new ) {
-		// First successful read just sets the baseline — no alert.
+		// First successful read just sets the baseline, no alert.
 		if ( 'ok' !== $old['state'] ) {
 			return;
 		}
@@ -471,10 +471,10 @@ class Shuffles_SSJ_NDIS_Register {
 		$removed  = array_values( array_diff( $old['groups'], $new_grp ) );
 
 		if ( 0 !== strcasecmp( trim( (string) $old['status'] ), trim( (string) $new['status'] ) ) ) {
-			$changes[] = sprintf( __( 'Status: %1$s → %2$s', 'shuffles-social-services-jobs' ), $old['status'] ? $old['status'] : '—', $new['status'] ? $new['status'] : '—' );
+			$changes[] = sprintf( __( 'Status: %1$s → %2$s', 'shuffles-social-services-jobs' ), $old['status'] ? $old['status'] : '-', $new['status'] ? $new['status'] : '-' );
 		}
 		if ( trim( (string) $old['in_force'] ) !== trim( (string) $new['in_force_until'] ) ) {
-			$changes[] = sprintf( __( 'In force until: %1$s → %2$s', 'shuffles-social-services-jobs' ), $old['in_force'] ? $old['in_force'] : '—', $new['in_force_until'] ? $new['in_force_until'] : '—' );
+			$changes[] = sprintf( __( 'In force until: %1$s → %2$s', 'shuffles-social-services-jobs' ), $old['in_force'] ? $old['in_force'] : '-', $new['in_force_until'] ? $new['in_force_until'] : '-' );
 		}
 		if ( $added ) {
 			$changes[] = sprintf( __( 'Groups added: %s', 'shuffles-social-services-jobs' ), implode( ', ', $added ) );
@@ -506,7 +506,7 @@ class Shuffles_SSJ_NDIS_Register {
 			sprintf( __( 'Public register listing: %s', 'shuffles-social-services-jobs' ), self::public_url( self::register_id_for( $org_id ) ) ),
 			sprintf( __( 'Edit organisation: %s', 'shuffles-social-services-jobs' ), get_edit_post_link( $org_id, '' ) ),
 			'',
-			__( 'Please re-verify this provider. (This alert goes to staff only — the provider was not notified.)', 'shuffles-social-services-jobs' ),
+			__( 'Please re-verify this provider. (This alert goes to staff only, the provider was not notified.)', 'shuffles-social-services-jobs' ),
 		);
 		wp_mail( $to, $subject, implode( "\n", $lines ) );
 	}
@@ -618,7 +618,7 @@ class Shuffles_SSJ_NDIS_Register {
 		if ( '' !== $nabn ) {
 			$out .= '<tr><th scope="row">' . esc_html__( 'ABN (register)', 'shuffles-social-services-jobs' ) . '</th><td><code>' . esc_html( $nabn ) . '</code>';
 			if ( '' !== $own && $own !== $nabn ) {
-				$out .= '<div class="sssj-ndis__abnwarn">' . esc_html( sprintf( __( '⚠ This differs from the ABN on file (%s) — please check.', 'shuffles-social-services-jobs' ), $own ) ) . '</div>';
+				$out .= '<div class="sssj-ndis__abnwarn">' . esc_html( sprintf( __( '⚠ This differs from the ABN on file (%s), please check.', 'shuffles-social-services-jobs' ), $own ) ) . '</div>';
 			}
 			$out .= '</td></tr>';
 		}
@@ -628,7 +628,7 @@ class Shuffles_SSJ_NDIS_Register {
 		if ( '' !== $web ) {
 			$out .= '<tr><th scope="row">' . esc_html__( 'Website (register)', 'shuffles-social-services-jobs' ) . '</th><td><a href="' . esc_url( $web ) . '" target="_blank" rel="noopener nofollow">' . esc_html( preg_replace( '#^https?://#', '', $web ) ) . '</a></td></tr>';
 		}
-		// Phone + outlets — read from the register footer (authoritative, not user-editable).
+		// Phone + outlets, read from the register footer (authoritative, not user-editable).
 		$phone   = (string) get_post_meta( $org_id, 'ndis_phone', true );
 		$outlets = json_decode( (string) get_post_meta( $org_id, 'ndis_outlets', true ), true );
 		$outlets = is_array( $outlets ) ? $outlets : array();
@@ -643,7 +643,7 @@ class Shuffles_SSJ_NDIS_Register {
 				if ( '' === $nm && '' === $ph ) {
 					continue;
 				}
-				$rows .= '<li>' . esc_html( $nm ) . ( $ph ? ' — ' . esc_html( $ph ) : '' ) . '</li>';
+				$rows .= '<li>' . esc_html( $nm ) . ( $ph ? ', ' . esc_html( $ph ) : '' ) . '</li>';
 			}
 			if ( '' !== $rows ) {
 				$out .= '<tr><th scope="row">' . esc_html( sprintf( _n( 'Outlet', 'Outlets (%d)', count( $outlets ), 'shuffles-social-services-jobs' ), count( $outlets ) ) ) . '</th><td><ul class="sssj-ndis__outlets">' . $rows . '</ul></td></tr>';
@@ -672,7 +672,7 @@ class Shuffles_SSJ_NDIS_Register {
 
 		// Honest note if we couldn't confirm automatically and have nothing stored.
 		if ( '' === $status && in_array( $state, array( 'fetch_fail', 'parse_fail' ), true ) ) {
-			$out .= '<p class="sssj-ndis__note">' . esc_html__( 'We could not confirm this automatically — an administrator will verify it.', 'shuffles-social-services-jobs' ) . '</p>';
+			$out .= '<p class="sssj-ndis__note">' . esc_html__( 'We could not confirm this automatically, an administrator will verify it.', 'shuffles-social-services-jobs' ) . '</p>';
 		}
 
 		// Admin-only re-scan control.

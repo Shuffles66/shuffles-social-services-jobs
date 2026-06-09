@@ -67,7 +67,7 @@ class Shuffles_SSJ_Assets {
 	private static function verified_checks( $worker_id ) {
 		global $wpdb;
 		$t    = $wpdb->prefix . 'sssj_credential';
-		// Only 'verified' credentials count (matches Shuffles_SSJ_Credentials::STATUSES — there is no 'approved').
+		// Only 'verified' credentials count (matches Shuffles_SSJ_Credentials::STATUSES, there is no 'approved').
 		$rows = $wpdb->get_col( $wpdb->prepare( "SELECT DISTINCT kind FROM {$t} WHERE worker_id = %d AND status = 'verified' AND ( expires_date IS NULL OR expires_date = '0000-00-00' OR expires_date >= CURDATE() )", (int) $worker_id ) ); // phpcs:ignore WordPress.DB
 		$out  = array();
 		foreach ( (array) $rows as $kind ) {

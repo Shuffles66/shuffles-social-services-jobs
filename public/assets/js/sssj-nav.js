@@ -1,4 +1,4 @@
-/* Shuffles Social Services Jobs — navigation menu.
+/* Shuffles Social Services Jobs, navigation menu.
  * Mobile hamburger toggle for the [sssj_menu] nav. On desktop the toggle is hidden (CSS),
  * so this is a no-op there. Tapping the toggle shows/hides the list; tapping a real link closes it.
  */

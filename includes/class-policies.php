@@ -1,10 +1,10 @@
 <?php
 /**
- * Policies — the PUBLISHED, member-facing layer of the platform's policies (single source of truth).
+ * Policies, the PUBLISHED, member-facing layer of the platform's policies (single source of truth).
  *
  * These are the plain-English, easy-read versions members read on the site (via [sssj_policies] and
  * Settings → Policies). The full, formal templates live in /docs/*.md and must be reviewed and
- * adopted by the organisation before relying on them — these summaries link to that intent.
+ * adopted by the organisation before relying on them, these summaries link to that intent.
  *
  * Keep items() CURRENT: when a policy changes, update its summary here and its /docs template.
  *
@@ -46,10 +46,10 @@ class Shuffles_SSJ_Policies {
 				'id'      => 'privacy',
 				'title'   => __( 'Privacy', 'shuffles-social-services-jobs' ),
 				'doc'     => 'PRIVACY-POLICY.md',
-				'summary' => __( 'We collect only the information we need to run the marketplace, and we handle it under the Privacy Act and the Australian Privacy Principles. Participants are always pseudonymous — your real name and contact details are never shown publicly.', 'shuffles-social-services-jobs' ),
+				'summary' => __( 'We collect only the information we need to run the marketplace, and we handle it under the Privacy Act and the Australian Privacy Principles. Participants are always pseudonymous, your real name and contact details are never shown publicly.', 'shuffles-social-services-jobs' ),
 				'points'  => array(
 					__( 'Participants appear by a pseudonym and suburb only; never a name or contact detail.', 'shuffles-social-services-jobs' ),
-					__( 'First contact runs through our internal relay — your email and phone are not shared between members.', 'shuffles-social-services-jobs' ),
+					__( 'First contact runs through our internal relay, your email and phone are not shared between members.', 'shuffles-social-services-jobs' ),
 					__( 'Credential and résumé files are stored privately and shown only to you (and, for a résumé, an employer you apply to).', 'shuffles-social-services-jobs' ),
 					__( 'You can ask to access, correct, export or erase your personal information.', 'shuffles-social-services-jobs' ),
 				),
@@ -59,7 +59,7 @@ class Shuffles_SSJ_Policies {
 				'id'      => 'code-of-conduct',
 				'title'   => __( 'NDIS Code of Conduct', 'shuffles-social-services-jobs' ),
 				'doc'     => 'NDIS-CODE-OF-CONDUCT.md',
-				'summary' => __( 'Workers and providers on the platform agree to follow the NDIS Code of Conduct — the standard of behaviour expected when delivering supports and services.', 'shuffles-social-services-jobs' ),
+				'summary' => __( 'Workers and providers on the platform agree to follow the NDIS Code of Conduct, the standard of behaviour expected when delivering supports and services.', 'shuffles-social-services-jobs' ),
 				'points'  => array(
 					__( 'Respect people’s rights, privacy, choices and dignity.', 'shuffles-social-services-jobs' ),
 					__( 'Deliver supports safely and competently, with honesty and integrity.', 'shuffles-social-services-jobs' ),
@@ -87,7 +87,7 @@ class Shuffles_SSJ_Policies {
 				'doc'     => 'SAFEGUARDING-RISK-POLICY.md',
 				'summary' => __( 'We design the platform to keep participants and other vulnerable people safe, with zero tolerance for abuse, neglect, exploitation or discrimination.', 'shuffles-social-services-jobs' ),
 				'points'  => array(
-					__( 'Worker screening (WWCC/Blue Card, NDIS Worker Screening, Police Check, First Aid) is admin-verified — never self-claimed.', 'shuffles-social-services-jobs' ),
+					__( 'Worker screening (WWCC/Blue Card, NDIS Worker Screening, Police Check, First Aid) is admin-verified, never self-claimed.', 'shuffles-social-services-jobs' ),
 					__( 'Participant pseudonymity, suburb-only location and relay messaging protect identities.', 'shuffles-social-services-jobs' ),
 					__( 'Participant requests are moderated before they appear, and reviews are moderated too.', 'shuffles-social-services-jobs' ),
 					__( 'Don’t move off-platform to avoid these safeguards.', 'shuffles-social-services-jobs' ),

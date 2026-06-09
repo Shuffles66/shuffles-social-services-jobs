@@ -1,10 +1,10 @@
 <?php
 /**
- * Monetisation gates — the two end-user subscriptions (distinct from the resale licence).
+ * Monetisation gates, the two end-user subscriptions (distinct from the resale licence).
  *
- * 1. Employer advertising subscription — free tier posts up to `free_active_listings`;
+ * 1. Employer advertising subscription, free tier posts up to `free_active_listings`;
  *    a subscriber (PMPro level or filter) posts unlimited.
- * 2. Provider application-fee subscription — required to respond to participant needs / ABN tasks
+ * 2. Provider application-fee subscription, required to respond to participant needs / ABN tasks
  *    (rides the existing `shuffles_ssj_can_respond` filter).
  *
  * All gates are OFF unless `monetisation_enabled` is on, so a site is never accidentally locked.
@@ -51,7 +51,7 @@ class Shuffles_SSJ_Monetisation {
 	}
 
 	/**
-	 * Does the ACTIVE provider grant this user the given subscription? Per-user only — no
+	 * Does the ACTIVE provider grant this user the given subscription? Per-user only, no
 	 * admin/licence bypass (this is the base used by featured placement + the public checks).
 	 *
 	 * @param int    $uid
@@ -198,7 +198,7 @@ class Shuffles_SSJ_Monetisation {
 		if ( ! $uid ) {
 			return false;
 		}
-		// Participants employing directly post for FREE — only providers/businesses are charged.
+		// Participants employing directly post for FREE, only providers/businesses are charged.
 		if ( class_exists( 'Shuffles_SSJ_Roles' ) && Shuffles_SSJ_Roles::is_participant( $uid ) && ! Shuffles_SSJ_Roles::is_provider( $uid ) ) {
 			return (bool) apply_filters( 'shuffles_ssj_can_post_job', true, $uid );
 		}
@@ -232,7 +232,7 @@ class Shuffles_SSJ_Monetisation {
 
 	/**
 	 * Gate responding to participant needs / ABN tasks behind the provider subscription.
-	 * Only tightens (never loosens) — runs after the ABN check.
+	 * Only tightens (never loosens), runs after the ABN check.
 	 *
 	 * @param bool   $ok    Result so far (ABN/login checks).
 	 * @param string $basis 'abn' | 'tfn'.
@@ -250,7 +250,7 @@ class Shuffles_SSJ_Monetisation {
 	}
 
 	/* ------------------------------------------------------------------ *
-	 * Featured placement — the "+ featured" half of the advertiser sub.
+	 * Featured placement, the "+ featured" half of the advertiser sub.
 	 * Boards already sort `menu_order DESC, date DESC`, so a featured job
 	 * (menu_order = 1) floats above the rest with NO change to the query
 	 * layer. We keep `is_promoted` meta (for the badge) and `menu_order`
@@ -260,7 +260,7 @@ class Shuffles_SSJ_Monetisation {
 	/**
 	 * Is this job featured? Featured = the AUTHOR holds the employer advertising subscription.
 	 *
-	 * Deliberately does NOT honour the site-wide resale licence (`License::is_pro`) — that
+	 * Deliberately does NOT honour the site-wide resale licence (`License::is_pro`), that
 	 * would feature EVERY job on a licensed site, defeating the purpose. This is a
 	 * per-advertiser distinction only (PMPro level, admin, or the filter override).
 	 *

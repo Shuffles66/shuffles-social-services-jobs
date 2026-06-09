@@ -1,6 +1,6 @@
 <?php
 /**
- * Account verification — the "blue tick".
+ * Account verification, the "blue tick".
  *
  * Distinct from per-credential verification (the green ✓ Verified badge driven by Credentials):
  * the blue tick is an admin-granted, account-level trust mark ("we have verified this worker /
@@ -91,7 +91,7 @@ class Shuffles_SSJ_Verification {
 		}
 		$nonce = isset( $_POST['sssj_bluetick_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_bluetick_nonce'] ) ) : '';
 		if ( ! wp_verify_nonce( $nonce, 'sssj_bluetick_' . $post_id ) ) {
-			return; // metabox not submitted (e.g. quick edit / REST) — don't touch the value
+			return; // metabox not submitted (e.g. quick edit / REST), don't touch the value
 		}
 		if ( ! current_user_can( 'manage_options' ) ) {
 			return;

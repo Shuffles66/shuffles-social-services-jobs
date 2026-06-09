@@ -28,7 +28,7 @@ $notices = array(
 	'added'    => __( 'Team member added.', 'shuffles-social-services-jobs' ),
 	'updated'  => __( 'Role updated.', 'shuffles-social-services-jobs' ),
 	'removed'  => __( 'Team member removed.', 'shuffles-social-services-jobs' ),
-	'approved' => __( 'Request approved — they’re now on the team.', 'shuffles-social-services-jobs' ),
+	'approved' => __( 'Request approved, they’re now on the team.', 'shuffles-social-services-jobs' ),
 	'declined' => __( 'Request declined.', 'shuffles-social-services-jobs' ),
 	'nouser'   => __( 'No account was found for that email or username. Ask them to sign up first, then add them.', 'shuffles-social-services-jobs' ),
 	'err'      => __( 'That change could not be applied.', 'shuffles-social-services-jobs' ),
@@ -37,7 +37,7 @@ $requests = $is_admin ? Shuffles_SSJ_Org_Team::join_requests( $org_id ) : array(
 ?>
 <div class="sssj sssj--team">
 	<div class="sssj-panel">
-		<h3 style="margin-top:0"><?php echo esc_html( sprintf( __( 'Team — %s', 'shuffles-social-services-jobs' ), $org_name ) ); ?></h3>
+		<h3 style="margin-top:0"><?php echo esc_html( sprintf( __( 'Team, %s', 'shuffles-social-services-jobs' ), $org_name ) ); ?></h3>
 
 		<?php if ( count( $managed ) > 1 ) : ?>
 			<form method="get" class="sssj-row" style="margin-bottom:10px">
@@ -98,7 +98,7 @@ $requests = $is_admin ? Shuffles_SSJ_Org_Team::join_requests( $org_id ) : array(
 										<button type="submit" class="sssj-btn sssj-btn--danger sssj-btn--sm"><?php esc_html_e( 'Remove', 'shuffles-social-services-jobs' ); ?></button>
 									</form>
 								<?php else : ?>
-									<span class="description">—</span>
+									<span class="description">-</span>
 								<?php endif; ?>
 							</td>
 						<?php endif; ?>
@@ -148,7 +148,7 @@ $requests = $is_admin ? Shuffles_SSJ_Org_Team::join_requests( $org_id ) : array(
 
 		<?php if ( $is_admin ) : ?>
 			<h4><?php esc_html_e( 'Add a team member', 'shuffles-social-services-jobs' ); ?></h4>
-			<p class="description"><?php esc_html_e( 'Enter the email address or username of someone who already has an account. We never create accounts on their behalf — ask them to sign up first if they haven’t.', 'shuffles-social-services-jobs' ); ?></p>
+			<p class="description"><?php esc_html_e( 'Enter the email address or username of someone who already has an account. We never create accounts on their behalf, ask them to sign up first if they haven’t.', 'shuffles-social-services-jobs' ); ?></p>
 			<form method="post" action="<?php echo esc_url( $action ); ?>" class="sssj-row">
 				<?php wp_nonce_field( 'sssj_org_team', 'sssj_team_nonce' ); ?>
 				<input type="hidden" name="action" value="sssj_org_team" />

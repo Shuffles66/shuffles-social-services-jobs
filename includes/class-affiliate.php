@@ -1,9 +1,9 @@
 <?php
 /**
- * Affiliate / referral earning — optional, standalone-safe integration with the FluentAffiliate
+ * Affiliate / referral earning, optional, standalone-safe integration with the FluentAffiliate
  * plugin (slug: fluent-affiliate).
  *
- * Purpose: invite members — ESPECIALLY participants — to earn a bit of income by referring others
+ * Purpose: invite members, ESPECIALLY participants, to earn a bit of income by referring others
  * to the marketplace. We never bundle or require FluentAffiliate; if it is not active (and no
  * affiliate URL is configured), the promo simply does not appear.
  *
@@ -11,7 +11,7 @@
  * shortcode on an admin-designated page. We detect that and link to it (or to a configured URL).
  *
  * IMPORTANT (product requirement): members must be told they need a PayPal account to be paid, and
- * that they can set the affiliate side up LATER — it never blocks onboarding.
+ * that they can set the affiliate side up LATER, it never blocks onboarding.
  *
  * @package Shuffles_SSJ
  */
@@ -22,7 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Shuffles_SSJ_Affiliate {
 
-	/** Is the FluentAffiliate plugin active? (version-agnostic — checks its portal shortcode.) */
+	/** Is the FluentAffiliate plugin active? (version-agnostic, checks its portal shortcode.) */
 	public static function is_active() {
 		return shortcode_exists( 'fluent_affiliate_portal' ) || defined( 'FLUENT_AFFILIATE_VERSION' ) || function_exists( 'fluentAffiliate' );
 	}
@@ -56,7 +56,7 @@ class Shuffles_SSJ_Affiliate {
 	 * The "earn money by referring" promo card. Returns '' if disabled or there is nowhere to link.
 	 *
 	 * @param int        $uid     The member (0 for logged-out).
-	 * @param array|null $roles   Member roles (fetched if null) — used to tailor for participants.
+	 * @param array|null $roles   Member roles (fetched if null), used to tailor for participants.
 	 * @param string     $context 'onboard' tweaks the copy ("after you finish onboarding").
 	 * @return string
 	 */
@@ -84,7 +84,7 @@ class Shuffles_SSJ_Affiliate {
 				</p>
 				<?php if ( $is_participant ) : ?>
 					<p class="sssj-affiliate__forparticipants">
-						<?php esc_html_e( 'This is a great, flexible way for participants to earn a bit of extra money — share your link with people who might find support or work here.', 'shuffles-social-services-jobs' ); ?>
+						<?php esc_html_e( 'This is a great, flexible way for participants to earn a bit of extra money, share your link with people who might find support or work here.', 'shuffles-social-services-jobs' ); ?>
 					</p>
 				<?php endif; ?>
 
@@ -104,7 +104,7 @@ class Shuffles_SSJ_Affiliate {
 				<p class="sssj-affiliate__later description">
 					<?php
 					if ( 'onboard' === $context ) {
-						esc_html_e( 'No rush — you can set this up later, after you finish setting up your account. It’s completely optional.', 'shuffles-social-services-jobs' );
+						esc_html_e( 'No rush, you can set this up later, after you finish setting up your account. It’s completely optional.', 'shuffles-social-services-jobs' );
 					} else {
 						esc_html_e( 'It’s completely optional, and you can set it up whenever you’re ready.', 'shuffles-social-services-jobs' );
 					}
@@ -142,7 +142,7 @@ class Shuffles_SSJ_Affiliate {
 		return $out;
 	}
 
-	/** [sssj_affiliate] — the referral promo card, placeable anywhere (e.g. the dashboard). */
+	/** [sssj_affiliate], the referral promo card, placeable anywhere (e.g. the dashboard). */
 	public static function shortcode( $atts ) {
 		wp_enqueue_style( 'sssj' );
 		return self::render_card( get_current_user_id() );

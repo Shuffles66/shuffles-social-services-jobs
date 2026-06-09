@@ -1,6 +1,6 @@
 <?php
 /**
- * Organisation branding helpers — social links (single source of truth) + logo.
+ * Organisation branding helpers, social links (single source of truth) + logo.
  * The logo is the org post's featured image (so it also feeds Organization JSON-LD).
  *
  * @package Shuffles_SSJ
@@ -39,7 +39,7 @@ class Shuffles_SSJ_Org {
 
 	/**
 	 * A job's logo: its own featured image if set, otherwise the linked organisation's logo.
-	 * "Inherit from organisation by default" — so a job without a logo shows its company's brand.
+	 * "Inherit from organisation by default", so a job without a logo shows its company's brand.
 	 *
 	 * @param int    $job_id Job post ID.
 	 * @param string $size   Image size.
@@ -70,7 +70,7 @@ class Shuffles_SSJ_Org {
 	}
 
 	/**
-	 * All geocoded points for an org — its primary location plus any additional locations that
+	 * All geocoded points for an org, its primary location plus any additional locations that
 	 * carry coordinates. Each: [ lat, lng, label ].
 	 *
 	 * @return array
@@ -212,7 +212,7 @@ class Shuffles_SSJ_Org {
 	}
 
 	/**
-	 * Fired on shuffles_ssj_ndis_recorded — give an integration the chance to auto-scan the
+	 * Fired on shuffles_ssj_ndis_recorded, give an integration the chance to auto-scan the
 	 * NDIS Commission register (there is no official public API, so this is hook-driven /
 	 * best-effort). A filter returning [ 'status' => …, 'groups' => … ] is stored; else manual.
 	 */

@@ -7,9 +7,9 @@
  * "Log in to view" lock) but shown to logged-in members. The owner and admins always see
  * their own values so they can preview. Storage: a single `_sssj_mask` post-meta array of
  * masked field keys. This class is the SINGLE SOURCE for the form checkboxes AND the
- * display gate — never hard-code a field name in a template.
+ * display gate, never hard-code a field name in a template.
  *
- * Note: this is an additive privacy layer. The structural rules still stand — participant
+ * Note: this is an additive privacy layer. The structural rules still stand, participant
  * contact is NEVER shown, worker visibility flags are enforced in the query layer, and
  * register-sourced NDIS data (outlets / phone / ABN) is read-only and not maskable here.
  *
@@ -128,7 +128,7 @@ class Shuffles_SSJ_Privacy {
 		$masked = self::masked_keys( $post_id );
 		?>
 		<fieldset class="sssj-fieldset sssj-fieldset--privacy">
-			<legend><?php esc_html_e( 'Privacy — show only to logged-in members', 'shuffles-social-services-jobs' ); ?></legend>
+			<legend><?php esc_html_e( 'Privacy, show only to logged-in members', 'shuffles-social-services-jobs' ); ?></legend>
 			<p class="description"><?php esc_html_e( 'Tick a field to hide it from logged-out visitors. Signed-in members still see it; everyone else sees a “Log in to view” note. Your profile stays findable either way.', 'shuffles-social-services-jobs' ); ?></p>
 			<?php foreach ( $fields as $key => $label ) : ?>
 				<label class="sssj-check">

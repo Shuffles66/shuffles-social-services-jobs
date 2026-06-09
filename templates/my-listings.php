@@ -12,7 +12,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! is_user_logged_in() ) {
 	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to see your listings.', 'shuffles-social-services-jobs' )
-		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 	return;
 }
 
@@ -83,8 +83,8 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 		if ( ! empty( $sssj_ex['screening'] ) && is_array( $sssj_ex['screening'] ) ) {
 			echo '<ul class="ul-disc" style="margin-left:18px">';
 			foreach ( $sssj_ex['screening'] as $sssj_qa ) {
-				$sssj_a = ( isset( $sssj_qa['a'] ) && '' !== $sssj_qa['a'] ) ? $sssj_qa['a'] : '—';
-				echo '<li><strong>' . esc_html( isset( $sssj_qa['q'] ) ? $sssj_qa['q'] : '' ) . '</strong> — ' . esc_html( $sssj_a ) . '</li>';
+				$sssj_a = ( isset( $sssj_qa['a'] ) && '' !== $sssj_qa['a'] ) ? $sssj_qa['a'] : '-';
+				echo '<li><strong>' . esc_html( isset( $sssj_qa['q'] ) ? $sssj_qa['q'] : '' ) . '</strong>, ' . esc_html( $sssj_a ) . '</li>';
 			}
 			echo '</ul>';
 		}
@@ -110,7 +110,7 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 				echo '<details class="sssj-apphist"><summary>' . esc_html__( 'Status history', 'shuffles-social-services-jobs' ) . '</summary><ul class="ul-disc" style="margin:6px 0 0 18px">';
 				foreach ( $hist as $h ) {
 					$when = isset( $h['at'] ) ? (string) $h['at'] : '';
-					echo '<li>' . esc_html( Shuffles_SSJ_Applications::status_label( isset( $h['s'] ) ? $h['s'] : '' ) . ( $when ? ' — ' . $when : '' ) ) . '</li>';
+					echo '<li>' . esc_html( Shuffles_SSJ_Applications::status_label( isset( $h['s'] ) ? $h['s'] : '' ) . ( $when ? ', ' . $when : '' ) ) . '</li>';
 				}
 				echo '</ul></details>';
 			}

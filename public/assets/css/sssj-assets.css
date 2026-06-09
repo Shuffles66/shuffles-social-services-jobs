@@ -2,53 +2,64 @@
    stylesheet for the $0 browser PDF path. Builds on the design tokens in sssj.css. */
 
 /* ---- The résumé asset (locked v2 style) ---- */
-.sssj .sssj-asset{ background:#fff; color:var(--sssj-text); border-radius:16px; overflow:hidden;
+/* Accent is themeable: the theme picker adds .sssj-asset--theme-<key> to #sssj-asset, which sets these
+   four custom properties; they cascade to every child below. Default (no class) = Ocean Teal. */
+.sssj .sssj-asset{ --sssj-ac:#0e6e8c; --sssj-adeep:#0b566f; --sssj-asoft:#e8f1f4; --sssj-ahead:linear-gradient(135deg,#e7f3f6,#eef4fb);
+	background:#fff; color:var(--sssj-text); border-radius:16px; overflow:hidden;
 	box-shadow:0 10px 30px rgba(2,6,23,.12); max-width:780px; margin:0 auto;
 	font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
 .sssj .sssj-asset__head{ display:flex; gap:20px; align-items:center; padding:28px 32px;
-	background:linear-gradient(135deg,#e7f3f6,#eef4fb); border-bottom:1px solid var(--sssj-line); }
-.sssj .sssj-asset__avatar{ width:84px; height:84px; flex:0 0 auto; border-radius:50%; background:#0e6e8c; color:#fff;
+	background:var(--sssj-ahead); border-bottom:1px solid var(--sssj-line); }
+.sssj .sssj-asset__avatar{ width:84px; height:84px; flex:0 0 auto; border-radius:50%; background:var(--sssj-ac); color:#fff;
 	display:flex; align-items:center; justify-content:center; font-size:30px; font-weight:700; letter-spacing:1px; overflow:hidden;
-	box-shadow:0 0 0 5px #fff, 0 8px 18px rgba(14,110,140,.30); }
+	box-shadow:0 0 0 5px #fff, 0 8px 18px rgba(2,6,23,.22); }
 .sssj .sssj-asset__avatar img{ width:100%; height:100%; object-fit:cover; }
 .sssj .sssj-asset__name{ margin:0; font-size:30px; color:var(--sssj-ink); letter-spacing:-.015em; }
-.sssj .sssj-asset__role{ margin:2px 0 0; font-size:18px; color:#0e6e8c; font-weight:700; }
+.sssj .sssj-asset__role{ margin:2px 0 0; font-size:18px; color:var(--sssj-ac); font-weight:700; }
 .sssj .sssj-asset__where{ margin:8px 0 0; color:var(--sssj-ink); font-weight:700; }
 .sssj .sssj-asset__facts{ display:flex; flex-wrap:wrap; border:1px solid var(--sssj-line); border-radius:12px; overflow:hidden; margin:22px 32px 0; }
 .sssj .sssj-asset__fact{ flex:1 1 0; min-width:140px; padding:12px 16px; border-right:1px solid var(--sssj-line); }
 .sssj .sssj-asset__fact:last-child{ border-right:0; }
-.sssj .sssj-asset__fact b{ display:block; color:#0e6e8c; font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
+.sssj .sssj-asset__fact b{ display:block; color:var(--sssj-ac); font-size:11px; text-transform:uppercase; letter-spacing:.05em; }
 .sssj .sssj-asset__fact span{ color:var(--sssj-ink); font-weight:700; }
 .sssj .sssj-asset__h{ font-size:13px; letter-spacing:.06em; text-transform:uppercase; color:var(--sssj-muted);
-	margin:22px 32px 8px; border-left:4px solid #0e6e8c; padding-left:10px; }
+	margin:22px 32px 8px; border-left:4px solid var(--sssj-ac); padding-left:10px; }
 .sssj .sssj-asset__about{ margin:0 32px; color:var(--sssj-text); }
 .sssj .sssj-asset__chips{ display:flex; flex-wrap:wrap; gap:8px; margin:0 32px; padding:0; list-style:none; }
-.sssj .sssj-asset__chips li{ background:#e8f1f4; color:#0b566f; border-radius:999px; padding:6px 14px; font-weight:700; font-size:14px; }
+.sssj .sssj-asset__chips li{ background:var(--sssj-asoft); color:var(--sssj-adeep); border-radius:999px; padding:6px 14px; font-weight:700; font-size:14px; }
 .sssj .sssj-asset__checks{ display:flex; flex-wrap:wrap; gap:8px 20px; margin:0 32px; padding:0; list-style:none; }
 .sssj .sssj-asset__checks li{ color:var(--sssj-ink); font-weight:700; }
 .sssj .sssj-asset__checks li::before{ content:"\2713"; color:#15803d; font-weight:800; margin-right:7px; }
-.sssj .sssj-asset__cta{ margin:24px 32px 30px; padding:16px; background:#0e6e8c; color:#fff; border-radius:12px; text-align:center; font-weight:800; font-size:17px; }
+.sssj .sssj-asset__cta{ margin:24px 32px 30px; padding:16px; background:var(--sssj-ac); color:#fff; border-radius:12px; text-align:center; font-weight:800; font-size:17px; }
+
+/* ---- Theme variants (accent + soft + head gradient) ---- */
+.sssj .sssj-asset--theme-indigo{ --sssj-ac:#4f46e5; --sssj-adeep:#3730a3; --sssj-asoft:#eef2ff; --sssj-ahead:linear-gradient(135deg,#eef2ff,#f5f3ff); }
+.sssj .sssj-asset--theme-rose{ --sssj-ac:#be185d; --sssj-adeep:#9d174d; --sssj-asoft:#fce7f0; --sssj-ahead:linear-gradient(135deg,#fdf2f8,#fff1f2); }
+.sssj .sssj-asset--theme-emerald{ --sssj-ac:#047857; --sssj-adeep:#065f46; --sssj-asoft:#dcfce7; --sssj-ahead:linear-gradient(135deg,#ecfdf5,#f0fdf4); }
+.sssj .sssj-asset--theme-slate{ --sssj-ac:#334155; --sssj-adeep:#1e293b; --sssj-asoft:#e2e8f0; --sssj-ahead:linear-gradient(135deg,#f1f5f9,#f8fafc); }
+.sssj .sssj-asset--theme-amber{ --sssj-ac:#b45309; --sssj-adeep:#92400e; --sssj-asoft:#fef3c7; --sssj-ahead:linear-gradient(135deg,#fffbeb,#fff7ed); }
+.sssj .sssj-asset--theme-plum{ --sssj-ac:#7c3aed; --sssj-adeep:#5b21b6; --sssj-asoft:#f3e8ff; --sssj-ahead:linear-gradient(135deg,#f5f3ff,#faf5ff); }
 
 /* ---- Service flyer extras ---- */
-.sssj .sssj-asset__ribbon{ margin:18px 32px 0; padding:10px 16px; background:#0e6e8c; color:#fff; border-radius:10px; font-weight:800; text-align:center; }
+.sssj .sssj-asset__ribbon{ margin:18px 32px 0; padding:10px 16px; background:var(--sssj-ac); color:#fff; border-radius:10px; font-weight:800; text-align:center; }
 .sssj .sssj-asset__chips--lg li{ font-size:15px; padding:8px 16px; }
 
 /* ---- Social graphic (square) ---- */
-.sssj .sssj-asset--social{ max-width:520px; aspect-ratio:1/1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:14px; padding:34px; background:linear-gradient(160deg,#e7f3f6,#ffffff 55%); }
+.sssj .sssj-asset--social{ max-width:520px; aspect-ratio:1/1; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; gap:14px; padding:34px; background:var(--sssj-ahead); }
 .sssj .sssj-asset--social .sssj-asset__avatar{ width:96px; height:96px; }
 .sssj .sssj-asset--social .sssj-asset__name{ font-size:28px; }
 .sssj .sssj-asset--social .sssj-asset__role{ margin:0; }
 .sssj .sssj-asset--social .sssj-asset__where{ margin:0; font-size:18px; }
 .sssj .sssj-asset--social .sssj-asset__chips{ justify-content:center; margin:0; }
 .sssj .sssj-asset__social-top{ display:flex; flex-direction:column; align-items:center; gap:6px; }
-.sssj .sssj-asset__social-foot{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-weight:700; color:#0b566f; }
+.sssj .sssj-asset__social-foot{ display:flex; gap:16px; flex-wrap:wrap; justify-content:center; font-weight:700; color:var(--sssj-adeep); }
 .sssj .sssj-asset__avail{ background:#dff0e6; color:#15803d; border-radius:999px; padding:5px 14px; }
 .sssj .sssj-asset--social .sssj-asset__cta{ margin:6px 0 0; }
 
 /* ---- Job flyer extras ---- */
 .sssj .sssj-asset__avatar--square{ border-radius:12px; }
 .sssj .sssj-asset__avatar--square img{ border-radius:12px; }
-.sssj .sssj-asset__org{ margin:0 0 2px; color:#0e6e8c; font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:13px; }
+.sssj .sssj-asset__org{ margin:0 0 2px; color:var(--sssj-ac); font-weight:700; text-transform:uppercase; letter-spacing:.04em; font-size:13px; }
 .sssj .sssj-asset-joblist{ list-style:none; margin:0; padding:0; }
 .sssj .sssj-asset-joblist li{ padding:9px 0; border-bottom:1px solid var(--sssj-line); }
 .sssj .sssj-asset-joblist li:last-child{ border-bottom:0; }

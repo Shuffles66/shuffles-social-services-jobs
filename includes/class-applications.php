@@ -1,6 +1,6 @@
 <?php
 /**
- * Applications service — apply to a job / respond to a participant need.
+ * Applications service, apply to a job / respond to a participant need.
  *
  * Gating: TFN jobs accept any logged-in member; ABN jobs and participant needs (always ABN)
  * require the responder to hold a recorded, checksum-valid ABN. A `shuffles_ssj_can_respond`
@@ -128,13 +128,13 @@ class Shuffles_SSJ_Applications {
 		if ( false === $ok ) {
 			return new WP_Error( 'db', __( 'Could not record your application.', 'shuffles-social-services-jobs' ) );
 		}
-		// Capture the new row ID BEFORE any further query — update_post_meta() below runs its
+		// Capture the new row ID BEFORE any further query, update_post_meta() below runs its
 		// own INSERT and would otherwise clobber $wpdb->insert_id.
 		$app_id = (int) $wpdb->insert_id;
 		if ( $job_id ) {
 			update_post_meta( $job_id, 'apply_count', (int) get_post_meta( $job_id, 'apply_count', true ) + 1 );
 		}
-		// Seed a messaging thread to the listing owner (relay — emails never exposed).
+		// Seed a messaging thread to the listing owner (relay, emails never exposed).
 		if ( class_exists( 'Shuffles_SSJ_Messaging' ) ) {
 			$entity = $job_id ? (int) $job_id : (int) $need_id;
 			$owner  = (int) get_post_field( 'post_author', $entity );

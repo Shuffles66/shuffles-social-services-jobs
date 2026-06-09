@@ -1,4 +1,4 @@
-/* Shuffles SSJ — testing worksheet: mark Pass/Fail per case, progress saved per browser. */
+/* Shuffles SSJ, testing worksheet: mark Pass/Fail per case, progress saved per browser. */
 ( function () {
 	'use strict';
 	var root = document.querySelector( '[data-sssj-tests]' );
@@ -46,5 +46,22 @@
 			if ( window.confirm( 'Clear all test results?' ) ) { state = {}; store( state ); rows.forEach( applyRow ); updateProgress(); }
 		} );
 	}
+
+	// On submit (feedback form), write the Pass/Fail marks + a summary into hidden fields.
+	var form = root.closest ? root.closest( 'form' ) : null;
+	if ( form ) {
+		form.addEventListener( 'submit', function () {
+			var marks = root.querySelector( '[data-tests-marks]' );
+			if ( marks ) { marks.value = JSON.stringify( state ); }
+			var pass = 0, fail = 0;
+			rows.forEach( function ( tr ) {
+				var v = state[ tr.getAttribute( 'data-test-id' ) ];
+				if ( 'pass' === v ) { pass++; } else if ( 'fail' === v ) { fail++; }
+			} );
+			var sum = root.querySelector( '[data-tests-summary]' );
+			if ( sum ) { sum.value = pass + ' passed, ' + fail + ' failed, ' + total + ' total'; }
+		} );
+	}
+
 	updateProgress();
 }() );

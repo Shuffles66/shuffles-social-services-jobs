@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 if ( ! is_user_logged_in() ) {
 	echo '<div class="sssj"><div class="sssj-panel"><p>' . esc_html__( 'Log in to create your asset.', 'shuffles-social-services-jobs' )
-		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
+		. ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p></div></div>';
 	return;
 }
 
@@ -27,6 +27,29 @@ $types = array(
 if ( current_user_can( 'sssj_post_job' ) || current_user_can( 'manage_options' ) ) {
 	$types['job'] = array( 'assets/job-flyer.php', __( 'Job flyer', 'shuffles-social-services-jobs' ), __( 'A flyer for one of your job ads.', 'shuffles-social-services-jobs' ) );
 }
+
+// Colour themes (keys must match the .sssj-asset--theme-* CSS classes and the JS THEMES map).
+$asset_themes = array(
+	'teal'    => __( 'Ocean Teal', 'shuffles-social-services-jobs' ),
+	'indigo'  => __( 'Indigo', 'shuffles-social-services-jobs' ),
+	'plum'    => __( 'Plum', 'shuffles-social-services-jobs' ),
+	'rose'    => __( 'Rose', 'shuffles-social-services-jobs' ),
+	'emerald' => __( 'Emerald', 'shuffles-social-services-jobs' ),
+	'amber'   => __( 'Sunset Amber', 'shuffles-social-services-jobs' ),
+	'slate'   => __( 'Slate', 'shuffles-social-services-jobs' ),
+);
+
+/** Render the colour-theme picker panel. */
+$theme_picker = function () use ( $asset_themes ) {
+	echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'Colour theme', 'shuffles-social-services-jobs' ) . '</h3>';
+	echo '<label class="sssj-field"><span>' . esc_html__( 'Pick a colour theme', 'shuffles-social-services-jobs' ) . '</span>';
+	echo '<select class="sssj-select" data-asset-theme>';
+	foreach ( $asset_themes as $k => $lbl ) {
+		echo '<option value="' . esc_attr( $k ) . '">' . esc_html( $lbl ) . '</option>';
+	}
+	echo '</select></label>';
+	echo '<p class="description">' . esc_html__( 'Changes the colours of your asset. It applies to the live preview, the PDF and the saved image.', 'shuffles-social-services-jobs' ) . '</p></div>';
+};
 
 $type = isset( $_GET['sssj_asset'] ) ? sanitize_key( wp_unslash( $_GET['sssj_asset'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 if ( '' === $type && ! empty( $atts['asset'] ) ) {
@@ -74,6 +97,7 @@ if ( 'job' === $type ) {
 						<p class="description"><?php esc_html_e( 'This flyer is built from the job ad. To change the wording, pay or location, edit the job.', 'shuffles-social-services-jobs' ); ?>
 							<a href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', 'job' ) ) ); ?>"><?php esc_html_e( 'Pick another job', 'shuffles-social-services-jobs' ); ?></a></p>
 					</div>
+						<?php $theme_picker(); ?>
 					<div class="sssj-panel">
 						<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>
 						<ul class="sssj-asset-check">
@@ -103,6 +127,28 @@ if ( 'job' === $type ) {
 					</div>
 				</div>
 			</div>
+					<?php
+					// Structured data for the themed "Save image" canvas renderer (job flyer).
+					$brand  = get_bloginfo( 'name' );
+					$jfacts = array();
+					if ( ! empty( $jd['pay'] ) ) { $jfacts[] = array( 'label' => __( 'Pay', 'shuffles-social-services-jobs' ), 'value' => (string) $jd['pay'] ); }
+					if ( ! empty( $jd['basis'] ) ) { $jfacts[] = array( 'label' => __( 'Engagement', 'shuffles-social-services-jobs' ), 'value' => (string) $jd['basis'] ); }
+					$jblob = array(
+						'kind'        => 'job',
+						'shape'       => 'portrait',
+						'name'        => (string) ( isset( $jd['title'] ) ? $jd['title'] : '' ),
+						'role'        => (string) ( ! empty( $jd['org'] ) ? $jd['org'] : ( isset( $jd['basis'] ) ? $jd['basis'] : '' ) ),
+						'location'    => (string) ( isset( $jd['location'] ) ? $jd['location'] : '' ),
+						'facts'       => $jfacts,
+						'about'       => '',
+						'chips'       => array(),
+						'checks'      => array(),
+						'cta'         => sprintf( __( 'Apply safely through %s', 'shuffles-social-services-jobs' ), $brand ),
+						'photo'       => '',
+						'avatarRound' => false,
+					);
+					echo '<script type="application/json" id="sssj-asset-data">' . wp_json_encode( $jblob, JSON_HEX_TAG | JSON_HEX_AMP ) . '</script>';
+					?>
 		<?php endif; ?>
 	</div>
 	<?php
@@ -159,6 +205,8 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 				</p>
 			</div>
 
+			<?php $theme_picker(); ?>
+
 			<div class="sssj-panel">
 				<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>
 				<ul class="sssj-asset-check">
@@ -194,4 +242,32 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 			</div>
 		</div>
 	</div>
+	<?php
+	// Structured data for the themed "Save image" canvas renderer (sssj-assets.js reads this by id).
+	$brand = get_bloginfo( 'name' );
+	$facts = array( array( 'label' => __( 'Available', 'shuffles-social-services-jobs' ), 'value' => (string) ( isset( $data['available'] ) ? $data['available'] : '' ) ) );
+	if ( ! empty( $data['experience'] ) ) {
+		$facts[] = array( 'label' => __( 'Experience', 'shuffles-social-services-jobs' ), 'value' => (string) $data['experience'] );
+	}
+	if ( ! empty( $data['languages'] ) ) {
+		$facts[] = array( 'label' => __( 'Languages', 'shuffles-social-services-jobs' ), 'value' => implode( ', ', (array) $data['languages'] ) );
+	}
+	$blob = array(
+		'kind'        => $type,
+		'shape'       => ( 'social' === $type ) ? 'square' : 'portrait',
+		'name'        => (string) ( isset( $data['name'] ) ? $data['name'] : '' ),
+		'role'        => (string) ( isset( $data['tagline'] ) ? $data['tagline'] : '' ),
+		'location'    => (string) ( isset( $data['location'] ) ? $data['location'] : '' ),
+		'facts'       => ( 'social' === $type ) ? array() : $facts,
+		'about'       => $show_blurb ? (string) ( isset( $data['blurb'] ) ? $data['blurb'] : '' ) : '',
+		'aboutLabel'  => __( 'About me', 'shuffles-social-services-jobs' ),
+		'chips'       => array_values( (array) ( isset( $data['services'] ) ? $data['services'] : array() ) ),
+		'chipsLabel'  => __( 'What I help with', 'shuffles-social-services-jobs' ),
+		'checks'      => ( 'social' === $type ) ? array() : array_values( (array) ( isset( $data['checks'] ) ? $data['checks'] : array() ) ),
+		'cta'         => sprintf( __( 'Get in touch safely through %s', 'shuffles-social-services-jobs' ), $brand ),
+		'photo'       => (string) ( isset( $data['photo'] ) ? $data['photo'] : '' ),
+		'avatarRound' => true,
+	);
+	echo '<script type="application/json" id="sssj-asset-data">' . wp_json_encode( $blob, JSON_HEX_TAG | JSON_HEX_AMP ) . '</script>';
+	?>
 </div>

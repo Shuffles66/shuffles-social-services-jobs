@@ -1,6 +1,6 @@
 <?php
 /**
- * Resale licensing client (FluentCart). Gates PREMIUM features only — core boards always work.
+ * Resale licensing client (FluentCart). Gates PREMIUM features only, core boards always work.
  *
  * Design (locked with John): resell to other operators; hard-gate premium when unlicensed; vendor
  * store = shuffles.com.au. Validation runs on a daily cron + on-demand (never the hot path) and is
@@ -84,7 +84,7 @@ class Shuffles_SSJ_License {
 		$s = self::status();
 		$state = isset( $s['state'] ) ? $s['state'] : 'unregistered';
 		$msg   = isset( $s['message'] ) ? $s['message'] : '';
-		return trim( ucfirst( $state ) . ( $msg ? ' — ' . $msg : '' ) );
+		return trim( ucfirst( $state ) . ( $msg ? ', ' . $msg : '' ) );
 	}
 
 	private static function call( $action ) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Compliance & verification — worker credentials (WWCC, NDIS screening, police check, etc.).
+ * Compliance & verification, worker credentials (WWCC, NDIS screening, police check, etc.).
  *
  * Trust model (non-negotiable, mirrors the CLAUDE.md privacy block):
  *   - Evidence files live in a deny-all directory (uploads/sssj-credentials) and are served ONLY
@@ -70,7 +70,7 @@ class Shuffles_SSJ_Credentials {
 
 	/**
 	 * Evidence is stored IN THE DATABASE and served only through the authenticated handler, so there
-	 * is no on-disk, web-reachable file to protect — kept as a (near) no-op for the activation hook.
+	 * is no on-disk, web-reachable file to protect, kept as a (near) no-op for the activation hook.
 	 *
 	 * Why DB storage: this host (like most managed/Nginx stacks) ignores .htaccess AND will not let
 	 * PHP write above the web root. That leaves no filesystem location that is both writable and not
@@ -192,10 +192,10 @@ class Shuffles_SSJ_Credentials {
 		return preg_match( '/^\d{4}-\d{2}-\d{2}$/', $v ) ? $v : null;
 	}
 
-	/** Columns for list views — everything EXCEPT the (potentially large) evidence blob. */
+	/** Columns for list views, everything EXCEPT the (potentially large) evidence blob. */
 	const LIST_COLS = 'id, worker_id, kind, number, issued_date, expires_date, original_name, evidence_mime, status, note, created_at, verified_at, verified_by_admin_id, (evidence_data IS NOT NULL) AS has_evidence';
 
-	/** Full row including the evidence blob — used only when serving a file. */
+	/** Full row including the evidence blob, used only when serving a file. */
 	public static function get( $id ) {
 		global $wpdb;
 		return $wpdb->get_row( $wpdb->prepare( 'SELECT * FROM ' . self::table() . ' WHERE id = %d', (int) $id ) ); // phpcs:ignore WordPress.DB
@@ -333,7 +333,7 @@ class Shuffles_SSJ_Credentials {
 
 	/**
 	 * Daily: expire lapsed verified credentials (recompute badges), and email a single reminder
-	 * at the configured lead time + on the expiry day. No extra state needed — reminders fire on
+	 * at the configured lead time + on the expiry day. No extra state needed, reminders fire on
 	 * exact date boundaries so workers are never spammed.
 	 */
 	public static function expiry_sweep() {

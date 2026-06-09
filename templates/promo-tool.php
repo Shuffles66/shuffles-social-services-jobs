@@ -78,7 +78,7 @@ $host = Shuffles_SSJ_Promo::site_host();
 				<summary style="cursor:pointer;padding:10px 14px;font-weight:700"><?php esc_html_e( 'How this works', 'shuffles-social-services-jobs' ); ?></summary>
 				<div style="padding:0 14px 12px">
 					<ul class="ul-disc">
-						<li><?php esc_html_e( 'Every highlight is built from real, public platform numbers or our own brand messages — never participant data.', 'shuffles-social-services-jobs' ); ?></li>
+						<li><?php esc_html_e( 'Every highlight is built from real, public platform numbers or our own brand messages, never participant data.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'A counter only appears once it is big enough to impress; small early numbers stay hidden.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( '“Save image” downloads a square PNG ready for Instagram, Facebook or LinkedIn. “Copy caption” copies the matching words and hashtags.', 'shuffles-social-services-jobs' ); ?></li>
 						<li><?php esc_html_e( 'Post one at a time, whenever you like. Automatic posting can come later.', 'shuffles-social-services-jobs' ); ?></li>

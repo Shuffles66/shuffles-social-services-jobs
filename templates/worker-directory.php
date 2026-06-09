@@ -100,7 +100,7 @@ $w_pts   = ! empty( $has_points );
 					<?php if ( ! is_wp_error( $svcs ) && ! empty( $svcs ) ) : ?>
 						<p><?php echo esc_html( implode( ', ', array_slice( $svcs, 0, 4 ) ) ); ?></p>
 					<?php endif; ?>
-					<?php if ( $rmin > 0 ) : ?><?php if ( ! class_exists( 'Shuffles_SSJ_Privacy' ) || Shuffles_SSJ_Privacy::show( $pid, 'rate' ) ) : ?><p>💲 <?php echo esc_html( __( 'from', 'shuffles-social-services-jobs' ) . ' ' . number_format_i18n( $rmin ) . ' / ' . ( $runit ? $runit : 'hour' ) ); ?></p><?php else : ?><p><?php echo Shuffles_SSJ_Privacy::lock_html( __( 'Rate — members', 'shuffles-social-services-jobs' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endif; ?><?php endif; ?>
+					<?php if ( $rmin > 0 ) : ?><?php if ( ! class_exists( 'Shuffles_SSJ_Privacy' ) || Shuffles_SSJ_Privacy::show( $pid, 'rate' ) ) : ?><p>💲 <?php echo esc_html( __( 'from', 'shuffles-social-services-jobs' ) . ' ' . number_format_i18n( $rmin ) . ' / ' . ( $runit ? $runit : 'hour' ) ); ?></p><?php else : ?><p><?php echo Shuffles_SSJ_Privacy::lock_html( __( 'Rate, members', 'shuffles-social-services-jobs' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endif; ?><?php endif; ?>
 					<p><?php echo esc_html( wp_trim_words( wp_strip_all_tags( get_the_excerpt() ), 22 ) ); ?></p>
 					<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php the_permalink(); ?>" data-i18n="view_profile"><?php esc_html_e( 'View profile', 'shuffles-social-services-jobs' ); ?></a>
 				</article>

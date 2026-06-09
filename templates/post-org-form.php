@@ -50,7 +50,7 @@ if ( $existing ) {
 <div class="sssj sssj--post-org">
 	<div class="sssj-panel">
 		<h2><?php echo $existing ? esc_html__( 'Edit your organisation profile', 'shuffles-social-services-jobs' ) : esc_html__( 'Create an organisation profile', 'shuffles-social-services-jobs' ); ?></h2>
-		<p class="description"><?php esc_html_e( 'A permanent, searchable profile for your business — it lists all your open positions and is indexable by search engines.', 'shuffles-social-services-jobs' ); ?></p>
+		<p class="description"><?php esc_html_e( 'A permanent, searchable profile for your business, it lists all your open positions and is indexable by search engines.', 'shuffles-social-services-jobs' ); ?></p>
 
 		<?php if ( '1' === $st ) : ?>
 			<p class="sssj-badge sssj-badge--verified"><?php esc_html_e( 'Profile saved.', 'shuffles-social-services-jobs' ); ?></p>
@@ -62,7 +62,7 @@ if ( $existing ) {
 
 		<?php if ( ! $can ) : ?>
 			<p><?php esc_html_e( 'Log in with an employer account to create a profile.', 'shuffles-social-services-jobs' ); ?>
-				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
+				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		<?php else : ?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data" data-sssj-busy="<?php esc_attr_e( 'Saving and checking your details (NDIS register, ABN and location)…', 'shuffles-social-services-jobs' ); ?>">
 				<input type="hidden" name="action" value="sssj_post_org" />
@@ -103,12 +103,12 @@ if ( $existing ) {
 						<select class="sssj-select" name="org_category">
 							<?php $ex_cat = $gm( 'org_category', 'support' ); foreach ( Shuffles_SSJ_Org::categories() as $v => $l ) { echo '<option value="' . esc_attr( $v ) . '" ' . selected( $ex_cat, $v, false ) . '>' . esc_html( $l ) . '</option>'; } ?>
 						</select>
-						<p class="description"><?php esc_html_e( 'What kind of organisation — support provider, supplier/services, SDA/housing, real estate or professional services. Drives where you appear in the directory.', 'shuffles-social-services-jobs' ); ?></p>
+						<p class="description"><?php esc_html_e( 'What kind of organisation, support provider, supplier/services, SDA/housing, real estate or professional services. Drives where you appear in the directory.', 'shuffles-social-services-jobs' ); ?></p>
 					</div>
 					<div class="sssj-field">
 						<label><?php esc_html_e( 'Organisation size', 'shuffles-social-services-jobs' ); ?></label>
 						<select class="sssj-select" name="org_size">
-							<option value=""><?php esc_html_e( '— select —', 'shuffles-social-services-jobs' ); ?></option>
+							<option value=""><?php esc_html_e( '- select -', 'shuffles-social-services-jobs' ); ?></option>
 							<?php $ex_size = $gm( 'org_size', '' ); foreach ( Shuffles_SSJ_Org::sizes() as $v => $l ) { echo '<option value="' . esc_attr( $v ) . '" ' . selected( $ex_size, $v, false ) . '>' . esc_html( $l ) . '</option>'; } ?>
 						</select>
 						<p class="description"><?php esc_html_e( 'Helps people filter sole traders vs larger providers.', 'shuffles-social-services-jobs' ); ?></p>
@@ -116,22 +116,22 @@ if ( $existing ) {
 					<div class="sssj-field">
 						<label><?php esc_html_e( 'Legal structure', 'shuffles-social-services-jobs' ); ?></label>
 						<select class="sssj-select" name="org_structure">
-							<option value=""><?php esc_html_e( '— select —', 'shuffles-social-services-jobs' ); ?></option>
+							<option value=""><?php esc_html_e( '- select -', 'shuffles-social-services-jobs' ); ?></option>
 							<?php $ex_struct = $gm( 'org_structure', '' ); foreach ( Shuffles_SSJ_Org::structures() as $v => $l ) { echo '<option value="' . esc_attr( $v ) . '" ' . selected( $ex_struct, $v, false ) . '>' . esc_html( $l ) . '</option>'; } ?>
 						</select>
 					</div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Website', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="url" name="org_website" value="<?php echo esc_attr( $gm( 'org_website' ) ); ?>" placeholder="https://" />
 						<button type="button" class="sssj-btn sssj-btn--ghost sssj-btn--sm" data-sssj-autofill data-loading="<?php esc_attr_e( 'Reading your site…', 'shuffles-social-services-jobs' ); ?>" data-empty="<?php esc_attr_e( 'Enter your website URL first (including https://).', 'shuffles-social-services-jobs' ); ?>" style="margin-top:6px">✨ <?php esc_html_e( 'Fetch details from my website', 'shuffles-social-services-jobs' ); ?></button>
-						<p class="description"><?php esc_html_e( 'Our AI reads your website and suggests a name, description and phone — review before saving. (It only fills empty fields.)', 'shuffles-social-services-jobs' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Our AI reads your website and suggests a name, description and phone, review before saving. (It only fills empty fields.)', 'shuffles-social-services-jobs' ); ?></p>
 					</div>
 					<div class="sssj-field"><label><?php esc_html_e( 'Phone', 'shuffles-social-services-jobs' ); ?></label><input class="sssj-input" type="text" name="org_phone" value="<?php echo esc_attr( $gm( 'org_phone' ) ); ?>" /></div>
-					<div class="sssj-field"><label><?php esc_html_e( 'ABN', 'shuffles-social-services-jobs' ); ?> *</label><input class="sssj-input" type="text" name="org_abn" inputmode="numeric" placeholder="11 digits" required value="<?php echo esc_attr( $gm( 'org_abn' ) ); ?>" /><p class="description"><?php esc_html_e( 'Required — organisations are businesses. Checked against the Australian Business Register when ABR verification is configured.', 'shuffles-social-services-jobs' ); ?></p></div>
+					<div class="sssj-field"><label><?php esc_html_e( 'ABN', 'shuffles-social-services-jobs' ); ?> *</label><input class="sssj-input" type="text" name="org_abn" inputmode="numeric" placeholder="11 digits" required value="<?php echo esc_attr( $gm( 'org_abn' ) ); ?>" /><p class="description"><?php esc_html_e( 'Required, organisations are businesses. Checked against the Australian Business Register when ABR verification is configured.', 'shuffles-social-services-jobs' ); ?></p></div>
 
 					<?php if ( $existing && class_exists( 'Shuffles_SSJ_ABN' ) ) { $abr_rec = Shuffles_SSJ_ABN::abr_record_text( $existing->ID ); if ( '' !== $abr_rec ) : ?>
 					<div class="sssj-field">
-						<label for="sssj-oabr"><?php esc_html_e( 'Australian Business Register — recorded details', 'shuffles-social-services-jobs' ); ?></label>
+						<label for="sssj-oabr"><?php esc_html_e( 'Australian Business Register, recorded details', 'shuffles-social-services-jobs' ); ?></label>
 						<textarea class="sssj-textarea" id="sssj-oabr" rows="8" readonly><?php echo esc_textarea( $abr_rec ); ?></textarea>
-						<p class="description"><?php esc_html_e( 'Recorded automatically from the ABR when your ABN was saved (includes trading / business names). Read-only — this is the Register’s own data.', 'shuffles-social-services-jobs' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Recorded automatically from the ABR when your ABN was saved (includes trading / business names). Read-only, this is the Register’s own data.', 'shuffles-social-services-jobs' ); ?></p>
 					</div>
 					<?php endif; } ?>
 
@@ -143,7 +143,7 @@ if ( $existing ) {
 					<input class="sssj-input" id="sssj-ndisid" type="text" inputmode="numeric" name="ndis_register_id" value="<?php echo esc_attr( $gm( 'ndis_register_id' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. 902439', 'shuffles-social-services-jobs' ); ?>" />
 					<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-sssj-ndis-scan style="margin-top:6px">🛡️ <?php esc_html_e( 'Scan now', 'shuffles-social-services-jobs' ); ?></button>
 					<div data-sssj-ndis-result style="margin-top:8px"></div>
-					<p class="description"><?php echo wp_kses_post( sprintf( __( 'The number after <code>?id=</code> in your listing URL on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a> (e.g. <code>…find-registered-provider?id=902439</code> → <code>902439</code>). When set, we read your public listing and show your verified registration status, the approved registration groups and the expiry date — refreshed automatically each month.', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/provider-registration/find-registered-provider' ) ) ); ?></p>
+					<p class="description"><?php echo wp_kses_post( sprintf( __( 'The number after <code>?id=</code> in your listing URL on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a> (e.g. <code>…find-registered-provider?id=902439</code> → <code>902439</code>). When set, we read your public listing and show your verified registration status, the approved registration groups and the expiry date, refreshed automatically each month.', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/provider-registration/find-registered-provider' ) ) ); ?></p>
 				</div>
 				</div>
 
@@ -210,12 +210,12 @@ if ( $existing ) {
 				<?php if ( class_exists( 'Shuffles_SSJ_Field_Registry' ) ) { Shuffles_SSJ_Field_Registry::render( 'org', $existing ? $existing->ID : 0 ); } ?>
 
 				<div class="sssj-field">
-					<label><input type="checkbox" name="org_hidden" value="1" <?php checked( '1', (string) $gm( 'org_hidden' ) ); ?> /> <?php esc_html_e( 'Do not display — hide this organisation from search engines and the directory', 'shuffles-social-services-jobs' ); ?></label>
+					<label><input type="checkbox" name="org_hidden" value="1" <?php checked( '1', (string) $gm( 'org_hidden' ) ); ?> /> <?php esc_html_e( 'Do not display, hide this organisation from search engines and the directory', 'shuffles-social-services-jobs' ); ?></label>
 				</div>
 
 				<fieldset class="sssj-fieldset">
 					<legend><?php esc_html_e( 'Open to…', 'shuffles-social-services-jobs' ); ?></legend>
-					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" <?php checked( '1', (string) $gm( 'offers_sponsorship' ) ); ?> /> ✈️ <?php esc_html_e( 'Open to overseas applicants — we sponsor visas', 'shuffles-social-services-jobs' ); ?></label></div>
+					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="offers_sponsorship" value="1" <?php checked( '1', (string) $gm( 'offers_sponsorship' ) ); ?> /> ✈️ <?php esc_html_e( 'Open to overseas applicants, we sponsor visas', 'shuffles-social-services-jobs' ); ?></label></div>
 					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="accepts_placements" value="1" <?php checked( '1', (string) $gm( 'accepts_placements' ) ); ?> /> 🎓 <?php esc_html_e( 'We accept work-placement / student-placement enquiries', 'shuffles-social-services-jobs' ); ?></label></div>
 					<div class="sssj-field"><label class="sssj-check"><input type="checkbox" name="welcomes_volunteers" value="1" <?php checked( '1', (string) $gm( 'welcomes_volunteers' ) ); ?> /> 🤝 <?php esc_html_e( 'We welcome volunteer enquiries', 'shuffles-social-services-jobs' ); ?></label></div>
 				</fieldset>

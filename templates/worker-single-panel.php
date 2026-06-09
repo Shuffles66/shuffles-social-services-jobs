@@ -32,7 +32,7 @@ $photo    = get_the_post_thumbnail_url( $worker_id, 'medium' );
 $gallery  = array_filter( array_map( 'intval', (array) get_post_meta( $worker_id, '_sssj_gallery', true ) ) );
 $status_labels = array(
 	'seeking'               => __( 'Seeking work', 'shuffles-social-services-jobs' ),
-	'employed-open-to-more' => __( 'Employed — open to more', 'shuffles-social-services-jobs' ),
+	'employed-open-to-more' => __( 'Employed, open to more', 'shuffles-social-services-jobs' ),
 	'not-looking'           => __( 'Not currently looking', 'shuffles-social-services-jobs' ),
 );
 ?>

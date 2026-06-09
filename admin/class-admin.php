@@ -349,6 +349,7 @@ class Shuffles_SSJ_Admin {
 			'licensing'    => array( 'T11', __( 'Licensing', 'shuffles-social-services-jobs' ), 'orange' ),
 			'integrations' => array( 'T12', __( 'Integrations', 'shuffles-social-services-jobs' ), 'blue' ),
 			'rendering'    => array( 'T34', __( 'Asset Rendering', 'shuffles-social-services-jobs' ), 'blue' ),
+			'profilecard'  => array( 'T37', __( 'AI Profile Card', 'shuffles-social-services-jobs' ), 'teal' ),
 			'fields'       => array( 'T21', __( 'Profile Fields', 'shuffles-social-services-jobs' ), 'indigo' ),
 			'crm'          => array( 'T22', __( 'CRM Sync', 'shuffles-social-services-jobs' ), 'blue' ),
 			'alerts'       => array( 'T23', __( 'Email Alerts', 'shuffles-social-services-jobs' ), 'orange' ),
@@ -369,6 +370,27 @@ class Shuffles_SSJ_Admin {
 			'changelog'    => array( 'T15', __( 'Changelog', 'shuffles-social-services-jobs' ), 'slate' ),
 			'pm'           => array( 'PM', __( 'Project Management', 'shuffles-social-services-jobs' ), 'slate' ),
 		);
+	}
+
+	/**
+	 * Tabs in the admin's chosen order: 'grouped' (curated default), 'tnum' (by the T-number),
+	 * or 'alpha' (alphabetical by label).
+	 */
+	public function sorted_tabs() {
+		$tabs  = $this->tabs();
+		$order = (string) $this->settings->get( 'admin_tab_order', 'grouped' );
+		if ( 'tnum' === $order ) {
+			uasort( $tabs, function ( $a, $b ) {
+				$na = is_numeric( substr( (string) $a[0], 1 ) ) ? (int) substr( (string) $a[0], 1 ) : 9999;
+				$nb = is_numeric( substr( (string) $b[0], 1 ) ) ? (int) substr( (string) $b[0], 1 ) : 9999;
+				return $na <=> $nb;
+			} );
+		} elseif ( 'alpha' === $order ) {
+			uasort( $tabs, function ( $a, $b ) {
+				return strcasecmp( (string) $a[1], (string) $b[1] );
+			} );
+		}
+		return $tabs;
 	}
 
 	public function dot_colour( $domain ) {
@@ -516,7 +538,7 @@ class Shuffles_SSJ_Admin {
 		</div>
 		<div class="sssj-grid">
 			<article class="sssj-card sssj-card--abn">
-				<h3 style="margin-top:0"><a href="#" onclick="return false">Support Worker — Disability</a></h3>
+				<h3 style="margin-top:0"><a href="#" onclick="return false">Support Worker, Disability</a></h3>
 				<div class="sssj-row"><span class="sssj-badge sssj-badge--abn">ABN (contractor)</span> <span class="sssj-badge">Ongoing</span></div>
 				<p>📍 Parramatta NSW</p><p>💲 45 – 60 / hour</p>
 				<a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="#" onclick="return false">View job</a>
@@ -571,7 +593,7 @@ class Shuffles_SSJ_Admin {
 		$stored = (string) $this->settings->get( $key, '' );
 		$last4  = '' !== $stored ? substr( $stored, -4 ) : '';
 		$ph     = '' !== $stored
-			? sprintf( '•••• •••• %s — %s', $last4, __( 'leave blank to keep', 'shuffles-social-services-jobs' ) )
+			? sprintf( '•••• •••• %s, %s', $last4, __( 'leave blank to keep', 'shuffles-social-services-jobs' ) )
 			: __( 'Enter key', 'shuffles-social-services-jobs' );
 		$allowed = array(
 			'a'      => array( 'href' => array(), 'target' => array(), 'rel' => array() ),
@@ -606,7 +628,7 @@ class Shuffles_SSJ_Admin {
 				'name'              => $this->field_name( $key ),
 				'id'                => 'sssj-' . $key,
 				'selected'          => $val,
-				'show_option_none'  => __( '— Select a page —', 'shuffles-social-services-jobs' ),
+				'show_option_none'  => __( '- Select a page -', 'shuffles-social-services-jobs' ),
 				'option_none_value' => '0',
 				'class'             => 'sssj-page-select',
 			)
@@ -663,6 +685,10 @@ class Shuffles_SSJ_Admin {
 			'page_marketing'   => '[sssj_marketing]',
 			'page_create_asset' => '[sssj_create_asset]',
 			'page_promote'     => '[sssj_promo]',
+			'page_profile_card' => '[sssj_profile_card]',
+			'page_login'       => '[sssj_login]',
+			'page_register'    => '[sssj_register]',
+			'page_demo_tour'   => '[sssj_demo_tour]',
 		);
 		if ( ! isset( $allowed[ $key ] ) || $allowed[ $key ] !== $shortcode ) {
 			wp_send_json_error( array( 'msg' => 'bad request' ), 400 );
@@ -703,7 +729,7 @@ class Shuffles_SSJ_Admin {
 	}
 
 	/**
-	 * Admin verification queue — review credential evidence and approve / reject.
+	 * Admin verification queue, review credential evidence and approve / reject.
 	 * The ✓ Verified badge is set ONLY here (never from user input).
 	 */
 	public function render_verification() {
@@ -754,8 +780,8 @@ class Shuffles_SSJ_Admin {
 			echo '<tr>';
 			echo '<td><strong>' . esc_html( $u ? $u->display_name : '#' . (int) $r->worker_id ) . '</strong><br><span class="description">' . esc_html( $u ? $u->user_email : '' ) . '</span></td>';
 			echo '<td>' . esc_html( Shuffles_SSJ_Credentials::kind_label( $r->kind ) ) . '</td>';
-			echo '<td>' . esc_html( $r->number ? $r->number : '—' ) . '</td>';
-			echo '<td>' . esc_html( $r->expires_date ? $r->expires_date : '—' ) . ( $expired_soon ? ' <span style="color:#b91c1c">(' . esc_html__( 'past', 'shuffles-social-services-jobs' ) . ')</span>' : '' ) . '</td>';
+			echo '<td>' . esc_html( $r->number ? $r->number : '-' ) . '</td>';
+			echo '<td>' . esc_html( $r->expires_date ? $r->expires_date : '-' ) . ( $expired_soon ? ' <span style="color:#b91c1c">(' . esc_html__( 'past', 'shuffles-social-services-jobs' ) . ')</span>' : '' ) . '</td>';
 			echo '<td>' . ( ! empty( $r->has_evidence ) ? '<a href="' . esc_url( Shuffles_SSJ_Credentials::file_url( $r->id ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'Open', 'shuffles-social-services-jobs' ) . '</a>' : '<span class="description">' . esc_html__( 'none', 'shuffles-social-services-jobs' ) . '</span>' ) . '</td>';
 			echo '<td><span class="sssj-badge ' . esc_attr( $bcls ) . '" style="padding:2px 8px;border-radius:10px">' . esc_html( $blabel ) . '</span></td>';
 			echo '<td><form method="post" action="' . $post . '" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">'; // phpcs:ignore WordPress.Security.EscapeOutput

@@ -59,7 +59,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 
 		<?php if ( ! $can ) : ?>
 			<p><?php esc_html_e( 'Log in to create your worker profile.', 'shuffles-social-services-jobs' ); ?>
-				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
+				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		<?php else : ?>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack" enctype="multipart/form-data" data-sssj-busy="<?php esc_attr_e( 'Saving your profile and checking your details…', 'shuffles-social-services-jobs' ); ?>">
 				<input type="hidden" name="action" value="sssj_post_worker" />
@@ -102,7 +102,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 						$cur_status = (string) $gm( 'employment_status', 'seeking' );
 						$opts       = array(
 							'seeking'                => __( 'Seeking work', 'shuffles-social-services-jobs' ),
-							'employed-open-to-more'  => __( 'Employed — open to more', 'shuffles-social-services-jobs' ),
+							'employed-open-to-more'  => __( 'Employed, open to more', 'shuffles-social-services-jobs' ),
 							'not-looking'            => __( 'Not currently looking', 'shuffles-social-services-jobs' ),
 						);
 						foreach ( $opts as $v => $l ) {
@@ -172,15 +172,15 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 
 				<?php if ( ! $participant_only ) : ?>
 				<div class="sssj-field">
-					<label for="sssj-wabn"><?php esc_html_e( 'Your ABN (optional — required to respond to ABN/participant work)', 'shuffles-social-services-jobs' ); ?></label>
+					<label for="sssj-wabn"><?php esc_html_e( 'Your ABN (optional, required to respond to ABN/participant work)', 'shuffles-social-services-jobs' ); ?></label>
 					<input class="sssj-input" id="sssj-wabn" type="text" name="worker_abn" inputmode="numeric" placeholder="11 digits" value="<?php echo esc_attr( (string) $gm( 'worker_abn', '' ) ); ?>" />
 				</div>
 
 				<?php if ( $existing && class_exists( 'Shuffles_SSJ_ABN' ) ) { $abr_rec = Shuffles_SSJ_ABN::abr_record_text( $existing->ID ); if ( '' !== $abr_rec ) : ?>
 				<div class="sssj-field">
-					<label for="sssj-wabr"><?php esc_html_e( 'Australian Business Register — recorded details', 'shuffles-social-services-jobs' ); ?></label>
+					<label for="sssj-wabr"><?php esc_html_e( 'Australian Business Register, recorded details', 'shuffles-social-services-jobs' ); ?></label>
 					<textarea class="sssj-textarea" id="sssj-wabr" rows="8" readonly><?php echo esc_textarea( $abr_rec ); ?></textarea>
-					<p class="description"><?php esc_html_e( 'Recorded automatically from the ABR when your ABN was saved (includes trading / business names). Read-only — this is the Register’s own data.', 'shuffles-social-services-jobs' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Recorded automatically from the ABR when your ABN was saved (includes trading / business names). Read-only, this is the Register’s own data.', 'shuffles-social-services-jobs' ); ?></p>
 				</div>
 				<?php endif; } ?>
 
@@ -192,7 +192,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<input class="sssj-input" id="sssj-wndisid" type="text" inputmode="numeric" name="ndis_register_id" value="<?php echo esc_attr( (string) $gm( 'ndis_register_id', '' ) ); ?>" placeholder="<?php esc_attr_e( 'e.g. 902439', 'shuffles-social-services-jobs' ); ?>" />
 					<button type="button" class="sssj-btn sssj-btn--secondary sssj-btn--sm" data-sssj-ndis-scan style="margin-top:6px">🛡️ <?php esc_html_e( 'Scan now', 'shuffles-social-services-jobs' ); ?></button>
 					<div data-sssj-ndis-result style="margin-top:8px"></div>
-					<p class="description"><?php echo wp_kses_post( sprintf( __( 'If you hold NDIS registration as an individual / sole trader, enter the number after <code>?id=</code> in your listing URL on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a>. We’ll read your public listing and show your verified status, registration groups and expiry — refreshed automatically each month.', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/provider-registration/find-registered-provider' ) ) ); ?></p>
+					<p class="description"><?php echo wp_kses_post( sprintf( __( 'If you hold NDIS registration as an individual / sole trader, enter the number after <code>?id=</code> in your listing URL on the <a href="%s" target="_blank" rel="noopener">NDIS Commission register</a>. We’ll read your public listing and show your verified status, registration groups and expiry, refreshed automatically each month.', 'shuffles-social-services-jobs' ), esc_url( 'https://www.ndiscommission.gov.au/provider-registration/find-registered-provider' ) ) ); ?></p>
 				</div>
 				<?php
 				// Multiple registered outlets usually mean an organisation, not one person. Ask.
@@ -218,7 +218,7 @@ $ex_vis  = $existing ? (string) get_post_meta( $existing->ID, 'visibility', true
 					<select class="sssj-select" id="sssj-wvis" name="visibility">
 						<option value="logged_in" <?php selected( $ex_vis, 'logged_in' ); ?>><?php esc_html_e( 'Logged-in members', 'shuffles-social-services-jobs' ); ?></option>
 						<option value="public" <?php selected( $ex_vis, 'public' ); ?>><?php esc_html_e( 'Everyone (public)', 'shuffles-social-services-jobs' ); ?></option>
-						<option value="hidden" <?php selected( $ex_vis, 'hidden' ); ?>><?php esc_html_e( 'Do not display — hide from search engines and public listings', 'shuffles-social-services-jobs' ); ?></option>
+						<option value="hidden" <?php selected( $ex_vis, 'hidden' ); ?>><?php esc_html_e( 'Do not display, hide from search engines and public listings', 'shuffles-social-services-jobs' ); ?></option>
 					</select>
 				</div>
 

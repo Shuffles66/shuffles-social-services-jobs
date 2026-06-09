@@ -33,7 +33,7 @@ $def_end = gmdate( 'Y-m-d', strtotime( $min_end . ' +60 days' ) );
 	<?php if ( ! $can ) : ?>
 		<div class="sssj-panel">
 			<p><?php esc_html_e( 'Log in to post a participant request.', 'shuffles-social-services-jobs' ); ?>
-				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
+				<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="<?php echo esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink() ) ); ?>"><?php esc_html_e( 'Log in', 'shuffles-social-services-jobs' ); ?></a></p>
 		</div>
 	<?php else : ?>
 		<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack sssj-need-form" data-sssj-busy="<?php esc_attr_e( 'Saving your request…', 'shuffles-social-services-jobs' ); ?>">

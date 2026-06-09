@@ -1,10 +1,10 @@
 <?php
 /**
- * Reviews & ratings — star ratings + written reviews for CONTRACTORS (worker profiles) and
+ * Reviews & ratings, star ratings + written reviews for CONTRACTORS (worker profiles) and
  * PROVIDERS (organisations).
  *
  * Trust by design:
- *  - You may only review someone you have ACTUALLY ENGAGED with — proven by an existing message
+ *  - You may only review someone you have ACTUALLY ENGAGED with, proven by an existing message
  *    thread between you (all first contact goes through the relay, and applying starts a thread).
  *  - Reviews are PRE-MODERATED: they are held as `pending` and only show once an admin approves.
  *  - You cannot review yourself, and you get one (editable) review per subject.
@@ -426,7 +426,7 @@ class Shuffles_SSJ_Reviews {
 					</form>
 				</div>
 			<?php elseif ( 'login' === $block ) : ?>
-				<div class="sssj-panel"><p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( wp_login_url( get_permalink( $subject_id ) ) ); ?>"><?php esc_html_e( 'Log in to leave a review', 'shuffles-social-services-jobs' ); ?></a></p></div>
+				<div class="sssj-panel"><p><a class="sssj-btn sssj-btn--secondary sssj-btn--sm" href="<?php echo esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink( $subject_id ) ) ); ?>"><?php esc_html_e( 'Log in to leave a review', 'shuffles-social-services-jobs' ); ?></a></p></div>
 			<?php elseif ( 'no-engagement' === $block ) : ?>
 				<div class="sssj-panel"><p class="description"><?php esc_html_e( 'Only members who have engaged through the platform (started a message or applied) can leave a review here.', 'shuffles-social-services-jobs' ); ?></p></div>
 			<?php endif; ?>

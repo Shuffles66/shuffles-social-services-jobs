@@ -43,3 +43,10 @@ $tmp/
 
 # -- Generated doc exports (kept out of source) --
 docs/pdf/
+
+# Internal marketing/partner collateral (members-only; never publish to the public repo)
+docs/MARKETING-MASTER.md
+docs/EXEC-SUMMARY.md
+docs/PARTNER-PROSPECTUS.md
+docs/CONCEPT-PITCH-DECK.md
+docs/ENDORSEMENT-ONEPAGER.md

@@ -3,7 +3,7 @@
  * Registers the three core CPTs and their structured meta.
  *
  * Privacy note: sssj_need is NOT public (no archive, excluded from search, REST off for
- * sensitive meta) — participant anonymity is baked in from registration, per the design.
+ * sensitive meta), participant anonymity is baked in from registration, per the design.
  *
  * @package Shuffles_SSJ
  */
@@ -65,7 +65,7 @@ class Shuffles_SSJ_CPT_Registrar {
 			)
 		);
 
-		// Organisation / Employer profile — public + SEO-able (named businesses, not participants).
+		// Organisation / Employer profile, public + SEO-able (named businesses, not participants).
 		register_post_type(
 			'sssj_org',
 			array(
@@ -168,7 +168,7 @@ class Shuffles_SSJ_CPT_Registrar {
 				'ndis_phone'              => array( 'string', true, 'text' ),
 				'ndis_outlets'            => array( 'string', false, 'text' ),
 			),
-			// Participant Need: sensitive — REST off for everything except non-identifying flags.
+			// Participant Need: sensitive, REST off for everything except non-identifying flags.
 			'sssj_need' => array(
 				'participant_ref'    => array( 'string', false, 'text' ),
 				'nominee_user_id'    => array( 'integer', false, 'int' ),

@@ -36,7 +36,7 @@ $uid   = get_current_user_id();
 
 		<?php
 		if ( ! is_user_logged_in() ) {
-			echo '<p>' . esc_html__( 'Log in to apply.', 'shuffles-social-services-jobs' ) . ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( wp_login_url( get_permalink( $job_id ) ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p>';
+			echo '<p>' . esc_html__( 'Log in to apply.', 'shuffles-social-services-jobs' ) . ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink( $job_id ) ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p>';
 		} elseif ( Shuffles_SSJ_Applications::already_applied( $job_id, 0, $uid ) ) {
 			echo '<p>' . esc_html__( 'You have applied for this job.', 'shuffles-social-services-jobs' ) . '</p>';
 		} elseif ( ! Shuffles_SSJ_Applications::can_respond( $basis ) ) {
@@ -67,7 +67,7 @@ $uid   = get_current_user_id();
 								<?php endforeach; ?>
 							</select>
 						<?php else : ?>
-							<p class="description"><?php esc_html_e( 'You have no résumé saved yet — you can still apply, but adding one helps.', 'shuffles-social-services-jobs' ); ?>
+							<p class="description"><?php esc_html_e( 'You have no résumé saved yet, you can still apply, but adding one helps.', 'shuffles-social-services-jobs' ); ?>
 							<?php if ( $res_page ) : ?> <a href="<?php echo esc_url( $res_page ); ?>"><?php esc_html_e( 'Add a résumé', 'shuffles-social-services-jobs' ); ?></a><?php endif; ?></p>
 						<?php endif; ?>
 					</div>

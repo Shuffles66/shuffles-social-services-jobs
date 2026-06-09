@@ -1,6 +1,6 @@
 <?php
 /**
- * Provider CSV importer — PROOF OF CONCEPT.
+ * Provider CSV importer, PROOF OF CONCEPT.
  *
  * Ingests the NDIS Commission's OFFICIAL bulk datasets rather than scraping the register:
  *   - "Active providers" CSV  → dataresearch.ndis.gov.au/datasets/provider-datasets  → draft sssj_org records.
@@ -23,7 +23,7 @@ class Shuffles_SSJ_Provider_Import {
 	const REPORT_T = 'sssj_import_report_';
 
 	/**
-	 * PROOF OF CONCEPT — preview only. While true, the importer NEVER writes anything and NEVER
+	 * PROOF OF CONCEPT, preview only. While true, the importer NEVER writes anything and NEVER
 	 * fires the compliance hook: it only parses and reports. Flip to false (and ship a UI for it)
 	 * when bulk import is actually wanted. Filterable so it can be force-enabled deliberately later.
 	 */
@@ -82,7 +82,7 @@ class Shuffles_SSJ_Provider_Import {
 
 		$uid     = get_current_user_id();
 		$kind    = isset( $_POST['kind'] ) ? sanitize_key( wp_unslash( $_POST['kind'] ) ) : 'active';
-		// PoC is preview-only: force dry-run regardless of any submitted value — nothing is written.
+		// PoC is preview-only: force dry-run regardless of any submitted value, nothing is written.
 		$dry_run = self::preview_only() ? true : empty( $_POST['do_import'] );
 		$cap     = isset( $_POST['cap'] ) ? max( 1, min( 1000, (int) $_POST['cap'] ) ) : 25;
 
