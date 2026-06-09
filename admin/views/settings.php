@@ -1288,7 +1288,8 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Participants (members only)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_need_board', __( 'Participant requests', 'shuffles-social-services-jobs' ), '[sssj_need_board]', __( 'Members-only; pseudonymous.', 'shuffles-social-services-jobs' ) );
-			$this->page_picker_field( 'page_post_need', __( 'Request support (form)', 'shuffles-social-services-jobs' ), '[sssj_post_need]', __( 'Participant/nominee request form (moderated).', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_post_need', __( 'Request support (form)', 'shuffles-social-services-jobs' ), '[sssj_post_need]', __( 'Participant/nominee request form (moderated). The form page also lists the member’s own requests below it.', 'shuffles-social-services-jobs' ) );
+			$this->page_picker_field( 'page_my_needs', __( 'My support requests (seeking workers)', 'shuffles-social-services-jobs' ), '[sssj_my_needs]', __( 'A dedicated list of just the member’s own requests: Open / Filled / Closed status, an Open/Closed/All filter, response counts, and Mark-as-filled / Close / Reopen controls.', 'shuffles-social-services-jobs' ) );
 
 			echo '<tr><td colspan="2"><h3 style="margin:16px 0 0">' . esc_html__( 'Post / create (member forms)', 'shuffles-social-services-jobs' ) . '</h3></td></tr>';
 			$this->page_picker_field( 'page_post_job', __( 'Post a job', 'shuffles-social-services-jobs' ), '[sssj_post_job]', __( 'Advertiser posting form.', 'shuffles-social-services-jobs' ) );
@@ -1596,7 +1597,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.35 · 2026-06-10 · Manage several support requests + status (Open / Filled / Closed)</h3>
+				<h3>v1.10.36 · 2026-06-10 · “My support requests” gets its own page + menu item</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'New “My support requests (seeking workers)” page mapping under Settings → Pages: one-click create/find/edit a dedicated page for the [sssj_my_needs] list.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Added a “My support requests” item to the participant/representative menu (in [sssj_menu]), so members reach their requests in one click from the header.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.35 · 2026-06-10 · Manage several support requests + status (Open / Filled / Closed)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The “Request support” page now shows “Your support requests” right under the form: every request you have posted, with an Open / Closed / All filter, a clear status (Open, Filled or Closed), the number of responses and the closing date. You can have several requests open at once and manage them in one place.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'New lifecycle controls on each request (and job ad): “Mark as filled” when you have found someone, “Close” to take it down, and “Reopen” to put it back live with a fresh closing date. Marked-as-filled shows a clear “Filled” badge; reopening clears it.', 'shuffles-social-services-jobs' ); ?></li>

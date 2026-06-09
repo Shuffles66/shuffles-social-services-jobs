@@ -2313,6 +2313,7 @@ class Shuffles_SSJ_Shortcodes {
 			}
 			if ( current_user_can( 'sssj_post_need' ) || current_user_can( 'manage_options' ) ) {
 				$acct[] = $leaf( __( 'Request support', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_post_need', '[sssj_post_need]' ), false, array( 'participant', 'representative' ) );
+				$acct[] = $leaf( __( 'My support requests', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_my_needs', '[sssj_my_needs]' ), false, array( 'participant', 'representative' ) );
 			}
 			$acct[] = $leaf( __( 'Messages', 'shuffles-social-services-jobs' ), $this->resolve_page( 'page_messages', '[sssj_messages]' ) );
 			if ( current_user_can( 'manage_options' ) ) {
