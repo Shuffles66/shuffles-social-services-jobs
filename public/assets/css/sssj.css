@@ -1010,3 +1010,12 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-flow-details{ margin:6px 0; }
 .sssj .sssj-flow-details > summary{ cursor:pointer; font-weight:600; color:var(--sssj-blue-deep,#1e5d9c); }
 .sssj .sssj-setback{ margin-top:12px; padding:14px 16px; border:1px solid #fde68a; background:#fffbeb; border-radius:var(--sssj-radius,10px); }
+
+/* ---- Advertiser applicants: controls, AI match badge, PoC note ---- */
+.sssj .sssj-applicants-controls{ display:flex; flex-wrap:wrap; gap:10px 14px; align-items:center; margin:6px 0 4px; }
+.sssj .sssj-applicants-controls label{ display:flex; align-items:center; gap:6px; font-size:.85rem; color:var(--sssj-muted,#64748b); }
+.sssj .sssj-applicants-controls .sssj-select{ min-width:130px; }
+.sssj .sssj-poc{ margin:0 0 10px; font-size:.8rem; background:#ede9fe; color:#5b21b6; border:1px solid #ddd6fe; border-radius:8px; padding:6px 10px; }
+.sssj .sssj-badge--match{ background:#ede9fe; color:#6d28d9; border:1px solid #ddd6fe; }
+.sssj .sssj-beta{ font-size:.7em; text-transform:uppercase; letter-spacing:.04em; opacity:.85; margin-left:2px; }
+.sssj .sssj-applicant{ scroll-margin-top:80px; }

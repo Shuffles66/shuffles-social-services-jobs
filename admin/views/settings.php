@@ -1597,7 +1597,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.45 · 2026-06-10 · Application review workflow (what to expect, with encouragement)</h3>
+				<h3>v1.10.46 · 2026-06-10 · Advertiser: applicant review workflow + sortable, filterable, AI-ranked list</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Each applicant now shows a “Review steps” workflow from your side (what to do at each stage), worded for the job type (employee TFN vs contractor ABN).', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Your applicants list (grouped by job) is now easier to read and can be sorted (best match / newest / oldest / stage / name) and filtered by stage. Your choices are remembered.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'AI match ranking (proof of concept / beta): each applicant gets an estimated Match % from profile overlap (services, location, availability, verification, rate) to help you triage, clearly labelled beta and not a hiring decision. You can turn it off on the same screen.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.45 · 2026-06-10 · Application review workflow (what to expect, with encouragement)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'When you apply for a job, a visual step-by-step review workflow now explains what happens next, worded for the job type (employee TFN vs contractor ABN), so you know what feedback and next steps to expect.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'On a job you have applied to, and in My applications, the current stage is highlighted on the workflow so you can see exactly where things are up to.', 'shuffles-social-services-jobs' ); ?></li>

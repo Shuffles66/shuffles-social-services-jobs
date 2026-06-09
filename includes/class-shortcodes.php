@@ -521,6 +521,10 @@ class Shuffles_SSJ_Shortcodes {
 				'i18nBig'    => __( 'That image is still over 8 MB after shrinking. Please try a smaller one.', 'shuffles-social-services-jobs' ),
 			) );
 		}
+		// Advertiser applicants list: client-side sort / filter (grouped by job), remembered per browser.
+		if ( ! wp_script_is( 'sssj-applicants', 'registered' ) ) {
+			wp_register_script( 'sssj-applicants', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-applicants.js', array(), SHUFFLES_SSJ_VERSION, true );
+		}
 		// Provider swipe deck (Tinder-style browse).
 		if ( ! wp_script_is( 'sssj-swipe', 'registered' ) ) {
 			wp_register_script( 'sssj-swipe', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-swipe.js', array( 'sssj-form-enhance' ), SHUFFLES_SSJ_VERSION, true );
@@ -1370,6 +1374,22 @@ class Shuffles_SSJ_Shortcodes {
 		$basis   = ( 'abn' === $basis ) ? 'abn' : 'tfn';
 		$explain = ! array_key_exists( 'explainer', $args ) || $args['explainer'];
 		$stages  = self::application_stages( $basis );
+		$audience  = ( isset( $args['audience'] ) && 'advertiser' === $args['audience'] ) ? 'advertiser' : 'applicant';
+		$adv_notes = ( 'abn' === $basis ) ? array(
+			'new'         => __( 'Review the response, profile and any quote.', 'shuffles-social-services-jobs' ),
+			'viewed'      => __( 'You have opened it. Shortlist the ones worth pursuing.', 'shuffles-social-services-jobs' ),
+			'shortlisted' => __( 'Message the contractor through the site to discuss scope and rate.', 'shuffles-social-services-jobs' ),
+			'interview'   => __( 'Confirm quote, availability, insurances and ABN, then decide.', 'shuffles-social-services-jobs' ),
+			'offer'       => __( 'Make the offer and agree engagement terms via messages.', 'shuffles-social-services-jobs' ),
+			'hired'       => __( 'Mark as engaged once agreed.', 'shuffles-social-services-jobs' ),
+		) : array(
+			'new'         => __( 'Review the application and resume.', 'shuffles-social-services-jobs' ),
+			'viewed'      => __( 'You have opened it. Shortlist the ones worth pursuing.', 'shuffles-social-services-jobs' ),
+			'shortlisted' => __( 'Message the candidate to arrange a chat or interview.', 'shuffles-social-services-jobs' ),
+			'interview'   => __( 'Hold the interview, then move to an offer or decline.', 'shuffles-social-services-jobs' ),
+			'offer'       => __( 'Extend the offer and agree details via messages.', 'shuffles-social-services-jobs' ),
+			'hired'       => __( 'Mark as hired once they accept.', 'shuffles-social-services-jobs' ),
+		);
 		$keys    = wp_list_pluck( $stages, 'key' );
 		$status  = ( 'rejected' === $status ) ? 'declined' : (string) $status;
 		$ended   = in_array( $status, array( 'declined', 'withdrawn' ), true );
@@ -1394,10 +1414,11 @@ class Shuffles_SSJ_Shortcodes {
 			echo '<ul class="ul-disc" style="margin:10px 0 0 18px">';
 			foreach ( $stages as $i => $s ) {
 				$hl = ( ! $ended && $i === $cur ) ? ' style="font-weight:600"' : '';
-				echo '<li' . $hl . '>' . esc_html( $s['label'] . ': ' . $s['note'] ) . '</li>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				$snote = ( 'advertiser' === $audience && isset( $adv_notes[ $s['key'] ] ) ) ? $adv_notes[ $s['key'] ] : $s['note'];
+				echo '<li' . $hl . '>' . esc_html( $s['label'] . ': ' . $snote ) . '</li>'; // phpcs:ignore WordPress.Security.EscapeOutput
 			}
 			echo '</ul>';
-			echo '<p class="description">' . esc_html__( 'All contact happens through the site. Your email and phone stay private until you choose to share them. If you are shortlisted you will get a message in your inbox.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="description">' . esc_html( 'advertiser' === $audience ? __( 'Use the status control to move each applicant along. Messaging stays on the site until contact details are shared.', 'shuffles-social-services-jobs' ) : __( 'All contact happens through the site. Your email and phone stay private until you choose to share them. If you are shortlisted you will get a message in your inbox.', 'shuffles-social-services-jobs' ) ) . '</p>';
 		}
 		return ob_get_clean();
 	}
@@ -1421,6 +1442,60 @@ class Shuffles_SSJ_Shortcodes {
 		echo '</div>';
 		echo '</div>';
 		return ob_get_clean();
+	}
+
+	/**
+	 * Proof-of-concept "AI match" score (0-100) for an applicant against a job, from profile overlap.
+	 * Heuristic only and clearly labelled beta; not a decision. Returns [ score, reasons[] ] or null.
+	 */
+	public static function applicant_match_score( $job_id, $applicant_uid ) {
+		$wids = get_posts( array( 'post_type' => 'sssj_worker', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'no_found_rows' => true, 'meta_key' => 'worker_user_id', 'meta_value' => (int) $applicant_uid ) ); // phpcs:ignore WordPress.DB.SlowDBQuery
+		if ( empty( $wids ) ) {
+			return null;
+		}
+		$wid     = (int) $wids[0];
+		$score   = 0.0;
+		$reasons = array();
+		$jcats = wp_get_object_terms( (int) $job_id, 'sssjt_category', array( 'fields' => 'ids' ) );
+		$wcats = wp_get_object_terms( $wid, 'sssjt_category', array( 'fields' => 'ids' ) );
+		if ( ! is_wp_error( $jcats ) && ! is_wp_error( $wcats ) && ! empty( $jcats ) ) {
+			$shared = count( array_intersect( (array) $jcats, (array) $wcats ) );
+			$score += 45 * ( $shared / max( 1, count( $jcats ) ) );
+			if ( $shared ) {
+				/* translators: %d: number of matching services. */
+				$reasons[] = sprintf( _n( '%d matching service', '%d matching services', $shared, 'shuffles-social-services-jobs' ), $shared );
+			}
+		} elseif ( ! is_wp_error( $wcats ) && ! empty( $wcats ) ) {
+			$score += 10;
+		}
+		if ( get_post_meta( $wid, 'is_available', true ) ) {
+			$score    += 10;
+			$reasons[] = __( 'available now', 'shuffles-social-services-jobs' );
+		}
+		$jlat = (float) get_post_meta( (int) $job_id, 'location_lat', true );
+		$jlng = (float) get_post_meta( (int) $job_id, 'location_lng', true );
+		$wlat = (float) get_post_meta( $wid, 'location_lat', true );
+		$wlng = (float) get_post_meta( $wid, 'location_lng', true );
+		if ( $jlat && $jlng && $wlat && $wlng && class_exists( 'Shuffles_SSJ_Geo' ) ) {
+			$km = (float) Shuffles_SSJ_Geo::distance_km( $jlat, $jlng, $wlat, $wlng );
+			if ( $km <= 50 ) {
+				$score += 20 * ( 1 - ( $km / 50 ) );
+				/* translators: %d: distance in km. */
+				$reasons[] = sprintf( __( '%d km away', 'shuffles-social-services-jobs' ), (int) round( $km ) );
+			}
+		} else {
+			$score += 6;
+		}
+		if ( class_exists( 'Shuffles_SSJ_Verification' ) && Shuffles_SSJ_Verification::is_verified( $wid ) ) {
+			$score    += 15;
+			$reasons[] = __( 'verified', 'shuffles-social-services-jobs' );
+		}
+		$rmax  = (float) get_post_meta( (int) $job_id, 'rate_max', true );
+		$wrate = (float) get_post_meta( $wid, 'rate_min', true );
+		if ( $wrate > 0 && ( $rmax <= 0 || $wrate <= $rmax ) ) {
+			$score += 10;
+		}
+		return array( 'score' => (int) round( max( 0, min( 100, $score ) ) ), 'reasons' => $reasons );
 	}
 
 	/* --- Apply flow + dashboard --- */
@@ -1451,6 +1526,7 @@ class Shuffles_SSJ_Shortcodes {
 
 	public function my_listings( $atts ) {
 		wp_enqueue_style( 'sssj' );
+		wp_enqueue_script( 'sssj-applicants' );
 		ob_start();
 		$this->load_template( 'my-listings.php', array() );
 		return ob_get_clean();
