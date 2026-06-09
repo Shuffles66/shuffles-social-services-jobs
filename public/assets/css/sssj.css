@@ -994,3 +994,19 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj .sssj-empty{ text-align:center; padding:40px 20px; border:1px dashed var(--sssj-line,#e2e8f0); border-radius:var(--sssj-radius,12px); background:var(--sssj-bg-soft,#f8fafc); }
 .sssj .sssj-empty__title{ margin:0 0 6px; font-weight:700; font-size:1.1rem; color:var(--sssj-ink,#0f172a); }
 .sssj .sssj-empty__sub{ margin:0 0 14px; color:var(--sssj-muted,#64748b); }
+
+/* ---- Application review workflow stepper (image form) + setback note ---- */
+.sssj .sssj-flowsteps{ display:flex; flex-wrap:wrap; gap:6px 4px; align-items:flex-start; margin:10px 0; }
+.sssj .sssj-flowstep{ display:flex; flex-direction:column; align-items:center; text-align:center; flex:1 1 92px; min-width:78px; position:relative; }
+.sssj .sssj-flowstep:not(:last-child)::after{ content:''; position:absolute; top:16px; left:50%; width:100%; height:2px; background:var(--sssj-line,#e2e8f0); z-index:0; }
+.sssj .sssj-flowstep__dot{ position:relative; z-index:1; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#fff; border:2px solid var(--sssj-line,#e2e8f0); color:#64748b; font-weight:700; font-size:.85rem; }
+.sssj .sssj-flowstep__dot .sssj-i{ width:16px; height:16px; }
+.sssj .sssj-flowstep__label{ margin-top:6px; font-size:.76rem; color:#64748b; line-height:1.2; }
+.sssj .sssj-flowstep.is-done .sssj-flowstep__dot{ background:var(--sssj-success,#16a34a); border-color:var(--sssj-success,#16a34a); color:#fff; }
+.sssj .sssj-flowstep.is-done:not(:last-child)::after{ background:var(--sssj-success,#16a34a); }
+.sssj .sssj-flowstep.is-current .sssj-flowstep__dot{ background:var(--sssj-blue,#3897e0); border-color:var(--sssj-blue,#3897e0); color:#fff; box-shadow:0 0 0 4px rgba(56,151,224,.18); }
+.sssj .sssj-flowstep.is-current .sssj-flowstep__label{ color:var(--sssj-blue-deep,#1e5d9c); font-weight:700; }
+.sssj .sssj-flowsteps.is-ended{ opacity:.65; }
+.sssj .sssj-flow-details{ margin:6px 0; }
+.sssj .sssj-flow-details > summary{ cursor:pointer; font-weight:600; color:var(--sssj-blue-deep,#1e5d9c); }
+.sssj .sssj-setback{ margin-top:12px; padding:14px 16px; border:1px solid #fde68a; background:#fffbeb; border-radius:var(--sssj-radius,10px); }

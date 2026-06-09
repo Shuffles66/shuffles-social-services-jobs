@@ -1597,7 +1597,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.44 · 2026-06-10 · Traceability: reference, date, type & category on your records</h3>
+				<h3>v1.10.45 · 2026-06-10 · Application review workflow (what to expect, with encouragement)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'When you apply for a job, a visual step-by-step review workflow now explains what happens next, worded for the job type (employee TFN vs contractor ABN), so you know what feedback and next steps to expect.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'On a job you have applied to, and in My applications, the current stage is highlighted on the workflow so you can see exactly where things are up to.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'If an application is not successful, it is clearly marked “Not successful this time” with a short encouraging note and quick links to browse more jobs and set a job alert, to keep your momentum going.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.44 · 2026-06-10 · Traceability: reference, date, type & category on your records</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Your own records now carry an at-a-glance audit line for identification and tracking: a reference number, the date posted (and updated when changed), the type and the category. Added to My job ads, My support requests and My applications.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

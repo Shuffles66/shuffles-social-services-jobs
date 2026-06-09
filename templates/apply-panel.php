@@ -65,6 +65,10 @@ $uid   = get_current_user_id();
 					echo '</form>';
 				}
 				echo '</div>';
+				echo '<div class="sssj-flowwrap" style="margin-top:12px"><h4 style="margin:0 0 6px">' . esc_html__( 'Where your application is up to', 'shuffles-social-services-jobs' ) . '</h4>' . Shuffles_SSJ_Shortcodes::application_workflow( $basis, (string) $my_app->status ) . '</div>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				if ( in_array( (string) $my_app->status, array( 'declined', 'rejected' ), true ) ) {
+					echo Shuffles_SSJ_Shortcodes::application_setback_note( $basis ); // phpcs:ignore WordPress.Security.EscapeOutput
+				}
 			}
 		} elseif ( ! Shuffles_SSJ_Applications::can_respond( $basis ) ) {
 			$profile_url = Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' );
@@ -74,6 +78,7 @@ $uid   = get_current_user_id();
 			}
 		} else {
 			?>
+			<details class="sssj-flow-details" style="margin-bottom:14px"><summary><?php echo esc_html( 'abn' === $basis ? __( 'How the review works for this contractor (ABN) job', 'shuffles-social-services-jobs' ) : __( 'How the review works for this employee (TFN) job', 'shuffles-social-services-jobs' ) ); ?></summary><?php echo Shuffles_SSJ_Shortcodes::application_workflow( $basis ); // phpcs:ignore WordPress.Security.EscapeOutput ?></details>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="sssj-stack">
 				<input type="hidden" name="action" value="sssj_apply" />
 				<input type="hidden" name="job_id" value="<?php echo esc_attr( $job_id ); ?>" />

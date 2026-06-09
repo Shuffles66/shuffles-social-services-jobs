@@ -1260,6 +1260,11 @@ class Shuffles_SSJ_Shortcodes {
 				$abasis = $a->job_id ? (string) get_post_meta( (int) $a->job_id, 'engagement_basis', true ) : 'abn';
 				if ( '' !== $abasis && class_exists( 'Shuffles_SSJ_Query' ) ) { $abits[] = sprintf( __( 'Type: %s', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Query::basis_label( $abasis ) ); }
 				echo '<p class="description" style="margin:4px 0 0">' . esc_html( implode( '  ' . "xC2xB7" . '  ', $abits ) ) . '</p>';
+				$wf_basis = ( 'abn' === $abasis ) ? 'abn' : 'tfn';
+				echo '<details class="sssj-flow-details"><summary>' . esc_html__( 'Where this is up to', 'shuffles-social-services-jobs' ) . '</summary>' . self::application_workflow( $wf_basis, (string) $a->status ) . '</details>'; // phpcs:ignore WordPress.Security.EscapeOutput
+				if ( in_array( (string) $a->status, array( 'declined', 'rejected' ), true ) ) {
+					echo self::application_setback_note( $wf_basis ); // phpcs:ignore WordPress.Security.EscapeOutput
+				}
 				$hist = Shuffles_SSJ_Applications::history( $a );
 				if ( $hist ) {
 					echo '<details class="sssj-apphist"><summary>' . esc_html__( 'Status history', 'shuffles-social-services-jobs' ) . '</summary><ul class="ul-disc" style="margin:6px 0 0 18px">';
@@ -1328,6 +1333,94 @@ class Shuffles_SSJ_Shortcodes {
 			}
 		}
 		return '<p class="sssj-meta description" style="margin:4px 0 0">' . esc_html( implode( '  ' . "\xC2\xB7" . '  ', $bits ) ) . '</p>';
+	}
+
+	/** The review stages for an application, worded for the engagement basis (tfn employee | abn contract). */
+	public static function application_stages( $basis ) {
+		if ( 'abn' === $basis ) {
+			return array(
+				array( 'key' => 'new',         'label' => __( 'Expression of interest', 'shuffles-social-services-jobs' ), 'note' => __( 'Your interest is registered. The advertiser reviews everyone who responded.', 'shuffles-social-services-jobs' ) ),
+				array( 'key' => 'viewed',      'label' => __( 'Reviewed', 'shuffles-social-services-jobs' ),               'note' => __( 'The advertiser has opened your response.', 'shuffles-social-services-jobs' ) ),
+				array( 'key' => 'shortlisted', 'label' => __( 'Shortlisted', 'shuffles-social-services-jobs' ),            'note' => __( 'You are in the running. Expect a message through the site to discuss scope and rate.', 'shuffles-social-services-jobs' ) ),
+				array( 'key' => 'interview',   'label' => __( 'Quote / discussion', 'shuffles-social-services-jobs' ),     'note' => __( 'You may be asked to confirm your quote, availability, insurances or ABN details.', 'shuffles-social-services-jobs' ) ),
+				array( 'key' => 'offer',       'label' => __( 'Offer / engagement', 'shuffles-social-services-jobs' ),     'note' => __( 'The advertiser wants to proceed. Engagement terms are arranged through messages.', 'shuffles-social-services-jobs' ) ),
+				array( 'key' => 'hired',       'label' => __( 'Engaged', 'shuffles-social-services-jobs' ),                'note' => __( 'Engaged for the work. Congratulations.', 'shuffles-social-services-jobs' ) ),
+			);
+		}
+		return array(
+			array( 'key' => 'new',         'label' => __( 'Applied', 'shuffles-social-services-jobs' ),     'note' => __( 'Your application is in. The advertiser reviews all applicants.', 'shuffles-social-services-jobs' ) ),
+			array( 'key' => 'viewed',      'label' => __( 'Reviewed', 'shuffles-social-services-jobs' ),    'note' => __( 'The advertiser has opened your application.', 'shuffles-social-services-jobs' ) ),
+			array( 'key' => 'shortlisted', 'label' => __( 'Shortlisted', 'shuffles-social-services-jobs' ), 'note' => __( 'You are in the running. Expect a message through the site if they want to talk.', 'shuffles-social-services-jobs' ) ),
+			array( 'key' => 'interview',   'label' => __( 'Interview', 'shuffles-social-services-jobs' ),   'note' => __( 'You may be invited to an interview or a chat.', 'shuffles-social-services-jobs' ) ),
+			array( 'key' => 'offer',       'label' => __( 'Offer', 'shuffles-social-services-jobs' ),       'note' => __( 'They would like to proceed. Details come through messages.', 'shuffles-social-services-jobs' ) ),
+			array( 'key' => 'hired',       'label' => __( 'Hired', 'shuffles-social-services-jobs' ),       'note' => __( 'You got the role. Congratulations.', 'shuffles-social-services-jobs' ) ),
+		);
+	}
+
+	/**
+	 * The application review workflow as a visual stepper (image form) plus a plain-English explainer of
+	 * each stage and what feedback / next action to expect. Tailored to the engagement basis. When a
+	 * $status is given the current stage is highlighted; declined/withdrawn dim the track.
+	 *
+	 * @param string $basis  'tfn' | 'abn'
+	 * @param string $status current application status ('' before applying)
+	 * @param array  $args   ['explainer'=>bool]
+	 */
+	public static function application_workflow( $basis, $status = '', $args = array() ) {
+		$basis   = ( 'abn' === $basis ) ? 'abn' : 'tfn';
+		$explain = ! array_key_exists( 'explainer', $args ) || $args['explainer'];
+		$stages  = self::application_stages( $basis );
+		$keys    = wp_list_pluck( $stages, 'key' );
+		$status  = ( 'rejected' === $status ) ? 'declined' : (string) $status;
+		$ended   = in_array( $status, array( 'declined', 'withdrawn' ), true );
+		$cur     = array_search( $status, $keys, true );
+		$cur     = ( false === $cur ) ? -1 : (int) $cur;
+		$check   = '<svg class="sssj-i" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 13l4 4L19 7"/></svg>';
+		ob_start();
+		echo '<div class="sssj-flowsteps' . ( $ended ? ' is-ended' : '' ) . '" role="list" aria-label="' . esc_attr__( 'Application review steps', 'shuffles-social-services-jobs' ) . '">';
+		foreach ( $stages as $i => $s ) {
+			$state = 'todo';
+			if ( ! $ended && $cur >= 0 ) {
+				if ( $i < $cur ) { $state = 'done'; }
+				elseif ( $i === $cur ) { $state = 'current'; }
+			}
+			echo '<div class="sssj-flowstep is-' . esc_attr( $state ) . '" role="listitem">';
+			echo '<span class="sssj-flowstep__dot">' . ( 'done' === $state ? $check : (string) ( $i + 1 ) ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<span class="sssj-flowstep__label">' . esc_html( $s['label'] ) . '</span>';
+			echo '</div>';
+		}
+		echo '</div>';
+		if ( $explain ) {
+			echo '<ul class="ul-disc" style="margin:10px 0 0 18px">';
+			foreach ( $stages as $i => $s ) {
+				$hl = ( ! $ended && $i === $cur ) ? ' style="font-weight:600"' : '';
+				echo '<li' . $hl . '>' . esc_html( $s['label'] . ': ' . $s['note'] ) . '</li>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			}
+			echo '</ul>';
+			echo '<p class="description">' . esc_html__( 'All contact happens through the site. Your email and phone stay private until you choose to share them. If you are shortlisted you will get a message in your inbox.', 'shuffles-social-services-jobs' ) . '</p>';
+		}
+		return ob_get_clean();
+	}
+
+	/** Encouraging "not successful this time" note + momentum / alert call-to-action for a declined application. */
+	public static function application_setback_note( $basis = 'tfn' ) {
+		$board = self::page_link( 'page_job_board', '[sssj_job_board]' );
+		$dash  = self::page_link( 'page_dashboard', '[sssj_dashboard]' );
+		ob_start();
+		echo '<div class="sssj-setback">';
+		echo '<p class="sssj-badge" style="background:#fef3c7;color:#92400e">' . esc_html__( 'Not successful this time', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<p style="margin:6px 0">' . esc_html__( 'This one was not a match, and that is okay. Every application builds momentum and the right role is often the next one. Keep going, your skills are needed.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<div class="sssj-row" style="gap:8px;flex-wrap:wrap">';
+		if ( $board ) {
+			echo '<a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( $board ) . '">' . esc_html__( 'Browse more jobs', 'shuffles-social-services-jobs' ) . '</a>';
+			echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $board ) . '">' . esc_html__( 'Set a job alert', 'shuffles-social-services-jobs' ) . '</a>';
+		}
+		if ( $dash ) {
+			echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $dash ) . '#dash-alerts">' . esc_html__( 'My alerts', 'shuffles-social-services-jobs' ) . '</a>';
+		}
+		echo '</div>';
+		echo '</div>';
+		return ob_get_clean();
 	}
 
 	/* --- Apply flow + dashboard --- */
