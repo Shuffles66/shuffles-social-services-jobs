@@ -397,7 +397,19 @@ class Shuffles_SSJ_Frontend_Forms {
 			wp_die( esc_html__( 'You do not have permission to create a worker profile.', 'shuffles-social-services-jobs' ) );
 		}
 
-		$redirect = wp_get_referer() ? wp_get_referer() : home_url( '/' );
+		// Build a robust return URL. wp_get_referer() yields a PATH-only value (_wp_http_referer), which a
+		// bare wp_safe_redirect can resolve against the wrong host (www vs non-www) and 404. Absolutise it to
+		// the canonical host, and fall back to the dashboard page, then home.
+		$redirect = wp_get_referer();
+		if ( is_string( $redirect ) && '' !== $redirect && '/' === $redirect[0] ) {
+			$redirect = home_url( $redirect );
+		}
+		if ( ! $redirect ) {
+			$redirect = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_dashboard', '[sssj_dashboard]' ) : '';
+		}
+		if ( ! $redirect ) {
+			$redirect = home_url( '/' );
+		}
 		$uid      = get_current_user_id();
 
 		$name = isset( $_POST['display_name'] ) ? sanitize_text_field( wp_unslash( $_POST['display_name'] ) ) : '';
@@ -613,7 +625,7 @@ class Shuffles_SSJ_Frontend_Forms {
 
 		do_action( 'shuffles_ssj_profile_saved', 'worker', $post_id, get_current_user_id() );
 
-		wp_safe_redirect( add_query_arg( 'sssj_worker', '1', $redirect ) );
+		wp_safe_redirect( add_query_arg( 'sssj_worker', '1', remove_query_arg( 'sssj_worker', $redirect ) ) . '#dash-profile' );
 		exit;
 	}
 

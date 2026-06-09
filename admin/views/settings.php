@@ -1597,7 +1597,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.39 · 2026-06-10 · Public Jobs board upgrade</h3>
+				<h3>v1.10.40 · 2026-06-10 · Fix: saving “My profile” could land on a 404</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Saving your worker / contractor profile now returns you cleanly to the My profile tab. The return link is built as a full, canonical web address (fixing a case where a www vs non-www mismatch could send you to a “page not found”).', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.39 · 2026-06-10 · Public Jobs board upgrade</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The Jobs board ([sssj_job_board]) is now the modern public board: a sticky filter bar that stays in reach as you scroll, an engagement-type toggle (All / Employee TFN / Contractor ABN / Volunteer), and a Sort control (Newest / Oldest / Title A to Z).', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Active filters now show as removable chips, the live result count is announced for screen readers, and you can switch between Grid and List layouts (remembered per browser).', 'shuffles-social-services-jobs' ); ?></li>
