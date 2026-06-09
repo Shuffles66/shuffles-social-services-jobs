@@ -233,9 +233,10 @@ independently deployable phases (each lint -> build -> deploy on its own) so val
 
 **Phase 2 - Real test drive (depends on the enriched demo seeder + Unsplash, both wired):**
 - Embed each persona's real seeded content inline (Jordan's worker card, Riverview's job ad, Aria's
-  pseudonymous request), refreshing as the seeder runs.
-- "Explore as this persona" links: admins use View-as; the public deep-links to the relevant board
-  pre-filtered to that persona's area.
+  pseudonymous request), refreshing as the seeder runs. ⏳
+- ✅ (v1.10.16) "Explore as this persona" deep-links: each persona has an "Explore" button that opens the
+  most relevant board (workers / jobs / contract work / organisations) pre-filtered to that persona's area
+  via `sssj_loc` + `sssj_radius`. (Admin View-as deep-link still ⏳.)
 - One live mini-feature per persona (working mini map + radius slider, the real language toolbar, a sample
   search) in place of a static callout. Show, don't tell.
 

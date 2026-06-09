@@ -194,6 +194,16 @@ class Shuffles_SSJ_Demo_Tour {
 			'provider'       => array( __( 'Create our organisation', 'shuffles-social-services-jobs' ), 'page_post_org', '[sssj_post_org]' ),
 			'supplier'       => array( __( 'List our organisation', 'shuffles-social-services-jobs' ), 'page_post_org', '[sssj_post_org]' ),
 		);
+		// Phase 2: "Explore as this persona" deep-link to the most relevant board, pre-filtered to their area.
+		$explore_of = array(
+			'participant'    => array( __( 'See support workers near %s', 'shuffles-social-services-jobs' ), 'page_worker_directory', '[sssj_worker_directory]' ),
+			'representative' => array( __( 'See support workers near %s', 'shuffles-social-services-jobs' ), 'page_worker_directory', '[sssj_worker_directory]' ),
+			'candidate'      => array( __( 'See jobs near %s', 'shuffles-social-services-jobs' ), 'page_job_board', '[sssj_job_board]' ),
+			'contractor'     => array( __( 'See contract work near %s', 'shuffles-social-services-jobs' ), 'page_abn_board', '[sssj_abn_board]' ),
+			'employer'       => array( __( 'See available workers near %s', 'shuffles-social-services-jobs' ), 'page_worker_directory', '[sssj_worker_directory]' ),
+			'provider'       => array( __( 'See available workers near %s', 'shuffles-social-services-jobs' ), 'page_worker_directory', '[sssj_worker_directory]' ),
+			'supplier'       => array( __( 'See organisations near %s', 'shuffles-social-services-jobs' ), 'page_org_directory', '[sssj_org_directory]' ),
+		);
 		$filter_groups = class_exists( 'Shuffles_SSJ_Roles' ) ? Shuffles_SSJ_Roles::hat_groups() : array(
 			'support' => __( 'I need support', 'shuffles-social-services-jobs' ),
 			'seek'    => __( 'I am looking for work', 'shuffles-social-services-jobs' ),
@@ -267,7 +277,7 @@ class Shuffles_SSJ_Demo_Tour {
 			echo '</div>';
 
 			if ( $onboard ) {
-				$dt_cta = isset( $cta_of[ $key ] ) ? $cta_of[ $key ] : null; $dt_url = ( $dt_cta && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) ? Shuffles_SSJ_Shortcodes::page_link( $dt_cta[1], $dt_cta[2] ) : ''; $dt_url = $dt_url ? $dt_url : $onboard; $dt_label = $dt_cta ? $dt_cta[0] : __( 'Try this yourself', 'shuffles-social-services-jobs' ); echo '<p style="margin-top:16px"><a class="sssj-btn sssj-btn--primary" href="' . esc_url( $dt_url ) . '">' . esc_html( $dt_label ) . '</a> <a class="sssj-demo-top" href="#">' . esc_html__( 'Back to top', 'shuffles-social-services-jobs' ) . '</a></p>';
+				$dt_cta = isset( $cta_of[ $key ] ) ? $cta_of[ $key ] : null; $dt_url = ( $dt_cta && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) ? Shuffles_SSJ_Shortcodes::page_link( $dt_cta[1], $dt_cta[2] ) : ''; $dt_url = $dt_url ? $dt_url : $onboard; $dt_label = $dt_cta ? $dt_cta[0] : __( 'Try this yourself', 'shuffles-social-services-jobs' ); $dt_exp = isset( $explore_of[ $key ] ) ? $explore_of[ $key ] : null; $dt_exp_url = ( $dt_exp && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) ? Shuffles_SSJ_Shortcodes::page_link( $dt_exp[1], $dt_exp[2] ) : ''; $dt_exp_btn = ''; if ( $dt_exp_url ) { $dt_exp_url = add_query_arg( array( 'sssj_loc' => $p['loc'], 'sssj_radius' => 50 ), $dt_exp_url ); $dt_exp_btn = '<a class="sssj-btn sssj-btn--ghost" href="' . esc_url( $dt_exp_url ) . '">' . esc_html( sprintf( $dt_exp[0], $p['loc'] ) ) . '</a> '; } echo '<p style="margin-top:16px"><a class="sssj-btn sssj-btn--primary" href="' . esc_url( $dt_url ) . '">' . esc_html( $dt_label ) . '</a> ' . $dt_exp_btn . '<a class="sssj-demo-top" href="#">' . esc_html__( 'Back to top', 'shuffles-social-services-jobs' ) . '</a></p>';
 			}
 			echo '</div></section>';
 		}

@@ -1589,7 +1589,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.15 · 2026-06-09 · Core objective: privacy, dignity and no “post-piracy”</h3>
+				<h3>v1.10.16 · 2026-06-09 · Demo tour Phase 2 (start): “Explore as this persona”</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Each persona on the tour now has an “Explore” button that opens the most relevant board (workers, jobs, contract work or organisations), pre-filtered to that persona’s area, so visitors can move from the story straight into the live marketplace.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.15 · 2026-06-09 · Core objective: privacy, dignity and no “post-piracy”</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Added an explicit core objective across the platform and its marketing: listings, requests and profiles are designed to live and be acted on inside the platform, not copied out onto public social media. This maintains privacy, increases dignity, and reduces the well-meaning copying or resharing of posts by the public that can re-expose people and become an unhealthy distraction.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'It appears on the home-page hero “Safety, built in” strip and in the Business Logic tab (Participant privacy), and is mirrored in the platform’s objectives and marketing documents.', 'shuffles-social-services-jobs' ); ?></li>
