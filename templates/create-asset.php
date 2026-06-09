@@ -58,7 +58,24 @@ $format_picker = function () {
 	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--primary" data-asset-format-pick="ats">' . esc_html__( 'ATS-friendly (recommended)', 'shuffles-social-services-jobs' ) . '</button>';
 	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--ghost" data-asset-format-pick="styled">' . esc_html__( 'Styled', 'shuffles-social-services-jobs' ) . '</button>';
 	echo '</div>';
-	echo '<p class="description">' . esc_html__( 'ATS-friendly is plain, single-column and photo-free, what health, disability and aged-care employers and their recruitment systems prefer. Styled adds your photo and colour, nicer on screen but not ATS-safe.', 'shuffles-social-services-jobs' ) . ' <a href="' . esc_url( apply_filters( 'shuffles_ssj_ats_guide_url', 'https://au.indeed.com/career-advice/resumes-cover-letters/applicant-tracking-systems' ) ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'What is an ATS? (guide)', 'shuffles-social-services-jobs' ) . '</a></p></div>';
+	echo '<p class="description">' . esc_html__( 'ATS-friendly is plain, single-column and photo-free, what health, disability and aged-care employers and their recruitment systems prefer. Styled adds your photo and colour, nicer on screen but not ATS-safe.', 'shuffles-social-services-jobs' ) . ' <a href="' . esc_url( apply_filters( 'shuffles_ssj_ats_guide_url', 'https://au.indeed.com/career-advice/resumes-cover-letters/applicant-tracking-systems' ) ) . '" target="_blank" rel="noopener noreferrer">' . esc_html__( 'What is an ATS? (guide)', 'shuffles-social-services-jobs' ) . '</a></p>';
+		echo '<details class="sssj-ats-tips"><summary>' . esc_html__( 'How to make your résumé ATS-friendly', 'shuffles-social-services-jobs' ) . '</summary>';
+		echo '<p class="description" style="margin-top:6px"><strong>' . esc_html__( 'Do', 'shuffles-social-services-jobs' ) . '</strong></p><ul>';
+		foreach ( array(
+			__( 'Keep it single-column and plain (the ATS-friendly option above does this for you).', 'shuffles-social-services-jobs' ),
+			__( 'Use standard headings: Professional summary, Employment history, Education.', 'shuffles-social-services-jobs' ),
+			__( 'Match the words used in the job ad (e.g. manual handling, progress notes, behaviour support).', 'shuffles-social-services-jobs' ),
+			__( 'State your qualifications, screening checks and licences clearly.', 'shuffles-social-services-jobs' ),
+			__( 'Save and send it as a PDF using the buttons below.', 'shuffles-social-services-jobs' ),
+		) as $tip ) { echo '<li>' . esc_html( $tip ) . '</li>'; }
+		echo '</ul><p class="description"><strong>' . esc_html__( 'Avoid', 'shuffles-social-services-jobs' ) . '</strong></p><ul>';
+		foreach ( array(
+			__( 'Columns, tables, text boxes, icons or graphics.', 'shuffles-social-services-jobs' ),
+			__( 'Putting contact details in the page header or footer (some systems skip them).', 'shuffles-social-services-jobs' ),
+			__( 'A photo (it is not expected in Australia and can confuse the software).', 'shuffles-social-services-jobs' ),
+			__( 'Keyword-stuffing; it must still read naturally to a person.', 'shuffles-social-services-jobs' ),
+		) as $tip ) { echo '<li>' . esc_html( $tip ) . '</li>'; }
+		echo '</ul></details></div>';
 };
 
 $type = isset( $_GET['sssj_asset'] ) ? sanitize_key( wp_unslash( $_GET['sssj_asset'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended

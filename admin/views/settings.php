@@ -1596,7 +1596,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.30 · 2026-06-09 · Résumé tool: link to an ATS guide</h3>
+				<h3>v1.10.31 · 2026-06-09 · Résumé tool: built-in ATS tips</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Added a collapsible “How to make your résumé ATS-friendly” tips box on the résumé tab, with plain-English do’s and don’ts (single column, standard headings, match the job-ad wording, no columns/photos/header-footer contact, save as PDF) so members get the key guidance without leaving the page. The “What is an ATS?” guide link sits alongside it.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.30 · 2026-06-09 · Résumé tool: link to an ATS guide</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Added a “What is an ATS? (guide)” link next to the résumé Layout toggle, pointing to a credible, plain-English explanation (Indeed Australia’s Career Guide) so members understand why the ATS-friendly layout is recommended. The link is editable via the shuffles_ssj_ats_guide_url filter.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>
