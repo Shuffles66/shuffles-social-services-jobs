@@ -315,4 +315,76 @@ class Shuffles_SSJ_Org_Team {
 		);
 		return isset( $map[ $role ] ) ? $map[ $role ] : ucfirst( (string) $role );
 	}
+
+	/* ----------------------------------------------------- Domain-matched self-attach */
+
+	const DOMAIN_META = 'org_email_domain';
+
+	/** Normalise a domain / email / URL to a bare lowercase host ("Acme.org.au/" -> "acme.org.au"). '' if implausible. */
+	public static function normalize_domain( $raw ) {
+		$d = strtolower( trim( (string) $raw ) );
+		if ( '' === $d ) {
+			return '';
+		}
+		if ( false !== strpos( $d, '@' ) ) {
+			$d = substr( $d, strpos( $d, '@' ) + 1 );
+		}
+		$d = preg_replace( '#^[a-z][a-z0-9+.\-]*://#', '', $d ); // strip scheme
+		$d = preg_replace( '#[/?\#].*$#', '', $d );             // strip path/query/fragment
+		$d = preg_replace( '#^www\.#', '', $d );                // drop a leading www.
+		$d = trim( $d, '. ' );
+		if ( ! preg_match( '/^[a-z0-9.\-]+\.[a-z]{2,}$/', $d ) ) {
+			return '';
+		}
+		return $d;
+	}
+
+	/** The bare domain of a user's account email. */
+	public static function user_email_domain( $user_id ) {
+		$u = get_user_by( 'id', (int) $user_id );
+		return $u ? self::normalize_domain( $u->user_email ) : '';
+	}
+
+	/** An org's configured email domain (normalised). */
+	public static function org_domain( $org_id ) {
+		return self::normalize_domain( (string) get_post_meta( (int) $org_id, self::DOMAIN_META, true ) );
+	}
+
+	/** Does this user's email domain match the org's configured domain? (both must be non-empty) */
+	public static function domain_matches( $org_id, $user_id ) {
+		$od = self::org_domain( $org_id );
+		$ud = self::user_email_domain( $user_id );
+		return ( '' !== $od && $od === $ud );
+	}
+
+	/**
+	 * Published orgs whose email domain matches the user's account-email domain, that the user is not
+	 * already part of and has not already requested to join. Returns [ org_id => name ].
+	 */
+	public static function orgs_matching_domain( $user_id ) {
+		$ud = self::user_email_domain( $user_id );
+		if ( '' === $ud ) {
+			return array();
+		}
+		$ids = get_posts(
+			array(
+				'post_type'      => 'sssj_org',
+				'post_status'    => 'publish',
+				'posts_per_page' => 50,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+				'meta_key'       => self::DOMAIN_META,
+				'meta_value'     => $ud,
+			)
+		); // phpcs:ignore WordPress.DB.SlowDBQuery
+		$out = array();
+		foreach ( (array) $ids as $oid ) {
+			$oid = (int) $oid;
+			if ( self::is_member( $oid, $user_id ) || self::has_request( $oid, $user_id ) ) {
+				continue;
+			}
+			$out[ $oid ] = get_the_title( $oid );
+		}
+		return $out;
+	}
 }

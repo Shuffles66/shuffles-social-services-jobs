@@ -1176,6 +1176,54 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+	/**
+	 * "Attach to organisation" control for the My-profile panel: lists organisations whose configured
+	 * email domain matches the member's account-email domain, with a "Request to attach" button (the org
+	 * admin approves it in their Team tab). Also renders the post-action notice. Returns '' when there is
+	 * nothing to show and no notice.
+	 */
+	public static function attach_org_control() {
+		if ( ! is_user_logged_in() || ! class_exists( 'Shuffles_SSJ_Org_Team' ) ) {
+			return '';
+		}
+		$uid  = get_current_user_id();
+		$note = isset( $_GET['sssj_attach'] ) ? sanitize_key( wp_unslash( $_GET['sssj_attach'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$matches = Shuffles_SSJ_Org_Team::orgs_matching_domain( $uid );
+		$domain  = Shuffles_SSJ_Org_Team::user_email_domain( $uid );
+		if ( '' === $note && empty( $matches ) ) {
+			return '';
+		}
+		ob_start();
+		echo '<div class="sssj-attach" style="margin-top:12px">';
+		if ( '' !== $note ) {
+			$msg = '';
+			$ok  = false;
+			if ( 'requested' === $note ) { $msg = __( 'Request sent. The organisation admin will review it and add you to their team.', 'shuffles-social-services-jobs' ); $ok = true; }
+			elseif ( 'already' === $note ) { $msg = __( 'You are already part of that organisation.', 'shuffles-social-services-jobs' ); }
+			elseif ( 'nomatch' === $note ) { $msg = __( 'Your account email domain does not match that organisation, so you cannot attach to it.', 'shuffles-social-services-jobs' ); }
+			elseif ( 'error' === $note ) { $msg = __( 'Sorry, that did not work. Please try again.', 'shuffles-social-services-jobs' ); }
+			if ( '' !== $msg ) {
+				echo '<p class="sssj-badge ' . ( $ok ? 'sssj-badge--verified' : '' ) . '">' . esc_html( $msg ) . '</p>';
+			}
+		}
+		if ( ! empty( $matches ) ) {
+			echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" class="sssj-row" style="gap:8px;flex-wrap:wrap;align-items:center">';
+			echo '<input type="hidden" name="action" value="sssj_org_attach" />';
+			echo '<input type="hidden" name="sssj_attach_nonce" value="' . esc_attr( wp_create_nonce( 'sssj_org_attach' ) ) . '" />';
+			echo '<label class="screen-reader-text" for="sssj-attach-org">' . esc_html__( 'Organisation', 'shuffles-social-services-jobs' ) . '</label>';
+			echo '<select class="sssj-select" id="sssj-attach-org" name="org_id">';
+			foreach ( $matches as $oid => $name ) {
+				echo '<option value="' . esc_attr( $oid ) . '">' . esc_html( $name ? $name : ( '#' . $oid ) ) . '</option>';
+			}
+			echo '</select>';
+			echo '<button type="submit" class="sssj-btn sssj-btn--secondary sssj-btn--sm">' . esc_html__( 'Attach to organisation', 'shuffles-social-services-jobs' ) . '</button>';
+			echo '</form>';
+			echo '<p class="description">' . esc_html( sprintf( __( 'These organisations use your email domain (%s). Attaching links you to their team once their admin approves.', 'shuffles-social-services-jobs' ), $domain ) ) . '</p>';
+		}
+		echo '</div>';
+		return ob_get_clean();
+	}
+
 	/* --- Apply flow + dashboard --- */
 
 	/**
@@ -1465,6 +1513,7 @@ class Shuffles_SSJ_Shortcodes {
 				if ( $want_needs ) { echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $this->resolve_page( 'page_post_need', '[sssj_post_need]' ) ) . '">' . esc_html__( 'Participant support request', 'shuffles-social-services-jobs' ) . '</a>'; }
 				echo '</div>';
 			}
+			echo self::attach_org_control(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</div>';
 			echo do_shortcode( '[sssj_post_worker]' );
 			echo '</section>';

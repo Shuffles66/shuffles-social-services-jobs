@@ -33,6 +33,8 @@ class Shuffles_SSJ_Frontend_Forms {
 		add_action( 'admin_post_nopriv_sssj_listing_reactivate', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_listing_close', array( $this, 'handle_listing_close' ) );
 		add_action( 'admin_post_nopriv_sssj_listing_close', array( $this, 'deny' ) );
+		add_action( 'admin_post_sssj_org_attach', array( $this, 'handle_org_attach' ) );
+		add_action( 'admin_post_nopriv_sssj_org_attach', array( $this, 'deny' ) );
 		add_action( 'admin_post_sssj_send_message', array( $this, 'handle_send_message' ) );
 		add_action( 'admin_post_sssj_post_org', array( $this, 'handle_post_org' ) );
 		add_action( 'admin_post_nopriv_sssj_post_org', array( $this, 'deny' ) );
@@ -942,6 +944,45 @@ class Shuffles_SSJ_Frontend_Forms {
 		exit;
 	}
 
+	/**
+	 * A worker requests to attach to an organisation whose configured email domain matches their own
+	 * account email. The domain match is re-checked server-side; the org admin then approves the request
+	 * in their Team tab (reusing the existing join-request flow).
+	 */
+	public function handle_org_attach() {
+		$nonce = isset( $_POST['sssj_attach_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_attach_nonce'] ) ) : '';
+		if ( ! wp_verify_nonce( $nonce, 'sssj_org_attach' ) ) {
+			wp_die( esc_html__( 'Security check failed.', 'shuffles-social-services-jobs' ) );
+		}
+		if ( ! is_user_logged_in() ) {
+			wp_die( esc_html__( 'Please log in.', 'shuffles-social-services-jobs' ) );
+		}
+		$uid      = get_current_user_id();
+		$org_id   = isset( $_POST['org_id'] ) ? absint( $_POST['org_id'] ) : 0;
+		$post     = $org_id ? get_post( $org_id ) : null;
+		$redirect = wp_get_referer();
+		if ( is_string( $redirect ) && '' !== $redirect && '/' === $redirect[0] ) {
+			$redirect = home_url( $redirect );
+		}
+		if ( ! $redirect ) {
+			$redirect = home_url( '/' );
+		}
+		$redirect = remove_query_arg( 'sssj_attach', $redirect );
+		if ( ! $post || 'sssj_org' !== $post->post_type ) {
+			wp_safe_redirect( add_query_arg( 'sssj_attach', 'error', $redirect ) . '#dash-profile' );
+			exit;
+		}
+		// The gate: the worker's account-email domain must match the org's configured domain.
+		if ( ! class_exists( 'Shuffles_SSJ_Org_Team' ) || ! Shuffles_SSJ_Org_Team::domain_matches( $org_id, $uid ) ) {
+			wp_safe_redirect( add_query_arg( 'sssj_attach', 'nomatch', $redirect ) . '#dash-profile' );
+			exit;
+		}
+		$res  = Shuffles_SSJ_Org_Team::add_request( $org_id, $uid, '' );
+		$code = is_wp_error( $res ) ? ( 'already' === $res->get_error_code() ? 'already' : 'error' ) : 'requested';
+		wp_safe_redirect( add_query_arg( 'sssj_attach', $code, $redirect ) . '#dash-profile' );
+		exit;
+	}
+
 	/** The reviewed party posts a public response to a review of them. */
 	public function handle_review_respond() {
 		$nonce = isset( $_POST['sssj_review_resp_nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['sssj_review_resp_nonce'] ) ) : '';
@@ -1140,6 +1181,7 @@ class Shuffles_SSJ_Frontend_Forms {
 			'org_website'       => isset( $_POST['org_website'] ) ? esc_url_raw( trim( (string) wp_unslash( $_POST['org_website'] ) ) ) : '',
 			'org_type'          => isset( $_POST['org_type'] ) ? sanitize_key( wp_unslash( $_POST['org_type'] ) ) : 'employer',
 			'org_phone'         => isset( $_POST['org_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['org_phone'] ) ) : '',
+			'org_email_domain'  => ( isset( $_POST['org_email_domain'] ) && class_exists( 'Shuffles_SSJ_Org_Team' ) ) ? Shuffles_SSJ_Org_Team::normalize_domain( wp_unslash( $_POST['org_email_domain'] ) ) : '',
 			'offers_sponsorship' => empty( $_POST['offers_sponsorship'] ) ? '' : '1',
 			'accepts_placements' => empty( $_POST['accepts_placements'] ) ? '' : '1',
 			'welcomes_volunteers' => empty( $_POST['welcomes_volunteers'] ) ? '' : '1',

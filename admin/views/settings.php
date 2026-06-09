@@ -1597,7 +1597,13 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.40 · 2026-06-10 · Fix: saving “My profile” could land on a 404</h3>
+				<h3>v1.10.41 · 2026-06-10 · Attach to an organisation (matching email domain)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Organisations can set an “Organisation email domain” (e.g. acme.org.au) on their profile.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'On your My profile tab, if your account email is on an organisation’s domain, you can now “Attach to organisation” next to “Create organisation”. It sends a request the organisation’s admin approves in their Team tab, so nobody is added without approval.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'The domain match is checked on the server, so you can only request to attach to organisations that share your email domain.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.40 · 2026-06-10 · Fix: saving “My profile” could land on a 404</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Saving your worker / contractor profile now returns you cleanly to the My profile tab. The return link is built as a full, canonical web address (fixing a case where a www vs non-www mismatch could send you to a “page not found”).', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>
