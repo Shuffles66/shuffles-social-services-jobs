@@ -249,10 +249,12 @@ independently deployable phases (each lint -> build -> deploy on its own) so val
   with the DeepL translation work. Diverse, authentic Australian imagery via Unsplash.
 - Sticky persona nav + scroll-spy for the long page; mobile polish (swipeable gallery).
 
-**Phase 4 - Marketing video / kiosk:**
-- An auto-play "kiosk" mode (`[sssj_demo_tour autoplay]`) that advances through personas with timed reveals,
-  clean 16:9 framing for screen-recording snappy promos or looping on a reception screen. Directly serves
-  the marketing-video goal.
+**Phase 4 - Marketing video / kiosk:** ✅ (v1.10.24)
+- ✅ Auto-play "kiosk" mode (`[sssj_demo_tour autoplay]`, `autoplay="6"` for seconds/slide, or `?sssj_kiosk`,
+  or the "Play as a slideshow" link on the tour) advances through personas one at a time in clean 16:9
+  framing that auto-advances and loops, for screen-recording snappy promos or looping on a reception screen.
+  Controls: play/pause, prev/next, dots, arrow keys. Renders via `Shuffles_SSJ_Demo_Tour::kiosk()` +
+  `kiosk()` in sssj-display.js + `.sssj-kiosk` CSS.
 
 **Phase 5 - SDA persona:**
 - Add an 8th persona once Workstream I (SDA) ships: an SDA provider listing a dwelling and/or a participant

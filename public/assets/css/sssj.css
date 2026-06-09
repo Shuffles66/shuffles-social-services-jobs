@@ -386,6 +386,8 @@ html.sssj-a11y-easyread .sssj p,
 html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 /* Site-wide floating toolbar (pages with no inline .sssj surface) + the English escape. */
 .sssj .sssj-a11y-bar--floating{ position:fixed; right:12px; bottom:12px; left:auto; margin:0; max-width:min(94vw,560px); z-index:99990; box-shadow:var(--sssj-shadow-lift); }
+.sssj-translating{ position:fixed; left:12px; bottom:12px; z-index:99991; background:#0f172a; color:#fff; padding:8px 14px; border-radius:999px; font-size:13px; font-weight:600; box-shadow:0 6px 20px rgba(2,6,23,.25); animation:sssj-tpulse 1s ease-in-out infinite; }
+@keyframes sssj-tpulse{ 0%,100%{ opacity:1; } 50%{ opacity:.6; } }
 .sssj .sssj-a11y-english{ display:flex; flex-direction:column; align-items:flex-start; gap:3px; }
 .sssj .sssj-a11y-english button{ border-color:var(--sssj-blue); color:var(--sssj-blue-deep); font-weight:var(--sssj-weight-strong); }
 .sssj .sssj-a11y-english-note{ font-size:11px; color:var(--sssj-muted); max-width:230px; line-height:1.3; }

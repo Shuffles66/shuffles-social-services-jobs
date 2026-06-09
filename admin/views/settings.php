@@ -1596,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.24 · 2026-06-09 · Demo tour Phase 4: autoplay “kiosk” slideshow</h3>
+				<h3>v1.10.25 · 2026-06-09 · Whole-site translation: progressive + visible progress</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Whole-site translation now shows results as they arrive instead of waiting for the entire page, uses smaller/faster batches, and displays a “Translating…” indicator while it works. On long pages (like the policies page) this means text starts changing within a second or two rather than appearing to do nothing.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'If a page still does not translate after this: the most common cause is a security/firewall plugin blocking the site’s own REST endpoint (/wp-json/sssj/v1/translate) for visitors. Allow that route, and remember to purge the cache so the updated script loads.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.24 · 2026-06-09 · Demo tour Phase 4: autoplay “kiosk” slideshow</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'New marketing/kiosk mode for the demo tour: [sssj_demo_tour autoplay] (or add ?sssj_kiosk to the tour URL, or click “Play as a slideshow”) shows the personas one at a time in clean 16:9 framing that auto-advances and loops, ideal for screen-recording a snappy promo or looping on a reception screen.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Controls: play/pause, previous/next, progress dots and arrow keys. Set the pace with autoplay="6" (seconds per slide; default 8).', 'shuffles-social-services-jobs' ); ?></li>

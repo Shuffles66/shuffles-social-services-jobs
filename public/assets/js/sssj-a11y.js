@@ -138,6 +138,16 @@
 
 	function chunkArr( arr, n ) { var out = []; for ( var i = 0; i < arr.length; i += n ) { out.push( arr.slice( i, i + n ) ); } return out; }
 
+	function showTranslating( on ) {
+		var el = document.getElementById( 'sssj-translating' );
+		if ( on ) {
+			if ( ! el ) { el = document.createElement( 'div' ); el.id = 'sssj-translating'; el.className = 'sssj-translating'; el.textContent = '🌐 Translating…'; document.body.appendChild( el ); }
+			el.style.display = '';
+		} else if ( el ) {
+			el.style.display = 'none';
+		}
+	}
+
 	function applyMap( nodes, map ) {
 		nodes.forEach( function ( nd ) {
 			var t = nd.nodeValue, s = t.trim();
@@ -161,8 +171,9 @@
 			if ( ph && ! uniq[ ph ] ) { uniq[ ph ] = 1; list.push( ph ); }
 		} );
 		if ( ! list.length ) { return; }
-		list = list.slice( 0, 600 );
-		var map = {}, batches = chunkArr( list, 100 ), pending = batches.length;
+		list = list.slice( 0, 800 );
+		var map = {}, batches = chunkArr( list, 40 ), pending = batches.length;
+		showTranslating( true );
 		batches.forEach( function ( b ) {
 			fetch( cfg.translate_url, {
 				method: 'POST',
@@ -170,10 +181,10 @@
 				credentials: 'same-origin',
 				body: JSON.stringify( { texts: b, lang: code } )
 			} ).then( function ( r ) { return r.json(); } ).then( function ( d ) {
-				if ( d && d.map ) { Object.keys( d.map ).forEach( function ( k ) { map[ k ] = d.map[ k ]; } ); }
+				if ( d && d.map ) { Object.keys( d.map ).forEach( function ( k ) { map[ k ] = d.map[ k ]; } ); applyMap( nodes, map ); }
 			} ).catch( function () {} ).then( function () {
 				pending--;
-				if ( 0 === pending ) { applyMap( nodes, map ); translatedLang = code; pageTranslated = true; }
+				if ( 0 === pending ) { applyMap( nodes, map ); translatedLang = code; pageTranslated = true; showTranslating( false ); }
 			} );
 		} );
 	}
