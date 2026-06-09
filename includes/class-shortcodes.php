@@ -489,7 +489,10 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		if ( ! wp_script_is( 'sssj-filters', 'registered' ) ) {
 			wp_register_script( 'sssj-filters', SHUFFLES_SSJ_URL . 'public/assets/js/sssj-filters.js', array( 'sssj-spinner' ), SHUFFLES_SSJ_VERSION, true );
-			wp_localize_script( 'sssj-filters', 'SSSJ_Filter', array( 'ajax' => admin_url( 'admin-ajax.php' ) ) );
+			wp_localize_script( 'sssj-filters', 'SSSJ_Filter', array(
+				'ajax'      => admin_url( 'admin-ajax.php' ),
+				'i18nError' => __( 'Sorry, something went wrong loading results. Please try again.', 'shuffles-social-services-jobs' ),
+			) );
 		}
 		// Navigation menu, mobile hamburger toggle for [sssj_menu].
 		if ( ! wp_script_is( 'sssj-nav', 'registered' ) ) {
@@ -703,10 +706,19 @@ class Shuffles_SSJ_Shortcodes {
 		wp_enqueue_script( 'sssj-filters' );
 
 		$basis = sanitize_key( (string) $atts['basis'] );
+		// Single-board engagement-type toggle (All / TFN / ABN / Volunteer) via ?sssj_basis. Only honoured
+		// when the shortcode itself isn't locked to a basis, so [sssj_tfn_board] etc. stay segregated.
+		if ( '' === $basis && isset( $_GET['sssj_basis'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$gb = sanitize_key( wp_unslash( $_GET['sssj_basis'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			if ( in_array( $gb, array( 'tfn', 'abn', 'vol' ), true ) ) { $basis = $gb; }
+		}
 		$extra = array(
 			'paged'          => isset( $_GET['sssj_paged'] ) ? max( 1, (int) $_GET['sssj_paged'] ) : 1, // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			'posts_per_page' => (int) $atts['per_page'],
 		);
+		if ( ! empty( $_GET['sssj_sort'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			$extra['sort'] = sanitize_key( wp_unslash( $_GET['sssj_sort'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
 		if ( ! empty( $_GET['sssj_cat'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 			$extra['category'] = array_filter( array_map( 'sanitize_title', (array) wp_unslash( $_GET['sssj_cat'] ) ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
@@ -727,12 +739,14 @@ class Shuffles_SSJ_Shortcodes {
 		$this->load_template(
 			'job-board.php',
 			array(
-				'query'      => $query,
-				'basis'      => $basis,
-				'atts'       => $atts,
-				'maps'       => $maps,
-				'has_points' => ! empty( $points ),
-				'center'     => $this->resolve_center(),
+				'query'        => $query,
+				'basis'        => $basis,
+				'atts'         => $atts,
+				'maps'         => $maps,
+				'has_points'   => ! empty( $points ),
+				'center'       => $this->resolve_center(),
+				'locked_basis' => '' !== sanitize_key( (string) $atts['basis'] ),
+				'sort'         => isset( $extra['sort'] ) ? $extra['sort'] : '',
 			)
 		);
 		wp_reset_postdata();
@@ -801,6 +815,15 @@ class Shuffles_SSJ_Shortcodes {
 		$has_centre = ! empty( $extra['lat'] ) && ! empty( $extra['lng'] ) && ! empty( $extra['radius'] );
 		if ( ! $has_centre ) {
 			$args = ( 'need' === $which ) ? Shuffles_SSJ_Query::need_args( $extra ) : ( ( 'worker' === $which ) ? Shuffles_SSJ_Query::worker_args( $extra ) : Shuffles_SSJ_Query::base_args( $basis, $extra ) );
+			// Sort (jobs board). Only safe orderings that never drop listings missing a meta key.
+			if ( 'job' === $which && ! empty( $extra['sort'] ) ) {
+				if ( 'oldest' === $extra['sort'] ) {
+					$args['orderby'] = array( 'date' => 'ASC' );
+				} elseif ( 'az' === $extra['sort'] ) {
+					$args['orderby'] = array( 'title' => 'ASC' );
+				}
+				// 'newest' keeps base_args' default (featured/menu_order first, then newest).
+			}
 			return new WP_Query( $args );
 		}
 
@@ -1789,7 +1812,7 @@ class Shuffles_SSJ_Shortcodes {
 			wp_send_json_error( array( 'msg' => __( 'Please log in to view participant requests.', 'shuffles-social-services-jobs' ) ) );
 		}
 		// Mirror the submitted filter values into $_GET so the board methods (which read $_GET) work.
-		$keys = array( 'sssj_q', 'sssj_loc', 'sssj_lat', 'sssj_lng', 'sssj_radius', 'sssj_paged', 'sssj_funding', 'sssj_sector', 'sssj_orgcat', 'sssj_size', 'sssj_structure', 'sssj_open', 'sssj_cat' );
+		$keys = array( 'sssj_q', 'sssj_loc', 'sssj_lat', 'sssj_lng', 'sssj_radius', 'sssj_paged', 'sssj_funding', 'sssj_sector', 'sssj_orgcat', 'sssj_size', 'sssj_structure', 'sssj_open', 'sssj_cat', 'sssj_basis', 'sssj_sort' );
 		foreach ( $keys as $k ) {
 			if ( isset( $_POST[ $k ] ) ) {
 				$_GET[ $k ] = wp_unslash( $_POST[ $k ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended,WordPress.Security.ValidatedSanitizedInput

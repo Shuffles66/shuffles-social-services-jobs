@@ -949,3 +949,48 @@ html.sssj-a11y-easyread .sssj li{ max-width:64ch; }
 .sssj-capture__thumb{ width:54px; height:54px; object-fit:cover; border-radius:8px; flex:0 0 auto; }
 .sssj-capture__doc{ width:54px; height:54px; display:flex; align-items:center; justify-content:center; font-size:24px; background:#f1f5f9; border-radius:8px; flex:0 0 auto; }
 .sssj-capture__meta{ flex:1 1 auto; font-size:.9em; word-break:break-word; }
+
+/* ---- Public Jobs board upgrade: sticky filters, basis toggle, chips, view toggle, skeleton, empty-state ---- */
+.sssj .screen-reader-text{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0; padding:0; margin:-1px; }
+.sssj .sssj-board__filters[data-sssj-sticky]{ position:sticky; top:0; z-index:30; }
+@media (max-width:780px){ .sssj .sssj-board__filters[data-sssj-sticky]{ position:static; } }
+
+.sssj .sssj-segmented{ display:inline-flex; flex-wrap:wrap; gap:4px; padding:4px; background:#f1f5f9; border-radius:999px; margin:0 0 12px; }
+.sssj .sssj-seg__btn{ border:0; background:transparent; color:#475569; font-weight:600; font-size:.9rem; padding:7px 14px; border-radius:999px; cursor:pointer; min-height:36px; }
+.sssj .sssj-seg__btn.is-on{ background:#fff; color:var(--sssj-blue-deep,#1e5d9c); box-shadow:0 1px 3px rgba(2,6,23,.12); }
+
+.sssj .sssj-sort .sssj-select{ min-width:150px; }
+
+.sssj .sssj-chips{ display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.sssj .sssj-chip{ display:inline-flex; align-items:center; gap:7px; padding:4px 6px 4px 12px; border:1px solid var(--sssj-line,#e2e8f0); background:#fff; border-radius:999px; font-size:.85rem; color:var(--sssj-text,#0f172a); cursor:pointer; }
+.sssj .sssj-chip:hover{ border-color:var(--sssj-blue,#3897e0); }
+.sssj .sssj-chip__x{ display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:#f1f5f9; color:#475569; font-size:14px; line-height:1; }
+
+.sssj .sssj-board__head{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:14px 0 6px; }
+.sssj .sssj-board__head .sssj-count{ margin:0; font-weight:600; color:var(--sssj-muted,#64748b); }
+.sssj .sssj-viewtoggle{ display:inline-flex; gap:2px; border:1px solid var(--sssj-line,#e2e8f0); border-radius:10px; overflow:hidden; }
+.sssj .sssj-view__btn{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:36px; border:0; background:#fff; color:#64748b; cursor:pointer; }
+.sssj .sssj-view__btn.is-on{ background:var(--sssj-blue,#3897e0); color:#fff; }
+.sssj .sssj-view__btn .sssj-i{ width:18px; height:18px; }
+
+.sssj .sssj-card__line{ display:flex; align-items:center; gap:7px; margin:4px 0; }
+.sssj .sssj-card__line .sssj-i{ width:16px; height:16px; flex:0 0 auto; color:var(--sssj-muted,#64748b); }
+
+.sssj .sssj-grid--list{ display:flex; flex-direction:column; gap:10px; }
+.sssj .sssj-grid--list .sssj-card{ display:grid; grid-template-columns:1fr auto; align-items:start; gap:6px 16px; }
+.sssj .sssj-grid--list .sssj-card > p{ grid-column:1; margin:2px 0; }
+.sssj .sssj-grid--list .sssj-card .sssj-btn{ grid-column:2; grid-row:1 / span 4; align-self:center; }
+
+.sssj .sssj-skel{ pointer-events:none; }
+.sssj .sssj-skel__line, .sssj .sssj-skel__pill{ background:linear-gradient(90deg,#eef2f7 25%,#e2e8f0 37%,#eef2f7 63%); background-size:400% 100%; animation:sssj-shimmer 1.3s ease infinite; border-radius:6px; }
+.sssj .sssj-skel__line{ height:12px; margin:8px 0; }
+.sssj .sssj-skel__line--title{ height:18px; width:70%; }
+.sssj .sssj-skel__line--short{ width:45%; }
+.sssj .sssj-skel__row{ display:flex; gap:8px; margin:10px 0; }
+.sssj .sssj-skel__pill{ height:20px; width:72px; border-radius:999px; }
+@keyframes sssj-shimmer{ 0%{ background-position:100% 0; } 100%{ background-position:-100% 0; } }
+@media (prefers-reduced-motion: reduce){ .sssj .sssj-skel__line, .sssj .sssj-skel__pill{ animation:none; } }
+
+.sssj .sssj-empty{ text-align:center; padding:40px 20px; border:1px dashed var(--sssj-line,#e2e8f0); border-radius:var(--sssj-radius,12px); background:var(--sssj-bg-soft,#f8fafc); }
+.sssj .sssj-empty__title{ margin:0 0 6px; font-weight:700; font-size:1.1rem; color:var(--sssj-ink,#0f172a); }
+.sssj .sssj-empty__sub{ margin:0 0 14px; color:var(--sssj-muted,#64748b); }

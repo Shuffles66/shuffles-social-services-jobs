@@ -66,14 +66,13 @@
 		fd.append( 'board', form.getAttribute( 'data-sssj-board' ) || 'job' );
 		eachField( form, function ( n, v ) { fd.append( n, v ); } );
 
-		if ( window.SSSJSpinner ) { window.SSSJSpinner.show( res, '' ); }
+		showSkeleton( res );
 		fetch( cfg.ajax, { method: 'POST', body: fd, credentials: 'same-origin' } )
 			.then( function ( r ) { return r.json(); } )
 			.then( function ( j ) {
-				if ( window.SSSJSpinner ) { window.SSSJSpinner.hide( res ); }
 				if ( j && j.success && j.data ) {
 					res.innerHTML = j.data.html;
-					bindPagination( form, res );
+					afterRender( form, res );
 					// Refresh the results-map markers so the pins match the filtered results.
 					if ( window.SSSJMaps && typeof window.SSSJMaps.render === 'function' ) {
 						window.SSSJMaps.render( j.data.points || [] );
@@ -81,7 +80,7 @@
 				}
 				try { var qs = queryString( form ); window.history.replaceState( {}, '', window.location.pathname + ( qs ? ( '?' + qs ) : '' ) ); } catch ( e ) {}
 			} )
-			.catch( function () { if ( window.SSSJSpinner ) { window.SSSJSpinner.hide( res ); } } );
+			.catch( function () { res.innerHTML = '<div class="sssj-panel"><p>' + ( cfg.i18nError || 'Sorry, something went wrong. Please try again.' ) + '</p></div>'; } );
 	}
 
 	function submitForm( form ) {
@@ -185,13 +184,132 @@
 		} );
 	}
 
+	/* ---------- Results layout (grid / list), remembered per browser ---------- */
+	function currentView() { try { return window.localStorage.getItem( 'sssj_board_view' ) === 'list' ? 'list' : 'grid'; } catch ( e ) { return 'grid'; } }
+	function applyView( view ) {
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-sssj-grid]' ), function ( g ) { g.classList.toggle( 'sssj-grid--list', 'list' === view ); } );
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-sssj-view]' ), function ( b ) {
+			var on = b.getAttribute( 'data-sssj-view' ) === view;
+			b.classList.toggle( 'is-on', on );
+			b.setAttribute( 'aria-pressed', on ? 'true' : 'false' );
+		} );
+	}
+	function setView( view ) { try { window.localStorage.setItem( 'sssj_board_view', view ); } catch ( e ) {} applyView( view ); }
+
+	/* ---------- Loading skeletons (shown while the AJAX request is in flight) ---------- */
+	function showSkeleton( res ) {
+		var cards = '';
+		for ( var i = 0; i < 6; i++ ) {
+			cards += '<div class="sssj-card sssj-skel"><div class="sssj-skel__line sssj-skel__line--title"></div><div class="sssj-skel__row"><span class="sssj-skel__pill"></span><span class="sssj-skel__pill"></span></div><div class="sssj-skel__line"></div><div class="sssj-skel__line sssj-skel__line--short"></div></div>';
+		}
+		res.innerHTML = '<div class="sssj-grid' + ( 'list' === currentView() ? ' sssj-grid--list' : '' ) + '" data-sssj-grid>' + cards + '</div>';
+	}
+
+	/* ---------- Result count (announced via aria-live) ---------- */
+	function updateCount( res ) {
+		var found = res.querySelector( '[data-sssj-found]' );
+		var n = found ? ( parseInt( found.getAttribute( 'data-sssj-found' ), 10 ) || 0 ) : 0;
+		var el = document.querySelector( '[data-sssj-count]' );
+		if ( ! el ) { return; }
+		var tpl = ( ( 1 === n ? el.getAttribute( 'data-one' ) : el.getAttribute( 'data-many' ) ) || '%d' );
+		el.textContent = tpl.replace( '%d', n );
+	}
+
+	/* ---------- Active-filter chips ---------- */
+	var BASIS_LABEL = { tfn: 'Employee (TFN)', abn: 'Contractor (ABN)', vol: 'Volunteer' };
+	function chipsBox( form ) { var root = form.closest( '.sssj' ); return root ? root.querySelector( '[data-sssj-chips]' ) : null; }
+	function addChip( box, label, onRemove ) {
+		var c = document.createElement( 'button' );
+		c.type = 'button';
+		c.className = 'sssj-chip';
+		var t = document.createElement( 'span' ); t.textContent = label; c.appendChild( t );
+		var x = document.createElement( 'span' ); x.className = 'sssj-chip__x'; x.setAttribute( 'aria-hidden', 'true' ); x.textContent = '×'; c.appendChild( x );
+		c.setAttribute( 'aria-label', 'Remove filter: ' + label );
+		c.addEventListener( 'click', onRemove );
+		box.appendChild( c );
+	}
+	function renderChips( form ) {
+		var box = chipsBox( form );
+		if ( ! box ) { return; }
+		box.innerHTML = '';
+		var q = form.querySelector( '[name="sssj_q"]' );
+		if ( q && q.value.trim() ) { addChip( box, 'Search: ' + q.value.trim(), function () { q.value = ''; apply( form, true ); } ); }
+		var loc = form.querySelector( '[name="sssj_loc"]' );
+		if ( loc && loc.value.trim() ) { addChip( box, 'Near: ' + loc.value.trim(), function () {
+			loc.value = '';
+			var la = form.querySelector( '[data-sssj-lat]' ), ln = form.querySelector( '[data-sssj-lng]' );
+			if ( la ) { la.value = ''; } if ( ln ) { ln.value = ''; }
+			apply( form, true );
+		} ); }
+		var cat = form.querySelector( 'select[name="sssj_cat[]"]' );
+		if ( cat ) {
+			Array.prototype.forEach.call( cat.selectedOptions, function ( o ) {
+				addChip( box, o.textContent, function () {
+					if ( cat.tomselect ) { cat.tomselect.removeItem( o.value, true ); }
+					else { o.selected = false; }
+					apply( form, true );
+				} );
+			} );
+		}
+		Array.prototype.forEach.call( form.querySelectorAll( 'input[name="sssj_funding[]"]:checked' ), function ( cb ) {
+			var lbl = cb.closest( 'label' );
+			addChip( box, ( lbl ? lbl.textContent.trim() : cb.value ), function () { cb.checked = false; apply( form, true ); } );
+		} );
+		var basis = form.querySelector( '[data-sssj-basis]' );
+		if ( basis && basis.value && BASIS_LABEL[ basis.value ] ) {
+			addChip( box, BASIS_LABEL[ basis.value ], function () { setBasis( form, '' ); } );
+		}
+		var sort = form.querySelector( '[name="sssj_sort"]' );
+		if ( sort && sort.value && 'newest' !== sort.value ) {
+			var so = sort.options[ sort.selectedIndex ];
+			addChip( box, ( so ? so.textContent : sort.value ), function () { sort.value = 'newest'; apply( form, true ); } );
+		}
+	}
+
+	function setBasis( form, val ) {
+		var hid = form.querySelector( '[data-sssj-basis]' );
+		if ( hid ) { hid.value = val; }
+		var root = form.closest( '.sssj' );
+		if ( root ) {
+			Array.prototype.forEach.call( root.querySelectorAll( '[data-sssj-basis-pick]' ), function ( b ) {
+				var bv = b.getAttribute( 'data-sssj-basis-pick' );
+				var on = ( ( 'all' === bv ? '' : bv ) === val );
+				b.classList.toggle( 'is-on', on );
+				b.setAttribute( 'aria-pressed', on ? 'true' : 'false' );
+			} );
+		}
+		apply( form, true );
+	}
+
+	function afterRender( form, res ) {
+		bindPagination( form, res );
+		updateCount( res );
+		applyView( currentView() );
+		renderChips( form );
+	}
+
 	function boot() {
-		Array.prototype.forEach.call( document.querySelectorAll( '[data-sssj-filter-form]' ), wireForm );
+		Array.prototype.forEach.call( document.querySelectorAll( '[data-sssj-filter-form]' ), function ( form ) {
+			wireForm( form );
+			renderChips( form );
+			var res = resultsFor( form );
+			if ( res ) { updateCount( res ); }
+		} );
+		applyView( currentView() );
 		document.addEventListener( 'click', function ( e ) {
 			var here = e.target.closest( '[data-sssj-here]' );
 			if ( here ) { e.preventDefault(); useMyLocation( here ); return; }
 			var clear = e.target.closest( '[data-sssj-clear]' );
-			if ( clear ) { e.preventDefault(); clearAll(); }
+			if ( clear ) { e.preventDefault(); clearAll(); return; }
+			var view = e.target.closest( '[data-sssj-view]' );
+			if ( view ) { e.preventDefault(); setView( view.getAttribute( 'data-sssj-view' ) ); return; }
+			var pick = e.target.closest( '[data-sssj-basis-pick]' );
+			if ( pick ) {
+				e.preventDefault();
+				var root = pick.closest( '.sssj' );
+				var form = root ? root.querySelector( '[data-sssj-filter-form]' ) : null;
+				if ( form ) { var bv = pick.getAttribute( 'data-sssj-basis-pick' ); setBasis( form, 'all' === bv ? '' : bv ); }
+			}
 		} );
 	}
 

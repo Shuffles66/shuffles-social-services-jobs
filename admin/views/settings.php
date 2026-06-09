@@ -1597,7 +1597,14 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.38 · 2026-06-10 · Form ergonomics: dropdowns float, cards two-up, clearer sole-trader note</h3>
+				<h3>v1.10.39 · 2026-06-10 · Public Jobs board upgrade</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The Jobs board ([sssj_job_board]) is now the modern public board: a sticky filter bar that stays in reach as you scroll, an engagement-type toggle (All / Employee TFN / Contractor ABN / Volunteer), and a Sort control (Newest / Oldest / Title A to Z).', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Active filters now show as removable chips, the live result count is announced for screen readers, and you can switch between Grid and List layouts (remembered per browser).', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Smoother results: loading skeletons while filtering, a friendly empty-state with “Clear all filters” / “Post a job”, and crisp inline-SVG icons in place of emoji.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'To make this your public Jobs page: Settings → Pages → “Jobs” → Create, then set it as the Jobs page / menu target and retire the old board page.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.38 · 2026-06-10 · Form ergonomics: dropdowns float, cards two-up, clearer sole-trader note</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Fixed: searchable dropdowns (services, languages, cultural focus, etc.) no longer disappear behind the next section, they now float above everything.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Desktop: profile and posting forms now lay their section cards two-up to make better use of the screen, and stay a clean single column on phones and tablets.', 'shuffles-social-services-jobs' ); ?></li>
