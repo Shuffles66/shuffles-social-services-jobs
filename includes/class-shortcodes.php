@@ -1224,6 +1224,63 @@ class Shuffles_SSJ_Shortcodes {
 		return ob_get_clean();
 	}
 
+	/**
+	 * The member's own applications (candidate view): job/need title, status, the date applied, status
+	 * history and a Withdraw button. Single source of truth, used by the dashboard "My applications" tab
+	 * and the "My listings" page. Returns a panel (or an empty-state panel) for a logged-in user.
+	 */
+	public static function render_my_applications( $uid = 0 ) {
+		$uid = $uid ? (int) $uid : get_current_user_id();
+		if ( ! $uid || ! class_exists( 'Shuffles_SSJ_Applications' ) ) {
+			return '';
+		}
+		$mine     = Shuffles_SSJ_Applications::for_applicant( $uid );
+		$action   = esc_url( admin_url( 'admin-post.php' ) );
+		$wd_nonce = wp_create_nonce( 'sssj_app_withdraw' );
+		$datef    = get_option( 'date_format' );
+		ob_start();
+		echo '<div class="sssj-panel">';
+		echo '<h2 style="margin-top:0">' . esc_html__( 'My applications', 'shuffles-social-services-jobs' ) . '</h2>';
+		if ( empty( $mine ) ) {
+			echo '<p class="description">' . esc_html__( 'You have not applied to anything yet. When you apply for a job, it shows here with its date and status.', 'shuffles-social-services-jobs' ) . '</p>';
+		} else {
+			foreach ( $mine as $a ) {
+				$eid     = $a->job_id ? (int) $a->job_id : (int) $a->need_id;
+				$title   = get_the_title( $eid );
+				$applied = ! empty( $a->created_at ) ? mysql2date( $datef, $a->created_at ) : '';
+				$good    = in_array( (string) $a->status, array( 'offer', 'shortlisted', 'interview', 'hired' ), true );
+				echo '<div class="sssj-card" style="margin:8px 0">';
+				echo '<div class="sssj-row" style="justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap">';
+				echo '<strong><a href="' . esc_url( (string) get_permalink( $eid ) ) . '">' . esc_html( $title ? $title : ( '#' . $eid ) ) . '</a></strong>';
+				echo '<span class="sssj-badge ' . ( $good ? 'sssj-badge--verified' : '' ) . '">' . esc_html( Shuffles_SSJ_Applications::status_label( (string) $a->status ) ) . '</span>';
+				echo '</div>';
+				if ( '' !== $applied ) {
+					echo '<p class="description" style="margin:4px 0 0">' . esc_html( sprintf( __( 'Applied %s', 'shuffles-social-services-jobs' ), $applied ) ) . '</p>';
+				}
+				$hist = Shuffles_SSJ_Applications::history( $a );
+				if ( $hist ) {
+					echo '<details class="sssj-apphist"><summary>' . esc_html__( 'Status history', 'shuffles-social-services-jobs' ) . '</summary><ul class="ul-disc" style="margin:6px 0 0 18px">';
+					foreach ( $hist as $h ) {
+						$when = isset( $h['at'] ) ? (string) $h['at'] : '';
+						echo '<li>' . esc_html( Shuffles_SSJ_Applications::status_label( isset( $h['s'] ) ? $h['s'] : '' ) . ( $when ? ', ' . $when : '' ) ) . '</li>';
+					}
+					echo '</ul></details>';
+				}
+				if ( ! in_array( (string) $a->status, array( 'withdrawn', 'hired', 'declined', 'rejected' ), true ) ) {
+					echo '<form method="post" action="' . $action . '" onsubmit="return confirm(\'' . esc_js( __( 'Withdraw this application?', 'shuffles-social-services-jobs' ) ) . '\');" style="margin-top:8px">';
+					echo '<input type="hidden" name="action" value="sssj_app_withdraw" />';
+					echo '<input type="hidden" name="app_id" value="' . esc_attr( $a->id ) . '" />';
+					echo '<input type="hidden" name="sssj_withdraw_nonce" value="' . esc_attr( $wd_nonce ) . '" />';
+					echo '<button type="submit" class="sssj-btn sssj-btn--ghost sssj-btn--sm">' . esc_html__( 'Withdraw', 'shuffles-social-services-jobs' ) . '</button>';
+					echo '</form>';
+				}
+				echo '</div>';
+			}
+		}
+		echo '</div>';
+		return ob_get_clean();
+	}
+
 	/* --- Apply flow + dashboard --- */
 
 	/**
@@ -1435,10 +1492,12 @@ class Shuffles_SSJ_Shortcodes {
 		$n_jobs = (int) count( get_posts( array( 'post_type' => 'sssj_job', 'post_status' => 'publish', 'posts_per_page' => 100, 'fields' => 'ids', 'no_found_rows' => true, 'author' => $uid ) ) );
 		$saved  = get_user_meta( $uid, '_sssj_saved_searches', true );
 		$n_saved = is_array( $saved ) ? count( $saved ) : 0;
+		$want_apps = ( $want_worker || $n_apps > 0 ); // a candidate may apply without posting anything
 
 		// Tabs (slug => label), revealed by the member's hats (cap fallback for legacy users).
 		$tabs = array( 'overview' => __( 'Overview', 'shuffles-social-services-jobs' ) );
 		if ( $want_worker ) { $tabs['profile'] = __( 'My profile', 'shuffles-social-services-jobs' ); }
+		if ( $want_apps ) { $tabs['applications'] = $n_apps ? sprintf( __( 'My applications (%d)', 'shuffles-social-services-jobs' ), $n_apps ) : __( 'My applications', 'shuffles-social-services-jobs' ); }
 		if ( $want_listings ) { $tabs['listings'] = __( 'My listings & applicants', 'shuffles-social-services-jobs' ); }
 		if ( $want_team ) {
 			$team_reqs = 0;
@@ -1522,6 +1581,9 @@ class Shuffles_SSJ_Shortcodes {
 		// Composed sections.
 		if ( $want_listings ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="listings">' . do_shortcode( '[sssj_my_listings]' ) . '</section>';
+		}
+		if ( $want_apps ) {
+			echo '<section class="sssj-dash__panel" data-dash-panel="applications">' . self::render_my_applications( $uid ) . '</section>';
 		}
 		if ( $want_team ) {
 			echo '<section class="sssj-dash__panel" data-dash-panel="team">' . do_shortcode( '[sssj_org_team]' ) . '</section>';

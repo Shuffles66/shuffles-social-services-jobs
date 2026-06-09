@@ -1597,7 +1597,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.42 · 2026-06-10 · Fix: “Create page” for My support requests</h3>
+				<h3>v1.10.43 · 2026-06-10 · See your own applications (date + status)</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'New “My applications” tab on your dashboard, shown to anyone who has applied (you no longer need to be an advertiser to see it). Each application lists the job, the date you applied, the current status, status history, and a Withdraw button.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'On a job you have already applied to, the “Apply for this job” box now shows your status and the date you applied, with “View in My applications” and Withdraw.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.42 · 2026-06-10 · Fix: “Create page” for My support requests</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Fixed the “Create page” button for the “My support requests (seeking workers)” page mapping, it was missing from the allowed list, so it now creates the [sssj_my_needs] page correctly.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

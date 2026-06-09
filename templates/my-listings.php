@@ -127,33 +127,7 @@ $render_apps = function ( $type, $entity_id ) use ( $badge, $nonce, $action ) {
 	}
 	?>
 
-	<div class="sssj-panel">
-		<h2><?php esc_html_e( 'My applications', 'shuffles-social-services-jobs' ); ?></h2>
-		<?php
-		$mine = Shuffles_SSJ_Applications::for_applicant( $uid );
-		if ( empty( $mine ) ) {
-			echo '<p class="description">' . esc_html__( 'You have not applied to anything yet.', 'shuffles-social-services-jobs' ) . '</p>';
-		} else {
-			foreach ( $mine as $a ) {
-				$eid   = $a->job_id ? (int) $a->job_id : (int) $a->need_id;
-				$title = get_the_title( $eid );
-				echo '<div class="sssj-row" style="justify-content:space-between;align-items:center;border-bottom:1px solid #e2e8f0;padding:6px 0">';
-				echo '<span><a href="' . esc_url( (string) get_permalink( $eid ) ) . '">' . esc_html( $title ? $title : '#' . $eid ) . '</a></span>';
-				echo '<span class="sssj-row" style="gap:8px;align-items:center">' . $badge( (string) $a->status ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-				if ( ! in_array( (string) $a->status, array( 'withdrawn', 'hired', 'declined', 'rejected' ), true ) ) {
-					echo '<form method="post" action="' . $action . '" onsubmit="return confirm(\'' . esc_js( __( 'Withdraw this application?', 'shuffles-social-services-jobs' ) ) . '\');" style="margin:0">'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					echo '<input type="hidden" name="action" value="sssj_app_withdraw" />';
-					echo '<input type="hidden" name="app_id" value="' . esc_attr( $a->id ) . '" />';
-					echo '<input type="hidden" name="sssj_withdraw_nonce" value="' . esc_attr( $wd_nonce ) . '" />';
-					echo '<button type="submit" class="sssj-btn sssj-btn--ghost sssj-btn--sm">' . esc_html__( 'Withdraw', 'shuffles-social-services-jobs' ) . '</button>';
-					echo '</form>';
-				}
-				echo '</span>';
-				echo '</div>';
-			}
-		}
-		?>
-	</div>
+	<?php echo Shuffles_SSJ_Shortcodes::render_my_applications( $uid ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 
 	<div class="sssj-panel">
 		<h2><?php esc_html_e( 'My job ads', 'shuffles-social-services-jobs' ); ?></h2>

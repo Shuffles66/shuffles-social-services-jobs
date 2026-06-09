@@ -38,7 +38,34 @@ $uid   = get_current_user_id();
 		if ( ! is_user_logged_in() ) {
 			echo '<p>' . esc_html__( 'Log in to apply.', 'shuffles-social-services-jobs' ) . ' <a class="sssj-btn sssj-btn--primary sssj-btn--sm" href="' . esc_url( Shuffles_SSJ_Shortcodes::login_url( get_permalink( $job_id ) ) ) . '">' . esc_html__( 'Log in', 'shuffles-social-services-jobs' ) . '</a></p>';
 		} elseif ( Shuffles_SSJ_Applications::already_applied( $job_id, 0, $uid ) ) {
-			echo '<p>' . esc_html__( 'You have applied for this job.', 'shuffles-social-services-jobs' ) . '</p>';
+			echo '<p class="sssj-badge sssj-badge--verified">' . esc_html__( 'You have applied for this job.', 'shuffles-social-services-jobs' ) . '</p>';
+			$my_app = null;
+			foreach ( Shuffles_SSJ_Applications::for_applicant( $uid ) as $sssj_a ) {
+				if ( (int) $sssj_a->job_id === $job_id ) { $my_app = $sssj_a; break; }
+			}
+			if ( $my_app ) {
+				$applied = ! empty( $my_app->created_at ) ? mysql2date( get_option( 'date_format' ), $my_app->created_at ) : '';
+				echo '<ul class="ul-disc" style="margin:8px 0 0 18px">';
+				echo '<li>' . esc_html( sprintf( __( 'Status: %s', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Applications::status_label( (string) $my_app->status ) ) ) . '</li>';
+				if ( '' !== $applied ) {
+					echo '<li>' . esc_html( sprintf( __( 'Applied %s', 'shuffles-social-services-jobs' ), $applied ) ) . '</li>';
+				}
+				echo '</ul>';
+				$dash = Shuffles_SSJ_Shortcodes::page_link( 'page_dashboard', '[sssj_dashboard]' );
+				echo '<div class="sssj-row" style="gap:8px;flex-wrap:wrap;margin-top:10px">';
+				if ( $dash ) {
+					echo '<a class="sssj-btn sssj-btn--ghost sssj-btn--sm" href="' . esc_url( $dash ) . '#dash-applications">' . esc_html__( 'View in My applications', 'shuffles-social-services-jobs' ) . '</a>';
+				}
+				if ( ! in_array( (string) $my_app->status, array( 'withdrawn', 'hired', 'declined', 'rejected' ), true ) ) {
+					echo '<form method="post" action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" onsubmit="return confirm(\'' . esc_js( __( 'Withdraw this application?', 'shuffles-social-services-jobs' ) ) . '\');" style="margin:0">';
+					echo '<input type="hidden" name="action" value="sssj_app_withdraw" />';
+					echo '<input type="hidden" name="app_id" value="' . esc_attr( $my_app->id ) . '" />';
+					echo '<input type="hidden" name="sssj_withdraw_nonce" value="' . esc_attr( wp_create_nonce( 'sssj_app_withdraw' ) ) . '" />';
+					echo '<button type="submit" class="sssj-btn sssj-btn--ghost sssj-btn--sm">' . esc_html__( 'Withdraw application', 'shuffles-social-services-jobs' ) . '</button>';
+					echo '</form>';
+				}
+				echo '</div>';
+			}
 		} elseif ( ! Shuffles_SSJ_Applications::can_respond( $basis ) ) {
 			$profile_url = Shuffles_SSJ_Shortcodes::page_link( 'page_post_worker', '[sssj_post_worker]' );
 			echo '<p>' . esc_html__( 'This is contractor (ABN) work. Add a valid ABN to your worker profile to apply.', 'shuffles-social-services-jobs' ) . '</p>';
