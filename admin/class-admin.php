@@ -673,6 +673,7 @@ class Shuffles_SSJ_Admin {
 			'page_post_worker' => '[sssj_post_worker]',
 			'page_need_board'  => '[sssj_need_board]',
 			'page_post_need'   => '[sssj_post_need]',
+			'page_my_needs'    => '[sssj_my_needs]',
 			'page_credentials' => '[sssj_credentials]',
 			'page_onboard'     => '[sssj_onboard]',
 			'page_dashboard'   => '[sssj_dashboard]',

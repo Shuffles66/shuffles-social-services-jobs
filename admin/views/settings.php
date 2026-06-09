@@ -1597,7 +1597,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.41 · 2026-06-10 · Attach to an organisation (matching email domain)</h3>
+				<h3>v1.10.42 · 2026-06-10 · Fix: “Create page” for My support requests</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Fixed the “Create page” button for the “My support requests (seeking workers)” page mapping, it was missing from the allowed list, so it now creates the [sssj_my_needs] page correctly.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.41 · 2026-06-10 · Attach to an organisation (matching email domain)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Organisations can set an “Organisation email domain” (e.g. acme.org.au) on their profile.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'On your My profile tab, if your account email is on an organisation’s domain, you can now “Attach to organisation” next to “Create organisation”. It sends a request the organisation’s admin approves in their Team tab, so nobody is added without approval.', 'shuffles-social-services-jobs' ); ?></li>
