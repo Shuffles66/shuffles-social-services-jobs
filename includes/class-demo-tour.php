@@ -276,6 +276,8 @@ class Shuffles_SSJ_Demo_Tour {
 			}
 			echo '</div>';
 
+			echo self::live_card( $key );
+
 			if ( $onboard ) {
 				$dt_cta = isset( $cta_of[ $key ] ) ? $cta_of[ $key ] : null; $dt_url = ( $dt_cta && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) ? Shuffles_SSJ_Shortcodes::page_link( $dt_cta[1], $dt_cta[2] ) : ''; $dt_url = $dt_url ? $dt_url : $onboard; $dt_label = $dt_cta ? $dt_cta[0] : __( 'Try this yourself', 'shuffles-social-services-jobs' ); $dt_exp = isset( $explore_of[ $key ] ) ? $explore_of[ $key ] : null; $dt_exp_url = ( $dt_exp && class_exists( 'Shuffles_SSJ_Shortcodes' ) ) ? Shuffles_SSJ_Shortcodes::page_link( $dt_exp[1], $dt_exp[2] ) : ''; $dt_exp_btn = ''; if ( $dt_exp_url ) { $dt_exp_url = add_query_arg( array( 'sssj_loc' => $p['loc'], 'sssj_radius' => 50 ), $dt_exp_url ); $dt_exp_btn = '<a class="sssj-btn sssj-btn--ghost" href="' . esc_url( $dt_exp_url ) . '">' . esc_html( sprintf( $dt_exp[0], $p['loc'] ) ) . '</a> '; } echo '<p style="margin-top:16px"><a class="sssj-btn sssj-btn--primary" href="' . esc_url( $dt_url ) . '">' . esc_html( $dt_label ) . '</a> ' . $dt_exp_btn . '<a class="sssj-demo-top" href="#">' . esc_html__( 'Back to top', 'shuffles-social-services-jobs' ) . '</a></p>';
 			}
@@ -284,5 +286,66 @@ class Shuffles_SSJ_Demo_Tour {
 
 		echo '</div>';
 		return ob_get_clean();
+	}
+
+	/**
+	 * Phase 2: a real, public listing relevant to this persona, shown inline ("show, don't tell").
+	 * Privacy-safe: only PUBLIC worker profiles, published jobs and non-hidden organisations are ever
+	 * shown here; participant needs are logged-in-only and are NEVER rendered on this public page.
+	 *
+	 * @param string $key Persona key.
+	 * @return string HTML (empty when there is nothing safe to show).
+	 */
+	private static function live_card( $key ) {
+		$map = array(
+			'candidate'  => 'sssj_worker',
+			'contractor' => 'sssj_worker',
+			'employer'   => 'sssj_job',
+			'provider'   => 'sssj_org',
+			'supplier'   => 'sssj_org',
+		);
+		if ( ! isset( $map[ $key ] ) ) {
+			return '';
+		}
+		$pt   = $map[ $key ];
+		$args = array(
+			'post_type'           => $pt,
+			'post_status'         => 'publish',
+			'posts_per_page'      => 1,
+			'orderby'             => 'date',
+			'order'               => 'DESC',
+			'no_found_rows'       => true,
+			'ignore_sticky_posts' => true,
+		);
+		if ( 'sssj_worker' === $pt ) {
+			$args['meta_query'] = array( array( 'key' => 'visibility', 'value' => 'public', 'compare' => '=' ) );
+		} elseif ( 'sssj_org' === $pt ) {
+			$args['meta_query'] = array(
+				'relation' => 'OR',
+				array( 'key' => 'org_hidden', 'compare' => 'NOT EXISTS' ),
+				array( 'key' => 'org_hidden', 'value' => '1', 'compare' => '!=' ),
+			);
+		}
+		$q = new WP_Query( $args );
+		if ( empty( $q->posts ) ) {
+			return '';
+		}
+		$post  = $q->posts[0];
+		$title = get_the_title( $post );
+		$link  = get_permalink( $post );
+		if ( '' === $title || ! $link ) {
+			return '';
+		}
+		$labels = array(
+			'sssj_worker' => __( 'A real worker profile on Just Tasks', 'shuffles-social-services-jobs' ),
+			'sssj_job'    => __( 'A live job on Just Tasks', 'shuffles-social-services-jobs' ),
+			'sssj_org'    => __( 'A real organisation on Just Tasks', 'shuffles-social-services-jobs' ),
+		);
+		$tag  = isset( $labels[ $pt ] ) ? $labels[ $pt ] : __( 'Live on Just Tasks', 'shuffles-social-services-jobs' );
+		$out  = '<div class="sssj-demo-live">';
+		$out .= '<span class="sssj-demo-live__tag">' . esc_html( $tag ) . '</span>';
+		$out .= '<a class="sssj-demo-live__card" href="' . esc_url( $link ) . '"><strong>' . esc_html( $title ) . '</strong><span class="sssj-demo-live__go">' . esc_html__( 'View', 'shuffles-social-services-jobs' ) . ' &rarr;</span></a>';
+		$out .= '</div>';
+		return $out;
 	}
 }

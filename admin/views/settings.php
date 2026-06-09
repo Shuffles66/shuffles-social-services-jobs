@@ -1589,7 +1589,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.16 · 2026-06-09 · Demo tour Phase 2 (start): “Explore as this persona”</h3>
+				<h3>v1.10.17 · 2026-06-09 · Demo tour Phase 2: live listings inline</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The tour now shows a real, live listing inside each relevant persona (a public worker profile, a current job, or a real organisation), linking straight to it, so visitors see the marketplace is real rather than just described. Privacy is preserved: only public profiles, published jobs and visible organisations are shown, and participant requests (which are logged-in-only) are never displayed here.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.16 · 2026-06-09 · Demo tour Phase 2 (start): “Explore as this persona”</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Each persona on the tour now has an “Explore” button that opens the most relevant board (workers, jobs, contract work or organisations), pre-filtered to that persona’s area, so visitors can move from the story straight into the live marketplace.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

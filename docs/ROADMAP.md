@@ -232,8 +232,10 @@ independently deployable phases (each lint -> build -> deploy on its own) so val
   I offer work), so visitors see only the relevant stories.
 
 **Phase 2 - Real test drive (depends on the enriched demo seeder + Unsplash, both wired):**
-- Embed each persona's real seeded content inline (Jordan's worker card, Riverview's job ad, Aria's
-  pseudonymous request), refreshing as the seeder runs. ⏳
+- ✅ (v1.10.17) Embed a real, live listing inline per persona (public worker profile / current job /
+  visible organisation), linking straight to it; refreshes as content is added. Privacy-safe: only public
+  workers, published jobs and non-hidden orgs are shown; participant needs (logged-in-only) are NEVER
+  rendered on this public page.
 - ✅ (v1.10.16) "Explore as this persona" deep-links: each persona has an "Explore" button that opens the
   most relevant board (workers / jobs / contract work / organisations) pre-filtered to that persona's area
   via `sssj_loc` + `sssj_radius`. (Admin View-as deep-link still ⏳.)
