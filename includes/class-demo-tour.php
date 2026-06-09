@@ -175,6 +175,15 @@ class Shuffles_SSJ_Demo_Tour {
 		}
 		wp_enqueue_script( 'sssj-display' );
 
+		$raw   = is_array( $atts ) ? $atts : array();
+		$kiosk = in_array( 'autoplay', $raw, true ) || ( ! empty( $raw['autoplay'] ) && 'off' !== $raw['autoplay'] ) || isset( $_GET['sssj_kiosk'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( $kiosk ) {
+			$secs = 8;
+			if ( ! empty( $raw['autoplay'] ) && is_numeric( $raw['autoplay'] ) ) { $secs = max( 3, (int) $raw['autoplay'] ); }
+			if ( ! empty( $raw['seconds'] ) && is_numeric( $raw['seconds'] ) ) { $secs = max( 3, (int) $raw['seconds'] ); }
+			return self::kiosk( $secs );
+		}
+
 		$people  = self::personas();
 		$onboard = class_exists( 'Shuffles_SSJ_Shortcodes' ) ? Shuffles_SSJ_Shortcodes::page_link( 'page_onboard', '[sssj_onboard]' ) : '';
 
@@ -215,7 +224,8 @@ class Shuffles_SSJ_Demo_Tour {
 
 		// Intro.
 		echo '<section class="sssj-demo-intro sssj-reveal" data-sssj-reveal><h1 class="sssj-demo-intro__title">' . esc_html__( 'Take Just Tasks for a test drive', 'shuffles-social-services-jobs' ) . '</h1>';
-		echo '<p class="sssj-demo-intro__sub">' . esc_html__( 'See the marketplace through the people who use it. Pick a role to explore their story and the features they rely on. Every example below is fictional.', 'shuffles-social-services-jobs' ) . '</p></section>';
+		echo '<p class="sssj-demo-intro__sub">' . esc_html__( 'See the marketplace through the people who use it. Pick a role to explore their story and the features they rely on. Every example below is fictional.', 'shuffles-social-services-jobs' ) . '</p>';
+		echo '<p class="sssj-demo-intro__kiosklink"><a href="' . esc_url( add_query_arg( 'sssj_kiosk', '1' ) ) . '">&#9654; ' . esc_html__( 'Play as a slideshow', 'shuffles-social-services-jobs' ) . '</a></p></section>';
 
 		// Phase 3: trust + on-brand band: safety guardrails, accessibility note, and live stats.
 		echo '<section class="sssj-demo-trust sssj-reveal" data-sssj-reveal>';
@@ -370,5 +380,54 @@ class Shuffles_SSJ_Demo_Tour {
 		$out .= '<a class="sssj-demo-live__card" href="' . esc_url( $link ) . '"><strong>' . esc_html( $title ) . '</strong><span class="sssj-demo-live__go">' . esc_html__( 'View', 'shuffles-social-services-jobs' ) . ' &rarr;</span></a>';
 		$out .= '</div>';
 		return $out;
+	}
+
+	/**
+	 * Phase 4: an autoplay "kiosk" slideshow of the personas in clean 16:9 framing, for screen-recording
+	 * snappy promos or looping on a reception screen. Triggered by [sssj_demo_tour autoplay] (optionally
+	 * autoplay="6" for seconds per slide) or ?sssj_kiosk. Controls: play/pause, prev/next, dots, arrow keys.
+	 *
+	 * @param int $secs Seconds per slide.
+	 * @return string
+	 */
+	private static function kiosk( $secs ) {
+		$people = self::personas();
+		$site   = get_bloginfo( 'name' );
+		$total  = count( $people );
+		ob_start();
+		echo '<div class="sssj sssj--demo sssj-kiosk" data-sssj-kiosk data-interval="' . esc_attr( (int) $secs * 1000 ) . '">';
+		echo '<div class="sssj-kiosk__stage">';
+		$i = 0;
+		foreach ( $people as $key => $p ) {
+			$img   = class_exists( 'Shuffles_SSJ_Stock' ) ? Shuffles_SSJ_Stock::demo_image( $key ) : null;
+			$style = '--demo-ac:' . $p['accent'];
+			if ( $img ) { $style .= ";--demo-photo:url('" . esc_url( $img['url'] ) . "')"; }
+			echo '<section class="sssj-kiosk__slide' . ( 0 === $i ? ' is-active' : '' ) . ( $img ? ' has-photo' : '' ) . '" style="' . esc_attr( $style ) . '" aria-hidden="' . ( 0 === $i ? 'false' : 'true' ) . '">';
+			echo '<div class="sssj-kiosk__inner">';
+			echo '<span class="sssj-kiosk__icon" aria-hidden="true">' . esc_html( $p['icon'] ) . '</span>';
+			echo '<span class="sssj-kiosk__role">' . esc_html( $p['role'] ) . '</span>';
+			echo '<h2 class="sssj-kiosk__name">' . esc_html( $p['name'] ) . ' &middot; ' . esc_html( $p['loc'] ) . '</h2>';
+			echo '<p class="sssj-kiosk__tag">' . esc_html( $p['tagline'] ) . '</p>';
+			echo '<ul class="sssj-kiosk__points">';
+			foreach ( array_slice( (array) $p['items'], 0, 3 ) as $it ) {
+				echo '<li>' . esc_html( $it ) . '</li>';
+			}
+			echo '</ul></div></section>';
+			$i++;
+		}
+		echo '</div>';
+		echo '<div class="sssj-kiosk__bar">';
+		echo '<button type="button" class="sssj-kiosk__btn" data-kiosk-prev aria-label="' . esc_attr__( 'Previous', 'shuffles-social-services-jobs' ) . '">&lsaquo;</button>';
+		echo '<div class="sssj-kiosk__dots">';
+		for ( $d = 0; $d < $total; $d++ ) {
+			echo '<button type="button" class="sssj-kiosk__dot' . ( 0 === $d ? ' is-active' : '' ) . '" data-kiosk-dot="' . (int) $d . '" aria-label="' . esc_attr( sprintf( __( 'Go to slide %d', 'shuffles-social-services-jobs' ), $d + 1 ) ) . '"></button>';
+		}
+		echo '</div>';
+		echo '<button type="button" class="sssj-kiosk__btn" data-kiosk-playpause aria-label="' . esc_attr__( 'Pause', 'shuffles-social-services-jobs' ) . '">&#10074;&#10074;</button>';
+		echo '<button type="button" class="sssj-kiosk__btn" data-kiosk-next aria-label="' . esc_attr__( 'Next', 'shuffles-social-services-jobs' ) . '">&rsaquo;</button>';
+		echo '</div>';
+		echo '<div class="sssj-kiosk__brand">' . esc_html( $site ) . '</div>';
+		echo '</div>';
+		return ob_get_clean();
 	}
 }

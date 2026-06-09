@@ -1596,7 +1596,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.23 · 2026-06-09 · Menu dropdown z-index fix + demo tour Phase 3 (trust)</h3>
+				<h3>v1.10.24 · 2026-06-09 · Demo tour Phase 4: autoplay “kiosk” slideshow</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'New marketing/kiosk mode for the demo tour: [sssj_demo_tour autoplay] (or add ?sssj_kiosk to the tour URL, or click “Play as a slideshow”) shows the personas one at a time in clean 16:9 framing that auto-advances and loops, ideal for screen-recording a snappy promo or looping on a reception screen.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'Controls: play/pause, previous/next, progress dots and arrow keys. Set the pace with autoplay="6" (seconds per slide; default 8).', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.23 · 2026-06-09 · Menu dropdown z-index fix + demo tour Phase 3 (trust)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Fixed the navigation dropdowns appearing behind the page banner: the menu now sits above page content so the “Find / About / My account” submenus are fully visible.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Demo tour Phase 3: a “Safety, built in” trust band (privacy, verified checks, safe relay) with an accessibility note and live counters near the top, plus a sticky persona bar that follows you down the page and highlights whoever you are reading about. The trust band and sticky bar respect the “Which are you?” filter.', 'shuffles-social-services-jobs' ); ?></li>

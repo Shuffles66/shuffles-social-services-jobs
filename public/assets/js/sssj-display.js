@@ -136,7 +136,50 @@
 		Array.prototype.forEach.call( sections, function ( s ) { spy.observe( s ); } );
 	}
 
-	function start() { boot(); carousels(); demoFilter(); demoSpy(); }
+	// Phase 4: autoplay "kiosk" slideshow controller (one persona slide at a time, looping).
+	function kiosk() {
+		var root = document.querySelector( '[data-sssj-kiosk]' );
+		if ( ! root ) { return; }
+		var slides = root.querySelectorAll( '.sssj-kiosk__slide' );
+		var dots   = root.querySelectorAll( '[data-kiosk-dot]' );
+		var n      = slides.length;
+		if ( ! n ) { return; }
+		var cur = 0, playing = true, timer = null;
+		var interval = parseInt( root.getAttribute( 'data-interval' ), 10 ) || 8000;
+		function show( i ) {
+			cur = ( i + n ) % n;
+			for ( var k = 0; k < n; k++ ) {
+				slides[ k ].classList.toggle( 'is-active', k === cur );
+				slides[ k ].setAttribute( 'aria-hidden', k === cur ? 'false' : 'true' );
+			}
+			Array.prototype.forEach.call( dots, function ( d, di ) { d.classList.toggle( 'is-active', di === cur ); } );
+		}
+		function startTimer() { stopTimer(); if ( playing ) { timer = window.setInterval( function () { show( cur + 1 ); }, interval ); } }
+		function stopTimer() { if ( timer ) { window.clearInterval( timer ); timer = null; } }
+		function setPlay( p ) {
+			playing = p;
+			var b = root.querySelector( '[data-kiosk-playpause]' );
+			if ( b ) { b.innerHTML = p ? '❙❙' : '▶'; b.setAttribute( 'aria-label', p ? 'Pause' : 'Play' ); }
+			startTimer();
+		}
+		function bind( sel, fn ) { var el = root.querySelector( sel ); if ( el ) { el.addEventListener( 'click', fn ); } }
+		bind( '[data-kiosk-next]', function () { show( cur + 1 ); startTimer(); } );
+		bind( '[data-kiosk-prev]', function () { show( cur - 1 ); startTimer(); } );
+		bind( '[data-kiosk-playpause]', function () { setPlay( ! playing ); } );
+		Array.prototype.forEach.call( dots, function ( d ) {
+			d.addEventListener( 'click', function () { show( parseInt( d.getAttribute( 'data-kiosk-dot' ), 10 ) || 0 ); startTimer(); } );
+		} );
+		document.addEventListener( 'keydown', function ( e ) {
+			if ( ! root.offsetParent ) { return; }
+			if ( 'ArrowRight' === e.key ) { show( cur + 1 ); startTimer(); }
+			else if ( 'ArrowLeft' === e.key ) { show( cur - 1 ); startTimer(); }
+			else if ( ' ' === e.key ) { e.preventDefault(); setPlay( ! playing ); }
+		} );
+		show( 0 );
+		startTimer();
+	}
+
+	function start() { boot(); carousels(); demoFilter(); demoSpy(); kiosk(); }
 
 	if ( 'loading' === document.readyState ) {
 		document.addEventListener( 'DOMContentLoaded', start );
