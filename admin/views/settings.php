@@ -1597,7 +1597,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.43 · 2026-06-10 · See your own applications (date + status)</h3>
+				<h3>v1.10.44 · 2026-06-10 · Traceability: reference, date, type & category on your records</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'Your own records now carry an at-a-glance audit line for identification and tracking: a reference number, the date posted (and updated when changed), the type and the category. Added to My job ads, My support requests and My applications.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.43 · 2026-06-10 · See your own applications (date + status)</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'New “My applications” tab on your dashboard, shown to anyone who has applied (you no longer need to be an advertiser to see it). Each application lists the job, the date you applied, the current status, status history, and a Withdraw button.', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'On a job you have already applied to, the “Apply for this job” box now shows your status and the date you applied, with “View in My applications” and Withdraw.', 'shuffles-social-services-jobs' ); ?></li>

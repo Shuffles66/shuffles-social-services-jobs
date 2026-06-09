@@ -1164,6 +1164,7 @@ class Shuffles_SSJ_Shortcodes {
 				echo '<span>' . esc_html( 'open' === $bucket ? sprintf( __( 'Closes on %s', 'shuffles-social-services-jobs' ), mysql2date( $datef, $ends ) ) : sprintf( __( 'Was due %s', 'shuffles-social-services-jobs' ), mysql2date( $datef, $ends ) ) ) . '</span>';
 			}
 			echo '</div>';
+			echo self::listing_audit_line( $n ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo self::listing_actions_html( $n ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			echo '</div>';
 		}
@@ -1254,9 +1255,11 @@ class Shuffles_SSJ_Shortcodes {
 				echo '<strong><a href="' . esc_url( (string) get_permalink( $eid ) ) . '">' . esc_html( $title ? $title : ( '#' . $eid ) ) . '</a></strong>';
 				echo '<span class="sssj-badge ' . ( $good ? 'sssj-badge--verified' : '' ) . '">' . esc_html( Shuffles_SSJ_Applications::status_label( (string) $a->status ) ) . '</span>';
 				echo '</div>';
-				if ( '' !== $applied ) {
-					echo '<p class="description" style="margin:4px 0 0">' . esc_html( sprintf( __( 'Applied %s', 'shuffles-social-services-jobs' ), $applied ) ) . '</p>';
-				}
+				$abits = array( sprintf( __( 'Ref #%d', 'shuffles-social-services-jobs' ), (int) $a->id ) );
+				if ( '' !== $applied ) { $abits[] = sprintf( __( 'Applied %s', 'shuffles-social-services-jobs' ), $applied ); }
+				$abasis = $a->job_id ? (string) get_post_meta( (int) $a->job_id, 'engagement_basis', true ) : 'abn';
+				if ( '' !== $abasis && class_exists( 'Shuffles_SSJ_Query' ) ) { $abits[] = sprintf( __( 'Type: %s', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Query::basis_label( $abasis ) ); }
+				echo '<p class="description" style="margin:4px 0 0">' . esc_html( implode( '  ' . "xC2xB7" . '  ', $abits ) ) . '</p>';
 				$hist = Shuffles_SSJ_Applications::history( $a );
 				if ( $hist ) {
 					echo '<details class="sssj-apphist"><summary>' . esc_html__( 'Status history', 'shuffles-social-services-jobs' ) . '</summary><ul class="ul-disc" style="margin:6px 0 0 18px">';
@@ -1279,6 +1282,52 @@ class Shuffles_SSJ_Shortcodes {
 		}
 		echo '</div>';
 		return ob_get_clean();
+	}
+
+	/**
+	 * Traceability / audit line for a member's own record (job or participant request): reference id,
+	 * posted date, updated date (when materially changed), engagement type and category. Standing rule:
+	 * the logged-in member's own transactions carry identification + audit detail.
+	 *
+	 * @param int|WP_Post $post
+	 */
+	public static function listing_audit_line( $post ) {
+		$post = get_post( $post );
+		if ( ! $post ) {
+			return '';
+		}
+		$df   = get_option( 'date_format' );
+		$bits = array();
+		/* translators: %d: reference id. */
+		$bits[] = sprintf( __( 'Ref #%d', 'shuffles-social-services-jobs' ), (int) $post->ID );
+		$posted = get_post_time( $df, false, $post, true );
+		if ( $posted ) {
+			/* translators: %s: date posted. */
+			$bits[] = sprintf( __( 'Posted %s', 'shuffles-social-services-jobs' ), $posted );
+		}
+		$mod = (int) get_post_modified_time( 'U', true, $post );
+		$pub = (int) get_post_time( 'U', true, $post );
+		if ( $mod && $pub && ( $mod - $pub ) > 120 ) {
+			/* translators: %s: date last updated. */
+			$bits[] = sprintf( __( 'Updated %s', 'shuffles-social-services-jobs' ), get_post_modified_time( $df, false, $post, true ) );
+		}
+		if ( in_array( $post->post_type, array( 'sssj_job', 'sssj_need' ), true ) && class_exists( 'Shuffles_SSJ_Query' ) ) {
+			$basis = ( 'sssj_need' === $post->post_type ) ? 'abn' : (string) get_post_meta( $post->ID, 'engagement_basis', true );
+			if ( '' !== $basis ) {
+				/* translators: %s: engagement type. */
+				$bits[] = sprintf( __( 'Type: %s', 'shuffles-social-services-jobs' ), Shuffles_SSJ_Query::basis_label( $basis ) );
+			}
+		}
+		$cat_tax = ( 'sssj_need' === $post->post_type ) ? 'sssjt_support_category' : 'sssjt_category';
+		$cats    = get_the_terms( $post->ID, $cat_tax );
+		if ( $cats && ! is_wp_error( $cats ) ) {
+			$names = array_slice( (array) wp_list_pluck( $cats, 'name' ), 0, 4 );
+			if ( $names ) {
+				/* translators: %s: category list. */
+				$bits[] = sprintf( __( 'Category: %s', 'shuffles-social-services-jobs' ), implode( ', ', $names ) );
+			}
+		}
+		return '<p class="sssj-meta description" style="margin:4px 0 0">' . esc_html( implode( '  ' . "\xC2\xB7" . '  ', $bits ) ) . '</p>';
 	}
 
 	/* --- Apply flow + dashboard --- */
