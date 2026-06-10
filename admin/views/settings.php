@@ -1597,7 +1597,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.46 · 2026-06-10 · Advertiser: applicant review workflow + sortable, filterable, AI-ranked list</h3>
+				<h3>v1.10.47 · 2026-06-10 · “Workers who may suit this role” is now owner-only</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The suggested-workers panel on a job page (“Workers who may suit this role”) now shows only to the advertiser who created the job (or an admin), not to candidates viewing the job. Better for the workers’ privacy too.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.46 · 2026-06-10 · Advertiser: applicant review workflow + sortable, filterable, AI-ranked list</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'Each applicant now shows a “Review steps” workflow from your side (what to do at each stage), worded for the job type (employee TFN vs contractor ABN).', 'shuffles-social-services-jobs' ); ?></li>
 							<li><?php esc_html_e( 'Your applicants list (grouped by job) is now easier to read and can be sorted (best match / newest / oldest / stage / name) and filtered by stage. Your choices are remembered.', 'shuffles-social-services-jobs' ); ?></li>

@@ -2817,11 +2817,16 @@ class Shuffles_SSJ_Shortcodes {
 		return $content . ob_get_clean();
 	}
 
-	/** Best-matched workers appended to a single job page. */
+	/** Best-matched workers appended to a single job page, only for the job's creator (or an admin). */
 	public function maybe_job_matches( $content ) {
 		if ( is_singular( 'sssj_job' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Matcher' ) ) {
+			$job_id   = get_the_ID();
+			$is_owner = is_user_logged_in() && ( (int) get_post_field( 'post_author', $job_id ) === get_current_user_id() || current_user_can( 'manage_options' ) );
+			if ( ! $is_owner ) {
+				return $content; // candidates viewing the job do not see the suggested-workers panel.
+			}
 			wp_enqueue_style( 'sssj' );
-			$html = Shuffles_SSJ_Matcher::render_worker_matches( get_the_ID() );
+			$html = Shuffles_SSJ_Matcher::render_worker_matches( $job_id );
 			if ( $html ) {
 				return $content . $html;
 			}
