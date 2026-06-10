@@ -2834,11 +2834,18 @@ class Shuffles_SSJ_Shortcodes {
 		return $content;
 	}
 
-	/** Best-matched jobs appended to a single worker profile. */
+	/** Best-matched jobs appended to a single worker profile, only for the worker themselves (or an admin). */
 	public function maybe_worker_matches( $content ) {
 		if ( is_singular( 'sssj_worker' ) && in_the_loop() && is_main_query() && class_exists( 'Shuffles_SSJ_Matcher' ) ) {
+			$worker_id = get_the_ID();
+			$is_owner  = is_user_logged_in() && ( (int) get_post_meta( $worker_id, 'worker_user_id', true ) === get_current_user_id() || current_user_can( 'manage_options' ) );
+			// RESERVED: when a non-owner views this profile, this space is earmarked for a future Advanced Ads
+			// placement (the single-listing ad already renders via maybe_listing_ad, so nothing is added here yet).
+			if ( ! $is_owner ) {
+				return $content;
+			}
 			wp_enqueue_style( 'sssj' );
-			$html = Shuffles_SSJ_Matcher::render_job_matches( get_the_ID() );
+			$html = Shuffles_SSJ_Matcher::render_job_matches( $worker_id );
 			if ( $html ) {
 				return $content . $html;
 			}

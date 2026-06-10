@@ -1597,7 +1597,11 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.47 · 2026-06-10 · “Workers who may suit this role” is now owner-only</h3>
+				<h3>v1.10.48 · 2026-06-10 · “Open roles this worker may suit” is now owner-only</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The suggested-roles panel on a worker profile (“Open roles this worker may suit”) now shows only to that worker (or an admin), matching the job-page change. That space on other people’s profiles is reserved for a future Advanced Ads placement.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.47 · 2026-06-10 · “Workers who may suit this role” is now owner-only</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The suggested-workers panel on a job page (“Workers who may suit this role”) now shows only to the advertiser who created the job (or an admin), not to candidates viewing the job. Better for the workers’ privacy too.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>
