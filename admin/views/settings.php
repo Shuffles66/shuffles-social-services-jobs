@@ -1597,7 +1597,12 @@ $open_form = function ( $tab_slug ) use ( $group ) {
 			?>
 			<div id="sssj-tab-changelog">
 				<h2><?php esc_html_e( 'Changelog', 'shuffles-social-services-jobs' ); ?></h2>
-				<h3>v1.10.48 · 2026-06-10 · “Open roles this worker may suit” is now owner-only</h3>
+				<h3>v1.10.49 · 2026-06-10 · A4 Portrait option for résumés and flyers</h3>
+						<ul class="ul-disc">
+							<li><?php esc_html_e( 'The résumé and flyer builders now have a “Page size” choice: A4 Portrait (the page exactly as it prints, 210 x 297 mm) or Web card (a compact on-screen preview). A4 Portrait is the default; your choice is remembered.', 'shuffles-social-services-jobs' ); ?></li>
+							<li><?php esc_html_e( 'The PDF and print output were already A4 portrait; the preview now matches it so what you see is what you get.', 'shuffles-social-services-jobs' ); ?></li>
+						</ul>
+					<h3>v1.10.48 · 2026-06-10 · “Open roles this worker may suit” is now owner-only</h3>
 						<ul class="ul-disc">
 							<li><?php esc_html_e( 'The suggested-roles panel on a worker profile (“Open roles this worker may suit”) now shows only to that worker (or an admin), matching the job-page change. That space on other people’s profiles is reserved for a future Advanced Ads placement.', 'shuffles-social-services-jobs' ); ?></li>
 						</ul>

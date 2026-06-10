@@ -437,6 +437,28 @@
 		} ).catch( function () { current.style.opacity = ''; current.removeAttribute( 'aria-busy' ); } );
 	}
 
+	// Page size toggle (A4 portrait vs web card): a CSS class on the asset, remembered per browser.
+	function initSize( root ) {
+		var picks = root.querySelectorAll( '[data-asset-size-pick]' );
+		if ( ! picks.length ) { return; }
+		var asset = root.querySelector( '#sssj-asset' );
+		var saved = 'a4';
+		try { saved = window.localStorage.getItem( 'sssj_asset_size' ) || 'a4'; } catch ( e ) {}
+		function apply( sz ) {
+			if ( asset ) { asset.classList.toggle( 'sssj-asset--a4', 'a4' === sz ); }
+			Array.prototype.forEach.call( picks, function ( b ) {
+				var on = b.getAttribute( 'data-asset-size-pick' ) === sz;
+				b.classList.toggle( 'sssj-btn--primary', on );
+				b.classList.toggle( 'sssj-btn--ghost', ! on );
+			} );
+			try { window.localStorage.setItem( 'sssj_asset_size', sz ); } catch ( e ) {}
+		}
+		Array.prototype.forEach.call( picks, function ( b ) {
+			b.addEventListener( 'click', function () { apply( b.getAttribute( 'data-asset-size-pick' ) ); } );
+		} );
+		apply( 'card' === saved ? 'card' : 'a4' );
+	}
+
 	// Résumé layout toggle (ATS vs styled): a CSS skin on the same DOM, remembered per browser.
 	function initFormat( root ) {
 		var picks = root.querySelectorAll( '[data-asset-format-pick]' );
@@ -467,6 +489,7 @@
 		bindEditing( root );
 		initTheme( root );
 		initFormat( root );
+		initSize( root );
 		root.addEventListener( 'click', function ( e ) {
 			// Asset-type tabs + job pick-list links: swap in place instead of reloading the whole page.
 			var link = e.target.closest ? e.target.closest( 'a[href*="sssj_asset="]' ) : null;

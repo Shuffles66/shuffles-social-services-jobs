@@ -52,6 +52,16 @@ $theme_picker = function () use ( $asset_themes ) {
 };
 
 /** Render the ATS vs styled layout toggle (résumé only). */
+/** Render the page-size toggle (A4 portrait vs web card) for printable assets (resume / flyers). */
+$size_picker = function () {
+	echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'Page size', 'shuffles-social-services-jobs' ) . '</h3>';
+	echo '<div class="sssj-row" data-asset-size>';
+	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--primary" data-asset-size-pick="a4">' . esc_html__( 'A4 Portrait', 'shuffles-social-services-jobs' ) . '</button>';
+	echo '<button type="button" class="sssj-btn sssj-btn--sm sssj-btn--ghost" data-asset-size-pick="card">' . esc_html__( 'Web card', 'shuffles-social-services-jobs' ) . '</button>';
+	echo '</div>';
+	echo '<p class="description">' . esc_html__( 'A4 Portrait shows the page exactly as it prints (210 x 297 mm). Web card is a compact preview for sharing on screen. Both export to PDF.', 'shuffles-social-services-jobs' ) . '</p></div>';
+};
+
 $format_picker = function () {
 	echo '<div class="sssj-panel"><h3 style="margin-top:0">' . esc_html__( 'Layout', 'shuffles-social-services-jobs' ) . '</h3>';
 	echo '<div class="sssj-row" data-asset-format>';
@@ -124,7 +134,7 @@ if ( 'job' === $type ) {
 						<p class="description"><?php esc_html_e( 'This flyer is built from the job ad. To change the wording, pay or location, edit the job.', 'shuffles-social-services-jobs' ); ?>
 							<a href="<?php echo esc_url( remove_query_arg( 'sssj_job_id', add_query_arg( 'sssj_asset', 'job' ) ) ) . '#dash-create-asset'; ?>"><?php esc_html_e( 'Pick another job', 'shuffles-social-services-jobs' ); ?></a></p>
 					</div>
-						<?php $theme_picker(); if ( 'resume' === $type ) { $format_picker(); } ?>
+						<?php $theme_picker(); if ( in_array( $type, array( 'resume', 'flyer', 'job' ), true ) ) { $size_picker(); } if ( 'resume' === $type ) { $format_picker(); } ?>
 					<div class="sssj-panel">
 						<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>
 						<ul class="sssj-asset-check">
@@ -232,7 +242,7 @@ $show_blurb  = in_array( $type, array( 'resume', 'flyer' ), true );
 				</p>
 			</div>
 
-			<?php $theme_picker(); if ( 'resume' === $type ) { $format_picker(); } ?>
+			<?php $theme_picker(); if ( in_array( $type, array( 'resume', 'flyer', 'job' ), true ) ) { $size_picker(); } if ( 'resume' === $type ) { $format_picker(); } ?>
 
 			<div class="sssj-panel">
 				<h3 style="margin-top:0"><?php esc_html_e( 'Readability check', 'shuffles-social-services-jobs' ); ?></h3>

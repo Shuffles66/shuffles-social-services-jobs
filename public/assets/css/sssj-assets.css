@@ -156,3 +156,6 @@
 .sssj-ats-tips > summary{ cursor:pointer; color:var(--sssj-blue,#3897e0); font-weight:600; }
 .sssj-ats-tips ul{ margin:4px 0 8px; padding-left:20px; list-style:disc; }
 .sssj-ats-tips li{ margin:2px 0; font-size:var(--sssj-fs-sm,.9rem); color:var(--sssj-text,#334155); }
+
+/* A4 Portrait preview: render the asset at true A4 proportions (matches the printed PDF). */
+.sssj .sssj-asset.sssj-asset--a4{ width:210mm; max-width:100%; min-height:297mm; border-radius:2px; box-sizing:border-box; }
